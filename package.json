@@ -1,20 +1,25 @@
 {
   "name": "DOTA_memory",
   "version": "1.0.0",
-  "description": "",
+  "description": "第一个程序",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-loader": "^7.1.4",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "less-loader": "^4.1.0",
+    "style-loader": "^0.21.0",
+    "url-loader": "^1.0.1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yingyuan-ld/DOTA_memory.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/yingyuan-ld/DOTA_memory/issues"
-  },
-  "homepage": "https://github.com/yingyuan-ld/DOTA_memory#readme"
+  "author": "yingyuan",
+  "license": "ISC"
 }
