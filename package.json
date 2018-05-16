@@ -8,12 +8,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "babel-loader": "^7.1.4",
-    "css-loader": "^0.28.11",
-    "file-loader": "^1.1.11",
-    "less-loader": "^4.1.0",
-    "style-loader": "^0.21.0",
-    "url-loader": "^1.0.1"
   },
   "repository": {
     "type": "git",
