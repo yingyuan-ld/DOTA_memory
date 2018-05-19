@@ -4,7 +4,8 @@
   "description": "第一个程序",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "./node_modules/.bin/webpack"
   },
   "dependencies": {},
   "devDependencies": {
@@ -16,8 +17,8 @@
     "babel-register": "^6.26.0",
     "css-loader": "^0.28.11",
     "style-loader": "^0.21.0",
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^3.1.4"
   },
   "repository": {
     "type": "git",
