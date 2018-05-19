@@ -5,11 +5,11 @@ module.exports = {
     './index.js'
   ],
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'build'),//设置出口的相对路径为build
     filename: 'bundle.js'
   },
   module: {
-    loaders: [
+    loaders: [                               //exclude 不打包的目录         
       {test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/, query: {presets: ['react', 'es2015']}},
       {test: /\.css$/, loader: 'style-loader!css-loader'}
     ]

@@ -1,14 +1,15 @@
 require("./less/style.css");
-// import demo from './components/demo.js';
-var component = function () {
-  var element = document.createElement('h1');
+import ReactDOM from 'react-dom'; //react-dom，仅在项目顶层使用
+import React,{Component} from 'react'; //react
+import Demo from './components/demo.js';
+// var component = function () {
+//   var element = document.createElement('h1');
 
-  element.innerHTML = 'Hello world';
+//   element.innerHTML = 'Hello world';
 
-  return element;
-};
-document.body.appendChild(component());
+//   return element;
+// };
+// document.body.appendChild(component());
 
 
-// import React from 'react'; //react
-// ReactDOM.render(<demo></demo>, document.getElementById("text"));
+ReactDOM.render(<Demo></Demo>, document.getElementById("text"));
