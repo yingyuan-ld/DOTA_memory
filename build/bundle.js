@@ -848,22 +848,12 @@ var _demo = __webpack_require__(26);
 
 var _demo2 = _interopRequireDefault(_demo);
 
+__webpack_require__(27);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-__webpack_require__(27); //react-dom，仅在项目顶层使用
 //react
-
-// var component = function () {
-//   var element = document.createElement('h1');
-
-//   element.innerHTML = 'Hello world';
-
-//   return element;
-// };
-// document.body.appendChild(component());
-
-
-_reactDom2.default.render(_react2.default.createElement(_demo2.default, null), document.getElementById("text"));
+_reactDom2.default.render(_react2.default.createElement(_demo2.default, null), document.getElementById("text")); //react-dom，仅在项目顶层使用
 
 /***/ }),
 /* 14 */
@@ -19578,8 +19568,8 @@ var update = __webpack_require__(30)(content, options);
 if(content.locals) module.exports = content.locals;
 
 if(false) {
-	module.hot.accept("!!../node_modules/css-loader/index.js!./style.css", function() {
-		var newContent = require("!!../node_modules/css-loader/index.js!./style.css");
+	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
 
 		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 
@@ -19613,7 +19603,7 @@ exports = module.exports = __webpack_require__(29)(false);
 
 
 // module
-exports.push([module.i, "body{background: red}", ""]);
+exports.push([module.i, "body {\n  background: #0cf; }\n  body #text {\n    background: #666; }\n", ""]);
 
 // exports
 

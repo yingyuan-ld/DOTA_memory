@@ -11,7 +11,7 @@ module.exports = {
   module: {
     loaders: [                               //exclude 不打包的目录         
       {test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/, query: {presets: ['react', 'es2015']}},
-      {test: /\.css$/, loader: 'style-loader!css-loader'}
+      {test: /\.scss$/,loader:'style-loader!css-loader!sass-loader'}
     ]
   }
 }
