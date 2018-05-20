@@ -19,5 +19,5 @@
 ##"style-loader": "^0.21.0",
 ##"webpack": "^3.0.0",
 ##"webpack-dev-server": "^3.1.4",
-##"sass-loader": "^4.1.1", //处理scss 依赖node-sass
+##"sass-loader": "^4.1.1", //处理scss 依赖node-sass 4.以上版本
 ##"node-sass": "^4.3.0" //处理scss 需要翻墙（cnpm）
