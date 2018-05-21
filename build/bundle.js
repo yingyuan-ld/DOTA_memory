@@ -19995,10 +19995,26 @@ var Component = function (_React$Component) {
     function Component() {
         _classCallCheck(this, Component);
 
-        return _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+
+        _this.state = {
+            message: "",
+            record: ""
+        };
+        return _this;
     }
 
     _createClass(Component, [{
+        key: "edit",
+        value: function edit(val) {
+            this.setState({ message: val.target.value });
+        }
+    }, {
+        key: "send",
+        value: function send() {
+            console.info(this.state.message);
+        }
+    }, {
         key: "render",
         value: function render() {
             return _react2.default.createElement(
@@ -20010,11 +20026,11 @@ var Component = function (_React$Component) {
                     "Hello React"
                 ),
                 _react2.default.createElement("div", { className: "Chat_record" }),
-                _react2.default.createElement("textarea", { className: "text_input" }),
+                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.message }),
                 _react2.default.createElement("div", { className: "online_list" }),
                 _react2.default.createElement(
                     "div",
-                    { className: "send" },
+                    { className: "send", onClick: this.send.bind(this) },
                     "\u53D1\u9001"
                 )
             );
