@@ -13,6 +13,16 @@ class Component extends React.Component{
     }
     send(){
         console.info(this.state.message);
+        console.info(fetch);
+        fetch("message",{
+            headers:{'Content-Tipe':'application/json'}
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            console.log(data);
+        }).catch(function(e) {
+            console.log("error");
+        });
     }
   	render() {
         return <div className="system_body">

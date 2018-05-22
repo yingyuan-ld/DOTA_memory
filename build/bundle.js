@@ -20013,6 +20013,16 @@ var Component = function (_React$Component) {
         key: "send",
         value: function send() {
             console.info(this.state.message);
+            console.info(fetch);
+            fetch("message", {
+                headers: { 'Content-Tipe': 'application/json' }
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                console.log(data);
+            }).catch(function (e) {
+                console.log("error");
+            });
         }
     }, {
         key: "render",
