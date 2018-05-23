@@ -20014,7 +20014,9 @@ var Component = function (_React$Component) {
         value: function send() {
             console.info(this.state.message);
             console.info(fetch);
-            fetch("message", {
+            var url = "/message?name=ludi&value=" + this.state.message;
+            fetch(url, {
+                method: "Get",
                 headers: { 'Content-Tipe': 'application/json' }
             }).then(function (response) {
                 return response.json();

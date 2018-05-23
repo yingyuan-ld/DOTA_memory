@@ -14,7 +14,9 @@ class Component extends React.Component{
     send(){
         console.info(this.state.message);
         console.info(fetch);
-        fetch("message",{
+        let url = "/message?name=ludi&value="+this.state.message;
+        fetch(url,{
+            method: "Get", 
             headers:{'Content-Tipe':'application/json'}
         }).then(function(response) {
             return response.json();
