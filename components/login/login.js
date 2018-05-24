@@ -10,7 +10,7 @@ class login extends React.Component{
       	this.setState({name:val.target.value});
   	}
   	send(){
-		let url = "/login?name="+this.state.name;
+		let url = "/login?"+this.state.name;
 		fetch(url,{
 			method: "Get", 
 			headers:{'Content-Tipe':'application/json'}
@@ -26,7 +26,7 @@ class login extends React.Component{
     	return (<div>
         	<h1>输入名字</h1>
         	<input type="text" className="name_input" onChange={this.edit.bind(this)} value={this.state.name}/>
-        	<div onClick={this.edit.bind(this)}>确定</div>
+        	<div onClick={this.send.bind(this)}>确定</div>
     	</div>);
   	}
 }
