@@ -20248,6 +20248,9 @@ var login = function (_React$Component) {
         return response.json();
       }).then(function (data) {
         console.log(data);
+        if (data.type) {} else {
+          alert(data.message);
+        }
       }).catch(function (e) {
         console.log("error");
       });
