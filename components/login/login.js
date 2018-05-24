@@ -1,7 +1,7 @@
 import React from 'react';
 class login extends React.Component{
-  	constructor(){
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
           	name:""
         }
@@ -10,7 +10,8 @@ class login extends React.Component{
       	this.setState({name:val.target.value});
   	}
   	send(){
-		let url = "/login?"+this.state.name;
+		let that = this;
+		let url = "/login?"+that.state.name;
 		fetch(url,{
 			method: "Get", 
 			headers:{'Content-Tipe':'application/json'}
@@ -19,12 +20,10 @@ class login extends React.Component{
 		}).then(function(data) {
 			console.log(data);
 			if(data.type){
-
+				that.props.next_process()//可以进行下一步了
 			}else{
 				alert(data.message)
 			}
-		}).catch(function(e) {
-			console.log("error");
 		});
   	}
   	render() {
