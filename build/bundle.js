@@ -19981,6 +19981,8 @@ var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(29);
 
+var _components = __webpack_require__(34);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -19997,55 +19999,14 @@ var Component = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
 
-        _this.state = {
-            message: "",
-            record: ""
-        };
+        _this.state = {};
         return _this;
     }
 
     _createClass(Component, [{
-        key: "edit",
-        value: function edit(val) {
-            this.setState({ message: val.target.value });
-        }
-    }, {
-        key: "send",
-        value: function send() {
-            console.info(this.state.message);
-            console.info(fetch);
-            var url = "/message?name=ludi&value=" + this.state.message;
-            fetch(url, {
-                method: "Get",
-                headers: { 'Content-Tipe': 'application/json' }
-            }).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                console.log(data);
-            }).catch(function (e) {
-                console.log("error");
-            });
-        }
-    }, {
         key: "render",
         value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "system_body" },
-                _react2.default.createElement(
-                    "h1",
-                    null,
-                    "Hello React"
-                ),
-                _react2.default.createElement("div", { className: "Chat_record" }),
-                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.message }),
-                _react2.default.createElement("div", { className: "online_list" }),
-                _react2.default.createElement(
-                    "div",
-                    { className: "send", onClick: this.send.bind(this) },
-                    "\u53D1\u9001"
-                )
-            );
+            return _react2.default.createElement(_components.Login, null);
         }
     }]);
 
@@ -20273,6 +20234,262 @@ exports = module.exports = __webpack_require__(12)(false);
 
 // module
 exports.push([module.i, "body {\n  background: #0cf; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _login = __webpack_require__(35);
+
+var _login2 = _interopRequireDefault(_login);
+
+var _Playing = __webpack_require__(36);
+
+var _Playing2 = _interopRequireDefault(_Playing);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var index = {
+    Login: _login2.default,
+    Playing: _Playing2.default
+};
+module.exports = index;
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(3);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var login = function (_React$Component) {
+  _inherits(login, _React$Component);
+
+  function login() {
+    _classCallCheck(this, login);
+
+    var _this = _possibleConstructorReturn(this, (login.__proto__ || Object.getPrototypeOf(login)).call(this));
+
+    _this.state = {
+      name: ""
+    };
+    return _this;
+  }
+
+  _createClass(login, [{
+    key: "edit",
+    value: function edit(val) {
+      this.setState({ name: val.target.value });
+    }
+  }, {
+    key: "send",
+    value: function send() {
+      var url = "/login?name=" + this.state.name;
+      fetch(url, {
+        method: "Get",
+        headers: { 'Content-Tipe': 'application/json' }
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        console.log(data);
+      }).catch(function (e) {
+        console.log("error");
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement(
+          "h1",
+          null,
+          "\u8F93\u5165\u540D\u5B57"
+        ),
+        _react2.default.createElement("input", { type: "text", className: "name_input", onChange: this.edit.bind(this), value: this.state.name }),
+        _react2.default.createElement(
+          "div",
+          { onClick: this.edit.bind(this) },
+          "\u786E\u5B9A"
+        )
+      );
+    }
+  }]);
+
+  return login;
+}(_react2.default.Component);
+
+module.exports = login;
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(3);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(37);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Component = function (_React$Component) {
+    _inherits(Component, _React$Component);
+
+    function Component() {
+        _classCallCheck(this, Component);
+
+        var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+
+        _this.state = {
+            message: "",
+            record: ""
+        };
+        return _this;
+    }
+
+    _createClass(Component, [{
+        key: "edit",
+        value: function edit(val) {
+            this.setState({ message: val.target.value });
+        }
+    }, {
+        key: "send",
+        value: function send() {
+            console.info(this.state.message);
+            console.info(fetch);
+            var url = "/message?name=ludi&value=" + this.state.message;
+            fetch(url, {
+                method: "Get",
+                headers: { 'Content-Tipe': 'application/json' }
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                console.log(data);
+            }).catch(function (e) {
+                console.log("error");
+            });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "system_body" },
+                _react2.default.createElement(
+                    "h1",
+                    null,
+                    "Hello React"
+                ),
+                _react2.default.createElement("div", { className: "Chat_record" }),
+                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.message }),
+                _react2.default.createElement("div", { className: "online_list" }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "send", onClick: this.send.bind(this) },
+                    "\u53D1\u9001"
+                )
+            );
+        }
+    }]);
+
+    return Component;
+}(_react2.default.Component);
+
+module.exports = Component;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(38);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(13)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./playing.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./playing.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

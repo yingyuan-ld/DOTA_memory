@@ -1,16 +1,11 @@
 var http = require('http');
 var fs = require("fs");
 var url = require("url");
+// require("./action");
+
 
 http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
-    if(pathname == "/message"){
-        let rurl = url.parse(request.url);
-        response.writeHead(200, {'Content-Type': 'application/json'});  
-        var name = {name:"ludi",text:"hehe"}  
-        response.write(JSON.stringify(name)); 
-        response.end();
-    }
     // 从文件系统中读取请求的文件内容
     if(pathname=="/index.html"||pathname=='/build/bundle.js')fs.readFile(pathname.substr(1), function (err, data) {
         if (err) {
@@ -22,6 +17,7 @@ http.createServer(function (request, response) {
         }
         response.end();
     }); 
+    // action(pathname,request, response);//请求处理
 }).listen(8080);
 
 console.log('Server running at http://127.0.0.1:8080/');
