@@ -640,7 +640,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(31);
+var	fixUrls = __webpack_require__(33);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1316,7 +1316,7 @@ var _DotaSystem = __webpack_require__(28);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(40);
+__webpack_require__(42);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19979,9 +19979,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(29);
+__webpack_require__(31);
 
-var _components = __webpack_require__(32);
+var _components = __webpack_require__(34);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19991,6 +19991,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var socket = io();
+setTimeout(function () {
+    console.info(socket.id);
+}, 100);
 var component = { //所有的容器组件(最复杂有5层容器)
     Login: _components.Login,
     Prepare: _components.Prepare,
@@ -20006,27 +20010,32 @@ var Component = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, props));
 
         _this.state = {
+            myname: "",
             process: ["Login", "Prepare", "Playing"], //游戏流程
-            progress_state: 1
+            progress_state: 0
         };
         return _this;
     }
 
     _createClass(Component, [{
         key: "next_process",
-        value: function next_process() {
+        value: function next_process(name) {
             //进行到下一个流程
-            this.setState({ progress_state: this.state.progress_state + 1 });
+            this.setState({
+                progress_state: this.state.progress_state + 1,
+                myname: name || this.state.myname
+            });
         }
     }, {
         key: "render",
         value: function render() {
             var FieldBox = component[this.state.process[this.state.progress_state]];
             var data = {
-                next_process: this.next_process.bind(this)
-            };
-            console.info(this.state.progress_state);
-            return _react2.default.createElement(FieldBox, data);
+                myname: this.state.myname,
+                next_process: this.next_process.bind(this),
+                socket: socket
+                // console.info(this.state.progress_state);
+            };return _react2.default.createElement(FieldBox, data);
         }
     }]);
 
@@ -20036,11 +20045,13 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 29 */
+/* 29 */,
+/* 30 */,
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(30);
+var content = __webpack_require__(32);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20086,7 +20097,7 @@ if(false) {
 }
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);
@@ -20100,7 +20111,7 @@ exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .s
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports) {
 
 
@@ -20195,21 +20206,21 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _login = __webpack_require__(33);
+var _login = __webpack_require__(35);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(34);
+var _Prepare = __webpack_require__(36);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _Playing = __webpack_require__(37);
+var _Playing = __webpack_require__(39);
 
 var _Playing2 = _interopRequireDefault(_Playing);
 
@@ -20223,7 +20234,7 @@ var index = {
 module.exports = index;
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20258,45 +20269,45 @@ var login = function (_React$Component) {
   }
 
   _createClass(login, [{
-    key: "edit",
-    value: function edit(val) {
-      this.setState({ name: val.target.value });
-    }
-  }, {
-    key: "send",
-    value: function send() {
+    key: 'componentWillMount',
+    value: function componentWillMount() {
       var that = this;
-      var url = "/login?" + that.state.name;
-      fetch(url, {
-        method: "Get",
-        headers: { 'Content-Tipe': 'application/json' }
-      }).then(function (response) {
-        return response.json();
-      }).then(function (data) {
-        console.log(data);
-        if (data.type) {
-          that.props.next_process(); //可以进行下一步了
+      this.props.socket.on('loginreturn', function (res) {
+        //返回登录结果
+        if (res.type) {
+          that.props.next_process(that.state.name); //可以进行下一步了
         } else {
-          alert(data.message);
+          alert(res.message);
         }
       });
     }
   }, {
-    key: "render",
+    key: 'edit',
+    value: function edit(val) {
+      this.setState({ name: val.target.value });
+    }
+  }, {
+    key: 'send',
+    value: function send() {
+      var that = this;
+      this.props.socket.emit('login', that.state.name);
+    }
+  }, {
+    key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        "div",
+        'div',
         null,
         _react2.default.createElement(
-          "h1",
+          'h1',
           null,
-          "\u8F93\u5165\u540D\u5B57"
+          '\u8F93\u5165\u540D\u5B57'
         ),
-        _react2.default.createElement("input", { type: "text", className: "name_input", onChange: this.edit.bind(this), value: this.state.name }),
+        _react2.default.createElement('input', { type: 'text', className: 'name_input', onChange: this.edit.bind(this), value: this.state.name }),
         _react2.default.createElement(
-          "div",
+          'div',
           { onClick: this.send.bind(this) },
-          "\u786E\u5B9A"
+          '\u786E\u5B9A'
         )
       );
     }
@@ -20308,7 +20319,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20320,7 +20331,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(35);
+__webpack_require__(37);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20329,6 +20340,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var socket = io();
 
 var Component = function (_React$Component) {
     _inherits(Component, _React$Component);
@@ -20345,72 +20358,96 @@ var Component = function (_React$Component) {
     }
 
     _createClass(Component, [{
-        key: "componentWillMount",
+        key: 'componentWillMount',
         value: function componentWillMount() {
-            this.getpersen();
-            console.info("1234567890");
-        }
-    }, {
-        key: "getpersen",
-        value: function getpersen() {
             var that = this;
-            var url = "/getpersen";
-            fetch(url, {
-                method: "Get",
-                headers: { 'Content-Tipe': 'application/json' }
-            }).then(function (response) {
-                return response.json();
-            }).then(function (data) {
+            that.props.socket.on('message', function (res) {
+                //刷新人员列表
+                console.info(res);
                 var getpersen = [];
-                for (name in data) {
-                    getpersen.push(name);
+                for (name in res.persen) {
+                    getpersen.push({
+                        name: name,
+                        state: res.persen[name].state
+                    });
                 }
                 that.setState({ getpersen: getpersen });
             });
+            that.props.socket.on('letsFight', function (res) {
+                //接收挑战
+                console.info(res);
+                var r = confirm(res.message + ",是否迎战?");
+                if (r == true) {
+                    that.props.socket.emit('okFight', {
+                        name: res.name,
+                        fight: true
+                    });
+                } else {
+                    that.props.socket.emit('okFight', {
+                        name: res.name,
+                        fight: false
+                    });
+                }
+            });
         }
     }, {
-        key: "render_presen",
+        key: 'render_presen',
         value: function render_presen() {
             var _this2 = this;
 
-            return this.state.getpersen.map(function (name, i) {
-                return _react2.default.createElement(
-                    "div",
-                    { onClick: _this2.select_persen.bind(_this2, name) },
-                    name
+            //渲染 当前在线用户
+            return this.state.getpersen.map(function (item, i) {
+                if (item.name !== _this2.props.myname) return _react2.default.createElement(
+                    'div',
+                    { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this2.select_persen.bind(_this2, item.name) },
+                    item.name
                 );
             });
         }
     }, {
-        key: "select_persen",
-        value: function select_persen() {}
+        key: 'select_persen',
+        value: function select_persen(name) {
+            //选择用户发出要求
+            var that = this;
+            var r = confirm("是否向\"" + name + "\"发出邀请");
+            if (r == true) {
+                that.props.socket.emit('letsFight', name);
+            } else {
+                console.info("你按下了\"取消\"按钮!");
+            }
+        }
     }, {
-        key: "edit",
+        key: 'edit',
         value: function edit(val) {
             this.setState({ message: val.target.value });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             return _react2.default.createElement(
-                "div",
-                { className: "prepare_body" },
+                'div',
+                { className: 'prepare_body' },
                 _react2.default.createElement(
-                    "h1",
+                    'h1',
                     null,
-                    "\u8BF7\u9009\u62E9\u4E00\u4E2A\u73A9\u5BB6"
+                    '\u8BF7\u9009\u62E9\u4E00\u4E2A\u73A9\u5BB6'
                 ),
-                _react2.default.createElement("div", { className: "Chat_record" }),
-                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.message }),
+                _react2.default.createElement('div', { className: 'Chat_record' }),
+                _react2.default.createElement('textarea', { className: 'text_input', onChange: this.edit.bind(this), value: this.state.message }),
                 _react2.default.createElement(
-                    "div",
-                    { className: "online_list" },
+                    'div',
+                    { className: 'online_list' },
+                    _react2.default.createElement(
+                        'div',
+                        null,
+                        '\u5728\u7EBF\u4EBA\u5458\u5217\u8868'
+                    ),
                     this.render_presen()
                 ),
                 _react2.default.createElement(
-                    "div",
-                    { className: "send", onClick: this.getpersen.bind(this) },
-                    "\u53D1\u9001"
+                    'div',
+                    { className: 'send', onClick: function onClick() {} },
+                    '\u53D1\u9001'
                 )
             );
         }
@@ -20422,11 +20459,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(36);
+var content = __webpack_require__(38);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20472,7 +20509,7 @@ if(false) {
 }
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);
@@ -20486,7 +20523,7 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20498,7 +20535,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(38);
+__webpack_require__(40);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20574,11 +20611,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(39);
+var content = __webpack_require__(41);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20624,7 +20661,7 @@ if(false) {
 }
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);
@@ -20638,11 +20675,11 @@ exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .s
 
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(41);
+var content = __webpack_require__(43);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20688,7 +20725,7 @@ if(false) {
 }
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);

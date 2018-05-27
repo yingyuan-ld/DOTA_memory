@@ -6,25 +6,22 @@ class login extends React.Component{
           	name:""
         }
   	}
+	componentWillMount(){
+		let that = this;
+		this.props.socket.on('loginreturn', function(res){//返回登录结果
+			if(res.type){
+				that.props.next_process(that.state.name)//可以进行下一步了
+			}else{
+				alert(res.message)
+			}
+		})
+	}
   	edit(val){
       	this.setState({name:val.target.value});
   	}
   	send(){
 		let that = this;
-		let url = "/login?"+that.state.name;
-		fetch(url,{
-			method: "Get", 
-			headers:{'Content-Tipe':'application/json'}
-		}).then(function(response) {
-			return response.json();
-		}).then(function(data) {
-			console.log(data);
-			if(data.type){
-				that.props.next_process()//可以进行下一步了
-			}else{
-				alert(data.message)
-			}
-		});
+		this.props.socket.emit('login', that.state.name);
   	}
   	render() {
     	return (<div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import "./Prepare.scss";
+var socket = io();
 class Component extends React.Component{
     constructor(){
         super();
@@ -8,32 +9,48 @@ class Component extends React.Component{
         }
     }
     componentWillMount(){
-        this.getpersen();
-        console.info("1234567890")
-    }
-    getpersen(){
         let that = this;
-        let url = "/getpersen";
-        fetch(url,{
-            method: "Get", 
-            headers:{'Content-Tipe':'application/json'}
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
+        that.props.socket.on('message', function(res){//刷新人员列表
+			console.info(res);
             let getpersen = [];
-            for(name in data){
-                getpersen.push(name);
+            for(name in res.persen){
+                getpersen.push({
+                    name:name,
+                    state:res.persen[name].state
+                });
             }
             that.setState({getpersen:getpersen});
-        });
+		})
+        that.props.socket.on('letsFight', function(res){//接收挑战
+			console.info(res);
+            let r=confirm(res.message+",是否迎战?");
+            if (r==true){
+                that.props.socket.emit('okFight', {
+                    name:res.name,
+                    fight:true
+                });
+            }else{
+                that.props.socket.emit('okFight', {
+                    name:res.name,
+                    fight:false
+                });
+            }
+		})
     }
-    render_presen(){
-        return this.state.getpersen.map((name,i)=>{
-            return <div onClick={this.select_persen.bind(this,name)}>{name}</div>
+    render_presen(){//渲染 当前在线用户
+        return this.state.getpersen.map((item,i)=>{
+            if(item.name!==this.props.myname)
+            return <div key={i} style={item.state=="fighting"?{background:"red"}:{}} onClick={this.select_persen.bind(this,item.name)}>{item.name}</div>
         })
     }
-    select_persen(){
-        
+    select_persen(name){//选择用户发出要求
+        let that = this;
+        let r=confirm("是否向\""+name+"\"发出邀请");
+        if (r==true){
+            that.props.socket.emit('letsFight', name);
+        }else{
+            console.info("你按下了\"取消\"按钮!");
+        }
     }
     edit(val){
         this.setState({message:val.target.value});
@@ -44,9 +61,10 @@ class Component extends React.Component{
             <div className="Chat_record"></div>
             <textarea className="text_input" onChange={this.edit.bind(this)} value={this.state.message}></textarea>
             <div className="online_list">
+                <div>在线人员列表</div>
                 {this.render_presen()}
             </div>
-            <div className="send" onClick={this.getpersen.bind(this)}>发送</div>
+            <div className="send" onClick={()=>{}}>发送</div>
         </div>;
   	}
 }
