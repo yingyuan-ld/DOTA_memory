@@ -640,7 +640,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(33);
+var	fixUrls = __webpack_require__(31);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1316,7 +1316,7 @@ var _DotaSystem = __webpack_require__(28);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(42);
+__webpack_require__(40);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19979,9 +19979,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(31);
+__webpack_require__(29);
 
-var _components = __webpack_require__(34);
+var _components = __webpack_require__(32);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20045,13 +20045,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 29 */,
-/* 30 */,
-/* 31 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(32);
+var content = __webpack_require__(30);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20097,7 +20095,7 @@ if(false) {
 }
 
 /***/ }),
-/* 32 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);
@@ -20111,7 +20109,7 @@ exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .s
 
 
 /***/ }),
-/* 33 */
+/* 31 */
 /***/ (function(module, exports) {
 
 
@@ -20206,21 +20204,21 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 34 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _login = __webpack_require__(35);
+var _login = __webpack_require__(33);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(36);
+var _Prepare = __webpack_require__(34);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _Playing = __webpack_require__(39);
+var _Playing = __webpack_require__(37);
 
 var _Playing2 = _interopRequireDefault(_Playing);
 
@@ -20234,7 +20232,7 @@ var index = {
 module.exports = index;
 
 /***/ }),
-/* 35 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20272,9 +20270,10 @@ var login = function (_React$Component) {
     key: 'componentWillMount',
     value: function componentWillMount() {
       var that = this;
-      this.props.socket.on('loginreturn', function (res) {
+      this.props.socket.on('getLogin', function (res) {
         //返回登录结果
         if (res.type) {
+          console.info(res.message);
           that.props.next_process(that.state.name); //可以进行下一步了
         } else {
           alert(res.message);
@@ -20319,7 +20318,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 36 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20331,7 +20330,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(37);
+__webpack_require__(35);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20352,38 +20351,41 @@ var Component = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
 
         _this.state = {
-            getpersen: []
+            persenAry: [],
+            message: [], //{name value system}
+            mymessage: ""
         };
         return _this;
     }
 
     _createClass(Component, [{
-        key: 'componentWillMount',
+        key: "componentWillMount",
         value: function componentWillMount() {
             var that = this;
-            that.props.socket.on('message', function (res) {
+            that.props.socket.on('getpersen', function (res) {
                 //刷新人员列表
                 console.info(res);
-                var getpersen = [];
-                for (name in res.persen) {
-                    getpersen.push({
-                        name: name,
-                        state: res.persen[name].state
-                    });
-                }
-                that.setState({ getpersen: getpersen });
+                var message = that.state.message;
+                message.push({
+                    system: true,
+                    name: "系统消息",
+                    value: res.message
+                });
+                that.setState({ persenAry: res.persenAry, message: message });
             });
-            that.props.socket.on('letsFight', function (res) {
+
+            that.props.socket.on('getFight', function (res) {
                 //接收挑战
                 console.info(res);
                 var r = confirm(res.message + ",是否迎战?");
                 if (r == true) {
-                    that.props.socket.emit('okFight', {
+                    that.props.socket.emit('fightAns', {
                         name: res.name,
                         fight: true
                     });
+                    that.props.next_process(); //可以进行下一步了
                 } else {
-                    that.props.socket.emit('okFight', {
+                    that.props.socket.emit('fightAns', {
                         name: res.name,
                         fight: false
                     });
@@ -20391,63 +20393,88 @@ var Component = function (_React$Component) {
             });
         }
     }, {
-        key: 'render_presen',
+        key: "select_persen",
+        value: function select_persen(challengName) {
+            //选择用户发出要求 defier挑战 challeng被挑战
+            var that = this;
+            var r = confirm("是否向\"" + challengName + "\"发出邀请");
+            if (r == true) {
+                that.props.socket.emit('sendFight', challengName);
+            } else {
+                console.info("你按下了\"取消\"按钮!");
+            }
+        }
+    }, {
+        key: "render_presen",
         value: function render_presen() {
             var _this2 = this;
 
             //渲染 当前在线用户
-            return this.state.getpersen.map(function (item, i) {
+            return this.state.persenAry.map(function (item, i) {
                 if (item.name !== _this2.props.myname) return _react2.default.createElement(
-                    'div',
+                    "div",
                     { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this2.select_persen.bind(_this2, item.name) },
                     item.name
                 );
             });
         }
     }, {
-        key: 'select_persen',
-        value: function select_persen(name) {
-            //选择用户发出要求
-            var that = this;
-            var r = confirm("是否向\"" + name + "\"发出邀请");
-            if (r == true) {
-                that.props.socket.emit('letsFight', name);
-            } else {
-                console.info("你按下了\"取消\"按钮!");
-            }
+        key: "render_message",
+        value: function render_message() {
+            //渲染消息
+            return this.state.message.map(function (item, i) {
+                // return(item.system?<div key={i} >{item.value</div>:
+                return _react2.default.createElement(
+                    "div",
+                    null,
+                    item.system ? _react2.default.createElement(
+                        "div",
+                        { key: i, className: "system_message" },
+                        "系统消息:" + item.value
+                    ) : _react2.default.createElement(
+                        "div",
+                        { key: i, className: "organ_message" },
+                        item.name + ":" + item.value
+                    )
+                );
+            });
         }
     }, {
-        key: 'edit',
+        key: "edit",
         value: function edit(val) {
-            this.setState({ message: val.target.value });
+            this.setState({ mymessage: val.target.value });
         }
     }, {
-        key: 'render',
+        key: "render",
         value: function render() {
             return _react2.default.createElement(
-                'div',
-                { className: 'prepare_body' },
+                "div",
+                { className: "prepare_body" },
                 _react2.default.createElement(
-                    'h1',
+                    "h1",
                     null,
-                    '\u8BF7\u9009\u62E9\u4E00\u4E2A\u73A9\u5BB6'
+                    "\u8BF7\u9009\u62E9\u4E00\u4E2A\u73A9\u5BB6"
                 ),
-                _react2.default.createElement('div', { className: 'Chat_record' }),
-                _react2.default.createElement('textarea', { className: 'text_input', onChange: this.edit.bind(this), value: this.state.message }),
                 _react2.default.createElement(
-                    'div',
-                    { className: 'online_list' },
+                    "div",
+                    { className: "Chat_record" },
+                    this.render_message()
+                ),
+                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.mymessage }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "online_list" },
                     _react2.default.createElement(
-                        'div',
+                        "div",
                         null,
-                        '\u5728\u7EBF\u4EBA\u5458\u5217\u8868'
+                        "\u5728\u7EBF\u4EBA\u5458\u5217\u8868"
                     ),
                     this.render_presen()
                 ),
                 _react2.default.createElement(
-                    'div',
-                    { className: 'send', onClick: function onClick() {} },
-                    '\u53D1\u9001'
+                    "div",
+                    { className: "send", onClick: function onClick() {} },
+                    "\u53D1\u9001"
                 )
             );
         }
@@ -20459,11 +20486,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 37 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(38);
+var content = __webpack_require__(36);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20509,7 +20536,7 @@ if(false) {
 }
 
 /***/ }),
-/* 38 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);
@@ -20517,13 +20544,13 @@ exports = module.exports = __webpack_require__(6)(false);
 
 
 // module
-exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .prepare_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    border: 1px solid #666;\n    background: #fff; }\n  .prepare_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .prepare_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    border: 1px solid #666;\n    top: 100px;\n    right: 0px; }\n  .prepare_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .prepare_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    border: 1px solid #666;\n    background: #fff; }\n    .prepare_body .Chat_record .organ_message {\n      text-align: left; }\n    .prepare_body .Chat_record .system_message {\n      text-align: center; }\n  .prepare_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .prepare_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    border: 1px solid #666;\n    top: 100px;\n    right: 0px; }\n  .prepare_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 39 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20535,7 +20562,7 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(40);
+__webpack_require__(38);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20591,15 +20618,7 @@ var Component = function (_React$Component) {
                 _react2.default.createElement(
                     "h1",
                     null,
-                    "Hello React"
-                ),
-                _react2.default.createElement("div", { className: "Chat_record" }),
-                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.message }),
-                _react2.default.createElement("div", { className: "online_list" }),
-                _react2.default.createElement(
-                    "div",
-                    { className: "send", onClick: this.send.bind(this) },
-                    "\u53D1\u9001"
+                    "\u4E00\u4E2A\u754C\u9762"
                 )
             );
         }
@@ -20611,11 +20630,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 40 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(41);
+var content = __webpack_require__(39);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20661,7 +20680,7 @@ if(false) {
 }
 
 /***/ }),
-/* 41 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);
@@ -20675,11 +20694,11 @@ exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .s
 
 
 /***/ }),
-/* 42 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(43);
+var content = __webpack_require__(41);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20725,7 +20744,7 @@ if(false) {
 }
 
 /***/ }),
-/* 43 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);

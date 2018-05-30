@@ -8,8 +8,9 @@ class login extends React.Component{
   	}
 	componentWillMount(){
 		let that = this;
-		this.props.socket.on('loginreturn', function(res){//返回登录结果
+		this.props.socket.on('getLogin', function(res){//返回登录结果
 			if(res.type){
+				console.info(res.message);
 				that.props.next_process(that.state.name)//可以进行下一步了
 			}else{
 				alert(res.message)

@@ -28,11 +28,7 @@ class Component extends React.Component{
     }
   	render() {
         return <div className="system_body">
-            <h1>Hello React</h1>
-            <div className="Chat_record"></div>
-            <textarea className="text_input" onChange={this.edit.bind(this)} value={this.state.message}></textarea>
-            <div className="online_list"></div>
-            <div className="send" onClick={this.send.bind(this)}>发送</div>
+            <h1>一个界面</h1>
         </div>;
   	}
 }
