@@ -25,7 +25,7 @@ io.on('connection', function(socket){
     socket.on('login', function(name){//接收登录信息
         var res = {};
         if(!persenObj[name]){
-            persenObj[name]=true;
+            persenObj[name]=socket.id;
             persenAry.push({
                 name:name,
                 id:socket.id,
@@ -44,50 +44,62 @@ io.on('connection', function(socket){
         socket.emit('getLogin', res);//给指定的客户端发送消息
         if(res.type){
             socket.join('prepare room');
-            io.in('prepare room').emit('getpersen', {
-                persenAry:persenAry,
-                message:'玩家"'+name+'"登录游戏'
+            getpersen(persenAry);
+            getmessage({
+                system:true,
+                name:"系统消息",
+                value:'玩家"'+name+'"登录游戏'
             });
         }
     });
-    
-
-
-
-
-
-
-
-
-
-
-
-    socket.on('sendFight', function(name){//发起挑战
-        for(fatename in persen){
-            if(persen[fatename].id===socket.id)break;
+    socket.on('sendmessage', function(mymessage){//广播消息
+        for(fatename in persenObj){
+            if(persenObj[fatename]===socket.id)break;
         }
-        io.to(persen[name].id).emit('getFight',{
+        getmessage({
+            system:false,
             name:fatename,
-            message:'"'+fatename+'"向你发起挑战'
+            value:mymessage
         });
     });
-
+    socket.on('sendFight', function(challengId){//发起挑战
+        for(fatename in persenObj){
+            if(persenObj[fatename]===socket.id)break;
+        }
+        io.to(challengId).emit('getFight',{
+            id:socket.id,
+            name:fatename,
+            message:'"'+fatename+'"向你发起挑战,是否迎战'
+        });
+    });
     socket.on('fightAns', function(res){//接受挑战
-        if(tes.fight){
-            for(fatename in persen){
-                if(persen[fatename].id===socket.id){
-                    persen[fatename].state = "fighting"
-                    break;
+        if(res.fight){
+            for(i in persenAry){
+                if(persenAry[i].id===socket.id){
+                    persenAry[i].state = "fighting"
+                }
+                if(persenAry[i].id===res.id){
+                    persenAry[i].state = "fighting"
                 }
             }
-            persen[res.name].state = "fighting";
-            io.in('prepare room').emit('getpersen', {
-                persen:persen,
-                message:'"'+fatename+'"和"'+res.name+'"开战了!'
+            getpersen(persenAry);
+            io.to(res.id).emit('fightAns',{
+                fight:true,
+                message:'对方接受了挑战!'
             });
         }else{
-            //没有接收挑战
+            io.to(res.id).emit('fightAns',{
+                fight:false,
+                message:'对方让你滚蛋!'
+            });
         }
     });
 });
+
+let getpersen = function(persenAry){
+    io.in('prepare room').emit('getpersen', persenAry);
+}
+let getmessage = function(message){
+    io.in('prepare room').emit('getmessage', message);
+}
 console.log('Server running at http://127.0.0.1:8088/');

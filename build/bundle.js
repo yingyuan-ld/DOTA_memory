@@ -20362,44 +20362,46 @@ var Component = function (_React$Component) {
         key: "componentWillMount",
         value: function componentWillMount() {
             var that = this;
-            that.props.socket.on('getpersen', function (res) {
+            that.props.socket.on('getpersen', function (persenAry) {
                 //刷新人员列表
-                console.info(res);
+                that.setState({ persenAry: persenAry });
+            });
+            that.props.socket.on('getmessage', function (mewmessage) {
+                //刷新消息
                 var message = that.state.message;
-                message.push({
-                    system: true,
-                    name: "系统消息",
-                    value: res.message
-                });
-                that.setState({ persenAry: res.persenAry, message: message });
+                message.push(mewmessage);
+                that.setState({ message: message });
             });
 
             that.props.socket.on('getFight', function (res) {
                 //接收挑战
-                console.info(res);
-                var r = confirm(res.message + ",是否迎战?");
+                var r = confirm(res.message);
                 if (r == true) {
-                    that.props.socket.emit('fightAns', {
-                        name: res.name,
-                        fight: true
-                    });
+                    that.props.next_process(); //可以进行下一步了
+                }
+                that.props.socket.emit('fightAns', {
+                    id: res.id,
+                    name: res.name,
+                    fight: r
+                });
+            });
+            that.props.socket.on('fightAns', function (res) {
+                //挑战答复
+                if (res.fight) {
                     that.props.next_process(); //可以进行下一步了
                 } else {
-                    that.props.socket.emit('fightAns', {
-                        name: res.name,
-                        fight: false
-                    });
+                    alert(res.message);
                 }
             });
         }
     }, {
         key: "select_persen",
-        value: function select_persen(challengName) {
+        value: function select_persen(challengName, challengId) {
             //选择用户发出要求 defier挑战 challeng被挑战
             var that = this;
             var r = confirm("是否向\"" + challengName + "\"发出邀请");
             if (r == true) {
-                that.props.socket.emit('sendFight', challengName);
+                that.props.socket.emit('sendFight', challengId);
             } else {
                 console.info("你按下了\"取消\"按钮!");
             }
@@ -20413,7 +20415,7 @@ var Component = function (_React$Component) {
             return this.state.persenAry.map(function (item, i) {
                 if (item.name !== _this2.props.myname) return _react2.default.createElement(
                     "div",
-                    { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this2.select_persen.bind(_this2, item.name) },
+                    { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this2.select_persen.bind(_this2, item.name, item.id) },
                     item.name
                 );
             });
@@ -20423,17 +20425,16 @@ var Component = function (_React$Component) {
         value: function render_message() {
             //渲染消息
             return this.state.message.map(function (item, i) {
-                // return(item.system?<div key={i} >{item.value</div>:
                 return _react2.default.createElement(
                     "div",
-                    null,
+                    { key: i },
                     item.system ? _react2.default.createElement(
                         "div",
-                        { key: i, className: "system_message" },
+                        { className: "system_message" },
                         "系统消息:" + item.value
                     ) : _react2.default.createElement(
                         "div",
-                        { key: i, className: "organ_message" },
+                        { className: "organ_message" },
                         item.name + ":" + item.value
                     )
                 );
@@ -20445,8 +20446,14 @@ var Component = function (_React$Component) {
             this.setState({ mymessage: val.target.value });
         }
     }, {
+        key: "sendmessage",
+        value: function sendmessage() {
+            this.props.socket.emit('sendmessage', this.state.mymessage);
+        }
+    }, {
         key: "render",
         value: function render() {
+            console.info(this.state);
             return _react2.default.createElement(
                 "div",
                 { className: "prepare_body" },
@@ -20473,7 +20480,7 @@ var Component = function (_React$Component) {
                 ),
                 _react2.default.createElement(
                     "div",
-                    { className: "send", onClick: function onClick() {} },
+                    { className: "send", onClick: this.sendmessage.bind(this) },
                     "\u53D1\u9001"
                 )
             );
