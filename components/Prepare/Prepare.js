@@ -12,6 +12,12 @@ class Component extends React.Component{
     }
     componentWillMount(){
         let that = this;
+        window.onunload = function(event) {
+            socket.emit('logout', {
+                id:that.state.myid,
+                name:that.state.myname
+            }); 
+        }
         that.props.socket.on('getpersen', function(persenAry){//刷新人员列表
             that.setState({persenAry:persenAry});
         })
@@ -24,7 +30,11 @@ class Component extends React.Component{
         that.props.socket.on('getFight', function(res){//接收挑战
             let r=confirm(res.message);
             if (r==true){
-				that.props.next_process()//可以进行下一步了
+				that.props.next_process({
+                    thatname:res.name,
+                    thatid:res.id,
+                    progress_state:2
+                })//可以进行下一步了
             }
             that.props.socket.emit('fightAns', {
                 id:res.id,
@@ -34,7 +44,11 @@ class Component extends React.Component{
 		})
         that.props.socket.on('fightAns', function(res){//挑战答复
             if(res.fight){
-				that.props.next_process()//可以进行下一步了
+				that.props.next_process({
+                    thatname:res.name,
+                    thatid:res.id,
+                    progress_state:2
+                })//可以进行下一步了
             }else{
                 alert(res.message);
             }

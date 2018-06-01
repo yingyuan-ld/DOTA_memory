@@ -19973,6 +19973,8 @@ module.exports = camelize;
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -19995,10 +19997,10 @@ var socket = io();
 setTimeout(function () {
     console.info(socket.id);
 }, 100);
-var component = { //所有的容器组件(最复杂有5层容器)
-    Login: _components.Login,
-    Prepare: _components.Prepare,
-    Playing: _components.Playing
+var component = { //页面
+    Login: _components.Login, //登录
+    Prepare: _components.Prepare, //准备
+    Playing: _components.Playing //进行
 };
 
 var Component = function (_React$Component) {
@@ -20011,6 +20013,9 @@ var Component = function (_React$Component) {
 
         _this.state = {
             myname: "",
+            myid: "",
+            thatname: "",
+            thatid: "",
             process: ["Login", "Prepare", "Playing"], //游戏流程
             progress_state: 0
         };
@@ -20018,24 +20023,25 @@ var Component = function (_React$Component) {
     }
 
     _createClass(Component, [{
+        key: "componentWillMount",
+        value: function componentWillMount() {}
+    }, {
         key: "next_process",
-        value: function next_process(name) {
+        value: function next_process(newdata) {
             //进行到下一个流程
-            this.setState({
-                progress_state: this.state.progress_state + 1,
-                myname: name || this.state.myname
-            });
+            var state = this.state;
+            state = Object.assign(state, newdata);
+            this.setState(state);
         }
     }, {
         key: "render",
         value: function render() {
             var FieldBox = component[this.state.process[this.state.progress_state]];
             var data = {
-                myname: this.state.myname,
                 next_process: this.next_process.bind(this),
                 socket: socket
-                // console.info(this.state.progress_state);
-            };return _react2.default.createElement(FieldBox, data);
+            };
+            return _react2.default.createElement(FieldBox, _extends({}, data, this.state));
         }
     }]);
 
@@ -20253,66 +20259,71 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var login = function (_React$Component) {
-  _inherits(login, _React$Component);
+	_inherits(login, _React$Component);
 
-  function login(props) {
-    _classCallCheck(this, login);
+	function login(props) {
+		_classCallCheck(this, login);
 
-    var _this = _possibleConstructorReturn(this, (login.__proto__ || Object.getPrototypeOf(login)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (login.__proto__ || Object.getPrototypeOf(login)).call(this, props));
 
-    _this.state = {
-      name: ""
-    };
-    return _this;
-  }
+		_this.state = {
+			myname: "",
+			myid: ""
+		};
+		return _this;
+	}
 
-  _createClass(login, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      var that = this;
-      this.props.socket.on('getLogin', function (res) {
-        //返回登录结果
-        if (res.type) {
-          console.info(res.message);
-          that.props.next_process(that.state.name); //可以进行下一步了
-        } else {
-          alert(res.message);
-        }
-      });
-    }
-  }, {
-    key: 'edit',
-    value: function edit(val) {
-      this.setState({ name: val.target.value });
-    }
-  }, {
-    key: 'send',
-    value: function send() {
-      var that = this;
-      this.props.socket.emit('login', that.state.name);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h1',
-          null,
-          '\u8F93\u5165\u540D\u5B57'
-        ),
-        _react2.default.createElement('input', { type: 'text', className: 'name_input', onChange: this.edit.bind(this), value: this.state.name }),
-        _react2.default.createElement(
-          'div',
-          { onClick: this.send.bind(this) },
-          '\u786E\u5B9A'
-        )
-      );
-    }
-  }]);
+	_createClass(login, [{
+		key: "componentWillMount",
+		value: function componentWillMount() {
+			var that = this;
+			this.props.socket.on('getLogin', function (res) {
+				//返回登录结果
+				if (res.type) {
+					console.info(res.message);
+					that.props.next_process({ //可以进行下一步了
+						myname: res.name,
+						myid: res.id,
+						progress_state: 1
+					});
+				} else {
+					alert(res.message);
+				}
+			});
+		}
+	}, {
+		key: "edit",
+		value: function edit(val) {
+			this.setState({ myname: val.target.value });
+		}
+	}, {
+		key: "send",
+		value: function send() {
+			var that = this;
+			this.props.socket.emit('login', that.state.myname);
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"div",
+				null,
+				_react2.default.createElement(
+					"h1",
+					null,
+					"\u8F93\u5165\u540D\u5B57"
+				),
+				_react2.default.createElement("input", { type: "text", className: "name_input", onChange: this.edit.bind(this), value: this.state.myname }),
+				_react2.default.createElement(
+					"div",
+					{ onClick: this.send.bind(this) },
+					"\u786E\u5B9A"
+				)
+			);
+		}
+	}]);
 
-  return login;
+	return login;
 }(_react2.default.Component);
 
 module.exports = login;
@@ -20362,6 +20373,12 @@ var Component = function (_React$Component) {
         key: "componentWillMount",
         value: function componentWillMount() {
             var that = this;
+            window.onunload = function (event) {
+                socket.emit('logout', {
+                    id: that.state.myid,
+                    name: that.state.myname
+                });
+            };
             that.props.socket.on('getpersen', function (persenAry) {
                 //刷新人员列表
                 that.setState({ persenAry: persenAry });
@@ -20377,7 +20394,11 @@ var Component = function (_React$Component) {
                 //接收挑战
                 var r = confirm(res.message);
                 if (r == true) {
-                    that.props.next_process(); //可以进行下一步了
+                    that.props.next_process({
+                        thatname: res.name,
+                        thatid: res.id,
+                        progress_state: 2
+                    }); //可以进行下一步了
                 }
                 that.props.socket.emit('fightAns', {
                     id: res.id,
@@ -20388,7 +20409,11 @@ var Component = function (_React$Component) {
             that.props.socket.on('fightAns', function (res) {
                 //挑战答复
                 if (res.fight) {
-                    that.props.next_process(); //可以进行下一步了
+                    that.props.next_process({
+                        thatname: res.name,
+                        thatid: res.id,
+                        progress_state: 2
+                    }); //可以进行下一步了
                 } else {
                     alert(res.message);
                 }
@@ -20598,23 +20623,6 @@ var Component = function (_React$Component) {
         key: "edit",
         value: function edit(val) {
             this.setState({ message: val.target.value });
-        }
-    }, {
-        key: "send",
-        value: function send() {
-            console.info(this.state.message);
-            console.info(fetch);
-            var url = "/message?name=ludi&value=" + this.state.message;
-            fetch(url, {
-                method: "Get",
-                headers: { 'Content-Tipe': 'application/json' }
-            }).then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                console.log(data);
-            }).catch(function (e) {
-                console.log("error");
-            });
         }
     }, {
         key: "render",

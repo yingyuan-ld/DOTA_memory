@@ -33,6 +33,8 @@ io.on('connection', function(socket){
             });
             res = {
                 type:true,
+                name:name,
+                id:socket.id,
                 message : "登录成功,欢迎你\""+name+"\""
             }
         }else{
@@ -74,17 +76,26 @@ io.on('connection', function(socket){
     });
     socket.on('fightAns', function(res){//接受挑战
         if(res.fight){
+            let myname;
             for(i in persenAry){
                 if(persenAry[i].id===socket.id){
-                    persenAry[i].state = "fighting"
+                    persenAry[i].state = "fighting";
+                    myname = persenAry[i].name;
                 }
                 if(persenAry[i].id===res.id){
                     persenAry[i].state = "fighting"
                 }
             }
             getpersen(persenAry);
+            getmessage({
+                system:true,
+                name:"系统消息",
+                value:'玩家"'+res.name+'"和"'+myname+'"开战'
+            })
             io.to(res.id).emit('fightAns',{
                 fight:true,
+                name:res.name,
+                id:res.id,
                 message:'对方接受了挑战!'
             });
         }else{
@@ -93,6 +104,21 @@ io.on('connection', function(socket){
                 message:'对方让你滚蛋!'
             });
         }
+    });
+    socket.on('logout', function(res){//退出登录
+        persenObj[res.name] = "";
+        for(i in persenAry){
+            if(persenAry[i].id===socket.id){
+                persenAry.splice(i, 1);
+                break;
+            }
+        }
+        getpersen(persenAry);
+        getmessage({
+            system:true,
+            name:"系统消息",
+            value:'玩家"'+res.name+'"离开了...'
+        });
     });
 });
 
