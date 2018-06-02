@@ -120,6 +120,10 @@ io.on('connection', function(socket){
             value:'玩家"'+res.name+'"离开了...'
         });
     });
+    socket.on('totalk', function(res){//游戏交互
+        io.to(res.id).emit('totalk',res);
+    });
+    
 });
 
 let getpersen = function(persenAry){

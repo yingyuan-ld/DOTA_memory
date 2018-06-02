@@ -20017,7 +20017,7 @@ var Component = function (_React$Component) {
             thatname: "",
             thatid: "",
             process: ["Login", "Prepare", "Playing"], //游戏流程
-            progress_state: 0
+            progress_state: 2
         };
         return _this;
     }
@@ -20372,44 +20372,45 @@ var Component = function (_React$Component) {
     _createClass(Component, [{
         key: "componentWillMount",
         value: function componentWillMount() {
-            var that = this;
+            var _this2 = this;
+
             window.onunload = function (event) {
                 socket.emit('logout', {
-                    id: that.state.myid,
-                    name: that.state.myname
+                    id: _this2.props.myid,
+                    name: _this2.props.myname
                 });
             };
-            that.props.socket.on('getpersen', function (persenAry) {
+            this.props.socket.on('getpersen', function (persenAry) {
                 //刷新人员列表
-                that.setState({ persenAry: persenAry });
+                _this2.setState({ persenAry: persenAry });
             });
-            that.props.socket.on('getmessage', function (mewmessage) {
+            this.props.socket.on('getmessage', function (mewmessage) {
                 //刷新消息
-                var message = that.state.message;
+                var message = _this2.state.message;
                 message.push(mewmessage);
-                that.setState({ message: message });
+                _this2.setState({ message: message });
             });
 
-            that.props.socket.on('getFight', function (res) {
+            this.props.socket.on('getFight', function (res) {
                 //接收挑战
                 var r = confirm(res.message);
                 if (r == true) {
-                    that.props.next_process({
+                    _this2.props.next_process({
                         thatname: res.name,
                         thatid: res.id,
                         progress_state: 2
                     }); //可以进行下一步了
                 }
-                that.props.socket.emit('fightAns', {
+                _this2.props.socket.emit('fightAns', {
                     id: res.id,
                     name: res.name,
                     fight: r
                 });
             });
-            that.props.socket.on('fightAns', function (res) {
+            this.props.socket.on('fightAns', function (res) {
                 //挑战答复
                 if (res.fight) {
-                    that.props.next_process({
+                    _this2.props.next_process({
                         thatname: res.name,
                         thatid: res.id,
                         progress_state: 2
@@ -20423,10 +20424,9 @@ var Component = function (_React$Component) {
         key: "select_persen",
         value: function select_persen(challengName, challengId) {
             //选择用户发出要求 defier挑战 challeng被挑战
-            var that = this;
             var r = confirm("是否向\"" + challengName + "\"发出邀请");
             if (r == true) {
-                that.props.socket.emit('sendFight', challengId);
+                this.props.socket.emit('sendFight', challengId);
             } else {
                 console.info("你按下了\"取消\"按钮!");
             }
@@ -20434,13 +20434,13 @@ var Component = function (_React$Component) {
     }, {
         key: "render_presen",
         value: function render_presen() {
-            var _this2 = this;
+            var _this3 = this;
 
             //渲染 当前在线用户
             return this.state.persenAry.map(function (item, i) {
-                if (item.name !== _this2.props.myname) return _react2.default.createElement(
+                if (item.name !== _this3.props.myname) return _react2.default.createElement(
                     "div",
-                    { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this2.select_persen.bind(_this2, item.name, item.id) },
+                    { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this3.select_persen.bind(_this3, item.name, item.id) },
                     item.name
                 );
             });
@@ -20604,6 +20604,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var PLAYSPEED = ["selecthero"];
+
 var Component = function (_React$Component) {
     _inherits(Component, _React$Component);
 
@@ -20613,16 +20615,99 @@ var Component = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
 
         _this.state = {
-            message: "",
-            record: ""
+            herotype: "", //英雄种类 0力量 1敏捷 2智力
+            maxHp: "", //最大血量
+            Hp: "", //当前血量
+            maxForce: "", //最大蓝量
+            Force: "", //当前蓝量
+            attack: "", //攻击力
+            armor: "", //护甲
+            cardid: [], //卡牌id
+            status: [], //状态数组
+            money: "0", //金钱
+
+
+            playingSpeed: 0 //游戏进度
         };
         return _this;
     }
 
     _createClass(Component, [{
-        key: "edit",
-        value: function edit(val) {
-            this.setState({ message: val.target.value });
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            that.props.socket.on('totalk', function (res) {
+                // id:this.props.thatid,
+                // state:this.state,
+                // action:{}
+            });
+        }
+    }, {
+        key: "coeckhero",
+        value: function coeckhero(type) {
+            var attribute = {
+                herotype: "", //英雄种类 0力量 1敏捷 2智力
+                maxHp: "3500", //最大血量
+                Hp: "3500", //当前血量
+                Hprecove: "10", //生命值恢复速度
+                maxForce: "500", //最大蓝量
+                Force: "500", //当前蓝量
+                Forcerecove: "50", //魔法值恢复速度
+                attack: "40", //攻击力
+                armor: "10" //护甲
+            };
+            switch (type) {
+                case 0:
+                    attribute.herotype = "0";
+                    attribute.maxHp = "4000";
+                    attribute.Hprecove = "15";
+                    break;
+                case 1:
+                    attribute.herotype = "1";
+                    attribute.attack = "70";
+                    attribute.armor = "15";
+                    break;
+                case 2:
+                    attribute.herotype = "2";
+                    attribute.maxHp = "3000";
+                    attribute.maxForce = "600";
+                    attribute.Force = "600";
+                    attribute.Forcerecove = "60";
+                    break;
+            }
+            this.setState(attribute);
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                state: this.state,
+                action: {}
+            });
+        }
+    }, {
+        key: "selecthero",
+        value: function selecthero() {
+            return _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement(
+                    "h1",
+                    null,
+                    "\u8BF7\u9009\u62E9\u82F1\u96C4"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { onClick: this.coeckhero.bind(this, 0) },
+                    "\u529B\u91CF"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { onClick: this.coeckhero.bind(this, 1) },
+                    "\u654F\u6377"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { onClick: this.coeckhero.bind(this, 2) },
+                    "\u667A\u529B"
+                )
+            );
         }
     }, {
         key: "render",
@@ -20630,11 +20715,7 @@ var Component = function (_React$Component) {
             return _react2.default.createElement(
                 "div",
                 { className: "system_body" },
-                _react2.default.createElement(
-                    "h1",
-                    null,
-                    "\u4E00\u4E2A\u754C\u9762"
-                )
+                PLAYSPEED[this.state.playingSpeed]
             );
         }
     }]);

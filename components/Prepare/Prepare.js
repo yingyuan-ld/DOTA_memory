@@ -11,40 +11,39 @@ class Component extends React.Component{
         }
     }
     componentWillMount(){
-        let that = this;
-        window.onunload = function(event) {
+        window.onunload = (event)=> {
             socket.emit('logout', {
-                id:that.state.myid,
-                name:that.state.myname
+                id:this.props.myid,
+                name:this.props.myname
             }); 
         }
-        that.props.socket.on('getpersen', function(persenAry){//刷新人员列表
-            that.setState({persenAry:persenAry});
+        this.props.socket.on('getpersen', (persenAry)=>{//刷新人员列表
+            this.setState({persenAry:persenAry});
         })
-        that.props.socket.on('getmessage', function(mewmessage){//刷新消息
-            let message = that.state.message;
+        this.props.socket.on('getmessage', (mewmessage)=>{//刷新消息
+            let message = this.state.message;
             message.push(mewmessage);
-            that.setState({message:message});
+            this.setState({message:message});
         })
         
-        that.props.socket.on('getFight', function(res){//接收挑战
+        this.props.socket.on('getFight', (res)=>{//接收挑战
             let r=confirm(res.message);
             if (r==true){
-				that.props.next_process({
+				this.props.next_process({
                     thatname:res.name,
                     thatid:res.id,
                     progress_state:2
                 })//可以进行下一步了
             }
-            that.props.socket.emit('fightAns', {
+            this.props.socket.emit('fightAns', {
                 id:res.id,
                 name:res.name,
                 fight:r
             });
 		})
-        that.props.socket.on('fightAns', function(res){//挑战答复
+        this.props.socket.on('fightAns', (res)=>{//挑战答复
             if(res.fight){
-				that.props.next_process({
+				this.props.next_process({
                     thatname:res.name,
                     thatid:res.id,
                     progress_state:2
@@ -55,10 +54,9 @@ class Component extends React.Component{
 		})
     }
     select_persen(challengName,challengId){//选择用户发出要求 defier挑战 challeng被挑战
-        let that = this;
         let r=confirm("是否向\""+challengName+"\"发出邀请");
         if (r==true){
-            that.props.socket.emit('sendFight', challengId);
+            this.props.socket.emit('sendFight', challengId);
         }else{
             console.info("你按下了\"取消\"按钮!");
         }
