@@ -94,8 +94,8 @@ io.on('connection', function(socket){
             })
             io.to(res.id).emit('fightAns',{
                 fight:true,
-                name:res.name,
-                id:res.id,
+                name:myname,
+                id:socket.id,
                 message:'对方接受了挑战!'
             });
         }else{
@@ -108,7 +108,7 @@ io.on('connection', function(socket){
     socket.on('logout', function(res){//退出登录
         persenObj[res.name] = "";
         for(i in persenAry){
-            if(persenAry[i].id===socket.id){
+            if(persenAry[i].id===res.id){
                 persenAry.splice(i, 1);
                 break;
             }

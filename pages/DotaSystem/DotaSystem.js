@@ -19,7 +19,7 @@ class Component extends React.Component{
             thatname:"",
             thatid:"",
             process:["Login","Prepare","Playing"],//游戏流程
-            progress_state:2
+            progress_state:0
         }
     }
     componentWillMount(){

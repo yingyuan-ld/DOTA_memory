@@ -6,7 +6,8 @@ class login extends React.Component{
 			myname:"",
 			myid:""
         }
-  	}
+	  }
+	  
 	componentWillMount(){
 		let that = this;
 		this.props.socket.on('getLogin', function(res){//返回登录结果

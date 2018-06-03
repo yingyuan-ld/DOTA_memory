@@ -1316,7 +1316,7 @@ var _DotaSystem = __webpack_require__(28);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(40);
+__webpack_require__(41);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20017,7 +20017,7 @@ var Component = function (_React$Component) {
             thatname: "",
             thatid: "",
             process: ["Login", "Prepare", "Playing"], //游戏流程
-            progress_state: 2
+            progress_state: 0
         };
         return _this;
     }
@@ -20109,7 +20109,7 @@ exports = module.exports = __webpack_require__(6)(false);
 
 
 // module
-exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "body {\n  margin: 0px;\n  padding: 0px; }\n\n.system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -20596,6 +20596,8 @@ var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(38);
 
+var _action = __webpack_require__(40);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20604,7 +20606,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var PLAYSPEED = ["selecthero"];
+var ACTION = {
+    prepareOk: _action.prepareOk
+};
+
+var PLAYSPEED = ["selecthero", "playpage"];
 
 var Component = function (_React$Component) {
     _inherits(Component, _React$Component);
@@ -20615,107 +20621,186 @@ var Component = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
 
         _this.state = {
-            herotype: "", //英雄种类 0力量 1敏捷 2智力
-            maxHp: "", //最大血量
-            Hp: "", //当前血量
-            maxForce: "", //最大蓝量
-            Force: "", //当前蓝量
-            attack: "", //攻击力
-            armor: "", //护甲
+            mystate: {
+                herotype: "", //英雄种类 0力量 1敏捷 2智力
+                maxHp: "3500", //最大血量
+                Hp: "3500", //当前血量
+                Hprecove: "10", //生命值恢复速度
+                maxMp: "500", //最大蓝量
+                Mp: "500", //当前蓝量
+                Mprecove: "50", //魔法值恢复速度
+                attack: "40", //攻击力
+                armor: "10", //护甲
+                status: [], //状态数组
+                equipment: [] //装备列表
+            },
             cardid: [], //卡牌id
-            status: [], //状态数组
             money: "0", //金钱
 
-
+            thatstate: {}, //对手状态
             playingSpeed: 0 //游戏进度
         };
         return _this;
     }
 
     _createClass(Component, [{
-        key: "componentDidMount",
+        key: 'componentDidMount',
         value: function componentDidMount() {
-            that.props.socket.on('totalk', function (res) {
-                // id:this.props.thatid,
-                // state:this.state,
-                // action:{}
+            var _this2 = this;
+
+            window.onunload = function (event) {
+                socket.emit('logout', {
+                    id: _this2.props.myid,
+                    name: _this2.props.myname
+                });
+            };
+            this.props.socket.on('totalk', function (res) {
+                var action = res.action;
+                var state = ACTION[action.funname](_this2.state, res.state, action.cardid);
+                _this2.setState(state);
+                _this2.setState({ thatstate: res.state });
             });
         }
     }, {
-        key: "coeckhero",
+        key: 'coeckhero',
         value: function coeckhero(type) {
-            var attribute = {
-                herotype: "", //英雄种类 0力量 1敏捷 2智力
-                maxHp: "3500", //最大血量
-                Hp: "3500", //当前血量
-                Hprecove: "10", //生命值恢复速度
-                maxForce: "500", //最大蓝量
-                Force: "500", //当前蓝量
-                Forcerecove: "50", //魔法值恢复速度
-                attack: "40", //攻击力
-                armor: "10" //护甲
-            };
+            var mystate = this.state.mystate;
             switch (type) {
                 case 0:
-                    attribute.herotype = "0";
-                    attribute.maxHp = "4000";
-                    attribute.Hprecove = "15";
+                    mystate.herotype = "0";
+                    mystate.maxHp = "4000";
+                    mystate.Hp = "4000";
+                    mystate.Hprecove = "15";
                     break;
                 case 1:
-                    attribute.herotype = "1";
-                    attribute.attack = "70";
-                    attribute.armor = "15";
+                    mystate.herotype = "1";
+                    mystate.attack = "70";
+                    mystate.armor = "15";
                     break;
                 case 2:
-                    attribute.herotype = "2";
-                    attribute.maxHp = "3000";
-                    attribute.maxForce = "600";
-                    attribute.Force = "600";
-                    attribute.Forcerecove = "60";
+                    mystate.herotype = "2";
+                    mystate.maxHp = "3000";
+                    mystate.Hp = "3000";
+                    mystate.maxMp = "600";
+                    mystate.Mp = "600";
+                    mystate.Mprecove = "60";
                     break;
             }
-            this.setState(attribute);
+            this.setState({ mystate: mystate, playingSpeed: 1 });
             this.props.socket.emit('totalk', {
                 id: this.props.thatid,
-                state: this.state,
-                action: {}
+                state: this.state.mystate,
+                action: {
+                    funname: "prepareOk",
+                    cardid: ""
+                }
             });
         }
     }, {
-        key: "selecthero",
+        key: 'selecthero',
         value: function selecthero() {
             return _react2.default.createElement(
-                "div",
+                'div',
                 null,
                 _react2.default.createElement(
-                    "h1",
+                    'h1',
                     null,
-                    "\u8BF7\u9009\u62E9\u82F1\u96C4"
+                    '\u8BF7\u9009\u62E9\u82F1\u96C4'
                 ),
                 _react2.default.createElement(
-                    "div",
+                    'div',
                     { onClick: this.coeckhero.bind(this, 0) },
-                    "\u529B\u91CF"
+                    '\u529B\u91CF'
                 ),
                 _react2.default.createElement(
-                    "div",
+                    'div',
                     { onClick: this.coeckhero.bind(this, 1) },
-                    "\u654F\u6377"
+                    '\u654F\u6377'
                 ),
                 _react2.default.createElement(
-                    "div",
+                    'div',
                     { onClick: this.coeckhero.bind(this, 2) },
-                    "\u667A\u529B"
+                    '\u667A\u529B'
                 )
             );
         }
     }, {
-        key: "render",
+        key: 'hero_place',
+        value: function hero_place(basic, more) {
+            if (basic.herotype === "" || basic.herotype === undefined) return _react2.default.createElement('div', { className: 'hero_place' });
+            return _react2.default.createElement(
+                'div',
+                { className: 'hero_place' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'hero_ion' },
+                    basic.herotype
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'attribute_list' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'HP' },
+                        basic.Hp + "/" + basic.maxHp
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'MP' },
+                        basic.Mp + "/" + basic.maxMp
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'attack' },
+                        "攻击力:" + basic.attack
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'armor' },
+                        "护甲:" + basic.armor
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'statelist' },
+                        "状态:..."
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'card_list' },
+                    '\u5361\u724C\u5217\u8868'
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'equipment_list' },
+                    basic.equipment.map(function (equipment, i) {
+                        _react2.default.createElement('div', null);
+                    })
+                )
+            );
+        }
+    }, {
+        key: 'playpage',
+        value: function playpage() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'main_box' },
+                this.hero_place(this.state.thatstate),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'fight_place' },
+                    '\u5BF9\u6218\u533A'
+                ),
+                this.hero_place(this.state.mystate, this.state)
+            );
+        }
+    }, {
+        key: 'render',
         value: function render() {
             return _react2.default.createElement(
-                "div",
-                { className: "system_body" },
-                PLAYSPEED[this.state.playingSpeed]
+                'div',
+                { className: 'system_body' },
+                this[PLAYSPEED[this.state.playingSpeed]]()
             );
         }
     }]);
@@ -20784,7 +20869,7 @@ exports = module.exports = __webpack_require__(6)(false);
 
 
 // module
-exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n    .system_body .main_box .hero_place {\n      height: 20%;\n      background: #5fa1bf; }\n      .system_body .main_box .hero_place div {\n        float: left; }\n      .system_body .main_box .hero_place .hero_ion {\n        background: #64fff5;\n        height: 100%;\n        width: 10%; }\n      .system_body .main_box .hero_place .attribute_list {\n        background: #64fff5;\n        height: 100%;\n        width: 15%;\n        margin-left: 1%; }\n        .system_body .main_box .hero_place .attribute_list .HP {\n          width: 100%;\n          background: #8bff04; }\n        .system_body .main_box .hero_place .attribute_list .MP {\n          width: 100%;\n          background: #6977ff; }\n        .system_body .main_box .hero_place .attribute_list .attack {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .armor {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .statelist {\n          width: 100%; }\n      .system_body .main_box .hero_place .card_list {\n        background: #64fff5;\n        height: 100%;\n        width: 62%;\n        margin-left: 1%; }\n      .system_body .main_box .hero_place .equipment_list {\n        background: #64fff5;\n        height: 100%;\n        width: 10%;\n        margin-left: 1%; }\n    .system_body .main_box .fight_place {\n      height: 60%; }\n", ""]);
 
 // exports
 
@@ -20793,8 +20878,23 @@ exports.push([module.i, ".system_body {\n  width: 100%;\n  height: 100%; }\n  .s
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
 
-var content = __webpack_require__(41);
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.prepareOk = prepareOk;
+function prepareOk(mystate, thatstate, cardid) {
+    return mystate;
+}
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(42);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20840,7 +20940,7 @@ if(false) {
 }
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(6)(false);

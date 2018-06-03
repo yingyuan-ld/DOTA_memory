@@ -1,32 +1,57 @@
 .system_body{
-    width: 100%;
-    height: 100%;
-    .Chat_record{
-        width: calc(100% - 200px);
-        height: calc(100% - 300px);
-        background: #fff;
-    }
-    .text_input{ 
-        height: 150px;
-        width: calc(100% - 205px);
-        margin-top: 10px;
-    }
-    .online_list{
-        height: calc(100% - 200px);
-        width: 150px;
-        position: fixed;
-        background: #fff;
-        top: 100px;
-        right: 0px;
-    }
-    .send{
-        background: #afafaf;
-        width: 50px;
-        height: 25px;
-        text-align: center;
-        color: #fff;
-        border-radius: 3px;
-        line-height: 25px;
-        cursor: pointer;
+    background: #ccc;
+    .main_box{
+        width: 100%;
+        height: 100%;
+        .hero_place{
+            height: 20%;
+            background: #5fa1bf;
+            div{
+                float: left;
+            }
+            .hero_ion{
+                background: #64fff5;
+                height: 100%;
+                width: 10%;
+            }
+            .attribute_list{//属性列表
+                background: #64fff5;
+                height: 100%;
+                width: 15%;
+                margin-left: 1%;
+                .HP{
+                    width: 100%;
+                    background: #8bff04;
+                }
+                .MP{
+                    width: 100%;
+                    background: #6977ff;
+                }
+                .attack{
+                    width: 100%;
+                }
+                .armor{
+                    width: 100%;
+                }
+                .statelist{
+                    width: 100%;
+                }
+            }
+            .card_list{//卡牌列表
+                background: #64fff5;
+                height: 100%;
+                width: 62%;
+                margin-left: 1%;
+            }
+            .equipment_list{//装备列表
+                background: #64fff5;
+                height: 100%;
+                width: 10%;
+                margin-left: 1%;
+            }
+        }
+        .fight_place{
+            height: 60%;
+        }
     }
 }
