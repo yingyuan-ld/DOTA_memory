@@ -25,7 +25,8 @@ class Component extends React.Component{
             },
             cardid:[],//卡牌id
             money:"0",//金钱
-
+            
+            round:0, //是否是我的回合 0不是 1是
             thatstate:{},//对手状态
             playingSpeed:0,//游戏进度
         }
@@ -67,13 +68,14 @@ class Component extends React.Component{
                 mystate.Mprecove="60";
                 break;
         }
-        this.setState({mystate:mystate,playingSpeed:1});
+        let round = Math.random();//随机回合用
+        this.setState({mystate:mystate,playingSpeed:1,round:(this.state.round+round)});
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             state:this.state.mystate,
             action:{
                 funname:"prepareOk",
-                cardid:""
+                cardid:round
             }
         });
     }
@@ -86,7 +88,11 @@ class Component extends React.Component{
             </div>
     }
     hero_place(basic,more){
-        if(basic.herotype===""||basic.herotype===undefined)return <div className="hero_place" />;
+        if(basic.herotype===""||basic.herotype===undefined){
+            return <div className="hero_place" >
+                对手正在准备中...
+            </div>;
+        }
         return <div className="hero_place">
             <div className="hero_ion">{basic.herotype}</div>
             <div className="attribute_list">
@@ -104,11 +110,17 @@ class Component extends React.Component{
             </div>
         </div>
     }
-
+    fight_place(){
+        return <div className="fight_place">
+            {this.state.thatstate.herotype!==""?
+                <div>{this.state.round>0?"我的回合":"对方回合"}</div>:
+            ""}
+        </div>
+    }
     playpage(){
         return<div className="main_box">
             {this.hero_place(this.state.thatstate)}
-            <div className="fight_place">对战区</div>
+            {this.fight_place(this.state.thatstate)}
             {this.hero_place(this.state.mystate,this.state)}
         </div>
     }

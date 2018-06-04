@@ -20637,6 +20637,7 @@ var Component = function (_React$Component) {
             cardid: [], //卡牌id
             money: "0", //金钱
 
+            round: 0, //是否是我的回合 0不是 1是
             thatstate: {}, //对手状态
             playingSpeed: 0 //游戏进度
         };
@@ -20686,13 +20687,14 @@ var Component = function (_React$Component) {
                     mystate.Mprecove = "60";
                     break;
             }
-            this.setState({ mystate: mystate, playingSpeed: 1 });
+            var round = Math.random(); //随机回合用
+            this.setState({ mystate: mystate, playingSpeed: 1, round: this.state.round + round });
             this.props.socket.emit('totalk', {
                 id: this.props.thatid,
                 state: this.state.mystate,
                 action: {
                     funname: "prepareOk",
-                    cardid: ""
+                    cardid: round
                 }
             });
         }
@@ -20727,7 +20729,13 @@ var Component = function (_React$Component) {
     }, {
         key: 'hero_place',
         value: function hero_place(basic, more) {
-            if (basic.herotype === "" || basic.herotype === undefined) return _react2.default.createElement('div', { className: 'hero_place' });
+            if (basic.herotype === "" || basic.herotype === undefined) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'hero_place' },
+                    '\u5BF9\u624B\u6B63\u5728\u51C6\u5907\u4E2D...'
+                );
+            }
             return _react2.default.createElement(
                 'div',
                 { className: 'hero_place' },
@@ -20789,7 +20797,7 @@ var Component = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'fight_place' },
-                    '\u5BF9\u6218\u533A'
+                    this.state.round > 0 ? "我的回合" : "对方回合"
                 ),
                 this.hero_place(this.state.mystate, this.state)
             );
@@ -20886,6 +20894,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.prepareOk = prepareOk;
 function prepareOk(mystate, thatstate, cardid) {
+    //准备开始
+    mystate.round -= cardid;
     return mystate;
 }
 
