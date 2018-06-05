@@ -1,6 +1,8 @@
 import React from 'react';
 import "./DotaSystem.scss";
-import {Login,Prepare,Playing} from "../../components";
+import Login from "../login/login";
+import Prepare from "../Prepare/Prepare.js";
+import Playing from "../playing/playing";
 var socket = io();
 setTimeout(() => {
     console.info(socket.id);

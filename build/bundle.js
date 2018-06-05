@@ -258,21 +258,6 @@ process.umask = function() { return 0; };
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(18);
-} else {
-  module.exports = __webpack_require__(19);
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -329,7 +314,7 @@ module.exports = invariant;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -369,6 +354,21 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports = __webpack_require__(18);
+} else {
+  module.exports = __webpack_require__(19);
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 4 */
@@ -493,6 +493,337 @@ module.exports = emptyObject;
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyFunction = __webpack_require__(2);
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = emptyFunction;
+
+if (process.env.NODE_ENV !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+if (process.env.NODE_ENV !== 'production') {
+  var invariant = __webpack_require__(1);
+  var warning = __webpack_require__(6);
+  var ReactPropTypesSecret = __webpack_require__(20);
+  var loggedTypeFailures = {};
+}
+
+/**
+ * Assert that the values match with the type specs.
+ * Error messages are memorized and will only be shown once.
+ *
+ * @param {object} typeSpecs Map of name to a ReactPropType
+ * @param {object} values Runtime values that need to be type-checked
+ * @param {string} location e.g. "prop", "context", "child context"
+ * @param {string} componentName Name of the component for error messages.
+ * @param {?Function} getStack Returns the component stack.
+ * @private
+ */
+function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+  if (process.env.NODE_ENV !== 'production') {
+    for (var typeSpecName in typeSpecs) {
+      if (typeSpecs.hasOwnProperty(typeSpecName)) {
+        var error;
+        // Prop type validation may throw. In case they do, we don't want to
+        // fail the render phase where it didn't fail before. So we log it.
+        // After these have been cleaned up, we'll let them throw.
+        try {
+          // This is intentionally an invariant that gets caught. It's the same
+          // behavior as without this statement except with a better message.
+          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
+        } catch (ex) {
+          error = ex;
+        }
+        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
+        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
+          // Only monitor this failure once because there tends to be a lot of the
+          // same error.
+          loggedTypeFailures[error.message] = true;
+
+          var stack = getStack ? getStack() : '';
+
+          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
+        }
+      }
+    }
+  }
+}
+
+module.exports = checkPropTypes;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+
+/**
+ * Simple, lightweight module assisting with the detection and context of
+ * Worker. Helps avoid circular dependencies and allows code to reason about
+ * whether or not they are in a Worker, even if they never include the main
+ * `ReactWorker` dependency.
+ */
+var ExecutionEnvironment = {
+
+  canUseDOM: canUseDOM,
+
+  canUseWorkers: typeof Worker !== 'undefined',
+
+  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
+
+  canUseViewport: canUseDOM && !!window.screen,
+
+  isInWorker: !canUseDOM // For now, this is true - might change in the future.
+
+};
+
+module.exports = ExecutionEnvironment;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+/* eslint-disable fb-www/typeof-undefined */
+
+/**
+ * Same as document.activeElement but wraps in a try-catch block. In IE it is
+ * not safe to call document.activeElement if there is nothing focused.
+ *
+ * The activeElement will be null only if the document or document body is not
+ * yet defined.
+ *
+ * @param {?DOMDocument} doc Defaults to current document.
+ * @return {?DOMElement}
+ */
+function getActiveElement(doc) /*?DOMElement*/{
+  doc = doc || (typeof document !== 'undefined' ? document : undefined);
+  if (typeof doc === 'undefined') {
+    return null;
+  }
+  try {
+    return doc.activeElement || doc.body;
+  } catch (e) {
+    return doc.body;
+  }
+}
+
+module.exports = getActiveElement;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ * 
+ */
+
+/*eslint-disable no-self-compare */
+
+
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * inlined Object.is polyfill to avoid requiring consumers ship their own
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+ */
+function is(x, y) {
+  // SameValue algorithm
+  if (x === y) {
+    // Steps 1-5, 7-10
+    // Steps 6.b-6.e: +0 != -0
+    // Added the nonzero y check to make Flow happy, but it is redundant
+    return x !== 0 || y !== 0 || 1 / x === 1 / y;
+  } else {
+    // Step 6.a: NaN == NaN
+    return x !== x && y !== y;
+  }
+}
+
+/**
+ * Performs equality by iterating through keys on an object and returning false
+ * when any key has values which are not strictly equal between the arguments.
+ * Returns true when the values of all keys are strictly equal.
+ */
+function shallowEqual(objA, objB) {
+  if (is(objA, objB)) {
+    return true;
+  }
+
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+
+  // Test for A's keys different from B.
+  for (var i = 0; i < keysA.length; i++) {
+    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+module.exports = shallowEqual;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+var isTextNode = __webpack_require__(21);
+
+/*eslint-disable no-bitwise */
+
+/**
+ * Checks if a given DOM node contains or is another DOM node.
+ */
+function containsNode(outerNode, innerNode) {
+  if (!outerNode || !innerNode) {
+    return false;
+  } else if (outerNode === innerNode) {
+    return true;
+  } else if (isTextNode(outerNode)) {
+    return false;
+  } else if (isTextNode(innerNode)) {
+    return containsNode(outerNode, innerNode.parentNode);
+  } else if ('contains' in outerNode) {
+    return outerNode.contains(innerNode);
+  } else if (outerNode.compareDocumentPosition) {
+    return !!(outerNode.compareDocumentPosition(innerNode) & 16);
+  } else {
+    return false;
+  }
+}
+
+module.exports = containsNode;
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports) {
 
 /*
@@ -574,7 +905,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 7 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -960,337 +1291,6 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyFunction = __webpack_require__(3);
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(2);
-  var warning = __webpack_require__(8);
-  var ReactPropTypesSecret = __webpack_require__(20);
-  var loggedTypeFailures = {};
-}
-
-/**
- * Assert that the values match with the type specs.
- * Error messages are memorized and will only be shown once.
- *
- * @param {object} typeSpecs Map of name to a ReactPropType
- * @param {object} values Runtime values that need to be type-checked
- * @param {string} location e.g. "prop", "context", "child context"
- * @param {string} componentName Name of the component for error messages.
- * @param {?Function} getStack Returns the component stack.
- * @private
- */
-function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-  if (process.env.NODE_ENV !== 'production') {
-    for (var typeSpecName in typeSpecs) {
-      if (typeSpecs.hasOwnProperty(typeSpecName)) {
-        var error;
-        // Prop type validation may throw. In case they do, we don't want to
-        // fail the render phase where it didn't fail before. So we log it.
-        // After these have been cleaned up, we'll let them throw.
-        try {
-          // This is intentionally an invariant that gets caught. It's the same
-          // behavior as without this statement except with a better message.
-          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
-        } catch (ex) {
-          error = ex;
-        }
-        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
-        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-          // Only monitor this failure once because there tends to be a lot of the
-          // same error.
-          loggedTypeFailures[error.message] = true;
-
-          var stack = getStack ? getStack() : '';
-
-          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
-        }
-      }
-    }
-  }
-}
-
-module.exports = checkPropTypes;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-
-/**
- * Simple, lightweight module assisting with the detection and context of
- * Worker. Helps avoid circular dependencies and allows code to reason about
- * whether or not they are in a Worker, even if they never include the main
- * `ReactWorker` dependency.
- */
-var ExecutionEnvironment = {
-
-  canUseDOM: canUseDOM,
-
-  canUseWorkers: typeof Worker !== 'undefined',
-
-  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
-
-  canUseViewport: canUseDOM && !!window.screen,
-
-  isInWorker: !canUseDOM // For now, this is true - might change in the future.
-
-};
-
-module.exports = ExecutionEnvironment;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-/* eslint-disable fb-www/typeof-undefined */
-
-/**
- * Same as document.activeElement but wraps in a try-catch block. In IE it is
- * not safe to call document.activeElement if there is nothing focused.
- *
- * The activeElement will be null only if the document or document body is not
- * yet defined.
- *
- * @param {?DOMDocument} doc Defaults to current document.
- * @return {?DOMElement}
- */
-function getActiveElement(doc) /*?DOMElement*/{
-  doc = doc || (typeof document !== 'undefined' ? document : undefined);
-  if (typeof doc === 'undefined') {
-    return null;
-  }
-  try {
-    return doc.activeElement || doc.body;
-  } catch (e) {
-    return doc.body;
-  }
-}
-
-module.exports = getActiveElement;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- * 
- */
-
-/*eslint-disable no-self-compare */
-
-
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-/**
- * inlined Object.is polyfill to avoid requiring consumers ship their own
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
- */
-function is(x, y) {
-  // SameValue algorithm
-  if (x === y) {
-    // Steps 1-5, 7-10
-    // Steps 6.b-6.e: +0 != -0
-    // Added the nonzero y check to make Flow happy, but it is redundant
-    return x !== 0 || y !== 0 || 1 / x === 1 / y;
-  } else {
-    // Step 6.a: NaN == NaN
-    return x !== x && y !== y;
-  }
-}
-
-/**
- * Performs equality by iterating through keys on an object and returning false
- * when any key has values which are not strictly equal between the arguments.
- * Returns true when the values of all keys are strictly equal.
- */
-function shallowEqual(objA, objB) {
-  if (is(objA, objB)) {
-    return true;
-  }
-
-  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-    return false;
-  }
-
-  var keysA = Object.keys(objA);
-  var keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  // Test for A's keys different from B.
-  for (var i = 0; i < keysA.length; i++) {
-    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-module.exports = shallowEqual;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-var isTextNode = __webpack_require__(21);
-
-/*eslint-disable no-bitwise */
-
-/**
- * Checks if a given DOM node contains or is another DOM node.
- */
-function containsNode(outerNode, innerNode) {
-  if (!outerNode || !innerNode) {
-    return false;
-  } else if (outerNode === innerNode) {
-    return true;
-  } else if (isTextNode(outerNode)) {
-    return false;
-  } else if (isTextNode(innerNode)) {
-    return containsNode(outerNode, innerNode.parentNode);
-  } else if ('contains' in outerNode) {
-    return outerNode.contains(innerNode);
-  } else if (outerNode.compareDocumentPosition) {
-    return !!(outerNode.compareDocumentPosition(innerNode) & 16);
-  } else {
-    return false;
-  }
-}
-
-module.exports = containsNode;
-
-/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1308,7 +1308,7 @@ var _reactDom = __webpack_require__(16);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _react = __webpack_require__(1);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -1316,7 +1316,7 @@ var _DotaSystem = __webpack_require__(28);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(41);
+__webpack_require__(32);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1386,7 +1386,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(2),ea=__webpack_require__(1),m=__webpack_require__(10),A=__webpack_require__(4),C=__webpack_require__(3),fa=__webpack_require__(11),ha=__webpack_require__(12),ja=__webpack_require__(13),ka=__webpack_require__(5);
+var ba=__webpack_require__(1),ea=__webpack_require__(3),m=__webpack_require__(8),A=__webpack_require__(4),C=__webpack_require__(2),fa=__webpack_require__(9),ha=__webpack_require__(10),ja=__webpack_require__(11),ka=__webpack_require__(5);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -1636,7 +1636,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(4),n=__webpack_require__(2),p=__webpack_require__(5),q=__webpack_require__(3),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(4),n=__webpack_require__(1),p=__webpack_require__(5),q=__webpack_require__(2),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -1674,11 +1674,11 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var _assign = __webpack_require__(4);
-var invariant = __webpack_require__(2);
+var invariant = __webpack_require__(1);
 var emptyObject = __webpack_require__(5);
-var warning = __webpack_require__(8);
-var emptyFunction = __webpack_require__(3);
-var checkPropTypes = __webpack_require__(9);
+var warning = __webpack_require__(6);
+var emptyFunction = __webpack_require__(2);
+var checkPropTypes = __webpack_require__(7);
 
 // TODO: this is special because it gets imported during build.
 
@@ -3170,16 +3170,16 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var invariant = __webpack_require__(2);
-var React = __webpack_require__(1);
-var warning = __webpack_require__(8);
-var ExecutionEnvironment = __webpack_require__(10);
+var invariant = __webpack_require__(1);
+var React = __webpack_require__(3);
+var warning = __webpack_require__(6);
+var ExecutionEnvironment = __webpack_require__(8);
 var _assign = __webpack_require__(4);
-var emptyFunction = __webpack_require__(3);
-var checkPropTypes = __webpack_require__(9);
-var getActiveElement = __webpack_require__(11);
-var shallowEqual = __webpack_require__(12);
-var containsNode = __webpack_require__(13);
+var emptyFunction = __webpack_require__(2);
+var checkPropTypes = __webpack_require__(7);
+var getActiveElement = __webpack_require__(9);
+var shallowEqual = __webpack_require__(10);
+var containsNode = __webpack_require__(11);
 var emptyObject = __webpack_require__(5);
 var hyphenateStyleName = __webpack_require__(24);
 var camelizeStyleName = __webpack_require__(26);
@@ -19977,13 +19977,23 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(1);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(29);
 
-var _components = __webpack_require__(32);
+var _login = __webpack_require__(34);
+
+var _login2 = _interopRequireDefault(_login);
+
+var _Prepare = __webpack_require__(35);
+
+var _Prepare2 = _interopRequireDefault(_Prepare);
+
+var _playing = __webpack_require__(38);
+
+var _playing2 = _interopRequireDefault(_playing);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19998,9 +20008,9 @@ setTimeout(function () {
     console.info(socket.id);
 }, 100);
 var component = { //页面
-    Login: _components.Login, //登录
-    Prepare: _components.Prepare, //准备
-    Playing: _components.Playing //进行
+    Login: _login2.default, //登录
+    Prepare: _Prepare2.default, //准备
+    Playing: _playing2.default //进行
 };
 
 var Component = function (_React$Component) {
@@ -20069,7 +20079,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(13)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -20104,7 +20114,7 @@ if(false) {
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(6)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -20213,32 +20223,68 @@ module.exports = function (css) {
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+
+var content = __webpack_require__(33);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
 
 
-var _login = __webpack_require__(33);
 
-var _login2 = _interopRequireDefault(_login);
+var options = {"hmr":true}
 
-var _Prepare = __webpack_require__(34);
+options.transform = transform
+options.insertInto = undefined;
 
-var _Prepare2 = _interopRequireDefault(_Prepare);
+var update = __webpack_require__(13)(content, options);
 
-var _Playing = __webpack_require__(37);
+if(content.locals) module.exports = content.locals;
 
-var _Playing2 = _interopRequireDefault(_Playing);
+if(false) {
+	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 
-var index = {
-    Login: _login2.default,
-    Prepare: _Prepare2.default,
-    Playing: _Playing2.default
-};
-module.exports = index;
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "body {\n  background: #fff; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20246,7 +20292,7 @@ module.exports = index;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(1);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -20329,7 +20375,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20337,11 +20383,11 @@ module.exports = login;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(1);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(35);
+__webpack_require__(36);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20518,11 +20564,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(36);
+var content = __webpack_require__(37);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20536,7 +20582,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(13)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -20568,10 +20614,10 @@ if(false) {
 }
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(6)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -20582,21 +20628,35 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(1);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(38);
+__webpack_require__(39);
 
-var _action = __webpack_require__(40);
+var _action = __webpack_require__(42);
+
+var _HeroSelect = __webpack_require__(43);
+
+var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
+
+var _PlayPage = __webpack_require__(46);
+
+var _PlayPage2 = _interopRequireDefault(_PlayPage);
+
+var _skill = __webpack_require__(41);
+
+var _skill2 = _interopRequireDefault(_skill);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20609,8 +20669,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ACTION = {
     prepareOk: _action.prepareOk
 };
-
-var PLAYSPEED = ["selecthero", "playpage"];
+var PAGE = {
+    HeroSelect: _HeroSelect2.default,
+    PlayPage: _PlayPage2.default
+};
+var PLAYSPEED = ["HeroSelect", "PlayPage"];
 
 var Component = function (_React$Component) {
     _inherits(Component, _React$Component);
@@ -20645,16 +20708,10 @@ var Component = function (_React$Component) {
     }
 
     _createClass(Component, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
+        key: 'componentWillMount',
+        value: function componentWillMount() {
             var _this2 = this;
 
-            window.onunload = function (event) {
-                socket.emit('logout', {
-                    id: _this2.props.myid,
-                    name: _this2.props.myname
-                });
-            };
             this.props.socket.on('totalk', function (res) {
                 var action = res.action;
                 var state = ACTION[action.funname](_this2.state, res.state, action.cardid);
@@ -20663,152 +20720,13 @@ var Component = function (_React$Component) {
             });
         }
     }, {
-        key: 'coeckhero',
-        value: function coeckhero(type) {
-            var mystate = this.state.mystate;
-            switch (type) {
-                case 0:
-                    mystate.herotype = "0";
-                    mystate.maxHp = "4000";
-                    mystate.Hp = "4000";
-                    mystate.Hprecove = "15";
-                    break;
-                case 1:
-                    mystate.herotype = "1";
-                    mystate.attack = "70";
-                    mystate.armor = "15";
-                    break;
-                case 2:
-                    mystate.herotype = "2";
-                    mystate.maxHp = "3000";
-                    mystate.Hp = "3000";
-                    mystate.maxMp = "600";
-                    mystate.Mp = "600";
-                    mystate.Mprecove = "60";
-                    break;
-            }
-            var round = Math.random(); //随机回合用
-            this.setState({ mystate: mystate, playingSpeed: 1, round: this.state.round + round });
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                state: this.state.mystate,
-                action: {
-                    funname: "prepareOk",
-                    cardid: round
-                }
-            });
-        }
-    }, {
-        key: 'selecthero',
-        value: function selecthero() {
-            return _react2.default.createElement(
-                'div',
-                null,
-                _react2.default.createElement(
-                    'h1',
-                    null,
-                    '\u8BF7\u9009\u62E9\u82F1\u96C4'
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { onClick: this.coeckhero.bind(this, 0) },
-                    '\u529B\u91CF'
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { onClick: this.coeckhero.bind(this, 1) },
-                    '\u654F\u6377'
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { onClick: this.coeckhero.bind(this, 2) },
-                    '\u667A\u529B'
-                )
-            );
-        }
-    }, {
-        key: 'hero_place',
-        value: function hero_place(basic, more) {
-            if (basic.herotype === "" || basic.herotype === undefined) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'hero_place' },
-                    '\u5BF9\u624B\u6B63\u5728\u51C6\u5907\u4E2D...'
-                );
-            }
-            return _react2.default.createElement(
-                'div',
-                { className: 'hero_place' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'hero_ion' },
-                    basic.herotype
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'attribute_list' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'HP' },
-                        basic.Hp + "/" + basic.maxHp
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'MP' },
-                        basic.Mp + "/" + basic.maxMp
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'attack' },
-                        "攻击力:" + basic.attack
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'armor' },
-                        "护甲:" + basic.armor
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'statelist' },
-                        "状态:..."
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'card_list' },
-                    '\u5361\u724C\u5217\u8868'
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'equipment_list' },
-                    basic.equipment.map(function (equipment, i) {
-                        _react2.default.createElement('div', null);
-                    })
-                )
-            );
-        }
-    }, {
-        key: 'playpage',
-        value: function playpage() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'main_box' },
-                this.hero_place(this.state.thatstate),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'fight_place' },
-                    this.state.round > 0 ? "我的回合" : "对方回合"
-                ),
-                this.hero_place(this.state.mystate, this.state)
-            );
-        }
-    }, {
         key: 'render',
         value: function render() {
+            var Field = PAGE[PLAYSPEED[this.state.playingSpeed]];
             return _react2.default.createElement(
                 'div',
                 { className: 'system_body' },
-                this[PLAYSPEED[this.state.playingSpeed]]()
+                _react2.default.createElement(Field, _extends({ setState: this.setState.bind(this) }, this.props, this.state))
             );
         }
     }]);
@@ -20819,11 +20737,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(39);
+var content = __webpack_require__(40);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20837,7 +20755,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(13)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -20869,10 +20787,10 @@ if(false) {
 }
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(6)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -20883,7 +20801,332 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 
 
 /***/ }),
-/* 40 */
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var skill = [];
+skill[1] = { name: "毁灭", state: 0, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)" };
+skill[2] = { name: "幽灵船", state: 0, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)" };
+skill[3] = { name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
+skill[4] = { name: "飞锯", state: 0, message: "使敌方受到敌方最大生命值的10%的伤害(可闪避)" };
+skill[5] = { name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
+skill[6] = { name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
+skill[7] = { name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
+skill[8] = { name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
+skill[9] = { name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
+skill[10] = { name: "回音击", state: 0, message: "造成敌方手牌数乘以60的伤害(可闪避)" };
+skill[11] = { name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
+skill[12] = { name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
+skill[13] = { name: "变身", state: 2, message: "三回合内攻击加100" };
+skill[14] = { name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
+skill[15] = { name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
+skill[16] = { name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
+skill[17] = { name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
+skill[18] = { name: "两级反转", state: 0, message: "造成100点伤害并晕眩对手3回合(可闪避)" };
+skill[19] = { name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
+skill[20] = { name: "裂地者", state: 0, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫(可闪避)" };
+skill[21] = { name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
+skill[22] = { name: "地震", state: 0, message: "对敌方造成300+敌方手牌数乘50的伤害(可闪避)" };
+skill[23] = { name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
+skill[24] = { name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
+skill[25] = { name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
+skill[26] = { name: "疯狂生长", state: 0, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免(可闪避)" };
+skill[27] = { name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
+skill[29] = { name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
+skill[28] = { name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
+skill[30] = { name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
+skill[31] = { name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
+skill[32] = { name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
+skill[33] = { name: "无敌斩", state: 0, message: "快速普通攻击敌方6次(可闪避)" };
+skill[34] = { name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
+skill[35] = { name: "剧毒新星", state: 0, message: "对敌方造成300点伤害(可闪避)" };
+skill[36] = { name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
+skill[37] = { name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
+skill[38] = { name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
+skill[39] = { name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
+skill[40] = { name: "海妖之歌", state: 0, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态(可闪避)" };
+skill[41] = { name: "风暴之眼", state: 0, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害(可闪避)" };
+skill[42] = { name: "石化凝视", state: 0, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍(可闪避)" };
+skill[43] = { name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
+skill[44] = { name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
+skill[45] = { name: "时间结界", state: 0, message: "晕眩敌方2回合(可闪避)" };
+skill[46] = { name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
+skill[47] = { name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
+skill[48] = { name: "月蚀", state: 0, message: "对敌方造成350点伤害(可闪避)" };
+skill[49] = { name: "召唤飞弹", state: 0, message: "造成200加上,敌方手牌数乘30的伤害(可闪避)" };
+skill[50] = { name: "编织", state: 0, message: "三回合内增加自己50点护甲,减少敌方50点护甲(可闪避)" };
+skill[51] = { name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
+skill[52] = { name: "极寒领域", state: 0, message: "对敌方造成350点伤害(可闪避)" };
+skill[53] = { name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
+skill[54] = { name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
+skill[55] = { name: "死亡一指", state: 1, message: "造成600点伤害" };
+skill[56] = { name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
+skill[57] = { name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
+skill[58] = { name: "神智之蚀", state: 0, message: "造成自己能量值减敌方能量值的数值乘以220的伤害(可闪避)" };
+skill[59] = { name: "神灭斩", state: 1, message: "造成650点伤害" };
+skill[60] = { name: "冰晶爆轰", state: 0, message: "对方血量低于15%时直接秒杀(可闪避)" };
+skill[61] = { name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
+skill[62] = { name: "黑洞", state: 0, message: "对敌方造成250点伤害并晕眩2回合无视魔免(可闪避)" };
+skill[63] = { name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
+skill[64] = { name: "上帝之手", state: 1, message: "回复己方500点生命值" };
+skill[65] = { name: "脉冲新星", state: 0, message: "对敌方造成450点伤害(可闪避)" };
+skill[66] = { name: "万火焚身", state: 0, message: "对敌方造成100点伤害，持续4回合(可闪避)" };
+skill[67] = { name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
+skill[68] = { name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
+skill[69] = { name: "神秘之耀", state: 0, message: "对地方造成450点伤害(可闪避)" };
+skill[70] = { name: "超声冲击波", state: 0, message: "对敌方造成400点伤害(可闪避)" };
+skill[71] = { name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
+skill[72] = { name: "连环霜冻", state: 0, message: "对敌方造成100*敌方手牌数的伤害(可闪避)" };
+skill[73] = { name: "梦境缠绕", state: 0, message: "对敌方造成200点伤害并使敌方晕眩一回合(可闪避)" };
+skill[74] = { name: "自然之怒", state: 0, message: "对敌方造成300点伤害(可闪避)" };
+skill[75] = { name: "生命汲取", state: 0, message: "对敌方造成300点伤害，同时回复300点生命值(可闪避)" };
+skill[76] = { name: "静态风暴", state: 0, message: "对敌方造成200点伤害并使敌方沉默一回合(可闪避)" };
+skill[77] = { name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
+skill[1001] = { name: "马蹄践踏", state: 0, message: "使敌方造成30点伤害并晕眩1回合(可闪避)" };
+skill[1002] = { name: "双刃剑", state: 1, message: "使自己和敌方同时受到150点伤害" };
+skill[1003] = { name: "反击", state: 2, message: "被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%" };
+skill[1004] = { name: "巨浪", state: 0, message: "减少敌方十点护甲并对对方造成100点伤害(可闪避)" };
+skill[1005] = { name: "海妖外壳", state: 2, message: "被动牌:受到普通攻击时可以减少50点伤害" };
+skill[1006] = { name: "锚击", state: 1, message: "使自己在本回合内的攻击力增加敌方手牌数乘以10的数目" };
+skill[1007] = { name: "洪流", state: 0, message: "对敌方造成50点伤害并晕眩半回合(可闪避)" };
+skill[1008] = { name: "潮汐使者", state: 2, message: "被动牌:使自己增加30点攻击力" };
+skill[1009] = { name: "死亡旋风", state: 0, message: "对敌方造成110点伤害(可闪避)" };
+skill[1010] = { name: "伐木链锯", state: 0, message: "对敌方造成自己攻击力加50的伤害(可闪避)" };
+skill[1011] = { name: "活性护甲", state: 2, message: "被动牌:每受到一次攻击增加10点护甲" };
+skill[1012] = { name: "死亡缠绕", state: 1, message: "使自己回复70点生命并对敌方造成70点伤害" };
+skill[1013] = { name: "无光之盾", state: 2, message: "三回合内抵挡自己150点伤害并在破裂时对敌方造成70点伤害" };
+skill[1014] = { name: "霜之哀伤", state: 2, message: "被动牌:成功攻击对手后可以去除对手一张手牌" };
+skill[1015] = { name: "烈火精灵", state: 1, message: "对敌方造成90点伤害并且减少敌方一点能量值" };
+skill[1016] = { name: "烈日炎烤", state: 0, message: "对自己造成50点伤害并造成敌方现有生命值5%的伤害(可闪避)" };
+skill[1017] = { name: "战士怒吼", state: 0, message: "增加自己40点护甲,使敌方下一回合只可以攻击自己(可闪避)" };
+skill[1018] = { name: "反击螺旋", state: 2, message: "被动牌:敌方普通攻击自己时会受到40点伤害" };
+skill[1019] = { name: "寒冰碎片", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+skill[1020] = { name: "雪球", state: 0, message: "对敌方造成80点伤害并晕眩半回合(可闪避)" };
+skill[1021] = { name: "沟壑", state: 0, message: "对敌方造成90点伤害并晕眩一回合(可闪避)" };
+skill[1022] = { name: "强化图腾", state: 2, message: "三回合内使自己攻击力变为现在攻击力的2倍，攻击后恢复正常" };
+skill[1023] = { name: "余震", state: 2, message: "被动牌:自己使用任何技能都会至少使敌方眩晕半回合" };
+skill[1024] = { name: "混乱之箭", state: 1, message: "随机对敌方造成1-200的伤害，并晕眩1-2回合" };
+skill[1025] = { name: "实相裂隙", state: 1, message: "可以攻击对方一次，不和普通攻击冲突" };
+skill[1026] = { name: "致命一击", state: 2, message: "被动牌:攻击力会上下变动" };
+skill[1027] = { name: "幽光之魂", state: 0, message: "对敌方造成130点伤害(可闪避)" };
+skill[1028] = { name: "压倒性优势", state: 0, message: "对敌方造成敌方手牌乘以30的伤害(可闪避)" };
+skill[1029] = { name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
+skill[1030] = { name: "强攻", state: 1, message: "使自己回复100点生命值并攻击对方一次" };
+skill[1031] = { name: "冥火暴击", state: 0, message: "对敌方造成70点伤害并晕眩1回合(可闪避)" };
+skill[1032] = { name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值" };
+skill[1033] = { name: "致死打击", state: 2, message: "被动牌:攻击时有60%的概率1.5倍攻击" };
+skill[1034] = { name: "嚎叫", state: 1, message: "本回合攻击加60" };
+skill[1035] = { name: "野性驱使", state: 2, message: "被动牌:攻击加30" };
+skill[1036] = { name: "酸性喷雾", state: 0, message: "三回合内降低敌方10点防御并造成50点伤害(可闪避)" };
+skill[1037] = { name: "不稳定物", state: 0, message: "50%使对方晕眩两回合50%使自己晕眩一回合(可闪避)" };
+skill[1038] = { name: "地精贪婪", state: 2, message: "被动牌:每回合得到金钱数+10" };
+skill[1039] = { name: "暗影冲刺", state: 0, message: "对敌方造成60点伤害并眩晕半回合(可闪避)" };
+skill[1040] = { name: "巨力重击", state: 2, message: "被动牌:攻击时有30%的概率使敌方晕眩一回合并造成40点伤害" };
+skill[1041] = { name: "风暴之锤", state: 0, message: "对敌方造成100点伤害并晕眩一回合(可闪避)" };
+skill[1042] = { name: "巨力挥舞", state: 2, message: "被动牌:普通攻击时增加加敌方手牌数乘10的攻击力" };
+skill[1043] = { name: "战吼", state: 2, message: "三回合内增加自身30点护甲" };
+skill[1044] = { name: "火焰气息", state: 0, message: "对敌方造成120点伤害(可闪避)" };
+skill[1045] = { name: "神龙摆尾", state: 1, message: "对敌方造成50点伤害并晕眩一回合" };
+skill[1046] = { name: "龙族血统", state: 2, message: "被动牌:每回合回复40点生命值" };
+skill[1047] = { name: "震荡波", state: 0, message: "对敌方造成130点伤害" };
+skill[1048] = { name: "授予力量", state: 2, message: "本回合内攻击加80" };
+skill[1049] = { name: "獠牙冲刺", state: 0, message: "对敌方造成60点伤害(可闪避)" };
+skill[1050] = { name: "吞噬", state: 2, message: "如果手牌还没有达到上限，可以再摸两张牌" };
+skill[1051] = { name: "焦土", state: 1, message: "敌方掉70血，自己回复80血" };
+skill[1052] = { name: "回音重踏", state: 0, message: "使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态(可闪避)" };
+skill[1053] = { name: "自然秩序", state: 2, message: "被动牌:使对方护甲归0" };
+skill[1054] = { name: "洗礼", state: 0, message: "回复自己200点生命值(可闪避)" };
+skill[1055] = { name: "驱逐", state: 2, message: "使自己魔免两回合，可以被散失" };
+skill[1056] = { name: "掘地穿刺", state: 0, message: "对敌方造成65点伤害并晕眩一回合(可闪避)" };
+skill[1057] = { name: "沙尘暴", state: 0, message: "对敌方造成40点伤害，敌方的下一回合不可以攻击自己(可闪避)" };
+skill[1058] = { name: "雷击", state: 1, message: "对敌方造成140点伤害" };
+skill[1059] = { name: "投掷", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+skill[1060] = { name: "崎岖外表", state: 2, message: "被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合" };
+skill[1061] = { name: "山崩", state: 0, message: "对敌方造成30点伤害并晕眩一回合(可闪避)" };
+skill[1062] = { name: "火焰风暴", state: 0, message: "对敌方造成90点伤害(可闪避)" };
+skill[1063] = { name: "怨念深渊", state: 0, message: "使对方晕眩半回合(可闪避)" };
+skill[1064] = { name: "衰退光环", state: 2, message: "被动牌:减少对方50%攻击力" };
+skill[1065] = { name: "活血术", state: 1, message: "增加自己当前攻击力的血量" };
+skill[1066] = { name: "沸血之矛", state: 2, message: "消耗自身50点生命值使本回合内攻击加100" };
+skill[1067] = { name: "狂战士之血", state: 2, message: "被动牌:血量低于50%时每次普通攻击可以不消耗能量格多攻击一次" };
+skill[1068] = { name: "静电场", state: 2, message: "被动牌:每次释放任何技能都会对敌方造成40点伤害" };
+skill[1069] = { name: "腐朽", state: 0, message: "可以对敌方造成70点伤害(可闪避)" };
+skill[1070] = { name: "噬魂", state: 1, message: "造成己方和敌方手牌数的总和乘以15的伤害" };
+skill[1071] = { name: "狂暴", state: 2, message: "可以使自己魔免一回合" };
+skill[1072] = { name: "盛宴", state: 2, message: "被动牌:普通攻击时将对方现有生命值的2%转化为自身生命" };
+skill[1073] = { name: "撕裂伤口", state: 1, message: "本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命" };
+skill[1074] = { name: "野性之斧", state: 0, message: "对敌方造成150点伤害(可闪避)" };
+skill[1075] = { name: "寄生种子", state: 1, message: "使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌" };
+skill[1076] = { name: "活体护甲", state: 2, message: "受到物理伤害减少20点持续2回合每回合加40点血" };
+skill[1077] = { name: "腐烂", state: 1, message: "自己掉100点血，对方掉180点血" };
+skill[1078] = { name: "腐肉堆积", state: 2, message: "被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限" };
+skill[1079] = { name: "雷霆一击", state: 0, message: "对敌方造成80点伤害" };
+skill[1080] = { name: "醉酒云雾", state: 1, message: "2回合内使敌方的普通攻击有75%的概率打不中" };
+skill[1081] = { name: "醉拳", state: 2, message: "被动牌:受到普通攻击时有40%的概率mis" };
+skill[1082] = { name: "虚空", state: 1, message: "对敌方造成130点伤害" };
+skill[1083] = { name: "伤残恐惧", state: 1, message: "使敌方2回合内不可以使用技能" };
+skill[1084] = { name: "重击", state: 2, message: "被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害" };
+skill[1085] = { name: "鱼人碎击", state: 0, message: "对敌方造成60点伤害并晕眩一回合(可闪避)" };
+skill[1086] = { name: "群星坠落", state: 0, message: "对敌方造成40加上敌方手牌乘10的伤害(可闪避)" };
+skill[1087] = { name: "月神之箭", state: 0, message: "有50%的概率使敌方晕眩二回合(可闪避)" };
+skill[1088] = { name: "波浪形态", state: 0, message: "对敌方造成70点伤害(可闪避)" };
+skill[1089] = { name: "变体攻击", state: 1, message: "对敌方造成50点伤害并晕眩半回合" };
+skill[1090] = { name: "法力损毁", state: 2, message: "被动牌:普通攻击成功后可以削减敌方一点能量值" };
+skill[1091] = { name: "自杀攻击", state: 0, message: "对自己和敌方同时造成500点伤害(可闪避)" };
+skill[1092] = { name: "忽悠", state: 3, message: "可以闪避一次敌方的攻击" };
+skill[1093] = { name: "地之突袭", state: 2, message: "被动牌:攻击力加30" };
+skill[1094] = { name: "穿刺", state: 0, message: "造成70点伤害并晕眩敌方一回合(可闪避)" };
+skill[1095] = { name: "法力燃烧", state: 1, message: "减少敌方3点能量值" };
+skill[1096] = { name: "带刺外壳", state: 2, message: "被动牌:每回合可以抵挡一次指向性法术" };
+skill[1097] = { name: "魔法箭", state: 1, message: "造成80点伤害并晕眩敌方一回合" };
+skill[1098] = { name: "恐怖波动", state: 0, message: "减少敌方10点护甲并造成20点伤害(可闪避)" };
+skill[1099] = { name: "命令光环", state: 2, message: "被动牌:增加25%的攻击力" };
+skill[1100] = { name: "霜冻之箭", state: 1, message: "可以削减敌方2点能量值" };
+skill[1101] = { name: "沉默魔法", state: 0, message: "敌方在一回合内不可以使用技能(可闪避)" };
+skill[1102] = { name: "强击光环", state: 2, message: "被动牌:增加25%的攻击力" };
+skill[1103] = { name: "灵魂之矛", state: 0, message: "对敌方造成90点伤害(可闪避)" };
+skill[1104] = { name: "神出鬼没", state: 3, message: "可以闪避一次敌方的攻击" };
+skill[1105] = { name: "磁场", state: 2, message: "使自己在两回合内物理免疫" };
+skill[1106] = { name: "闪光冤魂", state: 0, message: "对敌方造成100点伤害(可闪避)" };
+skill[1107] = { name: "窒息之刃", state: 0, message: "对敌方造成30点伤害使用后回复一点能量值(可闪避)" };
+skill[1108] = { name: "闪烁突袭", state: 3, message: "可以闪避掉一次攻击" };
+skill[1109] = { name: "模糊", state: 2, message: "被动牌:敌方在普通攻击你时有70%的概率mis" };
+skill[1110] = { name: "火焰壁垒", state: 2, message: "被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值" };
+skill[1111] = { name: "无影拳", state: 0, message: "对敌方造成70点伤害(可闪避)" };
+skill[1112] = { name: "榴霰弹", state: 0, message: "对敌方造成60点伤害(可闪避)" };
+skill[1113] = { name: "爆头", state: 2, message: "被动牌:攻击时有40%的概率附加100点伤害" };
+skill[1114] = { name: "剑刃风暴", state: 0, message: "一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害(可闪避)" };
+skill[1115] = { name: "弧形闪电", state: 1, message: "对敌方造成80点伤害" };
+skill[1116] = { name: "剑舞", state: 2, message: "被动牌:攻击时有60%的概率1.5倍暴击" };
+skill[1117] = { name: "狂战士之怒", state: 2, message: "被动牌:本回合内加70点攻击" };
+skill[1118] = { name: "热血战魂", state: 2, message: "被动牌:加30点攻击" };
+skill[1119] = { name: "旋风飞斧", state: 0, message: "对敌方造成40点伤害并使敌方攻击有30%的概率mis(可闪避)" };
+skill[1120] = { name: "肉钩", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+skill[1121] = { name: "瘴气", state: 0, message: "对敌方造成70点伤害(可闪避)" };
+skill[1122] = { name: "毒刺", state: 2, message: "被动牌:攻击时对敌方额外造成20点伤害" };
+skill[1123] = { name: "扫射", state: 2, message: "攻击力加40" };
+skill[1124] = { name: "灼热之箭", state: 2, message: "本回合内攻击加50" };
+skill[1125] = { name: "变身", state: 2, message: "永久增加20点攻击力" };
+skill[1126] = { name: "连击", state: 2, message: "被动牌:每次攻击降低敌方10点护甲" };
+skill[1127] = { name: "蝗虫群", state: 1, message: "对敌方造成60点伤害并永久降低5点护甲" };
+skill[1128] = { name: "毒性攻击", state: 2, message: "被动牌:本回合攻击力加40" };
+skill[1129] = { name: "幽冥剧毒", state: 2, message: "被动牌:敌方血量低于50%时,攻击附加50点伤害" };
+skill[1130] = { name: "腐蚀外表", state: 2, message: "被动牌:受到敌方的任何攻击之后敌方会掉40点血" };
+skill[1131] = { name: "等离子场", state: 2, message: "3回合内敌方每次对你使用指向性技能时会减少100点生命值" };
+skill[1132] = { name: "静电连接", state: 1, message: "永久性减少敌方5点攻击,自己增加5点攻击" };
+skill[1133] = { name: "投掷飞镖", state: 1, message: "对敌方造成80点伤害" };
+skill[1134] = { name: "忍术", state: 2, message: "被动牌:攻击时有40%的概率双倍暴击" };
+skill[1135] = { name: "分裂箭", state: 2, message: "被动牌:攻击力增加敌方手牌数乘以15的数值" };
+skill[1136] = { name: "秘术异蛇", state: 0, message: "造成敌手牌数乘以20的伤害(可闪避)" };
+skill[1137] = { name: "魔法护盾", state: 2, message: "被动牌:受到伤害时一点能量值可以抵挡一次伤害" };
+skill[1138] = { name: "折光", state: 2, message: "5回合内抵挡4次伤害" };
+skill[1139] = { name: "黑暗契约", state: 2, message: "下回合双方损失50点生命值,可以清除自己身上所有状态" };
+skill[1140] = { name: "能量转换", state: 2, message: "被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击" };
+skill[1141] = { name: "超级力量", state: 2, message: "3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害" };
+skill[1142] = { name: "怒意狂击", state: 2, message: "被动牌:每次普通攻击成功后攻击力会增加20" };
+skill[1143] = { name: "回到过去", state: 2, message: "被动牌:受到任何攻击时有25%的概率免疫" };
+skill[1144] = { name: "时间锁定", state: 2, message: "被动牌:普通攻击时有25%的概率使敌方晕眩一回合" };
+skill[1145] = { name: "血之狂暴", state: 1, message: "使敌方2回合内无法使用技能" };
+skill[1146] = { name: "屠戮", state: 2, message: "被动牌:敌方每减少一张牌会使自己增加30点生命值" };
+skill[1147] = { name: "嗜血渴望", state: 2, message: "被动牌:敌方血量低于50%时，自己增加50点攻击" };
+skill[1148] = { name: "烟幕", state: 0, message: "使敌方在1回合内攻击有75%的概率mis,并不可以使用技能(可闪避)" };
+skill[1149] = { name: "闪烁突袭", state: 3, message: "可以闪避掉一次攻击" };
+skill[1150] = { name: "魔王降临", state: 2, message: "被动牌:减少敌方20点护甲" };
+skill[1151] = { name: "毁灭阴影", state: 0, message: "对敌方造成90点伤害(可闪避)" };
+skill[1152] = { name: "支配死灵", state: 2, message: "被动牌:敌方每减少一张牌,你可以永久增加2点攻击" };
+skill[1153] = { name: "幽鬼之刃", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+skill[1154] = { name: "荒芜", state: 2, message: "被动牌:增加30点攻击" };
+skill[1155] = { name: "折射", state: 2, message: "被动牌:反弹自己受到一切伤害的25%" };
+skill[1156] = { name: "麻痹撕咬", state: 2, message: "被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" };
+skill[1157] = { name: "月光", state: 1, message: "对敌方造成90点伤害" };
+skill[1158] = { name: "月之祝福", state: 2, message: "被动牌:攻击力加60" };
+skill[1159] = { name: "月刃", state: 2, message: "被动牌:攻击力加敌方手牌数乘10的数值" };
+skill[1160] = { name: "高射火炮", state: 2, message: "本回合内攻击增加70" };
+skill[1161] = { name: "追踪导弹", state: 0, message: "造成160点伤害(可闪避)" };
+skill[1162] = { name: "灵魂猎手", state: 0, message: "一回合内使敌方额外承受25%的伤害(可闪避)" };
+skill[1163] = { name: "薄葬", state: 2, message: "三回合内不会死亡" };
+skill[1164] = { name: "暗影波", state: 0, message: "回复自己手牌数乘以25点的生命(可闪避)" };
+skill[1165] = { name: "叉形闪电", state: 1, message: "对敌方造成90点伤害" };
+skill[1166] = { name: "妖术", state: 1, message: "将敌方变成小羊,持续1回合" };
+skill[1167] = { name: "枷锁", state: 1, message: "自己摸一张牌,敌方受到50点伤害" };
+skill[1168] = { name: "烈焰破击", state: 0, message: "对敌方造成100点伤害(可闪避)" };
+skill[1169] = { name: "冰霜新星", state: 0, message: "对敌方造成60点伤害(可闪避)" };
+skill[1170] = { name: "冰封禁制", state: 1, message: "对敌方造成30点伤害并晕眩一回合" };
+skill[1171] = { name: "辉煌光环", state: 2, message: "被动牌:每回合可以额外回复1点能量值" };
+skill[1172] = { name: "静默诅咒", state: 1, message: "减少敌方1点能量值" };
+skill[1173] = { name: "智慧之刃", state: 2, message: "本回合内攻击力增加自己能量值乘以20的数值" };
+skill[1174] = { name: "遗言", state: 1, message: "对敌方造成60点伤害,并沉默1回合" };
+skill[1175] = { name: "弱化能流", state: 1, message: "永久减少敌方10点攻击" };
+skill[1176] = { name: "激光", state: 1, message: "造成100点伤害并使敌方下1回合攻击100%mis" };
+skill[1177] = { name: "热导飞弹", state: 0, message: "造成100点伤害(可闪避)" };
+skill[1178] = { name: "法力汲取", state: 1, message: "减少敌方两点能量格,自己增加两点能量格" };
+skill[1179] = { name: "超负荷", state: 2, message: "被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" };
+skill[1180] = { name: "束缚之箭", state: 1, message: "造成40点伤害晕眩敌方半回合" };
+skill[1181] = { name: "强力一击", state: 0, message: "造成100点伤害(可闪避)" };
+skill[1182] = { name: "冲击波", state: 0, message: "造成130点伤害" };
+skill[1183] = { name: "法力流失", state: 1, message: "3回合内敌方任何攻击所需能量值加1" };
+skill[1184] = { name: "查克拉魔法", state: 1, message: "瞬间将自身能量值回满" };
+skill[1185] = { name: "严寒烧灼", state: 2, message: "2回合内增加敌方现有生命值2%的攻击力" };
+skill[1186] = { name: "碎裂冲击", state: 0, message: "造成100点伤害(可闪避)" };
+skill[1187] = { name: "极寒之拥", state: 2, message: "使自己加100点护甲回复100点生命,但本回合不可以再出牌" };
+skill[1188] = { name: "离子外壳", state: 1, message: "对敌方造成80点伤害" };
+skill[1189] = { name: "凤凰冲击", state: 3, message: "减少自身100点生命值，闪避对方一次攻击" };
+skill[1190] = { name: "秘法天球", state: 2, message: "本回合增加能量值乘以25的攻击力" };
+skill[1191] = { name: "星体禁锢", state: 1, message: "使对方减少2点能量格,并轮空一回合" };
+skill[1192] = { name: "精气光环", state: 2, message: "被动牌:释放技能时有50%的概率加1点能量值" };
+skill[1193] = { name: "龙破斩", state: 0, message: "造成100点伤害(可闪避)" };
+skill[1194] = { name: "光击阵", state: 0, message: "造成80点伤害并晕眩1回合(可闪避)" };
+skill[1195] = { name: "寒冰之触", state: 1, message: "对敌方造成80点伤害并晕眩半回合" };
+skill[1196] = { name: "火焰爆轰", state: 1, message: "造成80点伤害并晕眩敌方1回合" };
+skill[1197] = { name: "引燃", state: 1, message: "造成150点伤害" };
+skill[1198] = { name: "嗜血术", state: 2, message: "3回合内增加自己30点攻击力" };
+skill[1199] = { name: "憎恶", state: 1, message: "对敌方造成50点伤害并晕眩半回合" };
+skill[1200] = { name: "午夜凋零", state: 0, message: "造成80点伤害(可闪避)" };
+skill[1201] = { name: "命运赦令", state: 1, message: "使敌方1回合不可以攻击并且所受的物理伤害增加100%" };
+skill[1202] = { name: "涤罪之焰", state: 1, message: "对敌方造成150点伤害" };
+skill[1203] = { name: "忠诚考验", state: 1, message: "随机对敌方造成50-300点伤害" };
+skill[1204] = { name: "麻痹陷阱", state: 0, message: "对敌方晕眩一回合(可闪避)" };
+skill[1205] = { name: "恶魔赦令", state: 1, message: "三回合内每回合对敌方造成80点伤害" };
+skill[1206] = { name: "致命连接", state: 1, message: "本回合内对敌方额外造成手牌数0.1倍技能伤害 " };
+skill[1207] = { name: "暗言术", state: 1, message: "使己方回复100点生命值并对敌方造成100点伤害" };
+skill[1208] = { name: "冰火交加", state: 0, message: "对敌方造成150点伤害(可闪避)" };
+skill[1209] = { name: "冰封路径", state: 0, message: "使敌方晕眩一回合(可闪避)" };
+skill[1210] = { name: "液态火", state: 1, message: "对敌方造成150点伤害" };
+skill[1211] = { name: "死亡脉冲", state: 0, message: "对敌方造成100点伤害，同时回复100点生命值(可闪避)" };
+skill[1212] = { name: "竭心光环", state: 2, message: "被动牌:每回合减少敌方2%生命值" };
+skill[1213] = { name: "施虐之心", state: 2, message: "被动牌:每对敌方造成200点伤害回复1点能量格和100点生命" };
+skill[1214] = { name: "灵魂超度", state: 0, message: "对敌方造成自己损失血量10%的伤害(可闪避)" };
+skill[1215] = { name: "食腐蝙群", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+skill[1216] = { name: "上古封印", state: 0, message: "使敌方承受1.5倍魔法伤害，并使敌方沉默一回合(可闪避)" };
+skill[1217] = { name: "奥术箭", state: 0, message: "对敌方造成50*其能量格的伤害(可闪避)" };
+skill[1218] = { name: "暗影突袭", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+skill[1219] = { name: "闪烁", state: 3, message: "可闪避敌方一次技能，对无视闪避技能无效" };
+skill[1220] = { name: "痛苦尖叫", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+skill[1221] = { name: "虚弱", state: 1, message: "3回合内降低敌方30点攻击力" };
+skill[1222] = { name: "蚀脑", state: 1, message: "对敌方造成200点伤害，同时回复100点生命值" };
+skill[1223] = { name: "噩梦", state: 1, message: "使敌方沉睡一回合不能摸牌，己方也不能进行攻击" };
+skill[1224] = { name: "霜冻新星", state: 1, message: "对地敌方造成200点伤害" };
+skill[1225] = { name: "霜冻护甲", state: 2, message: "2回合内增加20点护甲" };
+skill[1226] = { name: "邪恶祭祀", state: 1, message: "消耗50点生命，回复3点能量" };
+skill[1227] = { name: "麻痹药剂", state: 0, message: "使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合(可闪避)" };
+skill[1228] = { name: "巫毒回复术", state: 1, message: "回复150点生命" };
+skill[1229] = { name: "诅咒", state: 0, message: "使敌方3回合后受到3回合内受到总伤害的25%(可闪避)" };
+skill[1230] = { name: "相位转移", state: 3, message: "免疫一次任何伤害" };
+skill[1231] = { name: "新月之痕", state: 0, message: "对敌方造成100点伤害并使对方沉默一回合(可闪避)" };
+skill[1232] = { name: "不可侵犯", state: 2, message: "被动牌:使对方普通攻击时消耗双倍能量格" };
+skill[1233] = { name: "自然之助", state: 1, message: "回复自身200点生命值" };
+skill[1234] = { name: "幽冥爆轰", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+skill[1235] = { name: "幽冥守卫", state: 1, message: "对敌方造成敌方消耗能量格*100的伤害" };
+skill[1236] = { name: "衰老", state: 1, message: "使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害" };
+skill[1237] = { name: "雷霆之击", state: 1, message: "对敌方造成200点伤害" };
+
+module.exports = skill;
+
+/***/ }),
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20893,18 +21136,2126 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.prepareOk = prepareOk;
+exports.doskill = doskill;
 function prepareOk(mystate, thatstate, cardid) {
     //准备开始
     mystate.round -= cardid;
     return mystate;
 }
+function doskill(mystate, thatstate, cardid) {
+    //使用技能
+
+    switch (cardid) {
+        case 0:
+            //毁灭 0 对敌方造成100点伤害并晕眩敌方手牌数除以2的回合
+            form4.hurtmofa = 100;
+            form4.youstate[0] = form4.youcardnumber;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 1:
+            //幽灵船 0 对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半
+            form4.hurtmofa = 130;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            form4.mystate[7] = 6;
+            form4.mystatelist(7);
+            form4.startsend5(107);
+            Thread.Sleep(100);
+            break;
+        case 2:
+            //雷神之怒 1 对敌方造成自己手牌乘以60的伤害
+            form4.hurtmofa = (form4.mycardnumber + 1) * 60;
+            break;
+        case 3:
+            //飞锯 0 使敌方受到敌方最大生命值的10%的伤害
+            form4.hurtmofa = form4.you.Maxhp / 10;
+            break;
+        case 4:
+            //回光返照 2 发动后4回合内受到的伤害都会增加自己的生命值
+            form4.mystate[9] = 8;
+            form4.mystatelist(9);
+            form4.startsend5(109);
+            Thread.Sleep(100);
+            break;
+        case 5:
+            //超级新星 3回合内敌方攻击自己6次就死，不然血量变为最大值的一半
+            form4.mystate[10] = 6;
+            form4.mystatelist(10);
+            form4.startsend5(110);
+            Thread.Sleep(100);
+            break;
+        case 6:
+            //淘汰之刃 1 当敌方生命值少于500时直接秒杀,否则造成200点伤害
+            if (form4.you.Hp <= 500) {
+                form4.hurtmofa = 10000;
+            } else {
+                form4.hurtmofa = 200;
+            }
+            break;
+        case 7:
+            //战意 2 每释放一次技能可以增加20点攻击力
+            form4.beidong = 6;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 6);
+            Thread.Sleep(100);
+            break;
+        case 8:
+            //海象挥击 2 使自己攻击力变为现在攻击力的4倍，攻击后恢复正常
+            form4.mystate[12] = 6;
+            form4.mystatelist(12);
+            form4.startsend5(112);
+            Thread.Sleep(100);
+            break;
+        case 9:
+            //回音击 0 造成敌方手牌数乘以60的伤害
+            form4.hurtmofa = form4.youcardnumber * 60;
+            break;
+        case 10:
+            //决斗 在3回合内双方只能互相攻击
+            form4.youstate[14] = 6;
+            form4.youstatelist(14);
+            form4.startsend5(14);
+            Thread.Sleep(100);
+            form4.mystate[14] = 6;
+            form4.mystatelist(14);
+            form4.startsend5(114);
+            Thread.Sleep(100);
+            break;
+        case 11:
+            //重生 死亡后可以重生，重生后拥有400点生命值
+            form4.beidong = 10;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 10);
+            Thread.Sleep(100);
+            break;
+        case 12:
+            //变身 三回合内攻击加100
+            form4.mystate[15] = 6;
+            form4.mystatelist(15);
+            form4.startsend5(115);
+            Thread.Sleep(100);
+            break;
+        case 13:
+            //化学狂暴 持续三回合,攻击加40并且每回合回复100点生命值
+            form4.mystate[17] = 6;
+            form4.mystatelist(17);
+            form4.startsend5(117);
+            Thread.Sleep(100);
+            break;
+        case 14:
+            //幽冥一击 对敌方造成300加自己攻击力的伤害并晕眩一回合
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            form4.hurtmofa = 300 + form4.me.Attack;
+            break;
+        case 15:
+            //神之力量 三回合内攻击翻倍
+            form4.mystate[19] = 6;
+            form4.mystatelist(19);
+            form4.startsend5(119);
+            Thread.Sleep(100);
+            break;
+        case 16:
+            //真龙形态 三回合内攻击力加上自身装备数目乘以15
+            form4.mystate[20] = 6;
+            form4.mystatelist(20);
+            form4.startsend5(120);
+            Thread.Sleep(100);
+            break;
+        case 17:
+            //两级反转 造成100点伤害并晕眩对手3回合
+            form4.youstate[0] = 6;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            form4.hurtmofa = 100;
+            break;
+        case 18:
+            //末日 对敌方造成300点伤害，敌方三回合内不能使用技能和物品
+            form4.youstate[22] = 6;
+            form4.youstatelist(22);
+            form4.startsend5(22);
+            Thread.Sleep(100);
+            break;
+        case 19:
+            //裂地者 对敌方造成自己现有生命值的30%的伤害，无视法免疫
+            form4.hurtmofa = form4.you.Hp * 3 / 10;
+            break;
+        case 20:
+            //守护天使 2回合内使自己物理免疫，并回复300点生命值
+            form4.me.Hp += 300;
+            form4.mystate[25] = 4;
+            form4.mystatelist(25);
+            form4.startsend5(125);
+            Thread.Sleep(100);
+            break;
+        case 21:
+            //地震 对敌方造成300+敌方手牌数乘50的伤害
+            form4.hurtmofa = 300 + form4.youcardnumber * 50;
+            break;
+        case 22:
+            //牺牲 自己和对方同时掉50%的血
+            form4.hurtmofa = form4.you.Hp / 2;
+            form4.me.Hp /= 2;
+            break;
+        case 23:
+            //血肉傀儡 回复200点生命,三回合内对方每少一张牌自己就加80点生命
+            form4.me.Hp += 200;
+            form4.mystate[26] = 6;
+            form4.mystatelist(26);
+            form4.startsend5(126);
+            Thread.Sleep(100);
+            break;
+        case 24:
+            //原始咆哮 造成200点伤害并晕眩敌方2回合无视魔法免疫
+            form4.hurtmofa = 200;
+            form4.youstate[0] = 4;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 25:
+            //疯狂生长 对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免
+            form4.hurtmofa = 200;
+            form4.youstate[28] = 6;
+            form4.youstatelist(28);
+            form4.startsend5(28);
+            Thread.Sleep(100);
+            break;
+        case 26:
+            //肢解 对敌方造成自身现有血量的25%的伤害
+            form4.hurtmofa = form4.me.Hp / 4;
+            break;
+        case 27:
+            //伤害加深 三回合内使敌方的护甲减少100点
+            form4.youstate[31] = 6;
+            form4.youstatelist(31);
+            form4.startsend5(31);
+            Thread.Sleep(100);
+            break;
+        case 28:
+            //变形术 永久增加自己600点血量上限，并回复450点生命值
+            form4.me.Maxhp += 600;
+            form4.me.Hp += 450;
+            form4.maxhp += 600;
+            break;
+        case 29:
+            //射手天赋 2 增加150点攻击力
+            form4.beidong = 30;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 30);
+            Thread.Sleep(100);
+            break;
+        case 30:
+            //恩赐解脱 2 攻击时有30%的概率4倍暴击
+            form4.beidong = 32;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 32);
+            Thread.Sleep(100);
+            break;
+        case 31:
+            //暗杀 0 下一回合自己不可以出牌,如果没有被打断,敌方受到1000点伤害
+            form4.statecontinue[23] = 1;
+            form4.mystate[81] = 2;
+            form4.mystatelist(81);
+            form4.startsend5(181);
+            Thread.Sleep(100);
+            break;
+        case 32:
+            //无敌斩 0 快速普通攻击敌方6次，不消耗能量值
+            for (var j = 0; j < 6; j++) {
+                form4.gongji();
+                Thread.Sleep(100);
+            }
+            break;
+        case 33:
+            //战斗专注 2 每次普通攻击时可以多攻击敌方一次,只维持一回合
+            form4.mystate[35] = 2;
+            form4.mystatelist(35);
+            form4.startsend5(135);
+            Thread.Sleep(100);
+            break;
+        case 34:
+            //剧毒新星 0 对敌方造成300点伤害
+            form4.hurtmofa = 300;
+            break;
+        case 35:
+            //死亡契约 2 本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点
+            form4.mystate[90] = 2;
+            form4.mystatelist(90);
+            form4.startsend5(190);
+            Thread.Sleep(100);
+            break;
+        case 36:
+            //灵魂隔断 1 自己和敌方互换血量
+            var n = form4.me.Hp;
+            form4.me.Hp = form4.you.Hp;
+            form4.hurtmofa = form4.you.Hp - n;
+            break;
+        case 37:
+            //时光倒流 2 可以瞬间使自己的能量值变为4点，手牌数增加到4张
+            break;
+        case 38:
+            //蝮蛇突袭 1 对敌方造成300点伤害
+            form4.hurtmofa = 300;
+            break;
+        case 39:
+            //海妖之歌 0 晕眩敌方3回合,敌方在3回合内处于无敌状态
+            form4.youstate[36] = 6;
+            form4.youstatelist(36);
+            form4.startsend5(36);
+            Thread.Sleep(100);
+            break;
+        case 40:
+            //风暴之眼 0 3回合内每回合对敌方造成你手牌数乘以30的伤害
+            form4.mystate[57] = 6;
+            form4.mystatelist(57);
+            form4.startsend5(157);
+            Thread.Sleep(100);
+            break;
+        case 41:
+            //石化凝视 0 晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍
+            form4.youstate[37] = 1;
+            form4.youstatelist(37);
+            form4.startsend5(37);
+            Thread.Sleep(100);
+            break;
+        case 42:
+            //暗影之舞 2 回复200点生命并使敌方在2回合内无法攻击自己
+            form4.me.Hp += 200;
+            form4.mystate[79] = 4;
+            form4.mystatelist(79);
+            form4.startsend5(179);
+            Thread.Sleep(100);
+            break;
+        case 43:
+            //激怒 2 本回合内增加自己当前生命5%的攻击力
+            form4.mystate[80] = 1;
+            form4.mystatelist(80);
+            form4.startsend5(180);
+            Thread.Sleep(100);
+            break;
+        case 44:
+            //时间结界 0 晕眩敌方2回合
+            form4.youstate[0] = 4;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 45:
+            //割裂 1 三回合敌方减少一张牌会减少200点生命值
+            form4.youstate[39] = 6;
+            form4.youstatelist(39);
+            form4.startsend5(39);
+            Thread.Sleep(100);
+            break;
+        case 46:
+            //极度饥渴 2 3回合增加80点攻击,将敌方受到普攻伤害的100%变为自己生命
+            form4.mystate[43] = 6;
+            form4.mystatelist(43);
+            form4.startsend5(143);
+            Thread.Sleep(100);
+            break;
+        case 47:
+            //月蚀 0 对敌方造成350点伤害
+            form4.hurtmofa = 350;
+            break;
+        case 48:
+            form4.hurtmofa = 200 + form4.youcardnumber * 30;
+            //召唤飞弹 0 造成200加上,敌方手牌数乘30的伤害
+            break;
+        case 49:
+            //编织 0 三回合增加自己50点护甲,减少敌方50点护甲
+            form4.youstate[45] = 6;
+            form4.youstatelist(45);
+            form4.startsend5(45);
+            Thread.Sleep(100);
+            break;
+        case 50:
+            //燃烧枷锁 1 晕眩敌方3回合
+            form4.youstate[0] = 6;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 51:
+            //极寒领域 0 对敌方造成350点伤害
+            form4.hurtmofa = 350;
+            break;
+        case 52:
+            //全域静默 1 使敌方3回合内无法使用技能
+            form4.youstate[1] = 6;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 53:
+            //技能窃取 2 可以抽取敌方的两张手牌
+            break;
+        case 54:
+            //死亡一指 1 造成600点伤害
+            form4.hurtmofa = 600;
+            break;
+        case 55:
+            //火力聚焦 2 3回合减少自身50点攻击,每次攻击后可以再攻击两次
+            form4.mystate[75] = 6;
+            form4.mystatelist(75);
+            form4.startsend5(175);
+            Thread.Sleep(100);
+            break;
+        case 56:
+            //寒冬诅咒 1 弃置敌方所有手牌
+            break;
+        case 57:
+            //神智之蚀 0 造成自己能量值减敌方能量值的数值乘以220的伤害
+            if (form4.me.Force > form4.you.Force) {
+                form4.hurtmofa = (form4.me.Force - form4.you.Force) * 220;
+            } else form4.hurtmofa = 0;
+            break;
+        case 58:
+            //神灭斩 1 造成650点伤害
+            form4.hurtmofa = 650;
+            break;
+        case 59:
+            //冰晶爆轰 0 对方血量低于15%时直接秒杀
+            if (form4.you.Hp / form4.you.Maxhp < 0.15) {
+                form4.hurtmofa = form4.you.Hp;
+            }
+            break;
+        case 60:
+            //多重施法 2 释放技能时有50%的概率2倍暴击
+            form4.beidong = 57;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 57);
+            Thread.Sleep(100);
+            break;
+        case 61:
+            //黑洞 0 对敌方造成250点伤害并晕眩2回合无视魔免
+            form4.hurtmofa = 250;
+            form4.youstate[0] = 4;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 62:
+            //虚妄之诺 2 回复300点生命值并使对方三回合内无法攻击你
+            form4.me.Hp += 300;
+            form4.mystate[50] = 4;
+            form4.mystatelist(50);
+            form4.startsend5(150);
+            Thread.Sleep(100);
+            break;
+        case 63:
+            //上帝之手 2 回复己方500点生命值
+            form4.me.Hp += 500;
+            break;
+        case 64:
+            //脉冲新星 0 对敌方造成450点伤害
+            form4.hurtmofa = 450;
+            break;
+        case 65:
+            form4.hurtmofa = 450;
+            //万火焚身 0 对敌方造成450点伤害
+            break;
+        case 66:
+            //死神镰刀 1 对敌方造成20%损失生命值的伤害，并使对方晕眩一回合
+            form4.hurtmofa = (form4.you.Maxhp - form4.you.Hp) / 5;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 67:
+            //驱使恶灵 1 对敌方造成400点伤害，并使己方回复100点生命值
+            form4.hurtmofa = 400;
+            form4.me.Hp += 100;
+            break;
+        case 68:
+            //神秘之耀 0 对敌方造成450点伤害
+            form4.hurtmofa = 450;
+            break;
+        case 69:
+            //超声冲击波 0 对敌方造成400点伤害
+            form4.hurtmofa = 400;
+            break;
+        case 70:
+            //恶魔的掌握 1 对敌方造成400点伤害，无视魔法免疫
+            form4.hurtmofa = 400;
+            break;
+        case 71:
+            //连环霜冻 0 对敌方造成100*敌方手牌数的伤害
+            form4.hurtmofa = 100 * form4.youcardnumber;
+            break;
+        case 72:
+            //梦境缠绕 0 对敌方造成200点伤害并使敌方晕眩一回合
+            form4.hurtmofa = 200;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 73:
+            //自然之怒 0 对敌方造成300点伤害
+            form4.hurtmofa = 300;
+            break;
+        case 74:
+            //生命汲取 0 对敌方造成300点伤害，同时回复300点生命值
+            form4.hurtmofa = 300;
+            form4.me.Hp += 300;
+            break;
+        case 75:
+            //静态风暴 0 对敌方造成200点伤害并使敌方沉默一回合
+            form4.hurtmofa = 200;
+            form4.youstate[1] = 2;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 76:
+            //法力虚空 1 造成敌方己消耗能量值乘以200的伤害
+            form4.hurtmofa = (form4.you.Forcemax - form4.you.Force) * 200;
+            break;
+        case 77:
+            //马蹄践踏 0 使敌方造成30点伤害并晕眩1回合
+            form4.hurtmofa = 30;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 78:
+            //双刃剑 1 使自己和敌方同时受到150点伤害
+            form4.hurtmofa = 150;
+            form4.me.Hp -= 150;
+            break;
+        case 79:
+            //反击 2 在自己受到伤害时对敌方造成自身承受伤害的20%
+            form4.beidong = 0;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 0);
+            Thread.Sleep(100);
+            break;
+        case 80:
+            //巨浪 0 减少敌方十点护甲持续3回合并对对方造成100点伤害
+            form4.youstate[5] = 6;
+            form4.youstatelist(5);
+            form4.startsend5(5);
+            Thread.Sleep(100);
+            form4.hurtmofa = 100;
+            break;
+        case 81:
+            //海妖外壳 2 受到普通攻击时可以减少50点伤害
+            form4.beidong = 1;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 1);
+            Thread.Sleep(100);
+            break;
+        case 82:
+            //锚击 1 使自己在本回合内的攻击力增加敌方手牌数乘以10的攻击
+            form4.mystate[6] = 2;
+            form4.mystatelist(6);
+            form4.startsend5(106);
+            Thread.Sleep(100);
+            break;
+        case 83:
+            //洪流 0 对敌方造成50点伤害并晕眩半回合
+            form4.hurtmofa = 50;
+            form4.youstate[0] = 1;
+            break;
+        case 84:
+            form4.beidong = 2;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 2);
+            Thread.Sleep(100);
+            //潮汐使者 2 使自己增加30点攻击力
+            break;
+        case 85:
+            form4.hurtmofa = 110;
+            //死亡旋风 0 对敌方造成110点伤害
+            break;
+        case 86:
+            form4.hurtmofa = form4.me.Attack + 50;
+            //伐木链锯 0 对敌方造成自己攻击力加50的伤害
+            break;
+        case 87:
+            form4.beidong = 3;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 3);
+            Thread.Sleep(100);
+            //活性护甲 2 每受到一次攻击增加10点护甲
+            break;
+        case 88:
+            //死亡缠绕 1 消耗自己70点生命并对敌方造成140点伤害
+            form4.hurtmofa = 140;
+            form4.me.Hp -= 70;
+            break;
+        case 89:
+            //无光之盾 2 3回合抵挡自己150点伤害并在破裂时对敌方造成70点伤害
+            form4.mystate[8] = 6;
+            form4.mystatelist(8);
+            form4.startsend5(108);
+            Thread.Sleep(100);
+            break;
+        case 90:
+            //霜之哀伤 2 增加自己30点攻击力
+            form4.beidong = 65;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 65);
+            Thread.Sleep(100);
+            break;
+        case 91:
+            //烈火精灵 1 对敌方造成90点伤害并且减少敌方一点能量值
+            form4.hurtmofa = 90;
+            break;
+        case 92:
+            //烈日炎烤 0 对自己造成50点伤害并造成敌方现有生命值5%的伤害
+            form4.me.Hp -= 50;
+            form4.hurtmofa = form4.you.Hp / 20;
+            break;
+        case 93:
+            //战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
+            form4.mystate[11] = 2;
+            form4.mystatelist(11);
+            form4.startsend5(111);
+            Thread.Sleep(100);
+            form4.youstate[32] = 2;
+            form4.youstatelist(32);
+            form4.startsend5(32);
+            Thread.Sleep(100);
+            break;
+        case 94:
+            //反击螺旋 2 敌方普通攻击自己时会受到40点伤害
+            form4.beidong = 5;
+            form4.mystate[4] = 3;
+            form4.mystatelist(4);
+            form4.startsend5(104, 5);
+            Thread.Sleep(100);
+            break;
+        case 95:
+            form4.hurtmofa = 80;
+            //寒冰碎片 0 对敌方造成80点伤害
+            break;
+        case 96:
+            //雪球 0 对敌方造成80点伤害并晕眩半回合
+            form4.hurtmofa = 80;
+            form4.mystate[0] = 1;
+            break;
+        case 97:
+            //沟壑 0 对敌方造成90点伤害并晕眩一回合
+            form4.hurtmofa = 90;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 98:
+            //强化图腾 2 使自己攻击力变为现在攻击力的2倍，攻击后恢复正常
+            form4.mystate[13] = 6;
+            form4.mystatelist(13);
+            form4.startsend5(113);
+            Thread.Sleep(100);
+            break;
+        case 99:
+            //余震 2 自己使用任何技能都会至少使敌方眩晕半回合
+            form4.beidong = 7;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 7);
+            Thread.Sleep(100);
+            break;
+        case 100:
+            //混乱之箭 1 随机对敌方造成1-200的伤害，并晕眩1-2回合
+            var h = new Random();
+            form4.hurtmofa = h.Next(1, 201);
+            form4.youstate[0] = h.Next(2, 6);
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 101:
+            //实相裂隙 1 可以攻击对方一次，不和普通攻击冲突
+            form4.gongji();
+            break;
+        case 102:
+            //致命一击 2 攻击时有40%的概率双倍攻击
+            form4.beidong = 8;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 8);
+            Thread.Sleep(100);
+            break;
+        case 103:
+            //幽光之魂 0 对敌方造成130点伤害
+            form4.hurtmofa = 130;
+            break;
+        case 104:
+            //压倒性优势 0 对敌方造成敌方手牌乘以30的伤害
+            form4.hurtmofa = form4.youcardnumber * 30;
+            break;
+        case 105:
+            //勇气之霎 2 受到普通攻击时有40%的概率增加自己100点血
+            form4.beidong = 9;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 9);
+            Thread.Sleep(100);
+            break;
+        case 106:
+            //强攻 2 使自己回复100点生命值并攻击对方一次
+            form4.hurtwuli = form4.me.Attack;
+            form4.me.Hp += 100;
+            break;
+        case 107:
+            //冥火暴击 0 对敌方造成70点伤害并晕眩1回合
+            form4.hurtmofa = 70;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 108:
+            //吸血光环 2 普通攻击时将对方受到伤害的30%转化成自己的生命值
+            form4.beidong = 11;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 11);
+            Thread.Sleep(100);
+            break;
+        case 109:
+            //致死打击 2 攻击时有60%的概率1.5倍攻击
+            form4.beidong = 12;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 12);
+            Thread.Sleep(100);
+            break;
+        case 110:
+            //嚎叫 0 本回合攻击加60
+            form4.mystate[16] = 2;
+            form4.mystatelist(16);
+            form4.startsend5(116);
+            Thread.Sleep(100);
+            break;
+        case 111:
+            //野性驱使 2 攻击加30
+            form4.beidong = 13;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 13);
+            Thread.Sleep(100);
+            break;
+        case 112:
+            //酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
+            form4.hurtmofa = 50;
+            form4.youstatelist(73);
+            form4.youstate[73] = 6;
+            form4.startsend5(73);
+            Thread.Sleep(100);
+            break;
+        case 113:
+            //不稳定物 0 50%使对方晕眩两回合50%使自己晕眩一回合
+            var ran = new Random();
+            var i = ran.Next(0, 2);
+            if (i == 0) {
+                form4.youstate[0] = 4;
+                form4.youstatelist(0);
+                form4.startsend5(0);
+                Thread.Sleep(100);
+            } else {
+                form4.mystate[0] = 2;
+                form4.mystatelist(0);
+                form4.startsend5(100);
+                Thread.Sleep(100);
+            }
+            break;
+        case 114:
+            //地精贪婪 2 每回合得到金钱数+10
+            form4.beidong = 14;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 14);
+            Thread.Sleep(100);
+            break;
+        case 115:
+            //暗影冲刺 0 对敌方造成60点伤害并眩晕半回合
+            form4.hurtmofa = 60;
+            form4.youstate[0] = 1;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 116:
+            //巨力重击 2 攻击时有30%的概率使敌方晕眩一回合并且额外造成40点伤害
+            form4.beidong = 66;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 66);
+            Thread.Sleep(100);
+            break;
+        case 117:
+            //风暴之锤 0 对敌方造成100点伤害并晕眩一回合
+            form4.hurtmofa = 100;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 118:
+            //巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力
+            form4.beidong = 68;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 68);
+            Thread.Sleep(100);
+            break;
+        case 119:
+            //战吼 2 三回合内增加自身30点护甲
+            form4.mystate[18] = 6;
+            form4.mystatelist(18);
+            form4.startsend5(118);
+            Thread.Sleep(100);
+            break;
+        case 120:
+            //火焰气息 0 对敌方造成120点伤害
+            form4.hurtmofa = 120;
+            break;
+        case 121:
+            //神龙摆尾 1 对敌方造成50点伤害并晕眩一回合
+            form4.hurtmofa = 50;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 122:
+            //龙族血统 2 每回合回复40点生命值
+            form4.beidong = 15;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 15);
+            Thread.Sleep(100);
+            break;
+        case 123:
+            //震荡波 0 对敌方造成130点伤害
+            form4.hurtmofa = 130;
+            break;
+        case 124:
+            //授予力量 2 本回合内攻击加80
+            form4.mystate[21] = 2;
+            form4.mystatelist(21);
+            form4.startsend5(121);
+            Thread.Sleep(100);
+            break;
+        case 125:
+            //獠牙冲刺 0 对敌方造成60点伤害
+            form4.hurtmofa = 60;
+            break;
+        case 126:
+            //吞噬 1 如果手牌还没有达到上限，可以再摸两张牌
+            if (form4.mycardnumber < 7) {
+                form4.getcard();
+                form4.getcard();
+            } else if (form4.mycardnumber == 7) {
+                form4.getcard();
+            }
+            break;
+        case 127:
+            //焦土 2 敌方掉70血，自己回复80血
+            form4.hurtmofa = 70;
+            form4.me.Hp += 80;
+            break;
+        case 128:
+            //回音重踏 0 使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态
+            form4.youstate[23] = 4;
+            form4.youstatelist(23);
+            form4.startsend5(23);
+            Thread.Sleep(100);
+            break;
+        case 129:
+            //自然秩序 2 使对方护甲归0
+            form4.beidong = 16;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 16);
+            Thread.Sleep(100);
+            form4.youstatelist(63);
+            form4.startsend5(63);
+            Thread.Sleep(100);
+            break;
+        case 130:
+            //洗礼 0 回复自己200点生命值
+            form4.me.Hp += 200;
+            break;
+        case 131:
+            //驱逐 2 使自己魔免两回合
+            form4.mystate[60] = 4;
+            form4.mystatelist(60);
+            form4.startsend5(160);
+            Thread.Sleep(100);
+            break;
+        case 132:
+            //掘地穿刺 0 对敌方造成65点伤害并晕眩一回合
+            form4.hurtmofa = 65;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 133:
+            //沙尘暴 0 对敌方造成40点伤害，敌方的下一回合不可以攻击自己
+            form4.hurtmofa = 40;
+            form4.youstate[3] = 2;
+            form4.youstatelist(3);
+            form4.startsend5(3);
+            Thread.Sleep(100);
+            break;
+        case 134:
+            //雷击 1 对敌方造成140点伤害
+            form4.hurtmofa = 140;
+            break;
+        case 135:
+            //投掷 0 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 136:
+            //崎岖外表 2 敌方在普通攻击你时有30%的概率使自己晕眩一回合
+            form4.beidong = 17;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 17);
+            Thread.Sleep(100);
+            break;
+        case 137:
+            //山崩 0 对敌方造成30点伤害并晕眩一回合
+            form4.hurtmofa = 30;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 138:
+            //火焰风暴 0 对敌方造成90点伤害
+            form4.hurtmofa = 90;
+            break;
+        case 139:
+            //怨念深渊 0 使对方晕眩半回合
+            form4.youstate[0] = 1;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 140:
+            //衰退光环 2 减少对方50%攻击力
+            form4.beidong = 18;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 18);
+            Thread.Sleep(100);
+            form4.youstatelist(62);
+            form4.startsend5(62);
+            Thread.Sleep(100);
+            break;
+        case 141:
+            //活血术 2 增加自己当前攻击力的血量
+            form4.me.Hp += form4.me.Attack;
+            break;
+        case 142:
+            //沸血之矛 2 消耗自身50点生命值使本回合内攻击加100
+            form4.me.Hp -= 50;
+            form4.mystate[72] = 2;
+            form4.mystatelist(72);
+            form4.startsend5(172);
+            Thread.Sleep(100);
+            break;
+        case 143:
+            //狂战士之血 2 血量低于50%时每次普通攻击可以不消耗能量格多攻击一次
+            form4.beidong = 19;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 19);
+            Thread.Sleep(100);
+            break;
+        case 144:
+            //静电场 2 每次释放任何技能都会对敌方造成40点伤害
+            form4.beidong = 64;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 64);
+            Thread.Sleep(100);
+            break;
+        case 145:
+            //腐朽 0 可以对敌方造成70点伤害
+            form4.hurtmofa = 70;
+            break;
+        case 146:
+            //噬魂 1 造成己方和敌方手牌数的总和乘以15的伤害
+            form4.hurtmofa = (form4.mycardnumber + form4.youcardnumber) * 15;
+            break;
+        case 147:
+            //狂暴 3 可以使自己魔免一回合
+            form4.mystate[27] = 2;
+            form4.mystatelist(27);
+            form4.startsend5(127);
+            Thread.Sleep(100);
+            break;
+        case 148:
+            //盛宴 2 普通攻击时将对方现有生命值的2%转化为自身生命
+            form4.beidong = 20;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 20);
+            Thread.Sleep(100);
+            break;
+        case 149:
+            //撕裂伤口 1 本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命
+            form4.mystate[61] = 2;
+            form4.mystatelist(61);
+            form4.startsend5(161);
+            Thread.Sleep(100);
+            break;
+        case 150:
+            //野性之斧 0 对敌方造成150点伤害
+            form4.hurtmofa = 150;
+            break;
+        case 151:
+            //寄生种子 1 使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌
+            form4.hurtmofa = 90;
+            form4.me.Hp += 80;
+            form4.getcard();
+            break;
+        case 152:
+            //活体护甲 2 受到物理伤害减少20点持续2回合每回合加40点血
+            form4.mystate[29] = 4;
+            form4.mystatelist(29);
+            form4.startsend5(129);
+            Thread.Sleep(100);
+            break;
+        case 153:
+            //腐烂 2 自己掉100点血，对方掉180点血
+            form4.me.Hp -= 100;
+            form4.hurtmofa = 180;
+            break;
+        case 154:
+            //腐肉堆积 2 敌方每少一张手牌自己加40点血，并且加40点血量上限
+            form4.beidong = 22;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 22);
+            Thread.Sleep(100);
+            break;
+        case 155:
+            //雷霆一击 0 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 156:
+            //醉酒云雾 1 3回合使敌方的普通攻击有75%的概率打不中
+            form4.youstate[30] = 6;
+            form4.youstatelist(30);
+            form4.startsend5(30);
+            Thread.Sleep(100);
+            break;
+        case 157:
+            //醉拳 2 受到普通攻击时有40%的概率mis
+            form4.beidong = 23;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 23);
+            Thread.Sleep(100);
+            break;
+        case 158:
+            //虚空 1 对敌方造成130点伤害
+            form4.hurtmofa = 130;
+            break;
+        case 159:
+            //伤残恐惧 1 使敌方2回合内不可以使用技能
+            form4.youstate[1] = 4;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 160:
+            //重击 2 攻击时有40%的概率击晕敌方半回合并附加70点伤害
+            form4.beidong = 24;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 24);
+            Thread.Sleep(100);
+            break;
+        case 161:
+            //鱼人碎击 0 对敌方造成60点伤害并晕眩一回合
+            form4.hurtmofa = 60;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 162:
+            //群星坠落 0 对敌方造成40加上敌方手牌乘10的伤害
+            form4.hurtmofa = 40 * form4.you.Cardnum;
+            break;
+        case 163:
+            //月神之箭 0 有50%的概率使敌方晕眩二回合
+            var a = new Random();
+            var b = a.Next(0, 2);
+            if (b == 1) {
+                form4.youstate[0] = 4;
+                form4.youstatelist(0);
+                form4.startsend5(0);
+                Thread.Sleep(100);
+            }
+            break;
+        case 164:
+            //波浪形态 0 对敌方造成70点伤害
+            form4.hurtmofa = 70;
+            break;
+        case 165:
+            //变体攻击 1 对敌方造成50点伤害并晕眩半回合
+            form4.hurtmofa = 50;
+            form4.youstate[0] = 1;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 166:
+            //法力损毁 2 普通攻击成功后可以削减敌方一点能量值
+            form4.beidong = 25;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 25);
+            Thread.Sleep(100);
+            break;
+        case 167:
+            //自杀攻击 0 对自己和敌方同时造成500点伤害
+            form4.me.Hp -= 500;
+            form4.hurtmofa = 500;
+            break;
+        case 168:
+            //忽悠 3 可以闪避一次敌方的攻击
+            break;
+        case 169:
+            //地之突袭 2 攻击力加30
+            form4.beidong = 26;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 26);
+            Thread.Sleep(100);
+            break;
+        case 170:
+            //穿刺 0 造成70点伤害并晕眩敌方一回合
+            form4.hurtmofa = 70;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 171:
+            //法力燃烧 1 减少敌方3点能量值
+            break;
+        case 172:
+            //带刺外壳 2 每回合可以抵挡一次指身性法术
+            form4.statecontinue[22] = 1;
+            form4.beidong = 27;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 27);
+            Thread.Sleep(100);
+            break;
+        case 173:
+            //魔法箭 1 造成80点伤害并晕眩敌方一回合
+            form4.hurtmofa = 80;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 174:
+            //恐怖波动 0 减少敌方10点护甲并造成20点伤害
+            form4.you.Armor -= 10;
+            form4.hurtmofa = 20;
+            break;
+        case 175:
+            //命令光环 2 增加25%的攻击力
+            form4.beidong = 28;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 28);
+            Thread.Sleep(100);
+            break;
+        case 176:
+            //霜冻之箭 1 本次攻击可以削减敌方2点能量值
+            break;
+        case 177:
+            //沉默魔法 0 敌方在一回合内不可以使用技能
+            form4.youstate[1] = 2;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 178:
+            //强击光环 2 增加25%的攻击力
+            form4.beidong = 29;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 29);
+            Thread.Sleep(100);
+            break;
+        case 179:
+            //灵魂之矛 0 对敌方造成90点伤害
+            form4.hurtmofa = 90;
+            break;
+        case 180:
+            //神出鬼没 3 可以闪避一次敌方的攻击
+            break;
+        case 181:
+            //磁场 2 使自己在两回合内物理免疫
+            form4.mystate[24] = 4;
+            form4.mystatelist(24);
+            form4.startsend5(124);
+            Thread.Sleep(100);
+            break;
+        case 182:
+            //闪光冤魂 0 对敌方造成100点伤害
+            form4.hurtmofa = 100;
+            break;
+        case 183:
+            //窒息之刃 0 对敌方造成30点伤害,使用过后本技能不消耗能量值
+            form4.hurtmofa = 30;
+            form4.me.Force++;
+            break;
+        case 184:
+            //闪烁突袭 3 可以闪避掉一次攻击
+            break;
+        case 185:
+            //模糊 2 敌方在普通攻击你时有70%的概率mis
+            form4.beidong = 31;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 31);
+            Thread.Sleep(100);
+            break;
+        case 186:
+            //火焰壁垒 2 可以抵挡150点魔法伤害，对方每回合减少30点生命值
+            form4.mystate[33] = 10;
+            form4.mystatelist(33);
+            form4.startsend5(133);
+            Thread.Sleep(100);
+            break;
+        case 187:
+            //无影拳 0 对敌方造成70点伤害
+            form4.hurtmofa = 70;
+            break;
+        case 188:
+            //榴霰弹 0 对敌方造成60点伤害
+            form4.hurtmofa = 60;
+            break;
+        case 189:
+            //爆头 2 攻击时有40%的概率附加100点伤害
+            form4.beidong = 33;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 33);
+            Thread.Sleep(100);
+            break;
+        case 190:
+            //剑刃风暴 0 一回合内使自己魔免,并对敌方造成50点伤害
+            form4.mystate[60] = 2;
+            form4.mystatelist(60);
+            form4.startsend5(160);
+            Thread.Sleep(100);
+            form4.hurtmofa = 50;
+            break;
+        case 191:
+            //弧形闪电 0 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 192:
+            //剑舞 2 攻击时有60%的概率1.5倍暴击
+            form4.beidong = 34;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 34);
+            Thread.Sleep(100);
+            break;
+        case 193:
+            //狂战士之怒 2 本回合内加70点攻击
+            form4.mystate[70] = 2;
+            form4.mystatelist(70);
+            form4.startsend5(170);
+            Thread.Sleep(100);
+            break;
+        case 194:
+            //热血战魂 2 加30点攻击
+            form4.beidong = 35;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 35);
+            Thread.Sleep(100);
+            break;
+        case 195:
+            //旋风飞斧 0 三回合对敌方造成40点伤害并使敌方攻击有30%的概率mis
+            form4.hurtmofa = 40;
+            form4.youstate[57] = 6;
+            form4.youstatelist(57);
+            form4.startsend5(57);
+            Thread.Sleep(100);
+            break;
+        case 196:
+            //肉钩 0 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 197:
+            //瘴气 0 对敌方造成70点伤害
+            form4.hurtmofa = 70;
+            break;
+        case 198:
+            //毒刺 2 攻击时对敌方额外造成20点伤害
+            form4.beidong = 36;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 36);
+            Thread.Sleep(100);
+            break;
+        case 199:
+            //扫射 2 攻击力加40
+            form4.mystatelist(71);
+            form4.mystate[71] = 2;
+            form4.startsend5(171);
+            Thread.Sleep(100);
+            break;
+        case 200:
+            //灼热之箭 2 本回合内攻击加50
+            form4.mystate[67] = 2;
+            form4.mystatelist(67);
+            form4.startsend5(167);
+            Thread.Sleep(100);
+            break;
+        case 201:
+            //变身 2 永久增加20点攻击力
+            form4.attack += 20;
+            break;
+        case 202:
+            //连击 2 每次攻击降低敌方10点护甲
+            form4.beidong = 56;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 56);
+            Thread.Sleep(100);
+            break;
+        case 203:
+            //蝗虫群 1 对敌方造成60点伤害并永久降低10点护甲
+            form4.hurtmofa = 60;
+            break;
+        case 204:
+            //毒性攻击 2 本回合攻击力加40
+            form4.mystate[69] = 2;
+            form4.mystatelist(69);
+            form4.startsend5(169);
+            Thread.Sleep(100);
+            break;
+        case 205:
+            //幽冥剧毒 2 敌方血量低于50%时,攻击附加50点伤害
+            form4.beidong = 37;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 37);
+            Thread.Sleep(100);
+            break;
+        case 206:
+            //腐蚀外表 2 受到敌方的任何攻击之后敌方会掉40点血
+            form4.beidong = 38;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 38);
+            Thread.Sleep(100);
+            break;
+        case 207:
+            //等离子场 0 敌方每次对你使用指向性技能时会减少100点生命值
+            form4.beidong = 39;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 39);
+            Thread.Sleep(100);
+            break;
+        case 208:
+            //静电连接 1 永久性减少敌方5点攻击,自己增加5点攻击
+            form4.attack += 5;
+            break;
+        case 209:
+            //投掷飞镖 1 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 210:
+            //忍术 2 攻击时有40%的概率双倍暴击
+            form4.beidong = 40;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 40);
+            Thread.Sleep(100);
+            break;
+        case 211:
+            //分裂箭 2 攻击力增加敌方手牌数乘以15的数值
+            form4.beidong = 41;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 41);
+            Thread.Sleep(100);
+            break;
+        case 212:
+            //秘术异蛇 0 造成敌手牌数乘以20的伤害
+            form4.hurtmofa = form4.youcardnumber * 20;
+            break;
+        case 213:
+            //魔法护盾 2 受到伤害时一点能量值可以抵挡100点伤害
+            form4.beidong = 42;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 42);
+            Thread.Sleep(100);
+            break;
+        case 214:
+            //折光 2 抵挡4次伤害
+            form4.mystate[38] = 10;
+            form4.mystatelist(38);
+            form4.startsend5(138);
+            Thread.Sleep(100);
+            break;
+        case 215:
+            //黑暗契约 2 下回合双方损失50点生命值,可以清除自己身上所有状态
+            form4.mystate[89] = 2;
+            form4.mystatelist(89);
+            form4.startsend5(189);
+            break;
+        case 216:
+            //能量转换 2 每次攻击永久减少敌方1点攻击力,并增加自己2点攻击
+            form4.beidong = 43;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 43);
+            Thread.Sleep(100);
+            break;
+        case 217:
+            //超级力量 2 下一次普通攻击成功后可以额外造成自己攻击乘2的伤害
+            form4.mystate[59] = 6;
+            form4.mystatelist(59);
+            form4.startsend5(159);
+            Thread.Sleep(100);
+            break;
+        case 218:
+            //怒意狂击 2 每次普通攻击成功后攻击力会增加20
+            form4.beidong = 44;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 44);
+            Thread.Sleep(100);
+            break;
+        case 219:
+            //回到过去 2 受到任何攻击时有25%的概率免疫
+            form4.beidong = 45;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 45);
+            Thread.Sleep(100);
+            break;
+        case 220:
+            //时间锁定 2 普通攻击时有25%的概率使敌方晕眩一回合
+            form4.beidong = 46;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 46);
+            Thread.Sleep(100);
+            break;
+        case 221:
+            //血之狂暴 1 使敌方2回合内无法使用技能
+            form4.youstate[58] = 4;
+            form4.youstatelist(58);
+            form4.startsend5(58);
+            Thread.Sleep(100);
+            break;
+        case 222:
+            //屠戮 2 敌方每减少一张牌会使自己增加30点生命值
+            form4.beidong = 63;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 63);
+            Thread.Sleep(100);
+            break;
+        case 223:
+            //嗜血渴望 2 敌方血量低于50%时，自己增加50点攻击
+            form4.beidong = 47;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 47);
+            Thread.Sleep(100);
+            break;
+        case 224:
+            //烟幕 0 使敌方在1回合内攻击有75%的概率mis,并qin以使用技能,
+            form4.youstate[40] = 2;
+            form4.youstatelist(40);
+            form4.startsend5(40);
+            Thread.Sleep(100);
+            break;
+        case 225:
+            //闪烁突袭 3 可以闪避掉一次攻击
+            break;
+        case 226:
+            //魔王降临 2 减少敌方20点护甲
+            form4.beidong = 62;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 62);
+            Thread.Sleep(100);
+            form4.youstatelist(41);
+            form4.startsend5(41);
+            Thread.Sleep(100);
+            break;
+        case 227:
+            //毁灭阴影 0 对敌方造成90点伤害
+            form4.hurtmofa = 90;
+            break;
+        case 228:
+            //支配死灵 2 敌方每减少一张牌,你可以永久增加2点攻击
+            form4.beidong = 48;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 48);
+            Thread.Sleep(100);
+            break;
+        case 229:
+            //幽鬼之刃 0 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 230:
+            //荒芜 2 增加30点攻击
+            form4.beidong = 49;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 49);
+            Thread.Sleep(100);
+            break;
+        case 231:
+            //折射 2 反弹自己受到一切伤害的25%
+            form4.beidong = 50;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 50);
+            Thread.Sleep(100);
+            break;
+        case 232:
+            //麻痹撕咬 2 普通攻击成功后可以使敌方1回合内有50%的概率攻击mis
+            form4.beidong = 51;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 51);
+            Thread.Sleep(100);
+            break;
+        case 233:
+            //月光 1 对敌方造成90点伤害
+            form4.hurtmofa = 90;
+            break;
+        case 234:
+            //月之祝福 2 攻击力加60
+            form4.beidong = 52;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 52);
+            Thread.Sleep(100);
+            break;
+        case 235:
+            //月刃 2 攻击力加敌方手牌数乘10的数值
+            form4.beidong = 67;
+            form4.mystate[4] = 3;
+            form4.mystatelist(4);
+            form4.startsend5(104, 67);
+            Thread.Sleep(100);
+            break;
+        case 236:
+            //高射火炮 2 本回合内攻击增加70
+            form4.mystate[65] = 2;
+            form4.mystatelist(65);
+            form4.startsend5(165);
+            Thread.Sleep(100);
+            break;
+        case 237:
+            //追踪导弹 0 造成160点伤害
+            form4.hurtmofa = 160;
+            break;
+        case 238:
+            //灵魂猎手 0 使敌方额外承受25%的伤害,持续一回合
+            form4.youstate[44] = 2;
+            form4.youstatelist(44);
+            form4.startsend5(44);
+            Thread.Sleep(100);
+            break;
+        case 239:
+            //薄葬 2 三回合内不会死亡
+            form4.mystate[46] = 6;
+            form4.mystatelist(46);
+            form4.startsend5(146);
+            Thread.Sleep(100);
+            break;
+        case 240:
+            //暗影波 0 回复自己手牌数乘以25点的生命
+            form4.me.Hp += form4.mycardnumber * 25;
+            break;
+        case 241:
+            //叉形闪电 1 对敌方造成90点伤害
+            form4.hurtmofa = 90;
+            break;
+        case 242:
+            //妖术 1 将敌方变成小羊,持续1回合
+            form4.youstate[87] = 2;
+            form4.youstatelist(87);
+            form4.startsend5(87);
+            Thread.Sleep(100);
+            break;
+        case 243:
+            //枷锁 1 自己摸一张牌,敌方受到50点伤害
+            form4.hurtmofa = 50;
+            form4.getcard();
+            break;
+        case 244:
+            //烈焰破击 0 对敌方造成100点伤害
+            form4.hurtmofa = 100;
+            break;
+        case 245:
+            //冰霜新星 0 对敌方造成60点伤害
+            form4.hurtmofa = 60;
+            break;
+        case 246:
+            //冰封禁制 1 对敌方造成30点伤害并晕眩一回合
+            form4.hurtmofa = 30;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 247:
+            //辉煌光环 2 每回合可以额外回复1点能量值
+            form4.beidong = 53;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 53);
+            Thread.Sleep(100);
+            break;
+        case 248:
+            //静默诅咒 1 减少敌方1点能量值
+            break;
+        case 249:
+            //智慧之刃 2 攻击力增加自己能量值乘以20的数值
+            form4.mystate[76] = 1;
+            form4.mystatelist(76);
+            form4.startsend5(176);
+            Thread.Sleep(100);
+            break;
+        case 250:
+            //遗言 1 对敌方造成60点伤害,并沉默1回合
+            form4.hurtmofa = 60;
+            form4.youstate[1] = 2;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 251:
+            //弱化能流 1 永久减少敌方10点攻击
+            break;
+        case 252:
+            //激光 0 造成100点伤害并使敌方下1回合攻击100%mis
+            form4.hurtmofa = 100;
+            form4.youstate[47] = 2;
+            form4.youstatelist(47);
+            form4.startsend5(47);
+            Thread.Sleep(100);
+            break;
+        case 253:
+            //热导飞弹 0 造成100点伤害
+            form4.hurtmofa = 100;
+            break;
+        case 254:
+            //法力汲取 1 减少敌方两点能量格,自己增加两点能量格
+            form4.me.Force += 2;
+            break;
+        case 255:
+            //超负荷 2 每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击
+            form4.beidong = 54;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 54);
+            Thread.Sleep(100);
+            break;
+        case 256:
+            //束缚之箭 1 造成40点伤害晕眩敌方半回合
+            form4.hurtmofa = 40;
+            form4.youstate[0] = 1;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 257:
+            //强力一击 0 造成100点伤害
+            form4.hurtmofa = 100;
+            break;
+        case 258:
+            //冲击波 0 造成130点伤害
+            form4.hurtmofa = 130;
+            break;
+        case 259:
+            //法力流失 1 3回合内敌方任何攻击所需能量值加1
+            form4.youstate[49] = 6;
+            form4.youstatelist(49);
+            form4.startsend5(49);
+            Thread.Sleep(100);
+            break;
+        case 260:
+            //查克拉魔法 2 瞬间将自身能量值回满
+            form4.me.Force = form4.me.Forcemax;
+            break;
+        case 261:
+            //严寒烧灼 2 2回合增加敌方现有生命值2%的攻击力
+            form4.mystate[74] = 4;
+            form4.mystatelist(74);
+            form4.startsend5(174);
+            Thread.Sleep(100);
+            break;
+        case 262:
+            //碎裂冲击 0 造成100点伤害
+            form4.hurtmofa = 100;
+            break;
+        case 263:
+            //极寒之拥 2 使自己加100点护甲回复100点生命,但本回合不可以再出牌
+            form4.me.Hp += 100;
+            form4.mystatelist(68);
+            form4.mystate[68] = 2;
+            form4.startsend5(168);
+            Thread.Sleep(100);
+            break;
+        case 264:
+            //离子外壳 2 对敌方造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 265:
+            //凤凰冲击 3 减少自身100点生命值，闪避对方一次攻击
+            form4.me.Hp -= 100;
+            break;
+        case 266:
+            //秘法天球 2 本回合增加能量值乘以25的攻击力
+            form4.mystate[78] = 1;
+            form4.mystatelist(78);
+            form4.startsend5(178);
+            Thread.Sleep(100);
+            break;
+        case 267:
+            //星体禁锢 1 使对方减少2点能量格,并轮空一回合
+            form4.you.Force -= 2;
+            form4.me.Force += 2;
+            form4.getcard();
+            break;
+        case 268:
+            //精气光环 2 释放技能时有50%的概率加1点能量值
+            form4.beidong = 55;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 55);
+            Thread.Sleep(100);
+            break;
+        case 269:
+            //龙破斩 0 造成100点伤害
+            form4.hurtmofa = 100;
+            break;
+        case 270:
+            //光击阵 0 造成80点伤害并晕眩1回合
+            form4.hurtmofa = 80;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 271:
+            //寒冰之触 2 对敌方造成80点伤害并晕眩半回合
+            form4.hurtmofa = 80;
+            form4.youstate[0] = 1;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 272:
+            //火焰爆轰 1 造成80点伤害并晕眩敌方1回合
+            form4.hurtmofa = 80;
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 273:
+            //引燃 1 造成150点伤害
+            form4.hurtmofa = 150;
+            break;
+        case 274:
+            //嗜血术 2 增加自己30点攻击力
+            form4.mystate[66] = 6;
+            form4.mystatelist(66);
+            form4.startsend5(166);
+            Thread.Sleep(100);
+            break;
+        case 275:
+            //憎恶 1 对敌方造成50点伤害并晕眩半回合
+            form4.hurtmofa = 50;
+            form4.youstate[0] = 1;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 276:
+            //午夜凋零 0 造成80点伤害
+            form4.hurtmofa = 80;
+            break;
+        case 277:
+            //命运赦令 1 使敌方1回合不可以攻击并且所受的物理伤害增加100%
+            form4.youstate[51] = 2;
+            form4.youstatelist(51);
+            form4.startsend5(51);
+            Thread.Sleep(100);
+            break;
+        case 278:
+            //涤罪之焰 1 对敌方造成150点伤害
+            form4.hurtmofa = 150;
+            break;
+        case 279:
+            //忠诚考验 1 随机对敌方造成50-300点伤害
+            var r = new Random();
+            var hurtmofa = r.Next(5, 31);
+            form4.hurtmofa = hurtmofa * 10;
+            break;
+        case 280:
+            //麻痹陷阱 0 对敌方晕眩一回合
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 281:
+            //恶魔赦令 0 三回合内每回合对敌方造成80点伤害
+            form4.mystate[52] = 6;
+            form4.mystatelist(52);
+            form4.startsend5(152);
+            Thread.Sleep(100);
+            break;
+        case 282:
+            //致命连接 1 使己方下回合对敌方造成1.5倍技能伤害
+            form4.youstate[53] = 2;
+            form4.youstatelist(53);
+            form4.startsend5(53);
+            Thread.Sleep(100);
+            break;
+        case 283:
+            //暗言术 0 使己方回复80点生命值并对敌方造成80点伤害
+            form4.me.Hp += 80;
+            form4.hurtmofa = 80;
+            break;
+        case 284:
+            //冰火交加 0 对敌方造成150点伤害
+            form4.hurtmofa = 150;
+            break;
+        case 285:
+            //冰封路径 0 使敌方晕眩一回合
+            form4.youstate[0] = 2;
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 286:
+            //液态火 2 对敌方造成150点伤害
+            form4.hurtmofa = 150;
+            break;
+        case 287:
+            //死亡脉冲 0 对敌方造成100点伤害，同时回复100点生命值
+            form4.hurtmofa = 100;
+            form4.me.Hp += 100;
+            break;
+        case 288:
+            //竭心光环 2 每回合减少敌方0.1%生命值
+            form4.beidong = 59;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 59);
+            Thread.Sleep(100);
+            break;
+        case 289:
+            //施虐之心 2 每对敌方造成200点伤害回复1点能量格和100点生命
+            form4.beidong = 60;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 60);
+            Thread.Sleep(100);
+            break;
+        case 290:
+            //灵魂超度 0 对敌方造成自己损失血量10%的伤害
+            form4.hurtmofa = (form4.me.Maxhp - form4.me.Hp) / 10;
+            break;
+        case 291:
+            //食腐蝙群 0 对敌方造成200点伤害
+            form4.hurtmofa = 200;
+            break;
+        case 292:
+            //上古封印 0 使敌方承受1.5倍魔法伤害，并使敌方沉默一回合
+            form4.youstate[1] = 2;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 293:
+            //奥术箭 0 对敌方造成50*其能量格的伤害
+            form4.hurtmofa = form4.you.Force * 50;
+            break;
+        case 294:
+            //暗影突袭 0 对敌方造成200点伤害
+            form4.hurtmofa = 200;
+            break;
+        case 295:
+            //闪烁 3 可闪避敌方一次技能，对无视闪避技能无效
+            break;
+        case 296:
+            //痛苦尖叫 0 对敌方造成200点伤害
+            form4.hurtmofa = 200;
+            break;
+        case 297:
+            //虚弱 1 3回合内降低敌方30点攻击力
+            form4.youstate[54] = 6;
+            form4.youstatelist(54);
+            form4.startsend5(54);
+            Thread.Sleep(100);
+            break;
+        case 298:
+            //蚀脑 1 对敌方造成200点伤害，同时回复100点生命值
+            form4.hurtmofa = 200;
+            form4.me.Hp += 100;
+            break;
+        case 299:
+            //噩梦 1 使敌方沉睡一回合不能摸牌，己方也不能进行攻击
+            form4.emeng = 1;
+            form4.youstate[55] = 2;
+            form4.youstatelist(55);
+            form4.startsend5(55);
+            Thread.Sleep(100);
+            break;
+        case 300:
+            //霜冻行星 1 对地敌方造成200点伤害
+            form4.hurtmofa = 200;
+            break;
+        case 301:
+            //霜冻护甲 2 增加20点护甲
+            form4.mystate[77] = 4;
+            form4.mystatelist(77);
+            form4.startsend5(177);
+            Thread.Sleep(100);
+            break;
+        case 302:
+            //邪恶祭祀 2 丢弃一张手牌，回复1点能量格
+            form4.me.Hp -= 50;
+            form4.me.Force += 3;
+            break;
+        case 303:
+            //麻痹药剂 0 使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合
+            if (form4.youcardnumber > 4) {
+                form4.youstate[0] = 4;
+            } else {
+                form4.youstate[0] = 2;
+            }
+            form4.youstatelist(0);
+            form4.startsend5(0);
+            Thread.Sleep(100);
+            break;
+        case 304:
+            //巫毒回复术 2 回复150点生命
+            form4.me.Hp += 150;
+            break;
+        case 305:
+            //诅咒 0 使敌方受到未来3回合内承受伤害的50%
+            form4.youstate[56] = 6;
+            form4.youstatelist(56);
+            form4.startsend5(56);
+            Thread.Sleep(100);
+            break;
+        case 306:
+            //相位转移 3 免疫一次任何伤害
+            break;
+        case 307:
+            //新月之痕 0 对敌方造成100点伤害并使对方沉默一回合
+            form4.hurtmofa = 100;
+            form4.youstate[1] = 2;
+            form4.youstatelist(1);
+            form4.startsend5(1);
+            Thread.Sleep(100);
+            break;
+        case 308:
+            //不可侵犯 2 使对方普通攻击时消耗双倍能量格
+            form4.beidong = 61;
+            form4.mystate[4] = 6;
+            form4.mystatelist(4);
+            form4.startsend5(104, 61);
+            Thread.Sleep(100);
+            break;
+        case 309:
+            //自然之助 2 回复自身200点生命值
+            form4.me.Hp += 200;
+            break;
+        case 310:
+            //幽冥爆轰 0 对敌方造成200点伤害
+            form4.hurtmofa = 200;
+            break;
+        case 311:
+            //幽冥守卫 2 对敌方造成100倍消耗能量格的伤害
+            form4.hurtmofa = (form4.you.Forcemax - form4.you.Force) * 100;
+            break;
+        case 312:
+            //衰老 1 使敌方不能攻击,同时物理免疫,承受1.5倍魔法伤害
+            form4.youstate[2] = 4;
+            form4.youstatelist(2);
+            form4.startsend5(2);
+            Thread.Sleep(100);
+            break;
+        case 313:
+            //雷霆之击 1 对敌方造成200点伤害
+            form4.hurtmofa = 200;
+            break;
+    }
+    if (form4.statecontinue[8] == 1) {
+        form4.youstate[0] = 1;
+        form4.youstatelist(0);
+        form4.startsend5(0, 1);
+        Thread.Sleep(100);
+    }
+
+    return mystate;
+}
 
 /***/ }),
-/* 41 */
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(3);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(44);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var HeroSelect = function (_React$Component) {
+    _inherits(HeroSelect, _React$Component);
+
+    function HeroSelect() {
+        _classCallCheck(this, HeroSelect);
+
+        var _this = _possibleConstructorReturn(this, (HeroSelect.__proto__ || Object.getPrototypeOf(HeroSelect)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(HeroSelect, [{
+        key: "coeckhero",
+        value: function coeckhero(type) {
+            var mystate = this.props.mystate;
+            switch (type) {
+                case 0:
+                    mystate.herotype = "0";
+                    mystate.maxHp = "4000";
+                    mystate.Hp = "4000";
+                    mystate.Hprecove = "15";
+                    break;
+                case 1:
+                    mystate.herotype = "1";
+                    mystate.attack = "70";
+                    mystate.armor = "15";
+                    break;
+                case 2:
+                    mystate.herotype = "2";
+                    mystate.maxHp = "3000";
+                    mystate.Hp = "3000";
+                    mystate.maxMp = "600";
+                    mystate.Mp = "600";
+                    mystate.Mprecove = "60";
+                    break;
+            }
+            var round = Math.random(); //随机回合用
+            this.props.setState({ mystate: mystate, playingSpeed: 1, round: this.props.round + round });
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                state: this.props.mystate,
+                action: {
+                    funname: "prepareOk",
+                    cardid: round
+                }
+            });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement(
+                    "h1",
+                    null,
+                    "\u8BF7\u9009\u62E9\u82F1\u96C4"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { onClick: this.coeckhero.bind(this, 0) },
+                    "\u529B\u91CF"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { onClick: this.coeckhero.bind(this, 1) },
+                    "\u654F\u6377"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { onClick: this.coeckhero.bind(this, 2) },
+                    "\u667A\u529B"
+                )
+            );
+        }
+    }]);
+
+    return HeroSelect;
+}(_react2.default.Component);
+
+module.exports = HeroSelect;
+
+/***/ }),
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(42);
+var content = __webpack_require__(45);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20918,13 +23269,13 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(13)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
 if(false) {
-	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
-		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss");
 
 		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 
@@ -20950,15 +23301,206 @@ if(false) {
 }
 
 /***/ }),
-/* 42 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(6)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
 // module
-exports.push([module.i, "body {\n  background: #fff; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(3);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(47);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PlayPage = function (_React$Component) {
+    _inherits(PlayPage, _React$Component);
+
+    function PlayPage() {
+        _classCallCheck(this, PlayPage);
+
+        var _this = _possibleConstructorReturn(this, (PlayPage.__proto__ || Object.getPrototypeOf(PlayPage)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(PlayPage, [{
+        key: "hero_place",
+        value: function hero_place(basic, more) {
+            if (basic.herotype === "" || basic.herotype === undefined) {
+                return _react2.default.createElement(
+                    "div",
+                    { className: "hero_place" },
+                    "\u5BF9\u624B\u6B63\u5728\u51C6\u5907\u4E2D..."
+                );
+            }
+            return _react2.default.createElement(
+                "div",
+                { className: "hero_place" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "hero_ion" },
+                    basic.herotype
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "attribute_list" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "HP" },
+                        basic.Hp + "/" + basic.maxHp
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "MP" },
+                        basic.Mp + "/" + basic.maxMp
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "attack" },
+                        "攻击力:" + basic.attack
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "armor" },
+                        "护甲:" + basic.armor
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "statelist" },
+                        "状态:..."
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "card_list" },
+                    "\u5361\u724C\u5217\u8868"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "equipment_list" },
+                    basic.equipment.map(function (equipment, i) {
+                        _react2.default.createElement("div", null);
+                    })
+                )
+            );
+        }
+    }, {
+        key: "fight_place",
+        value: function fight_place() {
+            return _react2.default.createElement(
+                "div",
+                { className: "fight_place" },
+                this.props.thatstate.herotype != undefined ? _react2.default.createElement(
+                    "div",
+                    null,
+                    this.props.round > 0 ? "我的回合" : "对方回合"
+                ) : ""
+            );
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "main_box" },
+                this.hero_place(this.props.thatstate),
+                this.fight_place(this.props.thatstate),
+                this.hero_place(this.props.mystate, this.props)
+            );
+        }
+    }]);
+
+    return PlayPage;
+}(_react2.default.Component);
+
+module.exports = PlayPage;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(48);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(13)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
 
 // exports
 
