@@ -3,7 +3,7 @@ import "./playing.scss";
 import {prepareOk} from '../../components/action';
 import HeroSelect from '../../components/HeroSelect/HeroSelect';
 import PlayPage from '../../components/PlayPage/PlayPage';
-import skill from '../../server/skill';
+import {big_skill,small_skill} from '../../server/skill';
 const ACTION = {
     prepareOk,
 }
@@ -39,6 +39,8 @@ class Component extends React.Component{
     }
 
     componentWillMount(){
+        console.info(big_skill)
+        console.info(small_skill)
         this.props.socket.on('totalk', (res)=>{
             let action = res.action;
             let state = ACTION[action.funname](this.state,res.state,action.cardid);

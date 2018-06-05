@@ -65,6 +65,21 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports = __webpack_require__(18);
+} else {
+  module.exports = __webpack_require__(19);
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -254,576 +269,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (process.env.NODE_ENV !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-module.exports = emptyFunction;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(18);
-} else {
-  module.exports = __webpack_require__(19);
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-
-/* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
-
-		// Detect buggy property enumeration order in older V8 versions.
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
-
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyObject = {};
-
-if (process.env.NODE_ENV !== 'production') {
-  Object.freeze(emptyObject);
-}
-
-module.exports = emptyObject;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyFunction = __webpack_require__(2);
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(1);
-  var warning = __webpack_require__(6);
-  var ReactPropTypesSecret = __webpack_require__(20);
-  var loggedTypeFailures = {};
-}
-
-/**
- * Assert that the values match with the type specs.
- * Error messages are memorized and will only be shown once.
- *
- * @param {object} typeSpecs Map of name to a ReactPropType
- * @param {object} values Runtime values that need to be type-checked
- * @param {string} location e.g. "prop", "context", "child context"
- * @param {string} componentName Name of the component for error messages.
- * @param {?Function} getStack Returns the component stack.
- * @private
- */
-function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-  if (process.env.NODE_ENV !== 'production') {
-    for (var typeSpecName in typeSpecs) {
-      if (typeSpecs.hasOwnProperty(typeSpecName)) {
-        var error;
-        // Prop type validation may throw. In case they do, we don't want to
-        // fail the render phase where it didn't fail before. So we log it.
-        // After these have been cleaned up, we'll let them throw.
-        try {
-          // This is intentionally an invariant that gets caught. It's the same
-          // behavior as without this statement except with a better message.
-          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
-        } catch (ex) {
-          error = ex;
-        }
-        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
-        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-          // Only monitor this failure once because there tends to be a lot of the
-          // same error.
-          loggedTypeFailures[error.message] = true;
-
-          var stack = getStack ? getStack() : '';
-
-          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
-        }
-      }
-    }
-  }
-}
-
-module.exports = checkPropTypes;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-
-/**
- * Simple, lightweight module assisting with the detection and context of
- * Worker. Helps avoid circular dependencies and allows code to reason about
- * whether or not they are in a Worker, even if they never include the main
- * `ReactWorker` dependency.
- */
-var ExecutionEnvironment = {
-
-  canUseDOM: canUseDOM,
-
-  canUseWorkers: typeof Worker !== 'undefined',
-
-  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
-
-  canUseViewport: canUseDOM && !!window.screen,
-
-  isInWorker: !canUseDOM // For now, this is true - might change in the future.
-
-};
-
-module.exports = ExecutionEnvironment;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-/* eslint-disable fb-www/typeof-undefined */
-
-/**
- * Same as document.activeElement but wraps in a try-catch block. In IE it is
- * not safe to call document.activeElement if there is nothing focused.
- *
- * The activeElement will be null only if the document or document body is not
- * yet defined.
- *
- * @param {?DOMDocument} doc Defaults to current document.
- * @return {?DOMElement}
- */
-function getActiveElement(doc) /*?DOMElement*/{
-  doc = doc || (typeof document !== 'undefined' ? document : undefined);
-  if (typeof doc === 'undefined') {
-    return null;
-  }
-  try {
-    return doc.activeElement || doc.body;
-  } catch (e) {
-    return doc.body;
-  }
-}
-
-module.exports = getActiveElement;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- * 
- */
-
-/*eslint-disable no-self-compare */
-
-
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-/**
- * inlined Object.is polyfill to avoid requiring consumers ship their own
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
- */
-function is(x, y) {
-  // SameValue algorithm
-  if (x === y) {
-    // Steps 1-5, 7-10
-    // Steps 6.b-6.e: +0 != -0
-    // Added the nonzero y check to make Flow happy, but it is redundant
-    return x !== 0 || y !== 0 || 1 / x === 1 / y;
-  } else {
-    // Step 6.a: NaN == NaN
-    return x !== x && y !== y;
-  }
-}
-
-/**
- * Performs equality by iterating through keys on an object and returning false
- * when any key has values which are not strictly equal between the arguments.
- * Returns true when the values of all keys are strictly equal.
- */
-function shallowEqual(objA, objB) {
-  if (is(objA, objB)) {
-    return true;
-  }
-
-  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-    return false;
-  }
-
-  var keysA = Object.keys(objA);
-  var keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  // Test for A's keys different from B.
-  for (var i = 0; i < keysA.length; i++) {
-    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-module.exports = shallowEqual;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-var isTextNode = __webpack_require__(21);
-
-/*eslint-disable no-bitwise */
-
-/**
- * Checks if a given DOM node contains or is another DOM node.
- */
-function containsNode(outerNode, innerNode) {
-  if (!outerNode || !innerNode) {
-    return false;
-  } else if (outerNode === innerNode) {
-    return true;
-  } else if (isTextNode(outerNode)) {
-    return false;
-  } else if (isTextNode(innerNode)) {
-    return containsNode(outerNode, innerNode.parentNode);
-  } else if ('contains' in outerNode) {
-    return outerNode.contains(innerNode);
-  } else if (outerNode.compareDocumentPosition) {
-    return !!(outerNode.compareDocumentPosition(innerNode) & 16);
-  } else {
-    return false;
-  }
-}
-
-module.exports = containsNode;
-
-/***/ }),
-/* 12 */
 /***/ (function(module, exports) {
 
 /*
@@ -905,7 +351,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 13 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -1291,6 +737,560 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var validateFormat = function validateFormat(format) {};
+
+if (process.env.NODE_ENV !== 'production') {
+  validateFormat = function validateFormat(format) {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  };
+}
+
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+}
+
+module.exports = invariant;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+module.exports = emptyFunction;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyObject = {};
+
+if (process.env.NODE_ENV !== 'production') {
+  Object.freeze(emptyObject);
+}
+
+module.exports = emptyObject;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyFunction = __webpack_require__(5);
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = emptyFunction;
+
+if (process.env.NODE_ENV !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+if (process.env.NODE_ENV !== 'production') {
+  var invariant = __webpack_require__(4);
+  var warning = __webpack_require__(8);
+  var ReactPropTypesSecret = __webpack_require__(20);
+  var loggedTypeFailures = {};
+}
+
+/**
+ * Assert that the values match with the type specs.
+ * Error messages are memorized and will only be shown once.
+ *
+ * @param {object} typeSpecs Map of name to a ReactPropType
+ * @param {object} values Runtime values that need to be type-checked
+ * @param {string} location e.g. "prop", "context", "child context"
+ * @param {string} componentName Name of the component for error messages.
+ * @param {?Function} getStack Returns the component stack.
+ * @private
+ */
+function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+  if (process.env.NODE_ENV !== 'production') {
+    for (var typeSpecName in typeSpecs) {
+      if (typeSpecs.hasOwnProperty(typeSpecName)) {
+        var error;
+        // Prop type validation may throw. In case they do, we don't want to
+        // fail the render phase where it didn't fail before. So we log it.
+        // After these have been cleaned up, we'll let them throw.
+        try {
+          // This is intentionally an invariant that gets caught. It's the same
+          // behavior as without this statement except with a better message.
+          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
+        } catch (ex) {
+          error = ex;
+        }
+        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
+        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
+          // Only monitor this failure once because there tends to be a lot of the
+          // same error.
+          loggedTypeFailures[error.message] = true;
+
+          var stack = getStack ? getStack() : '';
+
+          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
+        }
+      }
+    }
+  }
+}
+
+module.exports = checkPropTypes;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+
+/**
+ * Simple, lightweight module assisting with the detection and context of
+ * Worker. Helps avoid circular dependencies and allows code to reason about
+ * whether or not they are in a Worker, even if they never include the main
+ * `ReactWorker` dependency.
+ */
+var ExecutionEnvironment = {
+
+  canUseDOM: canUseDOM,
+
+  canUseWorkers: typeof Worker !== 'undefined',
+
+  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
+
+  canUseViewport: canUseDOM && !!window.screen,
+
+  isInWorker: !canUseDOM // For now, this is true - might change in the future.
+
+};
+
+module.exports = ExecutionEnvironment;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+/* eslint-disable fb-www/typeof-undefined */
+
+/**
+ * Same as document.activeElement but wraps in a try-catch block. In IE it is
+ * not safe to call document.activeElement if there is nothing focused.
+ *
+ * The activeElement will be null only if the document or document body is not
+ * yet defined.
+ *
+ * @param {?DOMDocument} doc Defaults to current document.
+ * @return {?DOMElement}
+ */
+function getActiveElement(doc) /*?DOMElement*/{
+  doc = doc || (typeof document !== 'undefined' ? document : undefined);
+  if (typeof doc === 'undefined') {
+    return null;
+  }
+  try {
+    return doc.activeElement || doc.body;
+  } catch (e) {
+    return doc.body;
+  }
+}
+
+module.exports = getActiveElement;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ * 
+ */
+
+/*eslint-disable no-self-compare */
+
+
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * inlined Object.is polyfill to avoid requiring consumers ship their own
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+ */
+function is(x, y) {
+  // SameValue algorithm
+  if (x === y) {
+    // Steps 1-5, 7-10
+    // Steps 6.b-6.e: +0 != -0
+    // Added the nonzero y check to make Flow happy, but it is redundant
+    return x !== 0 || y !== 0 || 1 / x === 1 / y;
+  } else {
+    // Step 6.a: NaN == NaN
+    return x !== x && y !== y;
+  }
+}
+
+/**
+ * Performs equality by iterating through keys on an object and returning false
+ * when any key has values which are not strictly equal between the arguments.
+ * Returns true when the values of all keys are strictly equal.
+ */
+function shallowEqual(objA, objB) {
+  if (is(objA, objB)) {
+    return true;
+  }
+
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+
+  // Test for A's keys different from B.
+  for (var i = 0; i < keysA.length; i++) {
+    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+module.exports = shallowEqual;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+var isTextNode = __webpack_require__(21);
+
+/*eslint-disable no-bitwise */
+
+/**
+ * Checks if a given DOM node contains or is another DOM node.
+ */
+function containsNode(outerNode, innerNode) {
+  if (!outerNode || !innerNode) {
+    return false;
+  } else if (outerNode === innerNode) {
+    return true;
+  } else if (isTextNode(outerNode)) {
+    return false;
+  } else if (isTextNode(innerNode)) {
+    return containsNode(outerNode, innerNode.parentNode);
+  } else if ('contains' in outerNode) {
+    return outerNode.contains(innerNode);
+  } else if (outerNode.compareDocumentPosition) {
+    return !!(outerNode.compareDocumentPosition(innerNode) & 16);
+  } else {
+    return false;
+  }
+}
+
+module.exports = containsNode;
+
+/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1308,7 +1308,7 @@ var _reactDom = __webpack_require__(16);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -1316,7 +1316,7 @@ var _DotaSystem = __webpack_require__(28);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(32);
+__webpack_require__(47);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1367,7 +1367,7 @@ if (process.env.NODE_ENV === 'production') {
   module.exports = __webpack_require__(23);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 17 */
@@ -1386,7 +1386,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(1),ea=__webpack_require__(3),m=__webpack_require__(8),A=__webpack_require__(4),C=__webpack_require__(2),fa=__webpack_require__(9),ha=__webpack_require__(10),ja=__webpack_require__(11),ka=__webpack_require__(5);
+var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(10),A=__webpack_require__(6),C=__webpack_require__(5),fa=__webpack_require__(11),ha=__webpack_require__(12),ja=__webpack_require__(13),ka=__webpack_require__(7);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -1636,7 +1636,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(4),n=__webpack_require__(1),p=__webpack_require__(5),q=__webpack_require__(2),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(6),n=__webpack_require__(4),p=__webpack_require__(7),q=__webpack_require__(5),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -1673,12 +1673,12 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(4);
-var invariant = __webpack_require__(1);
-var emptyObject = __webpack_require__(5);
-var warning = __webpack_require__(6);
-var emptyFunction = __webpack_require__(2);
-var checkPropTypes = __webpack_require__(7);
+var _assign = __webpack_require__(6);
+var invariant = __webpack_require__(4);
+var emptyObject = __webpack_require__(7);
+var warning = __webpack_require__(8);
+var emptyFunction = __webpack_require__(5);
+var checkPropTypes = __webpack_require__(9);
 
 // TODO: this is special because it gets imported during build.
 
@@ -3071,7 +3071,7 @@ module.exports = react;
   })();
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 20 */
@@ -3170,17 +3170,17 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var invariant = __webpack_require__(1);
-var React = __webpack_require__(3);
-var warning = __webpack_require__(6);
-var ExecutionEnvironment = __webpack_require__(8);
-var _assign = __webpack_require__(4);
-var emptyFunction = __webpack_require__(2);
-var checkPropTypes = __webpack_require__(7);
-var getActiveElement = __webpack_require__(9);
-var shallowEqual = __webpack_require__(10);
-var containsNode = __webpack_require__(11);
-var emptyObject = __webpack_require__(5);
+var invariant = __webpack_require__(4);
+var React = __webpack_require__(0);
+var warning = __webpack_require__(8);
+var ExecutionEnvironment = __webpack_require__(10);
+var _assign = __webpack_require__(6);
+var emptyFunction = __webpack_require__(5);
+var checkPropTypes = __webpack_require__(9);
+var getActiveElement = __webpack_require__(11);
+var shallowEqual = __webpack_require__(12);
+var containsNode = __webpack_require__(13);
+var emptyObject = __webpack_require__(7);
 var hyphenateStyleName = __webpack_require__(24);
 var camelizeStyleName = __webpack_require__(26);
 
@@ -19808,7 +19808,7 @@ module.exports = reactDom;
   })();
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 24 */
@@ -19977,21 +19977,21 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(29);
 
-var _login = __webpack_require__(34);
+var _login = __webpack_require__(32);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(35);
+var _Prepare = __webpack_require__(33);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(38);
+var _playing = __webpack_require__(36);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -20079,7 +20079,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(13)(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -20114,7 +20114,7 @@ if(false) {
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -20223,76 +20223,12 @@ module.exports = function (css) {
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-var content = __webpack_require__(33);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(13)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
-		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(12)(false);
-// imports
-
-
-// module
-exports.push([module.i, "body {\n  background: #fff; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -20375,7 +20311,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 35 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20383,11 +20319,11 @@ module.exports = login;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(36);
+__webpack_require__(34);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20564,11 +20500,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 36 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(37);
+var content = __webpack_require__(35);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20582,7 +20518,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(13)(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -20614,10 +20550,10 @@ if(false) {
 }
 
 /***/ }),
-/* 37 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -20628,7 +20564,7 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 38 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20638,25 +20574,23 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(39);
+__webpack_require__(37);
 
-var _action = __webpack_require__(42);
+var _action = __webpack_require__(39);
 
-var _HeroSelect = __webpack_require__(43);
+var _HeroSelect = __webpack_require__(40);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
-var _PlayPage = __webpack_require__(46);
+var _PlayPage = __webpack_require__(43);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _skill = __webpack_require__(41);
-
-var _skill2 = _interopRequireDefault(_skill);
+var _skill = __webpack_require__(46);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20712,6 +20646,8 @@ var Component = function (_React$Component) {
         value: function componentWillMount() {
             var _this2 = this;
 
+            console.info(_skill.big_skill);
+            console.info(_skill.small_skill);
             this.props.socket.on('totalk', function (res) {
                 var action = res.action;
                 var state = ACTION[action.funname](_this2.state, res.state, action.cardid);
@@ -20737,11 +20673,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 39 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(40);
+var content = __webpack_require__(38);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20755,7 +20691,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(13)(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -20787,10 +20723,10 @@ if(false) {
 }
 
 /***/ }),
-/* 40 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -20801,332 +20737,7 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var skill = [];
-skill[1] = { name: "毁灭", state: 0, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)" };
-skill[2] = { name: "幽灵船", state: 0, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)" };
-skill[3] = { name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
-skill[4] = { name: "飞锯", state: 0, message: "使敌方受到敌方最大生命值的10%的伤害(可闪避)" };
-skill[5] = { name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
-skill[6] = { name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
-skill[7] = { name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
-skill[8] = { name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
-skill[9] = { name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
-skill[10] = { name: "回音击", state: 0, message: "造成敌方手牌数乘以60的伤害(可闪避)" };
-skill[11] = { name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
-skill[12] = { name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
-skill[13] = { name: "变身", state: 2, message: "三回合内攻击加100" };
-skill[14] = { name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
-skill[15] = { name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
-skill[16] = { name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
-skill[17] = { name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
-skill[18] = { name: "两级反转", state: 0, message: "造成100点伤害并晕眩对手3回合(可闪避)" };
-skill[19] = { name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
-skill[20] = { name: "裂地者", state: 0, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫(可闪避)" };
-skill[21] = { name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
-skill[22] = { name: "地震", state: 0, message: "对敌方造成300+敌方手牌数乘50的伤害(可闪避)" };
-skill[23] = { name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
-skill[24] = { name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
-skill[25] = { name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
-skill[26] = { name: "疯狂生长", state: 0, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免(可闪避)" };
-skill[27] = { name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
-skill[29] = { name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
-skill[28] = { name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
-skill[30] = { name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
-skill[31] = { name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
-skill[32] = { name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
-skill[33] = { name: "无敌斩", state: 0, message: "快速普通攻击敌方6次(可闪避)" };
-skill[34] = { name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
-skill[35] = { name: "剧毒新星", state: 0, message: "对敌方造成300点伤害(可闪避)" };
-skill[36] = { name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
-skill[37] = { name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
-skill[38] = { name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
-skill[39] = { name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
-skill[40] = { name: "海妖之歌", state: 0, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态(可闪避)" };
-skill[41] = { name: "风暴之眼", state: 0, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害(可闪避)" };
-skill[42] = { name: "石化凝视", state: 0, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍(可闪避)" };
-skill[43] = { name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
-skill[44] = { name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
-skill[45] = { name: "时间结界", state: 0, message: "晕眩敌方2回合(可闪避)" };
-skill[46] = { name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
-skill[47] = { name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
-skill[48] = { name: "月蚀", state: 0, message: "对敌方造成350点伤害(可闪避)" };
-skill[49] = { name: "召唤飞弹", state: 0, message: "造成200加上,敌方手牌数乘30的伤害(可闪避)" };
-skill[50] = { name: "编织", state: 0, message: "三回合内增加自己50点护甲,减少敌方50点护甲(可闪避)" };
-skill[51] = { name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
-skill[52] = { name: "极寒领域", state: 0, message: "对敌方造成350点伤害(可闪避)" };
-skill[53] = { name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
-skill[54] = { name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
-skill[55] = { name: "死亡一指", state: 1, message: "造成600点伤害" };
-skill[56] = { name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
-skill[57] = { name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
-skill[58] = { name: "神智之蚀", state: 0, message: "造成自己能量值减敌方能量值的数值乘以220的伤害(可闪避)" };
-skill[59] = { name: "神灭斩", state: 1, message: "造成650点伤害" };
-skill[60] = { name: "冰晶爆轰", state: 0, message: "对方血量低于15%时直接秒杀(可闪避)" };
-skill[61] = { name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
-skill[62] = { name: "黑洞", state: 0, message: "对敌方造成250点伤害并晕眩2回合无视魔免(可闪避)" };
-skill[63] = { name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
-skill[64] = { name: "上帝之手", state: 1, message: "回复己方500点生命值" };
-skill[65] = { name: "脉冲新星", state: 0, message: "对敌方造成450点伤害(可闪避)" };
-skill[66] = { name: "万火焚身", state: 0, message: "对敌方造成100点伤害，持续4回合(可闪避)" };
-skill[67] = { name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
-skill[68] = { name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
-skill[69] = { name: "神秘之耀", state: 0, message: "对地方造成450点伤害(可闪避)" };
-skill[70] = { name: "超声冲击波", state: 0, message: "对敌方造成400点伤害(可闪避)" };
-skill[71] = { name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
-skill[72] = { name: "连环霜冻", state: 0, message: "对敌方造成100*敌方手牌数的伤害(可闪避)" };
-skill[73] = { name: "梦境缠绕", state: 0, message: "对敌方造成200点伤害并使敌方晕眩一回合(可闪避)" };
-skill[74] = { name: "自然之怒", state: 0, message: "对敌方造成300点伤害(可闪避)" };
-skill[75] = { name: "生命汲取", state: 0, message: "对敌方造成300点伤害，同时回复300点生命值(可闪避)" };
-skill[76] = { name: "静态风暴", state: 0, message: "对敌方造成200点伤害并使敌方沉默一回合(可闪避)" };
-skill[77] = { name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
-skill[1001] = { name: "马蹄践踏", state: 0, message: "使敌方造成30点伤害并晕眩1回合(可闪避)" };
-skill[1002] = { name: "双刃剑", state: 1, message: "使自己和敌方同时受到150点伤害" };
-skill[1003] = { name: "反击", state: 2, message: "被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%" };
-skill[1004] = { name: "巨浪", state: 0, message: "减少敌方十点护甲并对对方造成100点伤害(可闪避)" };
-skill[1005] = { name: "海妖外壳", state: 2, message: "被动牌:受到普通攻击时可以减少50点伤害" };
-skill[1006] = { name: "锚击", state: 1, message: "使自己在本回合内的攻击力增加敌方手牌数乘以10的数目" };
-skill[1007] = { name: "洪流", state: 0, message: "对敌方造成50点伤害并晕眩半回合(可闪避)" };
-skill[1008] = { name: "潮汐使者", state: 2, message: "被动牌:使自己增加30点攻击力" };
-skill[1009] = { name: "死亡旋风", state: 0, message: "对敌方造成110点伤害(可闪避)" };
-skill[1010] = { name: "伐木链锯", state: 0, message: "对敌方造成自己攻击力加50的伤害(可闪避)" };
-skill[1011] = { name: "活性护甲", state: 2, message: "被动牌:每受到一次攻击增加10点护甲" };
-skill[1012] = { name: "死亡缠绕", state: 1, message: "使自己回复70点生命并对敌方造成70点伤害" };
-skill[1013] = { name: "无光之盾", state: 2, message: "三回合内抵挡自己150点伤害并在破裂时对敌方造成70点伤害" };
-skill[1014] = { name: "霜之哀伤", state: 2, message: "被动牌:成功攻击对手后可以去除对手一张手牌" };
-skill[1015] = { name: "烈火精灵", state: 1, message: "对敌方造成90点伤害并且减少敌方一点能量值" };
-skill[1016] = { name: "烈日炎烤", state: 0, message: "对自己造成50点伤害并造成敌方现有生命值5%的伤害(可闪避)" };
-skill[1017] = { name: "战士怒吼", state: 0, message: "增加自己40点护甲,使敌方下一回合只可以攻击自己(可闪避)" };
-skill[1018] = { name: "反击螺旋", state: 2, message: "被动牌:敌方普通攻击自己时会受到40点伤害" };
-skill[1019] = { name: "寒冰碎片", state: 0, message: "对敌方造成80点伤害(可闪避)" };
-skill[1020] = { name: "雪球", state: 0, message: "对敌方造成80点伤害并晕眩半回合(可闪避)" };
-skill[1021] = { name: "沟壑", state: 0, message: "对敌方造成90点伤害并晕眩一回合(可闪避)" };
-skill[1022] = { name: "强化图腾", state: 2, message: "三回合内使自己攻击力变为现在攻击力的2倍，攻击后恢复正常" };
-skill[1023] = { name: "余震", state: 2, message: "被动牌:自己使用任何技能都会至少使敌方眩晕半回合" };
-skill[1024] = { name: "混乱之箭", state: 1, message: "随机对敌方造成1-200的伤害，并晕眩1-2回合" };
-skill[1025] = { name: "实相裂隙", state: 1, message: "可以攻击对方一次，不和普通攻击冲突" };
-skill[1026] = { name: "致命一击", state: 2, message: "被动牌:攻击力会上下变动" };
-skill[1027] = { name: "幽光之魂", state: 0, message: "对敌方造成130点伤害(可闪避)" };
-skill[1028] = { name: "压倒性优势", state: 0, message: "对敌方造成敌方手牌乘以30的伤害(可闪避)" };
-skill[1029] = { name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
-skill[1030] = { name: "强攻", state: 1, message: "使自己回复100点生命值并攻击对方一次" };
-skill[1031] = { name: "冥火暴击", state: 0, message: "对敌方造成70点伤害并晕眩1回合(可闪避)" };
-skill[1032] = { name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值" };
-skill[1033] = { name: "致死打击", state: 2, message: "被动牌:攻击时有60%的概率1.5倍攻击" };
-skill[1034] = { name: "嚎叫", state: 1, message: "本回合攻击加60" };
-skill[1035] = { name: "野性驱使", state: 2, message: "被动牌:攻击加30" };
-skill[1036] = { name: "酸性喷雾", state: 0, message: "三回合内降低敌方10点防御并造成50点伤害(可闪避)" };
-skill[1037] = { name: "不稳定物", state: 0, message: "50%使对方晕眩两回合50%使自己晕眩一回合(可闪避)" };
-skill[1038] = { name: "地精贪婪", state: 2, message: "被动牌:每回合得到金钱数+10" };
-skill[1039] = { name: "暗影冲刺", state: 0, message: "对敌方造成60点伤害并眩晕半回合(可闪避)" };
-skill[1040] = { name: "巨力重击", state: 2, message: "被动牌:攻击时有30%的概率使敌方晕眩一回合并造成40点伤害" };
-skill[1041] = { name: "风暴之锤", state: 0, message: "对敌方造成100点伤害并晕眩一回合(可闪避)" };
-skill[1042] = { name: "巨力挥舞", state: 2, message: "被动牌:普通攻击时增加加敌方手牌数乘10的攻击力" };
-skill[1043] = { name: "战吼", state: 2, message: "三回合内增加自身30点护甲" };
-skill[1044] = { name: "火焰气息", state: 0, message: "对敌方造成120点伤害(可闪避)" };
-skill[1045] = { name: "神龙摆尾", state: 1, message: "对敌方造成50点伤害并晕眩一回合" };
-skill[1046] = { name: "龙族血统", state: 2, message: "被动牌:每回合回复40点生命值" };
-skill[1047] = { name: "震荡波", state: 0, message: "对敌方造成130点伤害" };
-skill[1048] = { name: "授予力量", state: 2, message: "本回合内攻击加80" };
-skill[1049] = { name: "獠牙冲刺", state: 0, message: "对敌方造成60点伤害(可闪避)" };
-skill[1050] = { name: "吞噬", state: 2, message: "如果手牌还没有达到上限，可以再摸两张牌" };
-skill[1051] = { name: "焦土", state: 1, message: "敌方掉70血，自己回复80血" };
-skill[1052] = { name: "回音重踏", state: 0, message: "使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态(可闪避)" };
-skill[1053] = { name: "自然秩序", state: 2, message: "被动牌:使对方护甲归0" };
-skill[1054] = { name: "洗礼", state: 0, message: "回复自己200点生命值(可闪避)" };
-skill[1055] = { name: "驱逐", state: 2, message: "使自己魔免两回合，可以被散失" };
-skill[1056] = { name: "掘地穿刺", state: 0, message: "对敌方造成65点伤害并晕眩一回合(可闪避)" };
-skill[1057] = { name: "沙尘暴", state: 0, message: "对敌方造成40点伤害，敌方的下一回合不可以攻击自己(可闪避)" };
-skill[1058] = { name: "雷击", state: 1, message: "对敌方造成140点伤害" };
-skill[1059] = { name: "投掷", state: 0, message: "对敌方造成80点伤害(可闪避)" };
-skill[1060] = { name: "崎岖外表", state: 2, message: "被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合" };
-skill[1061] = { name: "山崩", state: 0, message: "对敌方造成30点伤害并晕眩一回合(可闪避)" };
-skill[1062] = { name: "火焰风暴", state: 0, message: "对敌方造成90点伤害(可闪避)" };
-skill[1063] = { name: "怨念深渊", state: 0, message: "使对方晕眩半回合(可闪避)" };
-skill[1064] = { name: "衰退光环", state: 2, message: "被动牌:减少对方50%攻击力" };
-skill[1065] = { name: "活血术", state: 1, message: "增加自己当前攻击力的血量" };
-skill[1066] = { name: "沸血之矛", state: 2, message: "消耗自身50点生命值使本回合内攻击加100" };
-skill[1067] = { name: "狂战士之血", state: 2, message: "被动牌:血量低于50%时每次普通攻击可以不消耗能量格多攻击一次" };
-skill[1068] = { name: "静电场", state: 2, message: "被动牌:每次释放任何技能都会对敌方造成40点伤害" };
-skill[1069] = { name: "腐朽", state: 0, message: "可以对敌方造成70点伤害(可闪避)" };
-skill[1070] = { name: "噬魂", state: 1, message: "造成己方和敌方手牌数的总和乘以15的伤害" };
-skill[1071] = { name: "狂暴", state: 2, message: "可以使自己魔免一回合" };
-skill[1072] = { name: "盛宴", state: 2, message: "被动牌:普通攻击时将对方现有生命值的2%转化为自身生命" };
-skill[1073] = { name: "撕裂伤口", state: 1, message: "本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命" };
-skill[1074] = { name: "野性之斧", state: 0, message: "对敌方造成150点伤害(可闪避)" };
-skill[1075] = { name: "寄生种子", state: 1, message: "使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌" };
-skill[1076] = { name: "活体护甲", state: 2, message: "受到物理伤害减少20点持续2回合每回合加40点血" };
-skill[1077] = { name: "腐烂", state: 1, message: "自己掉100点血，对方掉180点血" };
-skill[1078] = { name: "腐肉堆积", state: 2, message: "被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限" };
-skill[1079] = { name: "雷霆一击", state: 0, message: "对敌方造成80点伤害" };
-skill[1080] = { name: "醉酒云雾", state: 1, message: "2回合内使敌方的普通攻击有75%的概率打不中" };
-skill[1081] = { name: "醉拳", state: 2, message: "被动牌:受到普通攻击时有40%的概率mis" };
-skill[1082] = { name: "虚空", state: 1, message: "对敌方造成130点伤害" };
-skill[1083] = { name: "伤残恐惧", state: 1, message: "使敌方2回合内不可以使用技能" };
-skill[1084] = { name: "重击", state: 2, message: "被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害" };
-skill[1085] = { name: "鱼人碎击", state: 0, message: "对敌方造成60点伤害并晕眩一回合(可闪避)" };
-skill[1086] = { name: "群星坠落", state: 0, message: "对敌方造成40加上敌方手牌乘10的伤害(可闪避)" };
-skill[1087] = { name: "月神之箭", state: 0, message: "有50%的概率使敌方晕眩二回合(可闪避)" };
-skill[1088] = { name: "波浪形态", state: 0, message: "对敌方造成70点伤害(可闪避)" };
-skill[1089] = { name: "变体攻击", state: 1, message: "对敌方造成50点伤害并晕眩半回合" };
-skill[1090] = { name: "法力损毁", state: 2, message: "被动牌:普通攻击成功后可以削减敌方一点能量值" };
-skill[1091] = { name: "自杀攻击", state: 0, message: "对自己和敌方同时造成500点伤害(可闪避)" };
-skill[1092] = { name: "忽悠", state: 3, message: "可以闪避一次敌方的攻击" };
-skill[1093] = { name: "地之突袭", state: 2, message: "被动牌:攻击力加30" };
-skill[1094] = { name: "穿刺", state: 0, message: "造成70点伤害并晕眩敌方一回合(可闪避)" };
-skill[1095] = { name: "法力燃烧", state: 1, message: "减少敌方3点能量值" };
-skill[1096] = { name: "带刺外壳", state: 2, message: "被动牌:每回合可以抵挡一次指向性法术" };
-skill[1097] = { name: "魔法箭", state: 1, message: "造成80点伤害并晕眩敌方一回合" };
-skill[1098] = { name: "恐怖波动", state: 0, message: "减少敌方10点护甲并造成20点伤害(可闪避)" };
-skill[1099] = { name: "命令光环", state: 2, message: "被动牌:增加25%的攻击力" };
-skill[1100] = { name: "霜冻之箭", state: 1, message: "可以削减敌方2点能量值" };
-skill[1101] = { name: "沉默魔法", state: 0, message: "敌方在一回合内不可以使用技能(可闪避)" };
-skill[1102] = { name: "强击光环", state: 2, message: "被动牌:增加25%的攻击力" };
-skill[1103] = { name: "灵魂之矛", state: 0, message: "对敌方造成90点伤害(可闪避)" };
-skill[1104] = { name: "神出鬼没", state: 3, message: "可以闪避一次敌方的攻击" };
-skill[1105] = { name: "磁场", state: 2, message: "使自己在两回合内物理免疫" };
-skill[1106] = { name: "闪光冤魂", state: 0, message: "对敌方造成100点伤害(可闪避)" };
-skill[1107] = { name: "窒息之刃", state: 0, message: "对敌方造成30点伤害使用后回复一点能量值(可闪避)" };
-skill[1108] = { name: "闪烁突袭", state: 3, message: "可以闪避掉一次攻击" };
-skill[1109] = { name: "模糊", state: 2, message: "被动牌:敌方在普通攻击你时有70%的概率mis" };
-skill[1110] = { name: "火焰壁垒", state: 2, message: "被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值" };
-skill[1111] = { name: "无影拳", state: 0, message: "对敌方造成70点伤害(可闪避)" };
-skill[1112] = { name: "榴霰弹", state: 0, message: "对敌方造成60点伤害(可闪避)" };
-skill[1113] = { name: "爆头", state: 2, message: "被动牌:攻击时有40%的概率附加100点伤害" };
-skill[1114] = { name: "剑刃风暴", state: 0, message: "一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害(可闪避)" };
-skill[1115] = { name: "弧形闪电", state: 1, message: "对敌方造成80点伤害" };
-skill[1116] = { name: "剑舞", state: 2, message: "被动牌:攻击时有60%的概率1.5倍暴击" };
-skill[1117] = { name: "狂战士之怒", state: 2, message: "被动牌:本回合内加70点攻击" };
-skill[1118] = { name: "热血战魂", state: 2, message: "被动牌:加30点攻击" };
-skill[1119] = { name: "旋风飞斧", state: 0, message: "对敌方造成40点伤害并使敌方攻击有30%的概率mis(可闪避)" };
-skill[1120] = { name: "肉钩", state: 0, message: "对敌方造成80点伤害(可闪避)" };
-skill[1121] = { name: "瘴气", state: 0, message: "对敌方造成70点伤害(可闪避)" };
-skill[1122] = { name: "毒刺", state: 2, message: "被动牌:攻击时对敌方额外造成20点伤害" };
-skill[1123] = { name: "扫射", state: 2, message: "攻击力加40" };
-skill[1124] = { name: "灼热之箭", state: 2, message: "本回合内攻击加50" };
-skill[1125] = { name: "变身", state: 2, message: "永久增加20点攻击力" };
-skill[1126] = { name: "连击", state: 2, message: "被动牌:每次攻击降低敌方10点护甲" };
-skill[1127] = { name: "蝗虫群", state: 1, message: "对敌方造成60点伤害并永久降低5点护甲" };
-skill[1128] = { name: "毒性攻击", state: 2, message: "被动牌:本回合攻击力加40" };
-skill[1129] = { name: "幽冥剧毒", state: 2, message: "被动牌:敌方血量低于50%时,攻击附加50点伤害" };
-skill[1130] = { name: "腐蚀外表", state: 2, message: "被动牌:受到敌方的任何攻击之后敌方会掉40点血" };
-skill[1131] = { name: "等离子场", state: 2, message: "3回合内敌方每次对你使用指向性技能时会减少100点生命值" };
-skill[1132] = { name: "静电连接", state: 1, message: "永久性减少敌方5点攻击,自己增加5点攻击" };
-skill[1133] = { name: "投掷飞镖", state: 1, message: "对敌方造成80点伤害" };
-skill[1134] = { name: "忍术", state: 2, message: "被动牌:攻击时有40%的概率双倍暴击" };
-skill[1135] = { name: "分裂箭", state: 2, message: "被动牌:攻击力增加敌方手牌数乘以15的数值" };
-skill[1136] = { name: "秘术异蛇", state: 0, message: "造成敌手牌数乘以20的伤害(可闪避)" };
-skill[1137] = { name: "魔法护盾", state: 2, message: "被动牌:受到伤害时一点能量值可以抵挡一次伤害" };
-skill[1138] = { name: "折光", state: 2, message: "5回合内抵挡4次伤害" };
-skill[1139] = { name: "黑暗契约", state: 2, message: "下回合双方损失50点生命值,可以清除自己身上所有状态" };
-skill[1140] = { name: "能量转换", state: 2, message: "被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击" };
-skill[1141] = { name: "超级力量", state: 2, message: "3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害" };
-skill[1142] = { name: "怒意狂击", state: 2, message: "被动牌:每次普通攻击成功后攻击力会增加20" };
-skill[1143] = { name: "回到过去", state: 2, message: "被动牌:受到任何攻击时有25%的概率免疫" };
-skill[1144] = { name: "时间锁定", state: 2, message: "被动牌:普通攻击时有25%的概率使敌方晕眩一回合" };
-skill[1145] = { name: "血之狂暴", state: 1, message: "使敌方2回合内无法使用技能" };
-skill[1146] = { name: "屠戮", state: 2, message: "被动牌:敌方每减少一张牌会使自己增加30点生命值" };
-skill[1147] = { name: "嗜血渴望", state: 2, message: "被动牌:敌方血量低于50%时，自己增加50点攻击" };
-skill[1148] = { name: "烟幕", state: 0, message: "使敌方在1回合内攻击有75%的概率mis,并不可以使用技能(可闪避)" };
-skill[1149] = { name: "闪烁突袭", state: 3, message: "可以闪避掉一次攻击" };
-skill[1150] = { name: "魔王降临", state: 2, message: "被动牌:减少敌方20点护甲" };
-skill[1151] = { name: "毁灭阴影", state: 0, message: "对敌方造成90点伤害(可闪避)" };
-skill[1152] = { name: "支配死灵", state: 2, message: "被动牌:敌方每减少一张牌,你可以永久增加2点攻击" };
-skill[1153] = { name: "幽鬼之刃", state: 0, message: "对敌方造成80点伤害(可闪避)" };
-skill[1154] = { name: "荒芜", state: 2, message: "被动牌:增加30点攻击" };
-skill[1155] = { name: "折射", state: 2, message: "被动牌:反弹自己受到一切伤害的25%" };
-skill[1156] = { name: "麻痹撕咬", state: 2, message: "被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" };
-skill[1157] = { name: "月光", state: 1, message: "对敌方造成90点伤害" };
-skill[1158] = { name: "月之祝福", state: 2, message: "被动牌:攻击力加60" };
-skill[1159] = { name: "月刃", state: 2, message: "被动牌:攻击力加敌方手牌数乘10的数值" };
-skill[1160] = { name: "高射火炮", state: 2, message: "本回合内攻击增加70" };
-skill[1161] = { name: "追踪导弹", state: 0, message: "造成160点伤害(可闪避)" };
-skill[1162] = { name: "灵魂猎手", state: 0, message: "一回合内使敌方额外承受25%的伤害(可闪避)" };
-skill[1163] = { name: "薄葬", state: 2, message: "三回合内不会死亡" };
-skill[1164] = { name: "暗影波", state: 0, message: "回复自己手牌数乘以25点的生命(可闪避)" };
-skill[1165] = { name: "叉形闪电", state: 1, message: "对敌方造成90点伤害" };
-skill[1166] = { name: "妖术", state: 1, message: "将敌方变成小羊,持续1回合" };
-skill[1167] = { name: "枷锁", state: 1, message: "自己摸一张牌,敌方受到50点伤害" };
-skill[1168] = { name: "烈焰破击", state: 0, message: "对敌方造成100点伤害(可闪避)" };
-skill[1169] = { name: "冰霜新星", state: 0, message: "对敌方造成60点伤害(可闪避)" };
-skill[1170] = { name: "冰封禁制", state: 1, message: "对敌方造成30点伤害并晕眩一回合" };
-skill[1171] = { name: "辉煌光环", state: 2, message: "被动牌:每回合可以额外回复1点能量值" };
-skill[1172] = { name: "静默诅咒", state: 1, message: "减少敌方1点能量值" };
-skill[1173] = { name: "智慧之刃", state: 2, message: "本回合内攻击力增加自己能量值乘以20的数值" };
-skill[1174] = { name: "遗言", state: 1, message: "对敌方造成60点伤害,并沉默1回合" };
-skill[1175] = { name: "弱化能流", state: 1, message: "永久减少敌方10点攻击" };
-skill[1176] = { name: "激光", state: 1, message: "造成100点伤害并使敌方下1回合攻击100%mis" };
-skill[1177] = { name: "热导飞弹", state: 0, message: "造成100点伤害(可闪避)" };
-skill[1178] = { name: "法力汲取", state: 1, message: "减少敌方两点能量格,自己增加两点能量格" };
-skill[1179] = { name: "超负荷", state: 2, message: "被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" };
-skill[1180] = { name: "束缚之箭", state: 1, message: "造成40点伤害晕眩敌方半回合" };
-skill[1181] = { name: "强力一击", state: 0, message: "造成100点伤害(可闪避)" };
-skill[1182] = { name: "冲击波", state: 0, message: "造成130点伤害" };
-skill[1183] = { name: "法力流失", state: 1, message: "3回合内敌方任何攻击所需能量值加1" };
-skill[1184] = { name: "查克拉魔法", state: 1, message: "瞬间将自身能量值回满" };
-skill[1185] = { name: "严寒烧灼", state: 2, message: "2回合内增加敌方现有生命值2%的攻击力" };
-skill[1186] = { name: "碎裂冲击", state: 0, message: "造成100点伤害(可闪避)" };
-skill[1187] = { name: "极寒之拥", state: 2, message: "使自己加100点护甲回复100点生命,但本回合不可以再出牌" };
-skill[1188] = { name: "离子外壳", state: 1, message: "对敌方造成80点伤害" };
-skill[1189] = { name: "凤凰冲击", state: 3, message: "减少自身100点生命值，闪避对方一次攻击" };
-skill[1190] = { name: "秘法天球", state: 2, message: "本回合增加能量值乘以25的攻击力" };
-skill[1191] = { name: "星体禁锢", state: 1, message: "使对方减少2点能量格,并轮空一回合" };
-skill[1192] = { name: "精气光环", state: 2, message: "被动牌:释放技能时有50%的概率加1点能量值" };
-skill[1193] = { name: "龙破斩", state: 0, message: "造成100点伤害(可闪避)" };
-skill[1194] = { name: "光击阵", state: 0, message: "造成80点伤害并晕眩1回合(可闪避)" };
-skill[1195] = { name: "寒冰之触", state: 1, message: "对敌方造成80点伤害并晕眩半回合" };
-skill[1196] = { name: "火焰爆轰", state: 1, message: "造成80点伤害并晕眩敌方1回合" };
-skill[1197] = { name: "引燃", state: 1, message: "造成150点伤害" };
-skill[1198] = { name: "嗜血术", state: 2, message: "3回合内增加自己30点攻击力" };
-skill[1199] = { name: "憎恶", state: 1, message: "对敌方造成50点伤害并晕眩半回合" };
-skill[1200] = { name: "午夜凋零", state: 0, message: "造成80点伤害(可闪避)" };
-skill[1201] = { name: "命运赦令", state: 1, message: "使敌方1回合不可以攻击并且所受的物理伤害增加100%" };
-skill[1202] = { name: "涤罪之焰", state: 1, message: "对敌方造成150点伤害" };
-skill[1203] = { name: "忠诚考验", state: 1, message: "随机对敌方造成50-300点伤害" };
-skill[1204] = { name: "麻痹陷阱", state: 0, message: "对敌方晕眩一回合(可闪避)" };
-skill[1205] = { name: "恶魔赦令", state: 1, message: "三回合内每回合对敌方造成80点伤害" };
-skill[1206] = { name: "致命连接", state: 1, message: "本回合内对敌方额外造成手牌数0.1倍技能伤害 " };
-skill[1207] = { name: "暗言术", state: 1, message: "使己方回复100点生命值并对敌方造成100点伤害" };
-skill[1208] = { name: "冰火交加", state: 0, message: "对敌方造成150点伤害(可闪避)" };
-skill[1209] = { name: "冰封路径", state: 0, message: "使敌方晕眩一回合(可闪避)" };
-skill[1210] = { name: "液态火", state: 1, message: "对敌方造成150点伤害" };
-skill[1211] = { name: "死亡脉冲", state: 0, message: "对敌方造成100点伤害，同时回复100点生命值(可闪避)" };
-skill[1212] = { name: "竭心光环", state: 2, message: "被动牌:每回合减少敌方2%生命值" };
-skill[1213] = { name: "施虐之心", state: 2, message: "被动牌:每对敌方造成200点伤害回复1点能量格和100点生命" };
-skill[1214] = { name: "灵魂超度", state: 0, message: "对敌方造成自己损失血量10%的伤害(可闪避)" };
-skill[1215] = { name: "食腐蝙群", state: 0, message: "对敌方造成200点伤害(可闪避)" };
-skill[1216] = { name: "上古封印", state: 0, message: "使敌方承受1.5倍魔法伤害，并使敌方沉默一回合(可闪避)" };
-skill[1217] = { name: "奥术箭", state: 0, message: "对敌方造成50*其能量格的伤害(可闪避)" };
-skill[1218] = { name: "暗影突袭", state: 0, message: "对敌方造成200点伤害(可闪避)" };
-skill[1219] = { name: "闪烁", state: 3, message: "可闪避敌方一次技能，对无视闪避技能无效" };
-skill[1220] = { name: "痛苦尖叫", state: 0, message: "对敌方造成200点伤害(可闪避)" };
-skill[1221] = { name: "虚弱", state: 1, message: "3回合内降低敌方30点攻击力" };
-skill[1222] = { name: "蚀脑", state: 1, message: "对敌方造成200点伤害，同时回复100点生命值" };
-skill[1223] = { name: "噩梦", state: 1, message: "使敌方沉睡一回合不能摸牌，己方也不能进行攻击" };
-skill[1224] = { name: "霜冻新星", state: 1, message: "对地敌方造成200点伤害" };
-skill[1225] = { name: "霜冻护甲", state: 2, message: "2回合内增加20点护甲" };
-skill[1226] = { name: "邪恶祭祀", state: 1, message: "消耗50点生命，回复3点能量" };
-skill[1227] = { name: "麻痹药剂", state: 0, message: "使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合(可闪避)" };
-skill[1228] = { name: "巫毒回复术", state: 1, message: "回复150点生命" };
-skill[1229] = { name: "诅咒", state: 0, message: "使敌方3回合后受到3回合内受到总伤害的25%(可闪避)" };
-skill[1230] = { name: "相位转移", state: 3, message: "免疫一次任何伤害" };
-skill[1231] = { name: "新月之痕", state: 0, message: "对敌方造成100点伤害并使对方沉默一回合(可闪避)" };
-skill[1232] = { name: "不可侵犯", state: 2, message: "被动牌:使对方普通攻击时消耗双倍能量格" };
-skill[1233] = { name: "自然之助", state: 1, message: "回复自身200点生命值" };
-skill[1234] = { name: "幽冥爆轰", state: 0, message: "对敌方造成200点伤害(可闪避)" };
-skill[1235] = { name: "幽冥守卫", state: 1, message: "对敌方造成敌方消耗能量格*100的伤害" };
-skill[1236] = { name: "衰老", state: 1, message: "使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害" };
-skill[1237] = { name: "雷霆之击", state: 1, message: "对敌方造成200点伤害" };
-
-module.exports = skill;
-
-/***/ }),
-/* 42 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23145,7 +22756,7 @@ function doskill(mystate, thatstate, cardid) {
 }
 
 /***/ }),
-/* 43 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23153,11 +22764,11 @@ function doskill(mystate, thatstate, cardid) {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(44);
+__webpack_require__(41);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23251,11 +22862,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 44 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(45);
+var content = __webpack_require__(42);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23269,7 +22880,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(13)(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -23301,10 +22912,10 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -23315,7 +22926,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 46 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23323,11 +22934,11 @@ exports.push([module.i, "", ""]);
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(47);
+__webpack_require__(44);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23442,11 +23053,11 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 47 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(48);
+var content = __webpack_require__(45);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23460,7 +23071,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(13)(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -23492,15 +23103,405 @@ if(false) {
 }
 
 /***/ }),
-/* 48 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
 // module
 exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var big_skill = [];
+var small_skill = [];
+big_skill[1] = { name: "毁灭", state: 0, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)" };
+big_skill[2] = { name: "幽灵船", state: 0, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)" };
+big_skill[3] = { name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
+big_skill[4] = { name: "飞锯", state: 0, message: "使敌方受到敌方最大生命值的10%的伤害(可闪避)" };
+big_skill[5] = { name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
+big_skill[6] = { name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
+big_skill[7] = { name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
+big_skill[8] = { name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
+big_skill[9] = { name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
+big_skill[10] = { name: "回音击", state: 0, message: "造成敌方手牌数乘以60的伤害(可闪避)" };
+big_skill[11] = { name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
+big_skill[12] = { name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
+big_skill[13] = { name: "变身", state: 2, message: "三回合内攻击加100" };
+big_skill[14] = { name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
+big_skill[15] = { name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
+big_skill[16] = { name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
+big_skill[17] = { name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
+big_skill[18] = { name: "两级反转", state: 0, message: "造成100点伤害并晕眩对手3回合(可闪避)" };
+big_skill[19] = { name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
+big_skill[20] = { name: "裂地者", state: 0, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫(可闪避)" };
+big_skill[21] = { name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
+big_skill[22] = { name: "地震", state: 0, message: "对敌方造成300+敌方手牌数乘50的伤害(可闪避)" };
+big_skill[23] = { name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
+big_skill[24] = { name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
+big_skill[25] = { name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
+big_skill[26] = { name: "疯狂生长", state: 0, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免(可闪避)" };
+big_skill[27] = { name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
+big_skill[29] = { name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
+big_skill[28] = { name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
+big_skill[30] = { name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
+big_skill[31] = { name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
+big_skill[32] = { name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
+big_skill[33] = { name: "无敌斩", state: 0, message: "快速普通攻击敌方6次(可闪避)" };
+big_skill[34] = { name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
+big_skill[35] = { name: "剧毒新星", state: 0, message: "对敌方造成300点伤害(可闪避)" };
+big_skill[36] = { name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
+big_skill[37] = { name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
+big_skill[38] = { name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
+big_skill[39] = { name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
+big_skill[40] = { name: "海妖之歌", state: 0, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态(可闪避)" };
+big_skill[41] = { name: "风暴之眼", state: 0, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害(可闪避)" };
+big_skill[42] = { name: "石化凝视", state: 0, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍(可闪避)" };
+big_skill[43] = { name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
+big_skill[44] = { name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
+big_skill[45] = { name: "时间结界", state: 0, message: "晕眩敌方2回合(可闪避)" };
+big_skill[46] = { name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
+big_skill[47] = { name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
+big_skill[48] = { name: "月蚀", state: 0, message: "对敌方造成350点伤害(可闪避)" };
+big_skill[49] = { name: "召唤飞弹", state: 0, message: "造成200加上,敌方手牌数乘30的伤害(可闪避)" };
+big_skill[50] = { name: "编织", state: 0, message: "三回合内增加自己50点护甲,减少敌方50点护甲(可闪避)" };
+big_skill[51] = { name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
+big_skill[52] = { name: "极寒领域", state: 0, message: "对敌方造成350点伤害(可闪避)" };
+big_skill[53] = { name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
+big_skill[54] = { name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
+big_skill[55] = { name: "死亡一指", state: 1, message: "造成600点伤害" };
+big_skill[56] = { name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
+big_skill[57] = { name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
+big_skill[58] = { name: "神智之蚀", state: 0, message: "造成自己能量值减敌方能量值的数值乘以220的伤害(可闪避)" };
+big_skill[59] = { name: "神灭斩", state: 1, message: "造成650点伤害" };
+big_skill[60] = { name: "冰晶爆轰", state: 0, message: "对方血量低于15%时直接秒杀(可闪避)" };
+big_skill[61] = { name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
+big_skill[62] = { name: "黑洞", state: 0, message: "对敌方造成250点伤害并晕眩2回合无视魔免(可闪避)" };
+big_skill[63] = { name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
+big_skill[64] = { name: "上帝之手", state: 1, message: "回复己方500点生命值" };
+big_skill[65] = { name: "脉冲新星", state: 0, message: "对敌方造成450点伤害(可闪避)" };
+big_skill[66] = { name: "万火焚身", state: 0, message: "对敌方造成100点伤害，持续4回合(可闪避)" };
+big_skill[67] = { name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
+big_skill[68] = { name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
+big_skill[69] = { name: "神秘之耀", state: 0, message: "对地方造成450点伤害(可闪避)" };
+big_skill[70] = { name: "超声冲击波", state: 0, message: "对敌方造成400点伤害(可闪避)" };
+big_skill[71] = { name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
+big_skill[72] = { name: "连环霜冻", state: 0, message: "对敌方造成100*敌方手牌数的伤害(可闪避)" };
+big_skill[73] = { name: "梦境缠绕", state: 0, message: "对敌方造成200点伤害并使敌方晕眩一回合(可闪避)" };
+big_skill[74] = { name: "自然之怒", state: 0, message: "对敌方造成300点伤害(可闪避)" };
+big_skill[75] = { name: "生命汲取", state: 0, message: "对敌方造成300点伤害，同时回复300点生命值(可闪避)" };
+big_skill[76] = { name: "静态风暴", state: 0, message: "对敌方造成200点伤害并使敌方沉默一回合(可闪避)" };
+big_skill[77] = { name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
+small_skill[1] = { name: "马蹄践踏", state: 0, message: "使敌方造成30点伤害并晕眩1回合(可闪避)" };
+small_skill[2] = { name: "双刃剑", state: 1, message: "使自己和敌方同时受到150点伤害" };
+small_skill[3] = { name: "反击", state: 2, message: "被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%" };
+small_skill[4] = { name: "巨浪", state: 0, message: "减少敌方十点护甲并对对方造成100点伤害(可闪避)" };
+small_skill[5] = { name: "海妖外壳", state: 2, message: "被动牌:受到普通攻击时可以减少50点伤害" };
+small_skill[6] = { name: "锚击", state: 1, message: "使自己在本回合内的攻击力增加敌方手牌数乘以10的数目" };
+small_skill[7] = { name: "洪流", state: 0, message: "对敌方造成50点伤害并晕眩半回合(可闪避)" };
+small_skill[8] = { name: "潮汐使者", state: 2, message: "被动牌:使自己增加30点攻击力" };
+small_skill[9] = { name: "死亡旋风", state: 0, message: "对敌方造成110点伤害(可闪避)" };
+small_skill[10] = { name: "伐木链锯", state: 0, message: "对敌方造成自己攻击力加50的伤害(可闪避)" };
+small_skill[11] = { name: "活性护甲", state: 2, message: "被动牌:每受到一次攻击增加10点护甲" };
+small_skill[12] = { name: "死亡缠绕", state: 1, message: "使自己回复70点生命并对敌方造成70点伤害" };
+small_skill[13] = { name: "无光之盾", state: 2, message: "三回合内抵挡自己150点伤害并在破裂时对敌方造成70点伤害" };
+small_skill[14] = { name: "霜之哀伤", state: 2, message: "被动牌:成功攻击对手后可以去除对手一张手牌" };
+small_skill[15] = { name: "烈火精灵", state: 1, message: "对敌方造成90点伤害并且减少敌方一点能量值" };
+small_skill[16] = { name: "烈日炎烤", state: 0, message: "对自己造成50点伤害并造成敌方现有生命值5%的伤害(可闪避)" };
+small_skill[17] = { name: "战士怒吼", state: 0, message: "增加自己40点护甲,使敌方下一回合只可以攻击自己(可闪避)" };
+small_skill[18] = { name: "反击螺旋", state: 2, message: "被动牌:敌方普通攻击自己时会受到40点伤害" };
+small_skill[19] = { name: "寒冰碎片", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+small_skill[20] = { name: "雪球", state: 0, message: "对敌方造成80点伤害并晕眩半回合(可闪避)" };
+small_skill[21] = { name: "沟壑", state: 0, message: "对敌方造成90点伤害并晕眩一回合(可闪避)" };
+small_skill[22] = { name: "强化图腾", state: 2, message: "三回合内使自己攻击力变为现在攻击力的2倍，攻击后恢复正常" };
+small_skill[23] = { name: "余震", state: 2, message: "被动牌:自己使用任何技能都会至少使敌方眩晕半回合" };
+small_skill[24] = { name: "混乱之箭", state: 1, message: "随机对敌方造成1-200的伤害，并晕眩1-2回合" };
+small_skill[25] = { name: "实相裂隙", state: 1, message: "可以攻击对方一次，不和普通攻击冲突" };
+small_skill[26] = { name: "致命一击", state: 2, message: "被动牌:攻击力会上下变动" };
+small_skill[27] = { name: "幽光之魂", state: 0, message: "对敌方造成130点伤害(可闪避)" };
+small_skill[28] = { name: "压倒性优势", state: 0, message: "对敌方造成敌方手牌乘以30的伤害(可闪避)" };
+small_skill[29] = { name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
+small_skill[30] = { name: "强攻", state: 1, message: "使自己回复100点生命值并攻击对方一次" };
+small_skill[31] = { name: "冥火暴击", state: 0, message: "对敌方造成70点伤害并晕眩1回合(可闪避)" };
+small_skill[32] = { name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值" };
+small_skill[33] = { name: "致死打击", state: 2, message: "被动牌:攻击时有60%的概率1.5倍攻击" };
+small_skill[34] = { name: "嚎叫", state: 1, message: "本回合攻击加60" };
+small_skill[35] = { name: "野性驱使", state: 2, message: "被动牌:攻击加30" };
+small_skill[36] = { name: "酸性喷雾", state: 0, message: "三回合内降低敌方10点防御并造成50点伤害(可闪避)" };
+small_skill[37] = { name: "不稳定物", state: 0, message: "50%使对方晕眩两回合50%使自己晕眩一回合(可闪避)" };
+small_skill[38] = { name: "地精贪婪", state: 2, message: "被动牌:每回合得到金钱数+10" };
+small_skill[39] = { name: "暗影冲刺", state: 0, message: "对敌方造成60点伤害并眩晕半回合(可闪避)" };
+small_skill[40] = { name: "巨力重击", state: 2, message: "被动牌:攻击时有30%的概率使敌方晕眩一回合并造成40点伤害" };
+small_skill[41] = { name: "风暴之锤", state: 0, message: "对敌方造成100点伤害并晕眩一回合(可闪避)" };
+small_skill[42] = { name: "巨力挥舞", state: 2, message: "被动牌:普通攻击时增加加敌方手牌数乘10的攻击力" };
+small_skill[43] = { name: "战吼", state: 2, message: "三回合内增加自身30点护甲" };
+small_skill[44] = { name: "火焰气息", state: 0, message: "对敌方造成120点伤害(可闪避)" };
+small_skill[45] = { name: "神龙摆尾", state: 1, message: "对敌方造成50点伤害并晕眩一回合" };
+small_skill[46] = { name: "龙族血统", state: 2, message: "被动牌:每回合回复40点生命值" };
+small_skill[47] = { name: "震荡波", state: 0, message: "对敌方造成130点伤害" };
+small_skill[48] = { name: "授予力量", state: 2, message: "本回合内攻击加80" };
+small_skill[49] = { name: "獠牙冲刺", state: 0, message: "对敌方造成60点伤害(可闪避)" };
+small_skill[50] = { name: "吞噬", state: 2, message: "如果手牌还没有达到上限，可以再摸两张牌" };
+small_skill[51] = { name: "焦土", state: 1, message: "敌方掉70血，自己回复80血" };
+small_skill[52] = { name: "回音重踏", state: 0, message: "使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态(可闪避)" };
+small_skill[53] = { name: "自然秩序", state: 2, message: "被动牌:使对方护甲归0" };
+small_skill[54] = { name: "洗礼", state: 0, message: "回复自己200点生命值(可闪避)" };
+small_skill[55] = { name: "驱逐", state: 2, message: "使自己魔免两回合，可以被散失" };
+small_skill[56] = { name: "掘地穿刺", state: 0, message: "对敌方造成65点伤害并晕眩一回合(可闪避)" };
+small_skill[57] = { name: "沙尘暴", state: 0, message: "对敌方造成40点伤害，敌方的下一回合不可以攻击自己(可闪避)" };
+small_skill[58] = { name: "雷击", state: 1, message: "对敌方造成140点伤害" };
+small_skill[59] = { name: "投掷", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+small_skill[60] = { name: "崎岖外表", state: 2, message: "被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合" };
+small_skill[61] = { name: "山崩", state: 0, message: "对敌方造成30点伤害并晕眩一回合(可闪避)" };
+small_skill[62] = { name: "火焰风暴", state: 0, message: "对敌方造成90点伤害(可闪避)" };
+small_skill[63] = { name: "怨念深渊", state: 0, message: "使对方晕眩半回合(可闪避)" };
+small_skill[64] = { name: "衰退光环", state: 2, message: "被动牌:减少对方50%攻击力" };
+small_skill[65] = { name: "活血术", state: 1, message: "增加自己当前攻击力的血量" };
+small_skill[66] = { name: "沸血之矛", state: 2, message: "消耗自身50点生命值使本回合内攻击加100" };
+small_skill[67] = { name: "狂战士之血", state: 2, message: "被动牌:血量低于50%时每次普通攻击可以不消耗能量格多攻击一次" };
+small_skill[68] = { name: "静电场", state: 2, message: "被动牌:每次释放任何技能都会对敌方造成40点伤害" };
+small_skill[69] = { name: "腐朽", state: 0, message: "可以对敌方造成70点伤害(可闪避)" };
+small_skill[70] = { name: "噬魂", state: 1, message: "造成己方和敌方手牌数的总和乘以15的伤害" };
+small_skill[71] = { name: "狂暴", state: 2, message: "可以使自己魔免一回合" };
+small_skill[72] = { name: "盛宴", state: 2, message: "被动牌:普通攻击时将对方现有生命值的2%转化为自身生命" };
+small_skill[73] = { name: "撕裂伤口", state: 1, message: "本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命" };
+small_skill[74] = { name: "野性之斧", state: 0, message: "对敌方造成150点伤害(可闪避)" };
+small_skill[75] = { name: "寄生种子", state: 1, message: "使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌" };
+small_skill[76] = { name: "活体护甲", state: 2, message: "受到物理伤害减少20点持续2回合每回合加40点血" };
+small_skill[77] = { name: "腐烂", state: 1, message: "自己掉100点血，对方掉180点血" };
+small_skill[78] = { name: "腐肉堆积", state: 2, message: "被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限" };
+small_skill[79] = { name: "雷霆一击", state: 0, message: "对敌方造成80点伤害" };
+small_skill[80] = { name: "醉酒云雾", state: 1, message: "2回合内使敌方的普通攻击有75%的概率打不中" };
+small_skill[81] = { name: "醉拳", state: 2, message: "被动牌:受到普通攻击时有40%的概率mis" };
+small_skill[82] = { name: "虚空", state: 1, message: "对敌方造成130点伤害" };
+small_skill[83] = { name: "伤残恐惧", state: 1, message: "使敌方2回合内不可以使用技能" };
+small_skill[84] = { name: "重击", state: 2, message: "被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害" };
+small_skill[85] = { name: "鱼人碎击", state: 0, message: "对敌方造成60点伤害并晕眩一回合(可闪避)" };
+small_skill[86] = { name: "群星坠落", state: 0, message: "对敌方造成40加上敌方手牌乘10的伤害(可闪避)" };
+small_skill[87] = { name: "月神之箭", state: 0, message: "有50%的概率使敌方晕眩二回合(可闪避)" };
+small_skill[88] = { name: "波浪形态", state: 0, message: "对敌方造成70点伤害(可闪避)" };
+small_skill[89] = { name: "变体攻击", state: 1, message: "对敌方造成50点伤害并晕眩半回合" };
+small_skill[90] = { name: "法力损毁", state: 2, message: "被动牌:普通攻击成功后可以削减敌方一点能量值" };
+small_skill[91] = { name: "自杀攻击", state: 0, message: "对自己和敌方同时造成500点伤害(可闪避)" };
+small_skill[92] = { name: "忽悠", state: 3, message: "可以闪避一次敌方的攻击" };
+small_skill[93] = { name: "地之突袭", state: 2, message: "被动牌:攻击力加30" };
+small_skill[94] = { name: "穿刺", state: 0, message: "造成70点伤害并晕眩敌方一回合(可闪避)" };
+small_skill[95] = { name: "法力燃烧", state: 1, message: "减少敌方3点能量值" };
+small_skill[96] = { name: "带刺外壳", state: 2, message: "被动牌:每回合可以抵挡一次指向性法术" };
+small_skill[97] = { name: "魔法箭", state: 1, message: "造成80点伤害并晕眩敌方一回合" };
+small_skill[98] = { name: "恐怖波动", state: 0, message: "减少敌方10点护甲并造成20点伤害(可闪避)" };
+small_skill[99] = { name: "命令光环", state: 2, message: "被动牌:增加25%的攻击力" };
+small_skill[100] = { name: "霜冻之箭", state: 1, message: "可以削减敌方2点能量值" };
+small_skill[101] = { name: "沉默魔法", state: 0, message: "敌方在一回合内不可以使用技能(可闪避)" };
+small_skill[102] = { name: "强击光环", state: 2, message: "被动牌:增加25%的攻击力" };
+small_skill[103] = { name: "灵魂之矛", state: 0, message: "对敌方造成90点伤害(可闪避)" };
+small_skill[104] = { name: "神出鬼没", state: 3, message: "可以闪避一次敌方的攻击" };
+small_skill[105] = { name: "磁场", state: 2, message: "使自己在两回合内物理免疫" };
+small_skill[106] = { name: "闪光冤魂", state: 0, message: "对敌方造成100点伤害(可闪避)" };
+small_skill[107] = { name: "窒息之刃", state: 0, message: "对敌方造成30点伤害使用后回复一点能量值(可闪避)" };
+small_skill[108] = { name: "闪烁突袭", state: 3, message: "可以闪避掉一次攻击" };
+small_skill[109] = { name: "模糊", state: 2, message: "被动牌:敌方在普通攻击你时有70%的概率mis" };
+small_skill[110] = { name: "火焰壁垒", state: 2, message: "被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值" };
+small_skill[111] = { name: "无影拳", state: 0, message: "对敌方造成70点伤害(可闪避)" };
+small_skill[112] = { name: "榴霰弹", state: 0, message: "对敌方造成60点伤害(可闪避)" };
+small_skill[113] = { name: "爆头", state: 2, message: "被动牌:攻击时有40%的概率附加100点伤害" };
+small_skill[114] = { name: "剑刃风暴", state: 0, message: "一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害(可闪避)" };
+small_skill[115] = { name: "弧形闪电", state: 1, message: "对敌方造成80点伤害" };
+small_skill[116] = { name: "剑舞", state: 2, message: "被动牌:攻击时有60%的概率1.5倍暴击" };
+small_skill[117] = { name: "狂战士之怒", state: 2, message: "被动牌:本回合内加70点攻击" };
+small_skill[118] = { name: "热血战魂", state: 2, message: "被动牌:加30点攻击" };
+small_skill[119] = { name: "旋风飞斧", state: 0, message: "对敌方造成40点伤害并使敌方攻击有30%的概率mis(可闪避)" };
+small_skill[120] = { name: "肉钩", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+small_skill[121] = { name: "瘴气", state: 0, message: "对敌方造成70点伤害(可闪避)" };
+small_skill[122] = { name: "毒刺", state: 2, message: "被动牌:攻击时对敌方额外造成20点伤害" };
+small_skill[123] = { name: "扫射", state: 2, message: "攻击力加40" };
+small_skill[124] = { name: "灼热之箭", state: 2, message: "本回合内攻击加50" };
+small_skill[125] = { name: "变身", state: 2, message: "永久增加20点攻击力" };
+small_skill[126] = { name: "连击", state: 2, message: "被动牌:每次攻击降低敌方10点护甲" };
+small_skill[127] = { name: "蝗虫群", state: 1, message: "对敌方造成60点伤害并永久降低5点护甲" };
+small_skill[128] = { name: "毒性攻击", state: 2, message: "被动牌:本回合攻击力加40" };
+small_skill[129] = { name: "幽冥剧毒", state: 2, message: "被动牌:敌方血量低于50%时,攻击附加50点伤害" };
+small_skill[130] = { name: "腐蚀外表", state: 2, message: "被动牌:受到敌方的任何攻击之后敌方会掉40点血" };
+small_skill[131] = { name: "等离子场", state: 2, message: "3回合内敌方每次对你使用指向性技能时会减少100点生命值" };
+small_skill[132] = { name: "静电连接", state: 1, message: "永久性减少敌方5点攻击,自己增加5点攻击" };
+small_skill[133] = { name: "投掷飞镖", state: 1, message: "对敌方造成80点伤害" };
+small_skill[134] = { name: "忍术", state: 2, message: "被动牌:攻击时有40%的概率双倍暴击" };
+small_skill[135] = { name: "分裂箭", state: 2, message: "被动牌:攻击力增加敌方手牌数乘以15的数值" };
+small_skill[136] = { name: "秘术异蛇", state: 0, message: "造成敌手牌数乘以20的伤害(可闪避)" };
+small_skill[137] = { name: "魔法护盾", state: 2, message: "被动牌:受到伤害时一点能量值可以抵挡一次伤害" };
+small_skill[138] = { name: "折光", state: 2, message: "5回合内抵挡4次伤害" };
+small_skill[139] = { name: "黑暗契约", state: 2, message: "下回合双方损失50点生命值,可以清除自己身上所有状态" };
+small_skill[140] = { name: "能量转换", state: 2, message: "被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击" };
+small_skill[141] = { name: "超级力量", state: 2, message: "3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害" };
+small_skill[142] = { name: "怒意狂击", state: 2, message: "被动牌:每次普通攻击成功后攻击力会增加20" };
+small_skill[143] = { name: "回到过去", state: 2, message: "被动牌:受到任何攻击时有25%的概率免疫" };
+small_skill[144] = { name: "时间锁定", state: 2, message: "被动牌:普通攻击时有25%的概率使敌方晕眩一回合" };
+small_skill[145] = { name: "血之狂暴", state: 1, message: "使敌方2回合内无法使用技能" };
+small_skill[146] = { name: "屠戮", state: 2, message: "被动牌:敌方每减少一张牌会使自己增加30点生命值" };
+small_skill[147] = { name: "嗜血渴望", state: 2, message: "被动牌:敌方血量低于50%时，自己增加50点攻击" };
+small_skill[148] = { name: "烟幕", state: 0, message: "使敌方在1回合内攻击有75%的概率mis,并不可以使用技能(可闪避)" };
+small_skill[149] = { name: "闪烁突袭", state: 3, message: "可以闪避掉一次攻击" };
+small_skill[150] = { name: "魔王降临", state: 2, message: "被动牌:减少敌方20点护甲" };
+small_skill[151] = { name: "毁灭阴影", state: 0, message: "对敌方造成90点伤害(可闪避)" };
+small_skill[152] = { name: "支配死灵", state: 2, message: "被动牌:敌方每减少一张牌,你可以永久增加2点攻击" };
+small_skill[153] = { name: "幽鬼之刃", state: 0, message: "对敌方造成80点伤害(可闪避)" };
+small_skill[154] = { name: "荒芜", state: 2, message: "被动牌:增加30点攻击" };
+small_skill[155] = { name: "折射", state: 2, message: "被动牌:反弹自己受到一切伤害的25%" };
+small_skill[156] = { name: "麻痹撕咬", state: 2, message: "被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" };
+small_skill[157] = { name: "月光", state: 1, message: "对敌方造成90点伤害" };
+small_skill[158] = { name: "月之祝福", state: 2, message: "被动牌:攻击力加60" };
+small_skill[159] = { name: "月刃", state: 2, message: "被动牌:攻击力加敌方手牌数乘10的数值" };
+small_skill[160] = { name: "高射火炮", state: 2, message: "本回合内攻击增加70" };
+small_skill[161] = { name: "追踪导弹", state: 0, message: "造成160点伤害(可闪避)" };
+small_skill[162] = { name: "灵魂猎手", state: 0, message: "一回合内使敌方额外承受25%的伤害(可闪避)" };
+small_skill[163] = { name: "薄葬", state: 2, message: "三回合内不会死亡" };
+small_skill[164] = { name: "暗影波", state: 0, message: "回复自己手牌数乘以25点的生命(可闪避)" };
+small_skill[165] = { name: "叉形闪电", state: 1, message: "对敌方造成90点伤害" };
+small_skill[166] = { name: "妖术", state: 1, message: "将敌方变成小羊,持续1回合" };
+small_skill[167] = { name: "枷锁", state: 1, message: "自己摸一张牌,敌方受到50点伤害" };
+small_skill[168] = { name: "烈焰破击", state: 0, message: "对敌方造成100点伤害(可闪避)" };
+small_skill[169] = { name: "冰霜新星", state: 0, message: "对敌方造成60点伤害(可闪避)" };
+small_skill[170] = { name: "冰封禁制", state: 1, message: "对敌方造成30点伤害并晕眩一回合" };
+small_skill[171] = { name: "辉煌光环", state: 2, message: "被动牌:每回合可以额外回复1点能量值" };
+small_skill[172] = { name: "静默诅咒", state: 1, message: "减少敌方1点能量值" };
+small_skill[173] = { name: "智慧之刃", state: 2, message: "本回合内攻击力增加自己能量值乘以20的数值" };
+small_skill[174] = { name: "遗言", state: 1, message: "对敌方造成60点伤害,并沉默1回合" };
+small_skill[175] = { name: "弱化能流", state: 1, message: "永久减少敌方10点攻击" };
+small_skill[176] = { name: "激光", state: 1, message: "造成100点伤害并使敌方下1回合攻击100%mis" };
+small_skill[177] = { name: "热导飞弹", state: 0, message: "造成100点伤害(可闪避)" };
+small_skill[178] = { name: "法力汲取", state: 1, message: "减少敌方两点能量格,自己增加两点能量格" };
+small_skill[179] = { name: "超负荷", state: 2, message: "被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" };
+small_skill[180] = { name: "束缚之箭", state: 1, message: "造成40点伤害晕眩敌方半回合" };
+small_skill[181] = { name: "强力一击", state: 0, message: "造成100点伤害(可闪避)" };
+small_skill[182] = { name: "冲击波", state: 0, message: "造成130点伤害" };
+small_skill[183] = { name: "法力流失", state: 1, message: "3回合内敌方任何攻击所需能量值加1" };
+small_skill[184] = { name: "查克拉魔法", state: 1, message: "瞬间将自身能量值回满" };
+small_skill[185] = { name: "严寒烧灼", state: 2, message: "2回合内增加敌方现有生命值2%的攻击力" };
+small_skill[186] = { name: "碎裂冲击", state: 0, message: "造成100点伤害(可闪避)" };
+small_skill[187] = { name: "极寒之拥", state: 2, message: "使自己加100点护甲回复100点生命,但本回合不可以再出牌" };
+small_skill[188] = { name: "离子外壳", state: 1, message: "对敌方造成80点伤害" };
+small_skill[189] = { name: "凤凰冲击", state: 3, message: "减少自身100点生命值，闪避对方一次攻击" };
+small_skill[190] = { name: "秘法天球", state: 2, message: "本回合增加能量值乘以25的攻击力" };
+small_skill[191] = { name: "星体禁锢", state: 1, message: "使对方减少2点能量格,并轮空一回合" };
+small_skill[192] = { name: "精气光环", state: 2, message: "被动牌:释放技能时有50%的概率加1点能量值" };
+small_skill[193] = { name: "龙破斩", state: 0, message: "造成100点伤害(可闪避)" };
+small_skill[194] = { name: "光击阵", state: 0, message: "造成80点伤害并晕眩1回合(可闪避)" };
+small_skill[195] = { name: "寒冰之触", state: 1, message: "对敌方造成80点伤害并晕眩半回合" };
+small_skill[196] = { name: "火焰爆轰", state: 1, message: "造成80点伤害并晕眩敌方1回合" };
+small_skill[197] = { name: "引燃", state: 1, message: "造成150点伤害" };
+small_skill[198] = { name: "嗜血术", state: 2, message: "3回合内增加自己30点攻击力" };
+small_skill[199] = { name: "憎恶", state: 1, message: "对敌方造成50点伤害并晕眩半回合" };
+small_skill[200] = { name: "午夜凋零", state: 0, message: "造成80点伤害(可闪避)" };
+small_skill[201] = { name: "命运赦令", state: 1, message: "使敌方1回合不可以攻击并且所受的物理伤害增加100%" };
+small_skill[202] = { name: "涤罪之焰", state: 1, message: "对敌方造成150点伤害" };
+small_skill[203] = { name: "忠诚考验", state: 1, message: "随机对敌方造成50-300点伤害" };
+small_skill[204] = { name: "麻痹陷阱", state: 0, message: "对敌方晕眩一回合(可闪避)" };
+small_skill[205] = { name: "恶魔赦令", state: 1, message: "三回合内每回合对敌方造成80点伤害" };
+small_skill[206] = { name: "致命连接", state: 1, message: "本回合内对敌方额外造成手牌数0.1倍技能伤害 " };
+small_skill[207] = { name: "暗言术", state: 1, message: "使己方回复100点生命值并对敌方造成100点伤害" };
+small_skill[208] = { name: "冰火交加", state: 0, message: "对敌方造成150点伤害(可闪避)" };
+small_skill[209] = { name: "冰封路径", state: 0, message: "使敌方晕眩一回合(可闪避)" };
+small_skill[210] = { name: "液态火", state: 1, message: "对敌方造成150点伤害" };
+small_skill[211] = { name: "死亡脉冲", state: 0, message: "对敌方造成100点伤害，同时回复100点生命值(可闪避)" };
+small_skill[212] = { name: "竭心光环", state: 2, message: "被动牌:每回合减少敌方2%生命值" };
+small_skill[213] = { name: "施虐之心", state: 2, message: "被动牌:每对敌方造成200点伤害回复1点能量格和100点生命" };
+small_skill[214] = { name: "灵魂超度", state: 0, message: "对敌方造成自己损失血量10%的伤害(可闪避)" };
+small_skill[215] = { name: "食腐蝙群", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[216] = { name: "上古封印", state: 0, message: "使敌方承受1.5倍魔法伤害，并使敌方沉默一回合(可闪避)" };
+small_skill[217] = { name: "奥术箭", state: 0, message: "对敌方造成50*其能量格的伤害(可闪避)" };
+small_skill[218] = { name: "暗影突袭", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[219] = { name: "闪烁", state: 3, message: "可闪避敌方一次技能，对无视闪避技能无效" };
+small_skill[220] = { name: "痛苦尖叫", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[221] = { name: "虚弱", state: 1, message: "3回合内降低敌方30点攻击力" };
+small_skill[222] = { name: "蚀脑", state: 1, message: "对敌方造成200点伤害，同时回复100点生命值" };
+small_skill[223] = { name: "噩梦", state: 1, message: "使敌方沉睡一回合不能摸牌，己方也不能进行攻击" };
+small_skill[224] = { name: "霜冻新星", state: 1, message: "对地敌方造成200点伤害" };
+small_skill[225] = { name: "霜冻护甲", state: 2, message: "2回合内增加20点护甲" };
+small_skill[226] = { name: "邪恶祭祀", state: 1, message: "消耗50点生命，回复3点能量" };
+small_skill[227] = { name: "麻痹药剂", state: 0, message: "使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合(可闪避)" };
+small_skill[228] = { name: "巫毒回复术", state: 1, message: "回复150点生命" };
+small_skill[229] = { name: "诅咒", state: 0, message: "使敌方3回合后受到3回合内受到总伤害的25%(可闪避)" };
+small_skill[230] = { name: "相位转移", state: 3, message: "免疫一次任何伤害" };
+small_skill[231] = { name: "新月之痕", state: 0, message: "对敌方造成100点伤害并使对方沉默一回合(可闪避)" };
+small_skill[232] = { name: "不可侵犯", state: 2, message: "被动牌:使对方普通攻击时消耗双倍能量格" };
+small_skill[233] = { name: "自然之助", state: 1, message: "回复自身200点生命值" };
+small_skill[234] = { name: "幽冥爆轰", state: 0, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[235] = { name: "幽冥守卫", state: 1, message: "对敌方造成敌方消耗能量格*100的伤害" };
+small_skill[236] = { name: "衰老", state: 1, message: "使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害" };
+small_skill[237] = { name: "雷霆之击", state: 1, message: "对敌方造成200点伤害" };
+
+module.exports = { big_skill: big_skill, small_skill: small_skill };
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(48);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(3)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "body {\n  background: #fff; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
 
 // exports
 
