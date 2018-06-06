@@ -2,6 +2,20 @@ export function prepareOk (mystate,thatstate,cardid){//准备开始
     mystate.round-=cardid
     return mystate;
 }
+function getRandomInt(min, max) {  
+    return Math.floor(Math.random() * (max - min + 1) + min)  
+}
+export function shufflecards(_arr){//洗牌
+    let _arr = arr.slice()  
+    for (let i = 0; i < _arr.length; i++) {  
+      let j = getRandomInt(0, i)  
+      // 将 _arr[i]与_arr中随机的项交换  
+      let t = _arr[i]  
+      _arr[i] = _arr[j]  
+      _arr[j] = t  
+    }  
+    return _arr  
+}
 export function doskill (mystate,thatstate,cardid){//使用技能
     
     switch (cardid)

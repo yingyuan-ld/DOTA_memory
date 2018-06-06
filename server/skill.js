@@ -1,5 +1,6 @@
 ﻿let big_skill = [];
 let small_skill = [];
+big_skill[0] = {name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
 big_skill[1] = {name:"毁灭",state: 0 ,message:"对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)"};
 big_skill[2] = {name:"幽灵船",state: 0 ,message:"对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)"}
 big_skill[3] = {name:"雷神之怒",state: 1 ,message:"对敌方造成自己手牌乘以60的伤害"}
@@ -77,6 +78,7 @@ big_skill[74] = {name:"自然之怒",state: 0 ,message:"对敌方造成300点伤
 big_skill[75] = {name:"生命汲取",state: 0 ,message:"对敌方造成300点伤害，同时回复300点生命值(可闪避)"}
 big_skill[76] = {name:"静态风暴",state: 0 ,message:"对敌方造成200点伤害并使敌方沉默一回合(可闪避)"}
 big_skill[77] = {name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
+small_skill[0] = {name:"雷霆之击",state: 1 ,message:"对敌方造成200点伤害"}
 small_skill[1] = {name:"马蹄践踏",state: 0 ,message:"使敌方造成30点伤害并晕眩1回合(可闪避)"}
 small_skill[2] = {name:"双刃剑",state: 1 ,message:"使自己和敌方同时受到150点伤害"}
 small_skill[3] = {name:"反击",state: 2 ,message:"被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%"}

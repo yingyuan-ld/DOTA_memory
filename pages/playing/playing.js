@@ -1,16 +1,15 @@
 import React from 'react';
 import "./playing.scss";
 import {prepareOk} from '../../components/action';
-import HeroSelect from '../../components/HeroSelect/HeroSelect';
-import PlayPage from '../../components/PlayPage/PlayPage';
-import {big_skill,small_skill} from '../../server/skill';
+// import {HeroSelect,PlayPage} from '../../components/index';
+import PAGES from '../../components/index';
 const ACTION = {
     prepareOk,
 }
-const PAGE = {
-    HeroSelect,
-    PlayPage
-}
+// const PAGES = {
+//     HeroSelect,
+//     PlayPage
+// }
 const PLAYSPEED = ["HeroSelect","PlayPage"];
 class Component extends React.Component{
     constructor(){
@@ -39,8 +38,6 @@ class Component extends React.Component{
     }
 
     componentWillMount(){
-        console.info(big_skill)
-        console.info(small_skill)
         this.props.socket.on('totalk', (res)=>{
             let action = res.action;
             let state = ACTION[action.funname](this.state,res.state,action.cardid);
@@ -49,7 +46,7 @@ class Component extends React.Component{
         });
     }
   	render() {
-        let Field = PAGE[PLAYSPEED[this.state.playingSpeed]];
+        let Field = PAGES[PLAYSPEED[this.state.playingSpeed]];
         return <div className="system_body">
             <Field setState={this.setState.bind(this)} {...this.props}{...this.state}/>
         </div>;

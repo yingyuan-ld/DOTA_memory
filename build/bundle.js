@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(18);
-} else {
   module.exports = __webpack_require__(19);
+} else {
+  module.exports = __webpack_require__(20);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -417,7 +417,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(31);
+var	fixUrls = __webpack_require__(32);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1045,7 +1045,7 @@ module.exports = warning;
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(4);
   var warning = __webpack_require__(8);
-  var ReactPropTypesSecret = __webpack_require__(20);
+  var ReactPropTypesSecret = __webpack_require__(21);
   var loggedTypeFailures = {};
 }
 
@@ -1263,7 +1263,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(21);
+var isTextNode = __webpack_require__(22);
 
 /*eslint-disable no-bitwise */
 
@@ -1294,17 +1294,50 @@ module.exports = containsNode;
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(15);
+"use strict";
 
+
+var _PlayPage = __webpack_require__(41);
+
+var _PlayPage2 = _interopRequireDefault(_PlayPage);
+
+var _HeroSelect = __webpack_require__(44);
+
+var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
+
+var _HeroPlaceMy = __webpack_require__(47);
+
+var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
+
+var _HeroPlaceThat = __webpack_require__(50);
+
+var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var common = {
+    PlayPage: _PlayPage2.default,
+    HeroSelect: _HeroSelect2.default,
+    HeroPlaceMy: _HeroPlaceMy2.default,
+    HeroPlaceThat: _HeroPlaceThat2.default
+};
+module.exports = common;
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__(16);
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
-var _reactDom = __webpack_require__(16);
+var _reactDom = __webpack_require__(17);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -1312,11 +1345,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DotaSystem = __webpack_require__(28);
+var _DotaSystem = __webpack_require__(29);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(47);
+__webpack_require__(54);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1324,7 +1357,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(_DotaSystem2.default, null), document.getElementById("box")); //react-dom，仅在项目顶层使用
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1362,15 +1395,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(17);
+  module.exports = __webpack_require__(18);
 } else {
-  module.exports = __webpack_require__(23);
+  module.exports = __webpack_require__(24);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1623,7 +1656,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1652,7 +1685,7 @@ Y=X&&W||X;module.exports=Y["default"]?Y["default"]:Y;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3074,7 +3107,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3093,7 +3126,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3108,7 +3141,7 @@ module.exports = ReactPropTypesSecret;
  * @typechecks
  */
 
-var isNode = __webpack_require__(22);
+var isNode = __webpack_require__(23);
 
 /**
  * @param {*} object The object to check.
@@ -3121,7 +3154,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3149,7 +3182,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3181,8 +3214,8 @@ var getActiveElement = __webpack_require__(11);
 var shallowEqual = __webpack_require__(12);
 var containsNode = __webpack_require__(13);
 var emptyObject = __webpack_require__(7);
-var hyphenateStyleName = __webpack_require__(24);
-var camelizeStyleName = __webpack_require__(26);
+var hyphenateStyleName = __webpack_require__(25);
+var camelizeStyleName = __webpack_require__(27);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -19811,7 +19844,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19826,7 +19859,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(25);
+var hyphenate = __webpack_require__(26);
 
 var msPattern = /^ms-/;
 
@@ -19853,7 +19886,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19889,7 +19922,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19904,7 +19937,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(27);
+var camelize = __webpack_require__(28);
 
 var msPattern = /^-ms-/;
 
@@ -19932,7 +19965,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19967,7 +20000,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19981,17 +20014,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(29);
+__webpack_require__(30);
 
-var _login = __webpack_require__(32);
+var _login = __webpack_require__(33);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(33);
+var _Prepare = __webpack_require__(34);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(36);
+var _playing = __webpack_require__(37);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -20061,11 +20094,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(30);
+var content = __webpack_require__(31);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20111,7 +20144,7 @@ if(false) {
 }
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -20125,7 +20158,7 @@ exports.push([module.i, "body {\n  margin: 0px;\n  padding: 0px; }\n\n.system_bo
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports) {
 
 
@@ -20220,7 +20253,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20311,7 +20344,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20323,7 +20356,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(34);
+__webpack_require__(35);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20500,11 +20533,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(35);
+var content = __webpack_require__(36);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20550,7 +20583,7 @@ if(false) {
 }
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -20564,7 +20597,7 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20578,19 +20611,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(37);
+__webpack_require__(38);
 
-var _action = __webpack_require__(39);
+var _action = __webpack_require__(40);
 
-var _HeroSelect = __webpack_require__(40);
+var _index = __webpack_require__(14);
 
-var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
+var _index2 = _interopRequireDefault(_index);
 
-var _PlayPage = __webpack_require__(43);
-
-var _PlayPage2 = _interopRequireDefault(_PlayPage);
-
-var _skill = __webpack_require__(46);
+var _skill = __webpack_require__(53);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20599,15 +20628,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+// import {HeroSelect,PlayPage} from '../../components/index';
+
 
 var ACTION = {
     prepareOk: _action.prepareOk
-};
-var PAGE = {
-    HeroSelect: _HeroSelect2.default,
-    PlayPage: _PlayPage2.default
-};
-var PLAYSPEED = ["HeroSelect", "PlayPage"];
+    // const PAGES = {
+    //     HeroSelect,
+    //     PlayPage
+    // }
+};var PLAYSPEED = ["HeroSelect", "PlayPage"];
 
 var Component = function (_React$Component) {
     _inherits(Component, _React$Component);
@@ -20658,7 +20688,7 @@ var Component = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var Field = PAGE[PLAYSPEED[this.state.playingSpeed]];
+            var Field = _index2.default[PLAYSPEED[this.state.playingSpeed]];
             return _react2.default.createElement(
                 'div',
                 { className: 'system_body' },
@@ -20673,11 +20703,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(38);
+var content = __webpack_require__(39);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -20723,7 +20753,7 @@ if(false) {
 }
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -20737,7 +20767,7 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22756,7 +22786,7 @@ function doskill(mystate, thatstate, cardid) {
 }
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22768,7 +22798,139 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(41);
+__webpack_require__(42);
+
+var _index = __webpack_require__(14);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PlayPage = function (_React$Component) {
+    _inherits(PlayPage, _React$Component);
+
+    function PlayPage() {
+        _classCallCheck(this, PlayPage);
+
+        var _this = _possibleConstructorReturn(this, (PlayPage.__proto__ || Object.getPrototypeOf(PlayPage)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(PlayPage, [{
+        key: 'fight_place',
+        value: function fight_place() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'fight_place' },
+                this.props.thatstate.herotype != undefined ? _react2.default.createElement(
+                    'div',
+                    null,
+                    this.props.round > 0 ? "我的回合" : "对方回合"
+                ) : ""
+            );
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'main_box' },
+                _react2.default.createElement(_index.HeroPlaceThat, this.props),
+                this.fight_place(this.props.thatstate),
+                _react2.default.createElement(_index.HeroPlaceMy, this.props)
+            );
+        }
+    }]);
+
+    return PlayPage;
+}(_react2.default.Component);
+
+module.exports = PlayPage;
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(43);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(3)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(45);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22862,11 +23024,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 41 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(42);
+var content = __webpack_require__(46);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22912,7 +23074,7 @@ if(false) {
 }
 
 /***/ }),
-/* 42 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -22926,7 +23088,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 43 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22938,7 +23100,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(44);
+__webpack_require__(48);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22948,21 +23110,183 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var PlayPage = function (_React$Component) {
-    _inherits(PlayPage, _React$Component);
+var HeroPlaceMy = function (_React$Component) {
+    _inherits(HeroPlaceMy, _React$Component);
 
-    function PlayPage() {
-        _classCallCheck(this, PlayPage);
+    function HeroPlaceMy() {
+        _classCallCheck(this, HeroPlaceMy);
 
-        var _this = _possibleConstructorReturn(this, (PlayPage.__proto__ || Object.getPrototypeOf(PlayPage)).call(this));
+        var _this = _possibleConstructorReturn(this, (HeroPlaceMy.__proto__ || Object.getPrototypeOf(HeroPlaceMy)).call(this));
 
         _this.state = {};
         return _this;
     }
 
-    _createClass(PlayPage, [{
-        key: "hero_place",
-        value: function hero_place(basic, more) {
+    _createClass(HeroPlaceMy, [{
+        key: "render",
+        value: function render() {
+            var basic = this.props.mystate;
+            return _react2.default.createElement(
+                "div",
+                { className: "hero_place" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "hero_ion" },
+                    basic.herotype
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "attribute_list" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "HP" },
+                        basic.Hp + "/" + basic.maxHp
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "MP" },
+                        basic.Mp + "/" + basic.maxMp
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "attack" },
+                        "攻击力:" + basic.attack
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "armor" },
+                        "护甲:" + basic.armor
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "statelist" },
+                        "状态:..."
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "card_list" },
+                    "\u5361\u724C\u5217\u8868"
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "equipment_list" },
+                    basic.equipment.map(function (equipment, i) {
+                        _react2.default.createElement("div", null);
+                    })
+                )
+            );
+        }
+    }]);
+
+    return HeroPlaceMy;
+}(_react2.default.Component);
+
+module.exports = HeroPlaceMy;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(49);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(3)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceMy.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceMy.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(51);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var HeroPlaceThat = function (_React$Component) {
+    _inherits(HeroPlaceThat, _React$Component);
+
+    function HeroPlaceThat() {
+        _classCallCheck(this, HeroPlaceThat);
+
+        var _this = _possibleConstructorReturn(this, (HeroPlaceThat.__proto__ || Object.getPrototypeOf(HeroPlaceThat)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(HeroPlaceThat, [{
+        key: "render",
+        value: function render() {
+            var basic = this.props.thatstate;
             if (basic.herotype === "" || basic.herotype === undefined) {
                 return _react2.default.createElement(
                     "div",
@@ -23021,43 +23345,19 @@ var PlayPage = function (_React$Component) {
                 )
             );
         }
-    }, {
-        key: "fight_place",
-        value: function fight_place() {
-            return _react2.default.createElement(
-                "div",
-                { className: "fight_place" },
-                this.props.thatstate.herotype != undefined ? _react2.default.createElement(
-                    "div",
-                    null,
-                    this.props.round > 0 ? "我的回合" : "对方回合"
-                ) : ""
-            );
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "main_box" },
-                this.hero_place(this.props.thatstate),
-                this.fight_place(this.props.thatstate),
-                this.hero_place(this.props.mystate, this.props)
-            );
-        }
     }]);
 
-    return PlayPage;
+    return HeroPlaceThat;
 }(_react2.default.Component);
 
-module.exports = PlayPage;
+module.exports = HeroPlaceThat;
 
 /***/ }),
-/* 44 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(45);
+var content = __webpack_require__(52);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23076,8 +23376,8 @@ var update = __webpack_require__(3)(content, options);
 if(content.locals) module.exports = content.locals;
 
 if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceThat.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceThat.scss");
 
 		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 
@@ -23103,7 +23403,7 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -23117,7 +23417,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 46 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23443,11 +23743,11 @@ small_skill[237] = { name: "雷霆之击", state: 1, message: "对敌方造成20
 module.exports = { big_skill: big_skill, small_skill: small_skill };
 
 /***/ }),
-/* 47 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(48);
+var content = __webpack_require__(55);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23493,7 +23793,7 @@ if(false) {
 }
 
 /***/ }),
-/* 48 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
