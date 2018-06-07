@@ -1,22 +1,32 @@
-export function prepareOk (mystate,thatstate,cardid){//准备开始
-    mystate.round-=cardid
+export function prepareOk (mystate,obj){//准备开始
+    mystate.round-=obj.round
+    mystate.thatstate=obj.state
     return mystate;
 }
 function getRandomInt(min, max) {  
     return Math.floor(Math.random() * (max - min + 1) + min)  
 }
-export function shufflecards(_arr){//洗牌
-    let _arr = arr.slice()  
-    for (let i = 0; i < _arr.length; i++) {  
+export function shufflecards(arr){//洗牌
+    arr = arr.slice()  
+    for (let i = 0; i < arr.length; i++) {  
       let j = getRandomInt(0, i)  
       // 将 _arr[i]与_arr中随机的项交换  
-      let t = _arr[i]  
-      _arr[i] = _arr[j]  
-      _arr[j] = t  
+      let t = arr[i]  
+      arr[i] = arr[j]  
+      arr[j] = t  
     }  
-    return _arr  
+    return arr
 }
-export function doskill (mystate,thatstate,cardid){//使用技能
+export function cardheap (state,obj){//洗牌结果
+    if(state.small_cardheap.length==0){//判断是否第一次发牌
+        state.mystate.cardid = state.small_cardheap.slice(8,16);
+        state.small_speed = 16
+    }
+    state.small_cardheap = obj.small_cardheap;
+    state.big_cardheap = obj.big_cardheap;
+    return state;
+}
+export function doskill (mystate,cardid){//使用技能
     
     switch (cardid)
     {

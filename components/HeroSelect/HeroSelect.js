@@ -34,10 +34,10 @@ class HeroSelect extends React.Component{
         this.props.setState({mystate:mystate,playingSpeed:1,round:(this.props.round+round)});
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
-            state:this.props.mystate,
-            action:{
+            obj:{
+                state:this.props.mystate,
                 funname:"prepareOk",
-                cardid:round
+                round:round
             }
         });
     }

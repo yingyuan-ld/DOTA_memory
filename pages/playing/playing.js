@@ -1,10 +1,11 @@
 import React from 'react';
 import "./playing.scss";
-import {prepareOk} from '../../components/action';
+import {prepareOk,cardheap} from '../../components/action';
 // import {HeroSelect,PlayPage} from '../../components/index';
 import PAGES from '../../components/index';
 const ACTION = {
     prepareOk,
+    cardheap
 }
 // const PAGES = {
 //     HeroSelect,
@@ -27,25 +28,32 @@ class Component extends React.Component{
                 armor:"10",//护甲
                 status:[],//状态数组
                 equipment:[],//装备列表
+                cardid:[],//卡牌数组
+                money:"0",//金钱
             },
-            cardid:[],//卡牌id
-            money:"0",//金钱
-            
             round:0, //是否是我的回合 0不是 1是
+
+            small_cardheap:[],//小技能 牌堆
+            small_speed:0,//记录小技能牌使用进度
+            big_cardheap:[],//大技能 牌堆
+            big_speed:0,//记录大技能牌使用进度
+            small_discard:[],//小技能 弃牌堆
+            big_discard:[],//大技能 弃牌堆
+            cardShowList:[],//出牌历史
             thatstate:{},//对手状态
+
             playingSpeed:0,//游戏进度
         }
     }
 
     componentWillMount(){
         this.props.socket.on('totalk', (res)=>{
-            let action = res.action;
-            let state = ACTION[action.funname](this.state,res.state,action.cardid);
+            let state = ACTION[res.obj.funname](this.state,res.obj);
             this.setState(state);
-            this.setState({thatstate:res.state});
         });
     }
   	render() {
+        console.info(this.state);
         let Field = PAGES[PLAYSPEED[this.state.playingSpeed]];
         return <div className="system_body">
             <Field setState={this.setState.bind(this)} {...this.props}{...this.state}/>
