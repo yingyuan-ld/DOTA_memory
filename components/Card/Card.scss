@@ -1,0 +1,27 @@
+.card_box{
+    width: 100px;
+    position: relative;
+    font-size: 12px;
+    height: 100%;
+    border: 1px solid #d2d2d2;
+    cursor: pointer;
+    transition: all 0.1s;
+    cursor:pointer;
+    .card_ion{
+        background: green;
+        width: 60px;
+        height: 60px;
+        margin: 10px 0px 0px 20px;
+    }
+    .card_name{
+        text-align: center;
+        width: 100%;
+    }
+    .card_message{
+        text-align: left;
+        margin: 5px;
+    }
+}
+.card_box:hover{
+    transform: translateY(-10%);
+}

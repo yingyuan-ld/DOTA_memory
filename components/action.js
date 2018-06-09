@@ -19,7 +19,8 @@ export function shufflecards(arr){//洗牌
 }
 export function cardheap (state,obj){//洗牌结果
     if(state.small_cardheap.length==0){//判断是否第一次发牌
-        state.mystate.cardid = state.small_cardheap.slice(8,16);
+        state.mystate.cardid = obj.small_cardheap.slice(8,16);
+        state.thatstate = obj.mystate;
         state.small_speed = 16
     }
     state.small_cardheap = obj.small_cardheap;

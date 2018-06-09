@@ -53,7 +53,6 @@ class Component extends React.Component{
         });
     }
   	render() {
-        console.info(this.state);
         let Field = PAGES[PLAYSPEED[this.state.playingSpeed]];
         return <div className="system_body">
             <Field setState={this.setState.bind(this)} {...this.props}{...this.state}/>
