@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(21);
-} else {
   module.exports = __webpack_require__(22);
+} else {
+  module.exports = __webpack_require__(23);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -227,7 +227,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(34);
+var	fixUrls = __webpack_require__(35);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1045,7 +1045,7 @@ module.exports = warning;
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(4);
   var warning = __webpack_require__(8);
-  var ReactPropTypesSecret = __webpack_require__(23);
+  var ReactPropTypesSecret = __webpack_require__(24);
   var loggedTypeFailures = {};
 }
 
@@ -1263,7 +1263,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(24);
+var isTextNode = __webpack_require__(25);
 
 /*eslint-disable no-bitwise */
 
@@ -3354,7 +3354,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(47);
+var _Card = __webpack_require__(16);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3383,8 +3383,10 @@ var HeroPlaceMy = function (_React$Component) {
     _createClass(HeroPlaceMy, [{
         key: 'cardlist',
         value: function cardlist() {
+            var _this2 = this;
+
             return this.props.mystate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({}, card, { key: i }));
+                return _react2.default.createElement(_Card2.default, _extends({ card: card }, _this2.props, { key: i }));
             });
         }
     }, {
@@ -3456,6 +3458,82 @@ module.exports = HeroPlaceMy;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _action = __webpack_require__(14);
+
+__webpack_require__(48);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //使用技能
+
+
+var Card = function (_React$Component) {
+    _inherits(Card, _React$Component);
+
+    function Card() {
+        _classCallCheck(this, Card);
+
+        var _this = _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(Card, [{
+        key: 'usecard',
+        value: function usecard(id) {
+            var newstate = (0, _action.doskill)(id);
+            this.props.setState(newstate);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
+            var card = this.props.card;
+            if (this.props.show) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'card_box', onClick: this.usecard(card.id) },
+                    _react2.default.createElement('div', { className: 'card_ion' }),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_name' },
+                        card.name
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_message' },
+                        card.message
+                    )
+                );
+            } else {
+                return _react2.default.createElement('div', { className: 'card_box_hide' });
+            }
+        }
+    }]);
+
+    return Card;
+}(_react2.default.Component);
+
+module.exports = Card;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3464,7 +3542,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(47);
+var _Card = __webpack_require__(16);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3494,7 +3572,7 @@ var HeroPlaceThat = function (_React$Component) {
         key: 'cardlist',
         value: function cardlist() {
             return this.props.thatstate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({}, card, { key: i }));
+                return _react2.default.createElement(_Card2.default, _extends({ show: false }, card, { key: i }));
             });
         }
     }, {
@@ -3567,20 +3645,20 @@ var HeroPlaceThat = function (_React$Component) {
 module.exports = HeroPlaceThat;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(18);
+module.exports = __webpack_require__(19);
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _reactDom = __webpack_require__(19);
+var _reactDom = __webpack_require__(20);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -3588,7 +3666,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DotaSystem = __webpack_require__(31);
+var _DotaSystem = __webpack_require__(32);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
@@ -3600,7 +3678,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(_DotaSystem2.default, null), document.getElementById("box")); //react-dom，仅在项目顶层使用
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3638,15 +3716,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(20);
+  module.exports = __webpack_require__(21);
 } else {
-  module.exports = __webpack_require__(26);
+  module.exports = __webpack_require__(27);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3899,7 +3977,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3928,7 +4006,7 @@ Y=X&&W||X;module.exports=Y["default"]?Y["default"]:Y;
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5350,7 +5428,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5369,7 +5447,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5384,7 +5462,7 @@ module.exports = ReactPropTypesSecret;
  * @typechecks
  */
 
-var isNode = __webpack_require__(25);
+var isNode = __webpack_require__(26);
 
 /**
  * @param {*} object The object to check.
@@ -5397,7 +5475,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5425,7 +5503,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5457,8 +5535,8 @@ var getActiveElement = __webpack_require__(11);
 var shallowEqual = __webpack_require__(12);
 var containsNode = __webpack_require__(13);
 var emptyObject = __webpack_require__(7);
-var hyphenateStyleName = __webpack_require__(27);
-var camelizeStyleName = __webpack_require__(29);
+var hyphenateStyleName = __webpack_require__(28);
+var camelizeStyleName = __webpack_require__(30);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -22087,7 +22165,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22102,7 +22180,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(28);
+var hyphenate = __webpack_require__(29);
 
 var msPattern = /^ms-/;
 
@@ -22129,7 +22207,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22165,7 +22243,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22180,7 +22258,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(30);
+var camelize = __webpack_require__(31);
 
 var msPattern = /^-ms-/;
 
@@ -22208,7 +22286,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22243,7 +22321,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22257,17 +22335,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(32);
+__webpack_require__(33);
 
-var _login = __webpack_require__(35);
+var _login = __webpack_require__(36);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(36);
+var _Prepare = __webpack_require__(37);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(39);
+var _playing = __webpack_require__(40);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -22337,11 +22415,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(33);
+var content = __webpack_require__(34);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22387,7 +22465,7 @@ if(false) {
 }
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22401,7 +22479,7 @@ exports.push([module.i, "body {\n  margin: 0px;\n  padding: 0px; }\n\n.system_bo
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 
@@ -22496,7 +22574,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22587,7 +22665,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22599,7 +22677,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(37);
+__webpack_require__(38);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22776,11 +22854,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(38);
+var content = __webpack_require__(39);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22826,7 +22904,7 @@ if(false) {
 }
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22840,7 +22918,7 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22854,11 +22932,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(40);
+__webpack_require__(41);
 
 var _action = __webpack_require__(14);
 
-var _index = __webpack_require__(42);
+var _index = __webpack_require__(43);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -22949,11 +23027,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(41);
+var content = __webpack_require__(42);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22999,7 +23077,7 @@ if(false) {
 }
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23013,13 +23091,13 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _PlayPage = __webpack_require__(43);
+var _PlayPage = __webpack_require__(44);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
@@ -23031,7 +23109,7 @@ var _HeroPlaceMy = __webpack_require__(15);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(16);
+var _HeroPlaceThat = __webpack_require__(17);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -23046,7 +23124,7 @@ var common = {
 module.exports = common;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23058,17 +23136,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(44);
+__webpack_require__(45);
 
 var _action = __webpack_require__(14);
 
-var _skill = __webpack_require__(46);
+var _skill = __webpack_require__(47);
 
 var _HeroPlaceMy = __webpack_require__(15);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(16);
+var _HeroPlaceThat = __webpack_require__(17);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -23079,6 +23157,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+//洗牌
+
 
 var PlayPage = function (_React$Component) {
     _inherits(PlayPage, _React$Component);
@@ -23172,11 +23252,11 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(45);
+var content = __webpack_require__(46);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23222,7 +23302,7 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23236,7 +23316,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23564,69 +23644,6 @@ small_skill[237] = { id: 1237, name: "雷霆之击", state: 1, message: "对敌�
 module.exports = { big_skill: big_skill, small_skill: small_skill };
 
 /***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(48);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Card = function (_React$Component) {
-    _inherits(Card, _React$Component);
-
-    function Card() {
-        _classCallCheck(this, Card);
-
-        var _this = _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).call(this));
-
-        _this.state = {};
-        return _this;
-    }
-
-    _createClass(Card, [{
-        key: "render",
-        value: function render() {
-            // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
-            var basic = this.props.mystate;
-            return _react2.default.createElement(
-                "div",
-                { className: "card_box" },
-                _react2.default.createElement("div", { className: "card_ion" }),
-                _react2.default.createElement(
-                    "div",
-                    { className: "card_name" },
-                    this.props.name
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "card_message" },
-                    this.props.message
-                )
-            );
-        }
-    }]);
-
-    return Card;
-}(_react2.default.Component);
-
-module.exports = Card;
-
-/***/ }),
 /* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -23685,7 +23702,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  border: 1px solid #d2d2d2;\n  cursor: pointer;\n  transition: all 0.1s;\n  cursor: pointer; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_box:hover {\n  transform: translateY(-10%); }\n", ""]);
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  border: 1px solid #d2d2d2;\n  cursor: pointer;\n  transition: all 0.1s;\n  cursor: pointer; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_box:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2; }\n", ""]);
 
 // exports
 

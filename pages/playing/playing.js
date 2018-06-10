@@ -27,6 +27,7 @@ class Component extends React.Component{
                 attack:"40",//攻击力
                 armor:"10",//护甲
                 status:[],//状态数组
+                statusTime:[],//状态持续时间
                 equipment:[],//装备列表
                 cardid:[],//卡牌数组
                 money:"0",//金钱
