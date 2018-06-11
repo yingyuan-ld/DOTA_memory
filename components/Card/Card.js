@@ -11,12 +11,19 @@ class Card extends React.Component{
     usecard(id){
         let newstate = doskill(this.props.mystate,this.props.thatstate,id);
         this.props.setState(newstate);
+        this.props.socket.emit('totalk', {
+            id:this.props.thatid,
+            obj:{
+                funname:"getnewstate",
+                newstate:newstate,
+            }
+        });
     }
   	render() {
         // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
         let card = this.props.card
         if(this.props.show){
-            return <div className="card_box" onClick={this.usecard(card.id)}>
+            return <div className="card_box" onClick={this.usecard.bind(this,card.id)}>
                 <div className="card_ion"></div>
                 <div className="card_name">{card.name}</div>
                 <div className="card_message">{card.message}</div>

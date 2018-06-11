@@ -10,7 +10,7 @@ class HeroPlaceThat extends React.Component{
     }
     cardlist(){
         return this.props.thatstate.cardid.map((card,i)=>{
-            return <Card  show={false} {...card} key={i}/>
+            return <Card show={false} {...card} key={i}/>
         })
     }
   	render() {

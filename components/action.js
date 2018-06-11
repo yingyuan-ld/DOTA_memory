@@ -27,8 +27,11 @@ export function cardheap (state,obj){//洗牌结果
     state.big_cardheap = obj.big_cardheap;
     return state;
 }
-
-export function doskill (mystate,thatstate,cardid){//使用技能    
+export function getnewstate(thisstate,obj){
+    return obj.newstate;
+}
+export function doskill (mystate,thatstate,cardid){//使用技能
+      let r;  
     switch (cardid)
     {
          // case 0:
@@ -612,7 +615,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1024:
             //混乱之箭 1 随机对敌方造成1-200的伤害，并晕眩1-2回合
-            let r = Math.random();
+            r = Math.random();
             let t = parseInt(r*2+1);
             thatstate.Hp -= parseInt(r*200);
             mystate.Mp-=100;
@@ -690,15 +693,11 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         case 1037:
             //不稳定物 0 50%使对方晕眩两回合50%使自己晕眩一回合
             mystate.Mp -= 50;
-            let r = Math.random();
-            if (i >= 0.5)
-            {
+            r = Math.random();
+            if (r >= 0.5){
                 thatstate.status.push(0);
                 thatstate.statusTime.push(4);
-                
-            }
-            else
-            {
+            }else{
                 mystate.status.push(0);
                 mystate.statusTime.push(2)
             }
@@ -777,7 +776,10 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         case 1050:
             //吞噬 1 将对方的随机一张牌,转化为100金币
             mystate.Mp -= 100;
-            alert("未实现")
+            mystate.money += 100;
+            r = Math.random();
+            let index = parseInt(r*thatstate.cardid.length);
+            thatstate.cardid.splice(index, 1);
             break;
         // case 127:
         //     //焦土 2 敌方掉70血，自己回复80血
@@ -1648,7 +1650,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 279:
         //     //忠诚考验 1 随机对敌方造成50-300点伤害
-        //     let r = Math.random();
+        //     r = Math.random();
         //     let hurtmofa = r.Next(5, 31);
         //     thatstate.Hp -= hurtmofa * 10;
         //     break;
@@ -1833,12 +1835,12 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     thatstate.Hp -= 200;
         //     break;
     }
-    if (form4.statecontinue[8] == 1)
-    {
-        thatstate.statusTime.push(1);
-        thatstate.status.push(0);
+    // if (form4.statecontinue[8] == 1)
+    // {
+    //     thatstate.statusTime.push(1);
+    //     thatstate.status.push(0);
         
-    }
+    // }
 
-    return mystate;
+    return {mystate:mystate,thatstate:thatstate};
 }
