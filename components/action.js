@@ -31,7 +31,7 @@ export function getnewstate(thisstate,obj){
     return obj.newstate;
 }
 export function doskill (mystate,thatstate,cardid){//使用技能
-      let r;  
+    let r;  
     switch (cardid)
     {
          // case 0:
@@ -165,7 +165,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          //     break;
          // case 20:
          //     //守护天使 2回合内使自己物理免疫，并回复300点生命值
-         //     mystate.Hp += 300;
+         //     mystate.Hp =mystate.Hp*1+300;
          //     mystate.status.push();
          //    mystate.statusTime.push(6)
              
@@ -181,7 +181,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          //     break;
          // case 23:
          //     //血肉傀儡 回复200点生命,三回合内对方每少一张牌自己就加80点生命
-         //     mystate.Hp += 200;
+         //     mystate.Hp =mystate.Hp*1+200;
          //     mystate.status.push();
          //    mystate.statusTime.push(6)
              
@@ -213,7 +213,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          // case 28:
          //     //变形术 永久增加自己600点血量上限，并回复450点生命值
          //     form4.me.Maxhp += 600;
-         //     mystate.Hp += 450;
+         //     mystate.Hp =mystate.Hp*1+450;
          //     form4.maxhp += 600;
          //     break;
          // case 29:
@@ -294,7 +294,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          //     break;
          // case 42:
          //     //暗影之舞 2 回复200点生命并使敌方在2回合内无法攻击自己
-         //     mystate.Hp += 200;
+         //     mystate.Hp =mystate.Hp*1+200;
          //     mystate.status.push();
          //    mystate.statusTime.push(6)
              
@@ -405,14 +405,14 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          //     break;
          // case 62:
          //     //虚妄之诺 2 回复300点生命值并使对方三回合内无法攻击你
-         //     mystate.Hp += 300;
+         //     mystate.Hp =mystate.Hp*1+300;
          //     mystate.status.push();
          //    mystate.statusTime.push(6)
              
          //     break;
          // case 63:
          //     //上帝之手 2 回复己方500点生命值
-         //     mystate.Hp += 500;
+         //     mystate.Hp =mystate.Hp*1+500;
          //     break;
          // case 64:
          //     //脉冲新星 0 对敌方造成450点伤害
@@ -432,7 +432,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          // case 67:
          //     //驱使恶灵 1 对敌方造成400点伤害，并使己方回复100点生命值
          //     thatstate.Hp -= 400;
-         //     mystate.Hp += 100;
+         //     mystate.Hp =mystate.Hp*1+100;
          //     break;
          // case 68:
          //     //神秘之耀 0 对敌方造成450点伤害
@@ -464,7 +464,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
          // case 74:
          //     //生命汲取 0 对敌方造成300点伤害，同时回复300点生命值
          //     thatstate.Hp -= 300;
-         //     mystate.Hp += 300;
+         //     mystate.Hp =mystate.Hp*1+300;
          //     break;
          // case 75:
          //     //静态风暴 0 对敌方造成200点伤害并使敌方沉默一回合
@@ -650,7 +650,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         case 1030:
             //强攻 2 回复100点生命值并造成物理攻击的伤害
             thatstate.Hp -= mystate.attack;
-            mystate.Hp += 100;
+            mystate.Hp =mystate.Hp*1+100;
             mystate.Mp -= 80;
             break;
         case 1031:
@@ -738,7 +738,6 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             mystate.Mp -= 30;
             mystate.status.push(18);
             mystate.statusTime.push(6)
-            
             break;
         case 1044:
             //火焰气息 0 对敌方造成200点伤害
@@ -776,7 +775,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         case 1050:
             //吞噬 1 将对方的随机一张牌,转化为100金币
             mystate.Mp -= 100;
-            mystate.money += 100;
+            mystate.money = mystate.money*1+100;
             r = Math.random();
             let index = parseInt(r*thatstate.cardid.length);
             thatstate.cardid.splice(index, 1);
@@ -784,7 +783,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         // case 127:
         //     //焦土 2 敌方掉70血，自己回复80血
         //     thatstate.Hp -= 70;
-        //     mystate.Hp += 80;
+        //     mystate.Hp =mystate.Hp*1+80;
         //     break;
         // case 128:
         //     //回音重踏 0 使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态
@@ -803,7 +802,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 130:
         //     //洗礼 0 回复自己200点生命值
-        //     mystate.Hp += 200;
+        //     mystate.Hp =mystate.Hp*1+200;
         //     break;
         // case 131:
         //     //驱逐 2 使自己魔免两回合
@@ -868,7 +867,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 141:
         //     //活血术 2 增加自己当前攻击力的血量
-        //     mystate.Hp += mystate.attack;
+        //     mystate.Hp =mystate.Hp*1+mystate.attack;
         //     break;
         // case 142:
         //     //沸血之矛 2 消耗自身50点生命值使本回合内攻击加100
@@ -925,7 +924,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         // case 151:
         //     //寄生种子 1 使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌
         //     thatstate.Hp -= 90;
-        //     mystate.Hp += 80;
+        //     mystate.Hp =mystate.Hp*1+80;
         //     form4.getcard();
         //     break;
         // case 152:
@@ -1442,7 +1441,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 240:
         //     //暗影波 0 回复自己手牌数乘以25点的生命
-        //     mystate.Hp += form4.mycardnumber * 25;
+        //     mystate.Hp =mystate.Hp*1+form4.mycardnumber * 25;
         //     break;
         // case 241:
         //     //叉形闪电 1 对敌方造成90点伤害
@@ -1559,7 +1558,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 263:
         //     //极寒之拥 2 使自己加100点护甲回复100点生命,但本回合不可以再出牌
-        //     mystate.Hp += 100;
+        //     mystate.Hp =mystate.Hp*1+100;
         //     form4.mystatelist(68);
         //     mystate.status.push();
         //     mystate.statusTime.push(6)
@@ -1674,7 +1673,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 283:
         //     //暗言术 0 使己方回复80点生命值并对敌方造成80点伤害
-        //     mystate.Hp += 80;
+        //     mystate.Hp =mystate.Hp*1+80;
         //     thatstate.Hp -= 80;
         //     break;
         // case 284:
@@ -1694,7 +1693,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         // case 287:
         //     //死亡脉冲 0 对敌方造成100点伤害，同时回复100点生命值
         //     thatstate.Hp -= 100;
-        //     mystate.Hp += 100;
+        //     mystate.Hp =mystate.Hp*1+100;
         //     break;
         // case 288:
         //     //竭心光环 2 每回合减少敌方0.1%生命值
@@ -1748,7 +1747,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         // case 298:
         //     //蚀脑 1 对敌方造成200点伤害，同时回复100点生命值
         //     thatstate.Hp -= 200;
-        //     mystate.Hp += 100;
+        //     mystate.Hp =mystate.Hp*1+100;
         //     break;
         // case 299:
         //     //噩梦 1 使敌方沉睡一回合不能摸牌，己方也不能进行攻击
@@ -1787,7 +1786,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 304:
         //     //巫毒回复术 2 回复150点生命
-        //     mystate.Hp += 150;
+        //     mystate.Hp =mystate.Hp*1+150;
         //     break;
         // case 305:
         //     //诅咒 0 使敌方受到未来3回合内承受伤害的50%
@@ -1814,7 +1813,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         //     break;
         // case 309:
         //     //自然之助 2 回复自身200点生命值
-        //     mystate.Hp += 200;
+        //     mystate.Hp =mystate.Hp*1+200;
         //     break;
         // case 310:
         //     //幽冥爆轰 0 对敌方造成200点伤害

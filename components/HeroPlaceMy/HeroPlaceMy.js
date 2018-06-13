@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '../Card/Card';
+import StateIon from '../StateIon/StateIon';
 import "./HeroPlaceMy.scss";
 
 class HeroPlaceMy extends React.Component{
@@ -13,6 +14,10 @@ class HeroPlaceMy extends React.Component{
             return <Card card={card} show={true} {...this.props} key={i}/>
         })
     }
+    showstate(st){
+        let status = st.status;//状态数组
+        let statusTime = st.statusTime;//状态持续时间
+    }
   	render() {
         let basic = this.props.mystate;
         return <div className="hero_place">
@@ -22,7 +27,7 @@ class HeroPlaceMy extends React.Component{
                 <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove+"/s"}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
-                <div className="statelist">{"状态:..."}</div>
+                <div className="statelist">{this.showstate.bind(basic)}</div>
             </div>
             <div className="card_list">
                 {this.cardlist()}
