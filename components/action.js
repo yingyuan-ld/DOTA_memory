@@ -28,7 +28,11 @@ export function cardheap (state,obj){//洗牌结果
     return state;
 }
 export function getnewstate(thisstate,obj){
-    return obj.newstate;
+    let newstate = {
+        mystate:obj.newstate.thatstate,
+        thatstate:obj.newstate.mystate,
+    }
+    return newstate;
 }
 export function doskill (mystate,thatstate,cardid){//使用技能
     let r;  
@@ -495,7 +499,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1003:
             //反击 2 在自己受到伤害时对敌方造成自身承受伤害的20%,持续3回合
-            mystate.status.push(101);
+            mystate.status.push(100);
             mystate.statusTime.push(6);
             break;
         case 1004:
@@ -505,7 +509,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1005:
             //海妖外壳 2 受到普通攻击时可以减少50点伤害
-            mystate.status.push(102);
+            mystate.status.push(101);
             mystate.statusTime.push(6);
             break;
         case 1006:
@@ -524,7 +528,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1008:
             //潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
-            mystate.status.push(103);
+            mystate.status.push(102);
             mystate.statusTime.push(2);
             break;
         case 1009:
@@ -539,7 +543,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1011:
             //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
-            mystate.status.push(104);
+            mystate.status.push(103);
             mystate.statusTime.push(6);
             break;
         case 1012:
@@ -556,7 +560,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1014:
             //霜之哀伤 2 本回合内攻击对手后可以去除对手一张手牌
-            mystate.status.push(166);
+            mystate.status.push(96);
             mystate.statusTime.push(2);
             break;
         case 1015:
@@ -581,7 +585,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1018:
             //反击螺旋 2 敌方普通攻击自己时会受到50点伤害(持续3回合)
-            mystate.status.push(106);
+            mystate.status.push(105);
             mystate.statusTime.push(6);
             break;
         case 1019:
@@ -610,7 +614,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1023:
             //余震 2 半回合内自己使用任何技能都会使敌方眩晕半回合
-            mystate.status.push(108);
+            mystate.status.push(107);
             mystate.statusTime.push(1);
             break;
         case 1024:
@@ -629,7 +633,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1026:
             //致命一击 2 攻击时有40%的概率双倍攻击(持续3回合)
-            mystate.status.push(109);
+            mystate.status.push(108);
             mystate.statusTime.push(6);
             break;
         case 1027:
@@ -718,8 +722,8 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1040:
             //巨力重击 2 攻击时有30%的概率使敌方晕眩一回合并且额外造成40点伤害
+            mystate.status.push(97);
             mystate.statusTime.push(6)
-            mystate.status.push(166);
             break;
         case 1041:
             //风暴之锤 0 对敌方造成100点伤害并晕眩一回合
@@ -730,7 +734,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             break;
         case 1042:
             //巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
-            mystate.status.push(168);
+            mystate.status.push(99);
             mystate.statusTime.push(6)
             break;
         case 1043:

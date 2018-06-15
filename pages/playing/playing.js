@@ -1,11 +1,12 @@
 import React from 'react';
 import "./playing.scss";
-import {prepareOk,cardheap} from '../../components/action';
+import {prepareOk,cardheap,getnewstate} from '../../components/action';
 // import {HeroSelect,PlayPage} from '../../components/index';
 import PAGES from '../../components/index';
 const ACTION = {
     prepareOk,
-    cardheap
+    cardheap,
+    getnewstate
 }
 // const PAGES = {
 //     HeroSelect,

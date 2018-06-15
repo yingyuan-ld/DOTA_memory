@@ -15,7 +15,7 @@ class Card extends React.Component{
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
-                newstate:newstate,
+                newstate:newstate
             }
         });
     }
