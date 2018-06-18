@@ -11,23 +11,23 @@ class HeroSelect extends React.Component{
         let mystate = this.props.mystate
         switch(type){
             case 0:
-                mystate.herotype="0";
-                mystate.maxHp="4000";
-                mystate.Hp="4000";
-                mystate.Hprecove="15";
+                mystate.herotype=0;
+                mystate.maxHp=4000;
+                mystate.Hp=4000;
+                mystate.Hprecove=15;
                 break;
             case 1:
-                mystate.herotype="1";
-                mystate.attack="70";
-                mystate.armor="15";
+                mystate.herotype=1;
+                mystate.attack=70;
+                mystate.armor=15;
                 break;
             case 2:
-                mystate.herotype="2";
-                mystate.maxHp="3000";
-                mystate.Hp="3000";
-                mystate.maxMp="600";
-                mystate.Mp="600";
-                mystate.Mprecove="60";
+                mystate.herotype=2;
+                mystate.maxHp=3000;
+                mystate.Hp=3000;
+                mystate.maxMp=600;
+                mystate.Mp=600;
+                mystate.Mprecove=60;
                 break;
         }
         let round = Math.random();//随机回合用

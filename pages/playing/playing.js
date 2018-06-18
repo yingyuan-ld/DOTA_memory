@@ -19,22 +19,23 @@ class Component extends React.Component{
         this.state = {
             mystate:{
                 herotype:"",//英雄种类 0力量 1敏捷 2智力
-                maxHp:"3500",//最大血量
-                Hp:"3500",//当前血量
-                Hprecove:"10",//生命值恢复速度
-                maxMp:"500",//最大蓝量
-                Mp:"500",//当前蓝量
-                Mprecove:"50",//魔法值恢复速度
-                attack:"40",//攻击力
-                armor:"10",//护甲
+                maxHp:3500,//最大血量
+                Hp:3500,//当前血量
+                Hprecove:10,//生命值恢复速度
+                maxMp:500,//最大蓝量
+                Mp:500,//当前蓝量
+                Mprecove:50,//魔法值恢复速度
+                attack:40,//攻击力
+                armor:10,//护甲
                 status:[],//状态数组
                 statusTime:[],//状态持续时间
+                statusObj:{},//有些状态需要对象来存储
                 equipment:[],//装备列表
                 cardid:[],//卡牌数组
-                money:"0",//金钱
+                money:0,//金钱
             },
             round:0, //是否是我的回合 0不是 1是
-
+            messagelist:[],//战斗记录
             small_cardheap:[],//小技能 牌堆
             small_speed:0,//记录小技能牌使用进度
             big_cardheap:[],//大技能 牌堆
@@ -57,7 +58,10 @@ class Component extends React.Component{
   	render() {
         let Field = PAGES[PLAYSPEED[this.state.playingSpeed]];
         return <div className="system_body">
-            <Field setState={this.setState.bind(this)} {...this.props}{...this.state}/>
+            <Field 
+                setState={this.setState.bind(this)}
+                {...this.props}
+                {...this.state}/>
         </div>;
   	}
 }

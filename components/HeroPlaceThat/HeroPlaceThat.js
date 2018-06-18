@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
 import StateIon from '../StateIon/StateIon';
+import {state_base} from '../action';//计算状态影响下的属性
 import "./HeroPlaceThat.scss";
 
 class HeroPlaceThat extends React.Component{
@@ -23,14 +24,18 @@ class HeroPlaceThat extends React.Component{
         });
     }
   	render() {
-        let basic = this.props.thatstate;
+        let basic = state_base(this.props.thatstate,this.props.mystate);//计算状态影响下的属性
         if(basic.herotype===""||basic.herotype===undefined){
             return <div className="hero_place" >
                 对手正在准备中...
             </div>;
         }
         return <div className="hero_place">
-            <div className="hero_ion">{basic.herotype}</div>
+            <div className="hero_box">
+                <div className="hero_ion">
+                    {basic.herotype==0?"力量":(basic.herotype==1?"敏捷":"智力")}
+                </div>
+            </div>
             <div className="attribute_list">
                 <div className="HP">{basic.Hp+"/"+basic.maxHp+"+"+basic.Hprecove+"/s"}</div>
                 <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove+"/s"}</div>

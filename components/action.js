@@ -3,8 +3,11 @@ export function prepareOk (mystate,obj){//准备开始
     mystate.thatstate=obj.state
     return mystate;
 }
-function getRandomInt(min, max) {  
-    return Math.floor(Math.random() * (max - min + 1) + min)  
+function getRandomInt(min, max) {  //返回一个区间的随机数
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+function deepCopy(obj) {  
+    return JSON.parse(JSON.stringify(obj));
 }
 export function shufflecards(arr){//洗牌
     arr = arr.slice()  
@@ -28,12 +31,66 @@ export function cardheap (state,obj){//洗牌结果
     return state;
 }
 export function getnewstate(thisstate,obj){
-    let newstate = {
-        mystate:obj.newstate.thatstate,
-        thatstate:obj.newstate.mystate,
-    }
+    let messagelist =thisstate.messagelist;
+    if(!obj.message)console.info("缺少动作的message");
+    messagelist.push(obj.message);
+    let newstate = obj.newstate;
+    newstate.messagelist = messagelist;
     return newstate;
 }
+export function state_base(mystate,thatstate){
+    if(!mystate.status)return mystate;
+    mystate = deepCopy(mystate);
+    mystate.status.map((key)=>{
+        switch (key)
+        {
+            case 5://巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
+                mystate.armor-=10;
+                break;
+            case 6://锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
+                mystate.attack-= parseInt(mystate.attack/2);
+                break;                
+            case 102://潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
+                mystate.attack+= (20+thatstate.cardid.length*10);
+                break;
+            case 103://活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
+                mystate.armor+= (mystate.statusObj["103"]*10);
+                break;
+            case 11://战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
+                mystate.armor+= 40;
+                break;
+            case 13://强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
+                mystate.attack+= mystate.attack;
+                break;
+            case 16://嚎叫 0 本回合攻击加60
+                mystate.attack+= 60;
+                break;
+            case 113://野性驱使 2 攻击加30
+                mystate.attack+= 30;
+                break;
+            case 73://酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
+                mystate.armor-= 10;
+                break;
+            case 99://巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
+                mystate.attack+= thatstate.cardid.length*10;
+                break;
+            case 18://战吼 2 三回合内增加自身30点护甲
+                mystate.armor+= 30;
+                break;
+            case 115://龙族血统 2 每回合回复40点生命值(持续3回合)
+                mystate.Hprecove+= 40;
+                break;
+            case 21://授予力量 2 本回合内攻击加80
+                mystate.attack+= 80;
+                break;
+                
+        }
+            
+                
+    })
+    return mystate;
+}
+
 export function doskill (mystate,thatstate,cardid){//使用技能
     let r;  
     switch (cardid)
@@ -544,6 +601,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
         case 1011:
             //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
             mystate.status.push(103);
+            mystate.statusObj["103"] = 0;//护甲的层数
             mystate.statusTime.push(6);
             break;
         case 1012:
@@ -556,6 +614,7 @@ export function doskill (mystate,thatstate,cardid){//使用技能
             //无光之盾 2 最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)
             mystate.Mp-=100;
             mystate.status.push(8);
+            mystate.statusObj["8"] = 250;//盾的剩余hp
             mystate.statusTime.push(6);
             break;
         case 1014:

@@ -5,6 +5,7 @@ import {shufflecards} from '../action';
 import {big_skill,small_skill} from '../../server/skill';
 import HeroPlaceMy from "../HeroPlaceMy/HeroPlaceMy";
 import HeroPlaceThat from "../HeroPlaceThat/HeroPlaceThat";
+import FightPlace from "../FightPlace/FightPlace";
 
 class PlayPage extends React.Component{
     constructor(){
@@ -19,6 +20,40 @@ class PlayPage extends React.Component{
         if((this.props.round+"").indexOf(".")>0&&(newProps.round+"").indexOf(".")>0){//对手比你后进来
             this.prepare_card(newProps.round,newProps.thatstate);
         }
+        if(this.props.round==0&&newProps.round==1){//你的回合开始
+            let mystate = this.props.mystate;
+            mystate.Hp += mystate.Hprecove;//生命值恢复
+            mystate.Mp += mystate.Mprecove;//魔法值恢复
+            mystate.money+=100;//金钱
+            if(mystate.cardid.length>=8){//手牌处理
+                let messagelist = this.props.messagelist;
+                messagelist.push("小伙，你手牌满了！");
+                mystate.messagelist = messagelist;
+            }else{
+                let messagelist = this.props.messagelist;
+                messagelist.push("还没做这块。。。。");
+                mystate.messagelist = messagelist;
+            }
+            for(let i=0;i<mystate.status.length;){//状态处理
+                if(mystate.statusTime[i]==1){
+                    mystate.statusTime.splice(i,1);
+                    mystate.statusObj[mystate.status[i]]&&delete mystate.statusObj[mystate.status[i]];
+                    mystate.status.splice(i,1);
+                }else{
+                    mystate.statusTime[i]-=1;
+                    i++;
+                }
+            }
+            
+            this.props.socket.emit('totalk', {
+                id:this.props.thatid,
+                obj:{
+                    funname:"getnewstate",
+                    newstate:{round:1,thatstate:mystate},
+                    message:"对方回合结束，现在是你的回合"
+                }
+            });
+        }
     }
     prepare_card(round,thatstate){
         if(round>0){//准备完毕,并且先手
@@ -32,6 +67,7 @@ class PlayPage extends React.Component{
                 small_cardheap:small_cardheap,
                 big_cardheap:big_cardheap,
                 round:1,
+                messagelist:["你是先手"],
                 small_speed:16,
                 mystate:mystate,
                 thatstate:thatstate
@@ -47,21 +83,17 @@ class PlayPage extends React.Component{
                 }
             });
         }else{//准备完毕,并且后手
-            this.props.setState({round:0});
+            this.props.setState({
+                round:0,
+                messagelist:["对方先手"]
+            });
         }
-    }
-    fight_place(){
-        return <div className="fight_place">
-            {this.props.thatstate.herotype!=undefined?
-                <div>{(this.props.round>0?"我的回合":"对方回合")+this.props.round}</div>:
-            ""}
-        </div>
     }
   	render() {
         console.info(this.props);
         return<div className="main_box">
             <HeroPlaceThat {...this.props}/>
-            {this.fight_place(this.props.thatstate)}
+            <FightPlace {...this.props}/>
             <HeroPlaceMy {...this.props}/>
         </div>
   	}

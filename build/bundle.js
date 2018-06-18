@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 20);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(22);
+  module.exports = __webpack_require__(24);
 } else {
-  module.exports = __webpack_require__(23);
+  module.exports = __webpack_require__(25);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -227,7 +227,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(35);
+var	fixUrls = __webpack_require__(37);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -843,196 +843,6 @@ module.exports = emptyFunction;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-
-/* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
-
-		// Detect buggy property enumeration order in older V8 versions.
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
-
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyObject = {};
-
-if (process.env.NODE_ENV !== 'production') {
-  Object.freeze(emptyObject);
-}
-
-module.exports = emptyObject;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyFunction = __webpack_require__(5);
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
@@ -1042,6 +852,7 @@ exports.prepareOk = prepareOk;
 exports.shufflecards = shufflecards;
 exports.cardheap = cardheap;
 exports.getnewstate = getnewstate;
+exports.state_base = state_base;
 exports.doskill = doskill;
 function prepareOk(mystate, obj) {
     //准备开始
@@ -1050,7 +861,11 @@ function prepareOk(mystate, obj) {
     return mystate;
 }
 function getRandomInt(min, max) {
+    //返回一个区间的随机数
     return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function deepCopy(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }
 function shufflecards(arr) {
     //洗牌
@@ -1077,12 +892,76 @@ function cardheap(state, obj) {
     return state;
 }
 function getnewstate(thisstate, obj) {
-    var newstate = {
-        mystate: obj.newstate.thatstate,
-        thatstate: obj.newstate.mystate
-    };
+    var messagelist = thisstate.messagelist;
+    if (!obj.message) console.info("缺少动作的message");
+    messagelist.push(obj.message);
+    var newstate = obj.newstate;
+    newstate.messagelist = messagelist;
     return newstate;
 }
+function state_base(mystate, thatstate) {
+    if (!mystate.status) return mystate;
+    mystate = deepCopy(mystate);
+    mystate.status.map(function (key) {
+        switch (key) {
+            case 5:
+                //巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
+                mystate.armor -= 10;
+                break;
+            case 6:
+                //锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
+                mystate.attack -= parseInt(mystate.attack / 2);
+                break;
+            case 102:
+                //潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
+                mystate.attack += 20 + thatstate.cardid.length * 10;
+                break;
+            case 103:
+                //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
+                mystate.armor += mystate.statusObj["103"] * 10;
+                break;
+            case 11:
+                //战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
+                mystate.armor += 40;
+                break;
+            case 13:
+                //强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
+                mystate.attack += mystate.attack;
+                break;
+            case 16:
+                //嚎叫 0 本回合攻击加60
+                mystate.attack += 60;
+                break;
+            case 113:
+                //野性驱使 2 攻击加30
+                mystate.attack += 30;
+                break;
+            case 73:
+                //酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
+                mystate.armor -= 10;
+                break;
+            case 99:
+                //巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
+                mystate.attack += thatstate.cardid.length * 10;
+                break;
+            case 18:
+                //战吼 2 三回合内增加自身30点护甲
+                mystate.armor += 30;
+                break;
+            case 115:
+                //龙族血统 2 每回合回复40点生命值(持续3回合)
+                mystate.Hprecove += 40;
+                break;
+            case 21:
+                //授予力量 2 本回合内攻击加80
+                mystate.attack += 80;
+                break;
+
+        }
+    });
+    return mystate;
+}
+
 function doskill(mystate, thatstate, cardid) {
     //使用技能
     var r = void 0;
@@ -1593,6 +1472,7 @@ function doskill(mystate, thatstate, cardid) {
         case 1011:
             //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
             mystate.status.push(103);
+            mystate.statusObj["103"] = 0; //护甲的层数
             mystate.statusTime.push(6);
             break;
         case 1012:
@@ -1605,6 +1485,7 @@ function doskill(mystate, thatstate, cardid) {
             //无光之盾 2 最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)
             mystate.Mp -= 100;
             mystate.status.push(8);
+            mystate.statusObj["8"] = 250; //盾的剩余hp
             mystate.statusTime.push(6);
             break;
         case 1014:
@@ -2898,6 +2779,196 @@ function doskill(mystate, thatstate, cardid) {
 }
 
 /***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyObject = {};
+
+if (process.env.NODE_ENV !== 'production') {
+  Object.freeze(emptyObject);
+}
+
+module.exports = emptyObject;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyFunction = __webpack_require__(5);
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = emptyFunction;
+
+if (process.env.NODE_ENV !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2913,8 +2984,8 @@ function doskill(mystate, thatstate, cardid) {
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(4);
-  var warning = __webpack_require__(8);
-  var ReactPropTypesSecret = __webpack_require__(24);
+  var warning = __webpack_require__(9);
+  var ReactPropTypesSecret = __webpack_require__(26);
   var loggedTypeFailures = {};
 }
 
@@ -3132,7 +3203,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(25);
+var isTextNode = __webpack_require__(27);
 
 /*eslint-disable no-bitwise */
 
@@ -3178,13 +3249,15 @@ var _Card = __webpack_require__(16);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(50);
+var _stateflie = __webpack_require__(17);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _StateIon = __webpack_require__(51);
+var _StateIon = __webpack_require__(18);
 
 var _StateIon2 = _interopRequireDefault(_StateIon);
+
+var _action = __webpack_require__(6);
 
 __webpack_require__(54);
 
@@ -3194,7 +3267,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //计算状态影响下的属性
+
 
 var HeroPlaceMy = function (_React$Component) {
     _inherits(HeroPlaceMy, _React$Component);
@@ -3222,22 +3296,52 @@ var HeroPlaceMy = function (_React$Component) {
         value: function showstate(st) {
             var status = st.status; //状态数组
             var statusTime = st.statusTime; //状态持续时间
-
             return status.map(function (item, i) {
                 return _react2.default.createElement(_StateIon2.default, _extends({}, _stateflie2.default[item], { statusTime: statusTime[i], key: i }));
             });
         }
     }, {
+        key: 'roundOver',
+        value: function roundOver() {
+            var messagelist = this.props.messagelist;
+            messagelist.push("结束回合，现在是对方回合");
+            var round = { round: 0, messagelist: messagelist };
+            this.props.setState(round);
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { round: 1 },
+                    message: "对方回合结束，现在是你的回合"
+                }
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
-            var basic = this.props.mystate;
+
+            var basic = (0, _action.state_base)(this.props.mystate, this.props.thatstate); //计算状态影响下的属性
             return _react2.default.createElement(
                 'div',
                 { className: 'hero_place' },
                 _react2.default.createElement(
                     'div',
-                    { className: 'hero_ion' },
-                    basic.herotype
+                    { className: 'hero_box' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'hero_ion' },
+                        basic.herotype == 0 ? "力量" : basic.herotype == 1 ? "敏捷" : "智力"
+                    ),
+                    this.props.round == 1 ? _react2.default.createElement(
+                        'div',
+                        { className: 'attack_btn' },
+                        "普通攻击"
+                    ) : "",
+                    this.props.round == 1 ? _react2.default.createElement(
+                        'div',
+                        { className: 'over_btn', onClick: this.roundOver.bind(this) },
+                        "回合结束"
+                    ) : ""
                 ),
                 _react2.default.createElement(
                     'div',
@@ -3303,9 +3407,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _action = __webpack_require__(9);
+var _action = __webpack_require__(6);
 
-__webpack_require__(48);
+__webpack_require__(50);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3330,14 +3434,21 @@ var Card = function (_React$Component) {
 
     _createClass(Card, [{
         key: 'usecard',
-        value: function usecard(id) {
+        value: function usecard(id, name) {
+            if (this.props.round == 0) {
+                var messagelist = this.props.messagelist;
+                messagelist.push("现在不是你的回合！");
+                this.props.setState({ messagelist: messagelist });
+                return;
+            }
             var newstate = (0, _action.doskill)(this.props.mystate, this.props.thatstate, id);
             this.props.setState(newstate);
             this.props.socket.emit('totalk', {
                 id: this.props.thatid,
                 obj: {
                     funname: "getnewstate",
-                    newstate: newstate
+                    newstate: newstate,
+                    message: "对方使用了\"" + name + "\""
                 }
             });
         }
@@ -3349,7 +3460,7 @@ var Card = function (_React$Component) {
             if (this.props.show) {
                 return _react2.default.createElement(
                     'div',
-                    { className: 'card_box', onClick: this.usecard.bind(this, card.id) },
+                    { className: 'card_box', onClick: this.usecard.bind(this, card.id, card.name) },
                     _react2.default.createElement('div', { className: 'card_ion' }),
                     _react2.default.createElement(
                         'div',
@@ -3380,6 +3491,77 @@ module.exports = Card;
 "use strict";
 
 
+var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,出牌,使用装备" }, { id: 1, name: "沉默", message: "使该单位无法出牌" }, { id: 2, name: "虚无", message: "使该单位无法攻击,所受魔法伤害增加" }, { id: 3, name: "缴械", message: "使该单位无法攻击" }, { id: 4, name: "死亡契约", message: "该单位的攻击力暴涨了 (90)" }, { id: 5, name: "巨浪", message: "减少10点护甲" }, { id: 6, name: "锚击", message: "增加敌方手牌数乘以10的攻击" }, { id: 7, name: "船游", message: "受到伤害减半" }, { id: 8, name: "无光之盾", message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" }, { id: 9, name: "回光返照", message: "将受到的伤害转化为自己的生命值" }, { id: 10, name: "超级新星", message: "承受6次攻击则死亡,否则重生" }, { id: 11, name: "战士怒吼", message: "增加40点护甲" }, { id: 12, name: "海象挥击", message: "攻击力变为现在攻击力的4倍" }, { id: 13, name: "强化图腾", message: "攻击力变为现在攻击力的2倍" }, { id: 14, name: "决斗", message: "强制攻击,无法使用装备，技能" }, { id: 15, name: "变身", message: "攻击加100" }, { id: 16, name: "嚎叫", message: "攻击加60" }, { id: 17, name: "化学狂暴", message: "攻击加40并且每回合回复100点生命值" }, { id: 18, name: "战吼", message: "增加30点护甲" }, { id: 19, name: "神之力量", message: "攻击翻倍" }, { id: 20, name: "真龙形态", message: "攻击力增加装备数目乘以15" }, { id: 21, name: "授予力量", message: "攻击加80" }, { id: 22, name: "末日", message: "每回合造成100点伤害,不能使用技能和物品" }, { id: 23, name: "回音重踏", message: "晕眩状态,受到任何伤害都会解除" }, { id: 24, name: "磁场", message: "物理免疫" }, { id: 25, name: "守护天使", message: "物理免疫" }, { id: 26, name: "血肉傀儡", message: "对方每少一张牌加80点生命" }, { id: 27, name: "狂暴", message: "魔法免疫" }, { id: 28, name: "疯狂生长", message: "无法攻击" }, { id: 29, name: "活体护甲", message: "受到物理伤害减少20每回合加40点血" }, { id: 30, name: "醉酒云雾", message: "普通攻击有75%的概率打不中" }, { id: 31, name: "伤害加深", message: "护甲减少100点" }, { id: 32, name: "战士怒吼2", message: "强迫攻击,无法使用技能物品" }, { id: 33, name: "火焰壁垒", message: "抵挡150点魔法伤害,对方每回合减少30点生命值" }, { id: 34, name: "剑刃风暴", message: "使自己魔免,不可以攻击和出牌" }, { id: 35, name: "战斗专注", message: "普通攻击时可以多攻击敌方一次" }, { id: 36, name: "海妖之歌", message: "处于无敌状态" }, { id: 37, name: "石化凝视", message: "晕眩且魔免,但受到的物理伤害加倍" }, { id: 38, name: "折光", message: "抵挡伤害" }, { id: 39, name: "割裂", message: "自己每减少一张牌会减少200点生命值" }, { id: 40, name: "烟幕", message: "攻击有75%的概率miss,并不可以使用技能" }, { id: 41, name: "魔王降临", message: "减少20点护甲" }, { id: 42, name: "麻痹撕咬", message: "该单位50%概率攻击miss" }, { id: 43, name: "极度饥渴", message: "该单位攻击+80,且将对敌方造成伤害转化为己方生命值" }, { id: 44, name: "灵魂猎手", message: "该单位承受伤害加深25%" }, { id: 45, name: "编织", message: "该单位护甲+50" }, { id: 46, name: "薄葬", message: "该单位不会死亡" }, { id: 47, name: "激光", message: "该单位物理攻击100%miss" }, { id: 48, name: "超负荷", message: "空" }, { id: 49, name: "法力流失", message: "该单位攻击所需能量值+1" }, { id: 50, name: "虚妄之诺", message: "该单位不能攻击" }, { id: 51, name: "命运赦令", message: "该单位不能攻击切所受物理伤害加倍" }, { id: 52, name: "恶魔赦令", message: "该单位每回合对敌方造成80点伤害" }, { id: 53, name: "致命链接", message: "该单位承受1.5倍技能伤害" }, { id: 54, name: "虚弱", message: "该单位攻击力-30" }, { id: 55, name: "噩梦", message: "该单位沉睡中,不能出牌,攻击和使用装备" }, { id: 56, name: "诅咒", message: "该单位能量值-1" }, { id: 57, name: "旋风飞斧", message: "该单位攻击有30%的概率miss" }, { id: 58, name: "血之狂暴", message: "该单位无法使用技能" }, { id: 59, name: "超级力量", message: "普通攻击成功后额外对敌方造成该单位双倍攻击的伤害" }, { id: 60, name: "魔免", message: "魔法免疫" }, { id: 61, name: "撕裂伤口", message: "将该单位受到的普通攻击伤害转化为生命值" }, { id: 62, name: "衰退光环", message: "该单位攻击力减半" }, { id: 63, name: "自然秩序", message: "该单位护甲归0" }, { id: 64, name: "编织", message: "该单位护甲-50" }, { id: 65, name: "高射火炮", message: "该单位攻击+70" }, { id: 66, name: "嗜血术", message: "该单位攻击+30" }, { id: 67, name: "灼热之箭", message: "该单位攻击+50" }, { id: 68, name: "极寒之拥", message: "该单位护甲+100,且不可攻击,出牌和实用装备" }, { id: 69, name: "毒性攻击", message: "该单位攻击+40" }, { id: 70, name: "狂战士之怒", message: "该单位血量<50%时,攻击次数+1且不消耗能量格" }, { id: 71, name: "扫射", message: "该单位攻击+40" }, { id: 72, name: "沸血之矛", message: "该单位攻击+100" }, { id: 73, name: "酸性喷雾", message: "该单位护甲-10" }, { id: 74, name: "严寒灼烧", message: "增加敌方当前生命值2%的攻击力" }, { id: 75, name: "火力聚焦", message: "该单位攻击-50,攻击次数+2" }, { id: 76, name: "智慧之刃", message: "增加该单位20倍能量值的攻击力" }, { id: 77, name: "霜冻护甲", message: "该单位护甲+20" }, { id: 78, name: "秘法天球", message: "增加该单位25倍能量值的攻击力" }, { id: 79, name: "暗影之舞", message: "令该单位处于无法受到攻击状态" }, { id: 80, name: "激怒", message: "增加该单位当前生命5%的攻击力" }, { id: 81, name: "暗杀", message: "" }, { id: 82, name: "撒旦", message: "将受到伤害转化为生命值" }, { id: 83, name: "刃甲", message: "反弹任何伤害,对魔免状态无效" }, { id: 84, name: "勇气徽章", message: "敌方护甲-10,己方护甲-10" }, { id: 85, name: "林肯", message: "抵挡一次指向性法术(对装备的法术无效)" }, { id: 86, name: "鬼手", message: "回合结束时HP-100" }, { id: 87, name: "妖术", message: "使该单位无法攻击,出牌,使用装备" }, { id: 88, name: "风杖", message: "使该单位无法攻击,出牌,使用装备,并且无敌" }, { id: 89, name: "黑暗契约", message: "状态结束后清除所有状态,并造成伤害" }, { id: 90, name: "竭心光环", message: "每回合减少敌方0.1%生命值" }, { id: 91, name: "施虐之心", message: "每对敌方造成200点伤害回复1点能量格和100点生命" }, { id: 92, name: "不可侵犯", message: "使对方普通攻击时消耗双倍能量格" }, { id: 93, name: "魔王降临", message: "减少敌方20点护甲" }, { id: 94, name: "屠戮", message: "敌方每减少一张手牌自己回复30点生命" }, { id: 95, name: "静电场", message: "每次释放任何技能都会对敌方造成40点伤害" }, { id: 96, name: "霜之哀伤", message: "攻击成功后会弃置敌方一张手牌" }, { id: 97, name: "巨力重击", message: "攻击时有30%的概率晕眩敌方一回合并额外造成40点伤害" }, { id: 98, name: "月刃", message: "攻击力加敌方手牌数乘10的数值" }, { id: 99, name: "巨力挥舞", message: "普通攻击时增加加敌方手牌数乘10的攻击力" }, { id: 100, name: "反击", message: "在自己受到伤害时对敌方造成自身承受伤害的20%" }, { id: 101, name: "海妖外壳", message: "受到普通攻击时可以减少50点伤害" }, { id: 102, name: "潮汐使者", message: "使自己本回合增加20+对方手牌数*10点攻击力" }, { id: 103, name: "活性护甲", message: "每受到一次攻击增加10点护甲" }, { id: 104, name: "回光返照", message: "受到的伤害都会增加自己的生命值" }, { id: 105, name: "反击螺旋", message: "敌方普通攻击自己时会受到50点伤害(持续3回合)" }, { id: 106, name: "战意", message: "每释放一次技能可以增加20点攻击力" }, { id: 107, name: "余震", message: "半合内自己使用任何技能都会使敌方眩晕半回合" }, { id: 108, name: "致命一击", message: "攻击时有40%的概率双倍攻击(持续3回合)" }, { id: 109, name: "勇气之霎", message: "受到普通攻击时有40%的概率增加自己100点血" }, { id: 110, name: "重生", message: "死亡后可以重生，重生后拥有400点生命值" }, { id: 111, name: "吸血光环", message: "普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" }, { id: 112, name: "致死打击", message: "攻击时有60%的概率1.5倍攻击" }, { id: 113, name: "野性驱使", message: "攻击加30" }, { id: 114, name: "地精贪婪", message: "每回合得到金钱数+10" }, { id: 115, name: "龙族血统", message: "每回合回复40点生命值" }, { id: 116, name: "自然秩序", message: "令对方护甲归0" }, { id: 117, name: "崎岖外表", message: "敌方在普通攻击你时有30%的概率晕眩一回合" }, { id: 118, name: "衰退光环", message: "减少对方50%攻击力" }, { id: 119, name: "狂战士之血", message: "血量低于50%时每次普通攻击可以多攻击一次" }, { id: 120, name: "盛宴", message: "普通攻击时将对方现有生命值的2%转化为自身生命" }, { id: 121, name: "活体护甲", message: "免疫三次敌方的普通攻击" }, { id: 122, name: "腐肉堆积", message: "敌方每少一张手牌自己加40点血，并且加40点血量上限" }, { id: 123, name: "醉拳", message: "受到普通攻击时有40%的概率mis" }, { id: 124, name: "重击", message: "攻击时有40%的概率击晕敌方半回合并附加70点伤害" }, { id: 125, name: "法力损毁", message: "普通攻击成功后可以削减敌方一点能量值" }, { id: 126, name: "地之突袭", message: "攻击力加30" }, { id: 127, name: "带刺外壳", message: "每回合可以抵挡一次指向性法术" }, { id: 128, name: "命令光环", message: "增加25%的攻击力" }, { id: 129, name: "强击光环", message: "增加25%的攻击力" }, { id: 130, name: "射手天赋", message: "增加150点攻击力" }, { id: 131, name: "模糊", message: "敌方在普通攻击你时有70%的概率mis" }, { id: 132, name: "恩赐解脱", message: "攻击时有30%的概率4倍暴击" }, { id: 133, name: "爆头", message: "攻击时有40%的概率附加100点伤害" }, { id: 134, name: "剑舞", message: "攻击时有60%的概率1.5倍暴击" }, { id: 135, name: "热血战魂", message: "加30点攻击" }, { id: 136, name: "毒刺", message: "攻击时对敌方额外造成20点伤害" }, { id: 137, name: "幽冥剧毒", message: "敌方血量低于50%时,攻击附加50点伤害" }, { id: 138, name: "腐蚀外表", message: "受到敌方的任何攻击之后敌方会掉40点血" }, { id: 139, name: "等离子场", message: "敌方每次对你使用指向性技能时会减少100点生命值" }, { id: 140, name: "忍术", message: "攻击时有40%的概率双倍暴击" }, { id: 141, name: "分裂箭", message: "攻击力增加敌方手牌数乘以15的数值" }, { id: 142, name: "魔法护盾", message: "受到伤害时一点能量值可以抵挡100点伤害" }, { id: 143, name: "能量转换", message: "每次攻击永久减少敌方1点攻击力,并增加该单位2点攻击" }, { id: 144, name: "怒意狂击", message: "每次普通攻击成功后攻击力会增加20" }, { id: 145, name: "回到过去", message: "受到任何攻击时有25%的概率免疫" }, { id: 146, name: "时间锁定", message: "普通攻击时有25%的概率使敌方晕眩一回合" }, { id: 147, name: "嗜血渴望", message: "敌方血量低于50%时，该单位增加50点攻击" }, { id: 148, name: "支配死灵", message: "敌方每减少一张牌,该单位可以永久增加2点攻击" }, { id: 149, name: "荒芜", message: "增加30点攻击" }, { id: 150, name: "折射", message: "反弹自己受到一切伤害的25%" }, { id: 151, name: "麻痹撕咬", message: "普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" }, { id: 152, name: "月之祝福", message: "攻击力加60" }, { id: 153, name: "辉煌光环", message: "每回合可以额外回复1点能量值" }, { id: 154, name: "超负荷", message: "每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" }, { id: 155, name: "精气光环", message: "释放技能时有50%的概率加1点能量值" }, { id: 156, name: "连击", message: "每次攻击降低敌方10点护甲" }, { id: 157, name: "多重施法", message: "释放技能时有50%的概率2倍暴击" }, { id: 158, name: "嗜血术", message: "增加自己30点攻击力" }];
+module.exports = state_list;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(52);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var StateIon = function (_React$Component) {
+    _inherits(StateIon, _React$Component);
+
+    function StateIon() {
+        _classCallCheck(this, StateIon);
+
+        var _this = _possibleConstructorReturn(this, (StateIon.__proto__ || Object.getPrototypeOf(StateIon)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(StateIon, [{
+        key: "render",
+        value: function render() {
+            // {id:0,name:"晕眩",message:"使该单位无法攻击,出牌,使用装备"},statusTime
+            return _react2.default.createElement(
+                "div",
+                { className: "StateIon_box" },
+                _react2.default.createElement(
+                    "div",
+                    null,
+                    this.props.name
+                ),
+                _react2.default.createElement(
+                    "div",
+                    null,
+                    this.props.message
+                )
+            );
+        }
+    }]);
+
+    return StateIon;
+}(_react2.default.Component);
+
+module.exports = StateIon;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3392,13 +3574,15 @@ var _Card = __webpack_require__(16);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(50);
+var _stateflie = __webpack_require__(17);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _StateIon = __webpack_require__(51);
+var _StateIon = __webpack_require__(18);
 
 var _StateIon2 = _interopRequireDefault(_StateIon);
+
+var _action = __webpack_require__(6);
 
 __webpack_require__(56);
 
@@ -3408,7 +3592,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //计算状态影响下的属性
+
 
 var HeroPlaceThat = function (_React$Component) {
     _inherits(HeroPlaceThat, _React$Component);
@@ -3441,7 +3626,7 @@ var HeroPlaceThat = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var basic = this.props.thatstate;
+            var basic = (0, _action.state_base)(this.props.thatstate, this.props.mystate); //计算状态影响下的属性
             if (basic.herotype === "" || basic.herotype === undefined) {
                 return _react2.default.createElement(
                     'div',
@@ -3454,8 +3639,12 @@ var HeroPlaceThat = function (_React$Component) {
                 { className: 'hero_place' },
                 _react2.default.createElement(
                     'div',
-                    { className: 'hero_ion' },
-                    basic.herotype
+                    { className: 'hero_box' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'hero_ion' },
+                        basic.herotype == 0 ? "力量" : basic.herotype == 1 ? "敏捷" : "智力"
+                    )
                 ),
                 _react2.default.createElement(
                     'div',
@@ -3509,20 +3698,20 @@ var HeroPlaceThat = function (_React$Component) {
 module.exports = HeroPlaceThat;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(19);
+module.exports = __webpack_require__(21);
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _reactDom = __webpack_require__(20);
+var _reactDom = __webpack_require__(22);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -3530,11 +3719,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DotaSystem = __webpack_require__(32);
+var _DotaSystem = __webpack_require__(34);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(61);
+__webpack_require__(64);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3542,7 +3731,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(_DotaSystem2.default, null), document.getElementById("box")); //react-dom，仅在项目顶层使用
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3580,15 +3769,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(21);
+  module.exports = __webpack_require__(23);
 } else {
-  module.exports = __webpack_require__(27);
+  module.exports = __webpack_require__(29);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3604,7 +3793,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(11),A=__webpack_require__(6),C=__webpack_require__(5),fa=__webpack_require__(12),ha=__webpack_require__(13),ja=__webpack_require__(14),ka=__webpack_require__(7);
+var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(11),A=__webpack_require__(7),C=__webpack_require__(5),fa=__webpack_require__(12),ha=__webpack_require__(13),ja=__webpack_require__(14),ka=__webpack_require__(8);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -3841,7 +4030,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3854,7 +4043,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(6),n=__webpack_require__(4),p=__webpack_require__(7),q=__webpack_require__(5),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(7),n=__webpack_require__(4),p=__webpack_require__(8),q=__webpack_require__(5),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -3870,7 +4059,7 @@ Y=X&&W||X;module.exports=Y["default"]?Y["default"]:Y;
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3891,10 +4080,10 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(6);
+var _assign = __webpack_require__(7);
 var invariant = __webpack_require__(4);
-var emptyObject = __webpack_require__(7);
-var warning = __webpack_require__(8);
+var emptyObject = __webpack_require__(8);
+var warning = __webpack_require__(9);
 var emptyFunction = __webpack_require__(5);
 var checkPropTypes = __webpack_require__(10);
 
@@ -5292,7 +5481,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5311,7 +5500,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5326,7 +5515,7 @@ module.exports = ReactPropTypesSecret;
  * @typechecks
  */
 
-var isNode = __webpack_require__(26);
+var isNode = __webpack_require__(28);
 
 /**
  * @param {*} object The object to check.
@@ -5339,7 +5528,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5367,7 +5556,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5390,17 +5579,17 @@ if (process.env.NODE_ENV !== "production") {
 
 var invariant = __webpack_require__(4);
 var React = __webpack_require__(0);
-var warning = __webpack_require__(8);
+var warning = __webpack_require__(9);
 var ExecutionEnvironment = __webpack_require__(11);
-var _assign = __webpack_require__(6);
+var _assign = __webpack_require__(7);
 var emptyFunction = __webpack_require__(5);
 var checkPropTypes = __webpack_require__(10);
 var getActiveElement = __webpack_require__(12);
 var shallowEqual = __webpack_require__(13);
 var containsNode = __webpack_require__(14);
-var emptyObject = __webpack_require__(7);
-var hyphenateStyleName = __webpack_require__(28);
-var camelizeStyleName = __webpack_require__(30);
+var emptyObject = __webpack_require__(8);
+var hyphenateStyleName = __webpack_require__(30);
+var camelizeStyleName = __webpack_require__(32);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -22029,7 +22218,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22044,7 +22233,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(29);
+var hyphenate = __webpack_require__(31);
 
 var msPattern = /^ms-/;
 
@@ -22071,7 +22260,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22107,7 +22296,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22122,7 +22311,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(31);
+var camelize = __webpack_require__(33);
 
 var msPattern = /^-ms-/;
 
@@ -22150,7 +22339,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22185,7 +22374,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22199,17 +22388,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(33);
+__webpack_require__(35);
 
-var _login = __webpack_require__(36);
+var _login = __webpack_require__(38);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(37);
+var _Prepare = __webpack_require__(39);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(40);
+var _playing = __webpack_require__(42);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -22279,11 +22468,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(34);
+var content = __webpack_require__(36);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22329,7 +22518,7 @@ if(false) {
 }
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22343,7 +22532,7 @@ exports.push([module.i, "body {\n  margin: 0px;\n  padding: 0px; }\n\n.system_bo
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports) {
 
 
@@ -22438,7 +22627,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22529,7 +22718,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22541,7 +22730,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(38);
+__webpack_require__(40);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22718,11 +22907,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(39);
+var content = __webpack_require__(41);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22768,7 +22957,7 @@ if(false) {
 }
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22782,7 +22971,7 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22796,11 +22985,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(41);
+__webpack_require__(43);
 
-var _action = __webpack_require__(9);
+var _action = __webpack_require__(6);
 
-var _index = __webpack_require__(43);
+var _index = __webpack_require__(45);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -22835,22 +23024,23 @@ var Component = function (_React$Component) {
         _this.state = {
             mystate: {
                 herotype: "", //英雄种类 0力量 1敏捷 2智力
-                maxHp: "3500", //最大血量
-                Hp: "3500", //当前血量
-                Hprecove: "10", //生命值恢复速度
-                maxMp: "500", //最大蓝量
-                Mp: "500", //当前蓝量
-                Mprecove: "50", //魔法值恢复速度
-                attack: "40", //攻击力
-                armor: "10", //护甲
+                maxHp: 3500, //最大血量
+                Hp: 3500, //当前血量
+                Hprecove: 10, //生命值恢复速度
+                maxMp: 500, //最大蓝量
+                Mp: 500, //当前蓝量
+                Mprecove: 50, //魔法值恢复速度
+                attack: 40, //攻击力
+                armor: 10, //护甲
                 status: [], //状态数组
                 statusTime: [], //状态持续时间
+                statusObj: {}, //有些状态需要对象来存储
                 equipment: [], //装备列表
                 cardid: [], //卡牌数组
-                money: "0" //金钱
+                money: 0 //金钱
             },
             round: 0, //是否是我的回合 0不是 1是
-
+            messagelist: [], //战斗记录
             small_cardheap: [], //小技能 牌堆
             small_speed: 0, //记录小技能牌使用进度
             big_cardheap: [], //大技能 牌堆
@@ -22882,7 +23072,9 @@ var Component = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 { className: 'system_body' },
-                _react2.default.createElement(Field, _extends({ setState: this.setState.bind(this) }, this.props, this.state))
+                _react2.default.createElement(Field, _extends({
+                    setState: this.setState.bind(this)
+                }, this.props, this.state))
             );
         }
     }]);
@@ -22893,11 +23085,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(42);
+var content = __webpack_require__(44);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22943,7 +23135,7 @@ if(false) {
 }
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22951,23 +23143,23 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n    .system_body .main_box .hero_place {\n      height: 20%;\n      background: #5fa1bf; }\n      .system_body .main_box .hero_place div {\n        float: left; }\n      .system_body .main_box .hero_place .hero_ion {\n        background: #64fff5;\n        height: 100%;\n        width: 10%; }\n      .system_body .main_box .hero_place .attribute_list {\n        background: #64fff5;\n        height: 100%;\n        width: 15%;\n        margin-left: 1%; }\n        .system_body .main_box .hero_place .attribute_list .HP {\n          width: 100%;\n          background: #8bff04; }\n        .system_body .main_box .hero_place .attribute_list .MP {\n          width: 100%;\n          background: #6977ff; }\n        .system_body .main_box .hero_place .attribute_list .attack {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .armor {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .statelist {\n          width: 100%; }\n      .system_body .main_box .hero_place .card_list {\n        background: #64fff5;\n        height: 100%;\n        width: 62%;\n        margin-left: 1%; }\n      .system_body .main_box .hero_place .equipment_list {\n        background: #64fff5;\n        height: 100%;\n        width: 10%;\n        margin-left: 1%; }\n    .system_body .main_box .fight_place {\n      height: 60%; }\n", ""]);
+exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n    .system_body .main_box .hero_place {\n      height: 20%;\n      background: #5fa1bf; }\n      .system_body .main_box .hero_place div {\n        float: left; }\n      .system_body .main_box .hero_place .attribute_list {\n        background: #64fff5;\n        height: 100%;\n        width: 15%;\n        margin-left: 1%; }\n        .system_body .main_box .hero_place .attribute_list .HP {\n          width: 100%;\n          background: #8bff04; }\n        .system_body .main_box .hero_place .attribute_list .MP {\n          width: 100%;\n          background: #6977ff; }\n        .system_body .main_box .hero_place .attribute_list .attack {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .armor {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .statelist {\n          width: 100%; }\n      .system_body .main_box .hero_place .card_list {\n        background: #64fff5;\n        height: 100%;\n        width: 62%;\n        margin-left: 1%; }\n      .system_body .main_box .hero_place .equipment_list {\n        background: #64fff5;\n        height: 100%;\n        width: 10%;\n        margin-left: 1%; }\n    .system_body .main_box .fight_place {\n      height: 60%; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _PlayPage = __webpack_require__(44);
+var _PlayPage = __webpack_require__(46);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(58);
+var _HeroSelect = __webpack_require__(61);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
@@ -22975,7 +23167,7 @@ var _HeroPlaceMy = __webpack_require__(15);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(17);
+var _HeroPlaceThat = __webpack_require__(19);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -22990,7 +23182,7 @@ var common = {
 module.exports = common;
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23002,19 +23194,23 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(45);
+__webpack_require__(47);
 
-var _action = __webpack_require__(9);
+var _action = __webpack_require__(6);
 
-var _skill = __webpack_require__(47);
+var _skill = __webpack_require__(49);
 
 var _HeroPlaceMy = __webpack_require__(15);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(17);
+var _HeroPlaceThat = __webpack_require__(19);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
+
+var _FightPlace = __webpack_require__(58);
+
+var _FightPlace2 = _interopRequireDefault(_FightPlace);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23050,6 +23246,9 @@ var PlayPage = function (_React$Component) {
                 //对手比你后进来
                 this.prepare_card(newProps.round, newProps.thatstate);
             }
+            if (this.props.round == 0 && newProps.round == 1) {//你的回合开始
+
+            }
         }
     }, {
         key: 'prepare_card',
@@ -23066,6 +23265,7 @@ var PlayPage = function (_React$Component) {
                     small_cardheap: small_cardheap,
                     big_cardheap: big_cardheap,
                     round: 1,
+                    messagelist: ["你是先手"],
                     small_speed: 16,
                     mystate: mystate,
                     thatstate: thatstate
@@ -23082,21 +23282,11 @@ var PlayPage = function (_React$Component) {
                 });
             } else {
                 //准备完毕,并且后手
-                this.props.setState({ round: 0 });
+                this.props.setState({
+                    round: 0,
+                    messagelist: ["对方先手"]
+                });
             }
-        }
-    }, {
-        key: 'fight_place',
-        value: function fight_place() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'fight_place' },
-                this.props.thatstate.herotype != undefined ? _react2.default.createElement(
-                    'div',
-                    null,
-                    (this.props.round > 0 ? "我的回合" : "对方回合") + this.props.round
-                ) : ""
-            );
         }
     }, {
         key: 'render',
@@ -23106,7 +23296,7 @@ var PlayPage = function (_React$Component) {
                 'div',
                 { className: 'main_box' },
                 _react2.default.createElement(_HeroPlaceThat2.default, this.props),
-                this.fight_place(this.props.thatstate),
+                _react2.default.createElement(_FightPlace2.default, this.props),
                 _react2.default.createElement(_HeroPlaceMy2.default, this.props)
             );
         }
@@ -23118,11 +23308,11 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 45 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(46);
+var content = __webpack_require__(48);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23168,7 +23358,7 @@ if(false) {
 }
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23182,7 +23372,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23512,11 +23702,11 @@ small_skill[50] = { id: 1050, name: "吞噬", state: 2, mp: 100, message: "将�
 };module.exports = { big_skill: big_skill, small_skill: small_skill };
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(49);
+var content = __webpack_require__(51);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23562,7 +23752,7 @@ if(false) {
 }
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23574,77 +23764,6 @@ exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  
 
 // exports
 
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,出牌,使用装备" }, { id: 1, name: "沉默", message: "使该单位无法出牌" }, { id: 2, name: "虚无", message: "使该单位无法攻击,所受魔法伤害增加" }, { id: 3, name: "缴械", message: "使该单位无法攻击" }, { id: 4, name: "死亡契约", message: "该单位的攻击力暴涨了 (90)" }, { id: 5, name: "巨浪", message: "减少10点护甲" }, { id: 6, name: "锚击", message: "增加敌方手牌数乘以10的攻击" }, { id: 7, name: "船游", message: "受到伤害减半" }, { id: 8, name: "无光之盾", message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" }, { id: 9, name: "回光返照", message: "将受到的伤害转化为自己的生命值" }, { id: 10, name: "超级新星", message: "承受6次攻击则死亡,否则重生" }, { id: 11, name: "战士怒吼", message: "增加40点护甲" }, { id: 12, name: "海象挥击", message: "攻击力变为现在攻击力的4倍" }, { id: 13, name: "强化图腾", message: "攻击力变为现在攻击力的2倍" }, { id: 14, name: "决斗", message: "强制攻击,无法使用装备，技能" }, { id: 15, name: "变身", message: "攻击加100" }, { id: 16, name: "嚎叫", message: "攻击加60" }, { id: 17, name: "化学狂暴", message: "攻击加40并且每回合回复100点生命值" }, { id: 18, name: "战吼", message: "增加30点护甲" }, { id: 19, name: "神之力量", message: "攻击翻倍" }, { id: 20, name: "真龙形态", message: "攻击力增加装备数目乘以15" }, { id: 21, name: "授予力量", message: "攻击加80" }, { id: 22, name: "末日", message: "每回合造成100点伤害,不能使用技能和物品" }, { id: 23, name: "回音重踏", message: "晕眩状态,受到任何伤害都会解除" }, { id: 24, name: "磁场", message: "物理免疫" }, { id: 25, name: "守护天使", message: "物理免疫" }, { id: 26, name: "血肉傀儡", message: "对方每少一张牌加80点生命" }, { id: 27, name: "狂暴", message: "魔法免疫" }, { id: 28, name: "疯狂生长", message: "无法攻击" }, { id: 29, name: "活体护甲", message: "受到物理伤害减少20每回合加40点血" }, { id: 30, name: "醉酒云雾", message: "普通攻击有75%的概率打不中" }, { id: 31, name: "伤害加深", message: "护甲减少100点" }, { id: 32, name: "战士怒吼2", message: "强迫攻击,无法使用技能物品" }, { id: 33, name: "火焰壁垒", message: "抵挡150点魔法伤害,对方每回合减少30点生命值" }, { id: 34, name: "剑刃风暴", message: "使自己魔免,不可以攻击和出牌" }, { id: 35, name: "战斗专注", message: "普通攻击时可以多攻击敌方一次" }, { id: 36, name: "海妖之歌", message: "处于无敌状态" }, { id: 37, name: "石化凝视", message: "晕眩且魔免,但受到的物理伤害加倍" }, { id: 38, name: "折光", message: "抵挡伤害" }, { id: 39, name: "割裂", message: "自己每减少一张牌会减少200点生命值" }, { id: 40, name: "烟幕", message: "攻击有75%的概率miss,并不可以使用技能" }, { id: 41, name: "魔王降临", message: "减少20点护甲" }, { id: 42, name: "麻痹撕咬", message: "该单位50%概率攻击miss" }, { id: 43, name: "极度饥渴", message: "该单位攻击+80,且将对敌方造成伤害转化为己方生命值" }, { id: 44, name: "灵魂猎手", message: "该单位承受伤害加深25%" }, { id: 45, name: "编织", message: "该单位护甲+50" }, { id: 46, name: "薄葬", message: "该单位不会死亡" }, { id: 47, name: "激光", message: "该单位物理攻击100%miss" }, { id: 48, name: "超负荷", message: "空" }, { id: 49, name: "法力流失", message: "该单位攻击所需能量值+1" }, { id: 50, name: "虚妄之诺", message: "该单位不能攻击" }, { id: 51, name: "命运赦令", message: "该单位不能攻击切所受物理伤害加倍" }, { id: 52, name: "恶魔赦令", message: "该单位每回合对敌方造成80点伤害" }, { id: 53, name: "致命链接", message: "该单位承受1.5倍技能伤害" }, { id: 54, name: "虚弱", message: "该单位攻击力-30" }, { id: 55, name: "噩梦", message: "该单位沉睡中,不能出牌,攻击和使用装备" }, { id: 56, name: "诅咒", message: "该单位能量值-1" }, { id: 57, name: "旋风飞斧", message: "该单位攻击有30%的概率miss" }, { id: 58, name: "血之狂暴", message: "该单位无法使用技能" }, { id: 59, name: "超级力量", message: "普通攻击成功后额外对敌方造成该单位双倍攻击的伤害" }, { id: 60, name: "魔免", message: "魔法免疫" }, { id: 61, name: "撕裂伤口", message: "将该单位受到的普通攻击伤害转化为生命值" }, { id: 62, name: "衰退光环", message: "该单位攻击力减半" }, { id: 63, name: "自然秩序", message: "该单位护甲归0" }, { id: 64, name: "编织", message: "该单位护甲-50" }, { id: 65, name: "高射火炮", message: "该单位攻击+70" }, { id: 66, name: "嗜血术", message: "该单位攻击+30" }, { id: 67, name: "灼热之箭", message: "该单位攻击+50" }, { id: 68, name: "极寒之拥", message: "该单位护甲+100,且不可攻击,出牌和实用装备" }, { id: 69, name: "毒性攻击", message: "该单位攻击+40" }, { id: 70, name: "狂战士之怒", message: "该单位血量<50%时,攻击次数+1且不消耗能量格" }, { id: 71, name: "扫射", message: "该单位攻击+40" }, { id: 72, name: "沸血之矛", message: "该单位攻击+100" }, { id: 73, name: "酸性喷雾", message: "该单位护甲-10" }, { id: 74, name: "严寒灼烧", message: "增加敌方当前生命值2%的攻击力" }, { id: 75, name: "火力聚焦", message: "该单位攻击-50,攻击次数+2" }, { id: 76, name: "智慧之刃", message: "增加该单位20倍能量值的攻击力" }, { id: 77, name: "霜冻护甲", message: "该单位护甲+20" }, { id: 78, name: "秘法天球", message: "增加该单位25倍能量值的攻击力" }, { id: 79, name: "暗影之舞", message: "令该单位处于无法受到攻击状态" }, { id: 80, name: "激怒", message: "增加该单位当前生命5%的攻击力" }, { id: 81, name: "暗杀", message: "" }, { id: 82, name: "撒旦", message: "将受到伤害转化为生命值" }, { id: 83, name: "刃甲", message: "反弹任何伤害,对魔免状态无效" }, { id: 84, name: "勇气徽章", message: "敌方护甲-10,己方护甲-10" }, { id: 85, name: "林肯", message: "抵挡一次指向性法术(对装备的法术无效)" }, { id: 86, name: "鬼手", message: "回合结束时HP-100" }, { id: 87, name: "妖术", message: "使该单位无法攻击,出牌,使用装备" }, { id: 88, name: "风杖", message: "使该单位无法攻击,出牌,使用装备,并且无敌" }, { id: 89, name: "黑暗契约", message: "状态结束后清除所有状态,并造成伤害" }, { id: 90, name: "竭心光环", message: "每回合减少敌方0.1%生命值" }, { id: 91, name: "施虐之心", message: "每对敌方造成200点伤害回复1点能量格和100点生命" }, { id: 92, name: "不可侵犯", message: "使对方普通攻击时消耗双倍能量格" }, { id: 93, name: "魔王降临", message: "减少敌方20点护甲" }, { id: 94, name: "屠戮", message: "敌方每减少一张手牌自己回复30点生命" }, { id: 95, name: "静电场", message: "每次释放任何技能都会对敌方造成40点伤害" }, { id: 96, name: "霜之哀伤", message: "攻击成功后会弃置敌方一张手牌" }, { id: 97, name: "巨力重击", message: "攻击时有30%的概率晕眩敌方一回合并额外造成40点伤害" }, { id: 98, name: "月刃", message: "攻击力加敌方手牌数乘10的数值" }, { id: 99, name: "巨力挥舞", message: "普通攻击时增加加敌方手牌数乘10的攻击力" }, { id: 100, name: "反击", message: "在自己受到伤害时对敌方造成自身承受伤害的20%" }, { id: 101, name: "海妖外壳", message: "受到普通攻击时可以减少50点伤害" }, { id: 102, name: "潮汐使者", message: "使自己本回合增加20+对方手牌数*10点攻击力" }, { id: 103, name: "活性护甲", message: "每受到一次攻击增加10点护甲" }, { id: 104, name: "回光返照", message: "受到的伤害都会增加自己的生命值" }, { id: 105, name: "反击螺旋", message: "敌方普通攻击自己时会受到50点伤害(持续3回合)" }, { id: 106, name: "战意", message: "每释放一次技能可以增加20点攻击力" }, { id: 107, name: "余震", message: "半合内自己使用任何技能都会使敌方眩晕半回合" }, { id: 108, name: "致命一击", message: "攻击时有40%的概率双倍攻击(持续3回合)" }, { id: 109, name: "勇气之霎", message: "受到普通攻击时有40%的概率增加自己100点血" }, { id: 110, name: "重生", message: "死亡后可以重生，重生后拥有400点生命值" }, { id: 111, name: "吸血光环", message: "普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" }, { id: 112, name: "致死打击", message: "攻击时有60%的概率1.5倍攻击" }, { id: 113, name: "野性驱使", message: "攻击加30" }, { id: 114, name: "地精贪婪", message: "每回合得到金钱数+10" }, { id: 115, name: "龙族血统", message: "每回合回复40点生命值" }, { id: 116, name: "自然秩序", message: "令对方护甲归0" }, { id: 117, name: "崎岖外表", message: "敌方在普通攻击你时有30%的概率晕眩一回合" }, { id: 118, name: "衰退光环", message: "减少对方50%攻击力" }, { id: 119, name: "狂战士之血", message: "血量低于50%时每次普通攻击可以多攻击一次" }, { id: 120, name: "盛宴", message: "普通攻击时将对方现有生命值的2%转化为自身生命" }, { id: 121, name: "活体护甲", message: "免疫三次敌方的普通攻击" }, { id: 122, name: "腐肉堆积", message: "敌方每少一张手牌自己加40点血，并且加40点血量上限" }, { id: 123, name: "醉拳", message: "受到普通攻击时有40%的概率mis" }, { id: 124, name: "重击", message: "攻击时有40%的概率击晕敌方半回合并附加70点伤害" }, { id: 125, name: "法力损毁", message: "普通攻击成功后可以削减敌方一点能量值" }, { id: 126, name: "地之突袭", message: "攻击力加30" }, { id: 127, name: "带刺外壳", message: "每回合可以抵挡一次指向性法术" }, { id: 128, name: "命令光环", message: "增加25%的攻击力" }, { id: 129, name: "强击光环", message: "增加25%的攻击力" }, { id: 130, name: "射手天赋", message: "增加150点攻击力" }, { id: 131, name: "模糊", message: "敌方在普通攻击你时有70%的概率mis" }, { id: 132, name: "恩赐解脱", message: "攻击时有30%的概率4倍暴击" }, { id: 133, name: "爆头", message: "攻击时有40%的概率附加100点伤害" }, { id: 134, name: "剑舞", message: "攻击时有60%的概率1.5倍暴击" }, { id: 135, name: "热血战魂", message: "加30点攻击" }, { id: 136, name: "毒刺", message: "攻击时对敌方额外造成20点伤害" }, { id: 137, name: "幽冥剧毒", message: "敌方血量低于50%时,攻击附加50点伤害" }, { id: 138, name: "腐蚀外表", message: "受到敌方的任何攻击之后敌方会掉40点血" }, { id: 139, name: "等离子场", message: "敌方每次对你使用指向性技能时会减少100点生命值" }, { id: 140, name: "忍术", message: "攻击时有40%的概率双倍暴击" }, { id: 141, name: "分裂箭", message: "攻击力增加敌方手牌数乘以15的数值" }, { id: 142, name: "魔法护盾", message: "受到伤害时一点能量值可以抵挡100点伤害" }, { id: 143, name: "能量转换", message: "每次攻击永久减少敌方1点攻击力,并增加该单位2点攻击" }, { id: 144, name: "怒意狂击", message: "每次普通攻击成功后攻击力会增加20" }, { id: 145, name: "回到过去", message: "受到任何攻击时有25%的概率免疫" }, { id: 146, name: "时间锁定", message: "普通攻击时有25%的概率使敌方晕眩一回合" }, { id: 147, name: "嗜血渴望", message: "敌方血量低于50%时，该单位增加50点攻击" }, { id: 148, name: "支配死灵", message: "敌方每减少一张牌,该单位可以永久增加2点攻击" }, { id: 149, name: "荒芜", message: "增加30点攻击" }, { id: 150, name: "折射", message: "反弹自己受到一切伤害的25%" }, { id: 151, name: "麻痹撕咬", message: "普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" }, { id: 152, name: "月之祝福", message: "攻击力加60" }, { id: 153, name: "辉煌光环", message: "每回合可以额外回复1点能量值" }, { id: 154, name: "超负荷", message: "每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" }, { id: 155, name: "精气光环", message: "释放技能时有50%的概率加1点能量值" }, { id: 156, name: "连击", message: "每次攻击降低敌方10点护甲" }, { id: 157, name: "多重施法", message: "释放技能时有50%的概率2倍暴击" }, { id: 158, name: "嗜血术", message: "增加自己30点攻击力" }];
-module.exports = state_list;
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(52);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var StateIon = function (_React$Component) {
-    _inherits(StateIon, _React$Component);
-
-    function StateIon() {
-        _classCallCheck(this, StateIon);
-
-        var _this = _possibleConstructorReturn(this, (StateIon.__proto__ || Object.getPrototypeOf(StateIon)).call(this));
-
-        _this.state = {};
-        return _this;
-    }
-
-    _createClass(StateIon, [{
-        key: "render",
-        value: function render() {
-            // {id:0,name:"晕眩",message:"使该单位无法攻击,出牌,使用装备"},statusTime
-            return _react2.default.createElement(
-                "div",
-                { className: "StateIon_box" },
-                _react2.default.createElement(
-                    "div",
-                    null,
-                    this.props.name
-                ),
-                _react2.default.createElement(
-                    "div",
-                    null,
-                    this.props.message
-                )
-            );
-        }
-    }]);
-
-    return StateIon;
-}(_react2.default.Component);
-
-module.exports = StateIon;
 
 /***/ }),
 /* 52 */
@@ -23769,7 +23888,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".hero_box {\n  background: #64fff5;\n  height: 100%;\n  width: 10%; }\n\n.hero_ion {\n  width: 100%; }\n\n.attack_btn {\n  text-align: center;\n  background: red; }\n\n.over_btn {\n  text-align: center;\n  background: blue; }\n", ""]);
 
 // exports
 
@@ -23833,7 +23952,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".hero_box {\n  background: #64fff5;\n  height: 100%;\n  width: 10%; }\n\n.hero_ion {\n  width: 100%; }\n", ""]);
 
 // exports
 
@@ -23861,6 +23980,137 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var FightPlace = function (_React$Component) {
+    _inherits(FightPlace, _React$Component);
+
+    function FightPlace() {
+        _classCallCheck(this, FightPlace);
+
+        var _this = _possibleConstructorReturn(this, (FightPlace.__proto__ || Object.getPrototypeOf(FightPlace)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(FightPlace, [{
+        key: "messagelist",
+        value: function messagelist() {
+            return this.props.messagelist.map(function (message, i) {
+                return _react2.default.createElement(
+                    "div",
+                    { className: "message_item", key: i },
+                    message
+                );
+            });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "fight_place" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "fight_message" },
+                    this.messagelist()
+                ),
+                ":"
+            );
+        }
+    }]);
+
+    return FightPlace;
+}(_react2.default.Component);
+
+module.exports = FightPlace;
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(60);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./FightPlace.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./FightPlace.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".fight_message {\n  width: 20%;\n  height: 100%;\n  overflow: auto;\n  border: 1px solid #666; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(62);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var HeroSelect = function (_React$Component) {
     _inherits(HeroSelect, _React$Component);
 
@@ -23874,28 +24124,28 @@ var HeroSelect = function (_React$Component) {
     }
 
     _createClass(HeroSelect, [{
-        key: "coeckhero",
+        key: 'coeckhero',
         value: function coeckhero(type) {
             var mystate = this.props.mystate;
             switch (type) {
                 case 0:
-                    mystate.herotype = "0";
-                    mystate.maxHp = "4000";
-                    mystate.Hp = "4000";
-                    mystate.Hprecove = "15";
+                    mystate.herotype = 0;
+                    mystate.maxHp = 4000;
+                    mystate.Hp = 4000;
+                    mystate.Hprecove = 15;
                     break;
                 case 1:
-                    mystate.herotype = "1";
-                    mystate.attack = "70";
-                    mystate.armor = "15";
+                    mystate.herotype = 1;
+                    mystate.attack = 70;
+                    mystate.armor = 15;
                     break;
                 case 2:
-                    mystate.herotype = "2";
-                    mystate.maxHp = "3000";
-                    mystate.Hp = "3000";
-                    mystate.maxMp = "600";
-                    mystate.Mp = "600";
-                    mystate.Mprecove = "60";
+                    mystate.herotype = 2;
+                    mystate.maxHp = 3000;
+                    mystate.Hp = 3000;
+                    mystate.maxMp = 600;
+                    mystate.Mp = 600;
+                    mystate.Mprecove = 60;
                     break;
             }
             var round = Math.random(); //随机回合用
@@ -23910,30 +24160,30 @@ var HeroSelect = function (_React$Component) {
             });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             return _react2.default.createElement(
-                "div",
+                'div',
                 null,
                 _react2.default.createElement(
-                    "h1",
+                    'h1',
                     null,
-                    "\u8BF7\u9009\u62E9\u82F1\u96C4"
+                    '\u8BF7\u9009\u62E9\u82F1\u96C4'
                 ),
                 _react2.default.createElement(
-                    "div",
+                    'div',
                     { onClick: this.coeckhero.bind(this, 0) },
-                    "\u529B\u91CF"
+                    '\u529B\u91CF'
                 ),
                 _react2.default.createElement(
-                    "div",
+                    'div',
                     { onClick: this.coeckhero.bind(this, 1) },
-                    "\u654F\u6377"
+                    '\u654F\u6377'
                 ),
                 _react2.default.createElement(
-                    "div",
+                    'div',
                     { onClick: this.coeckhero.bind(this, 2) },
-                    "\u667A\u529B"
+                    '\u667A\u529B'
                 )
             );
         }
@@ -23945,11 +24195,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 59 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(60);
+var content = __webpack_require__(63);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23995,7 +24245,7 @@ if(false) {
 }
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24009,11 +24259,11 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(62);
+var content = __webpack_require__(65);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24059,7 +24309,7 @@ if(false) {
 }
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
