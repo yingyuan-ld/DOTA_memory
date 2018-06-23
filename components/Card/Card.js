@@ -24,12 +24,14 @@ class Card extends React.Component{
                 newstate.mystate.cardid.splice(i,1);
             };
         });//删除手牌
+        let cardShowList = this.props.cardShowList;
+        cardShowList.push(this.props.card);//放入弃牌堆
         this.props.setState(newstate);
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
-                newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate},
+                newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate,cardShowList:cardShowList},
                 message:"对方使用了\""+name+"\"",
             }
         });
@@ -37,15 +39,24 @@ class Card extends React.Component{
   	render() {
         // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
         let card = this.props.card
-        if(this.props.show){
+        if(this.props.state=="my"){
             return <div className="card_box" onClick={this.usecard.bind(this,card.id,card.name)}>
                 <div className="card_ion"></div>
                 <div className="card_name">{card.name}</div>
                 <div className="card_message">{card.message}</div>
             </div>
-        }else{
+        }
+        if(this.props.state=="show"){
+            return <div className="card_box">
+                <div className="card_ion"></div>
+                <div className="card_name">{card.name}</div>
+                <div className="card_message">{card.message}</div>
+            </div>
+        }
+        if(this.props.state=="that"){
             return <div className="card_box_hide" />
         }
+        return <div className="card_box_hide" />
   	}
 }
 module.exports = Card;

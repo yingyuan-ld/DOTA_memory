@@ -1,6 +1,18 @@
-.fight_message{
-    width: 20%;
-    height: 100%;
-    overflow: auto;
-    border: 1px solid #666;
+.fight_place{
+    height: 60%;
+    position: relative;
+    .fight_message{
+        width: 20%;
+        height: 100%;
+        overflow: auto;
+        border: 1px solid #666;
+        position: absolute;
+    }
+    .cardShowList{
+        width: 100px;
+        height: 180px;
+        position: absolute;
+        left: calc(50% - 50px);
+        top: calc(50% - 90px);
+    }
 }

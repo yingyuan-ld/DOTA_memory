@@ -2974,6 +2974,127 @@ module.exports = warning;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _action = __webpack_require__(6);
+
+__webpack_require__(50);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //使用技能
+
+
+var Card = function (_React$Component) {
+    _inherits(Card, _React$Component);
+
+    function Card() {
+        _classCallCheck(this, Card);
+
+        var _this = _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(Card, [{
+        key: 'usecard',
+        value: function usecard(id, name) {
+            var _this2 = this;
+
+            if (this.props.round == 0) {
+                var _messagelist = this.props.messagelist;
+                _messagelist.push("现在不是你的回合！");
+                this.props.setState({ messagelist: _messagelist });
+                return;
+            }
+            var newstate = (0, _action.doskill)(this.props.mystate, this.props.thatstate, id);
+            var messagelist = this.props.messagelist; //消息
+            messagelist.push("你使用了\"" + name + "\"");
+            newstate.mystate.messagelist = messagelist;
+            newstate.mystate.cardid.map(function (item, i) {
+                if (item == _this2.props.card) {
+                    newstate.mystate.cardid.splice(i, 1);
+                };
+            }); //删除手牌
+            var cardShowList = this.props.cardShowList;
+            cardShowList.push(this.props.card); //放入弃牌堆
+            this.props.setState(newstate);
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate, cardShowList: cardShowList },
+                    message: "对方使用了\"" + name + "\""
+                }
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
+            var card = this.props.card;
+            if (this.props.state == "my") {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'card_box', onClick: this.usecard.bind(this, card.id, card.name) },
+                    _react2.default.createElement('div', { className: 'card_ion' }),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_name' },
+                        card.name
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_message' },
+                        card.message
+                    )
+                );
+            }
+            if (this.props.state == "show") {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'card_box' },
+                    _react2.default.createElement('div', { className: 'card_ion' }),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_name' },
+                        card.name
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_message' },
+                        card.message
+                    )
+                );
+            }
+            if (this.props.state == "that") {
+                return _react2.default.createElement('div', { className: 'card_box_hide' });
+            }
+            return _react2.default.createElement('div', { className: 'card_box_hide' });
+        }
+    }]);
+
+    return Card;
+}(_react2.default.Component);
+
+module.exports = Card;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -3037,7 +3158,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3076,7 +3197,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3118,7 +3239,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3189,7 +3310,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3232,7 +3353,7 @@ function containsNode(outerNode, innerNode) {
 module.exports = containsNode;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3246,7 +3367,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(16);
+var _Card = __webpack_require__(10);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3289,7 +3410,7 @@ var HeroPlaceMy = function (_React$Component) {
             var _this2 = this;
 
             return this.props.mystate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({ card: card, show: true }, _this2.props, { key: i }));
+                return _react2.default.createElement(_Card2.default, _extends({ card: card, state: "my" }, _this2.props, { key: i }));
             });
         }
     }, {
@@ -3409,106 +3530,6 @@ var HeroPlaceMy = function (_React$Component) {
 module.exports = HeroPlaceMy;
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _action = __webpack_require__(6);
-
-__webpack_require__(50);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //使用技能
-
-
-var Card = function (_React$Component) {
-    _inherits(Card, _React$Component);
-
-    function Card() {
-        _classCallCheck(this, Card);
-
-        var _this = _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).call(this));
-
-        _this.state = {};
-        return _this;
-    }
-
-    _createClass(Card, [{
-        key: 'usecard',
-        value: function usecard(id, name) {
-            var _this2 = this;
-
-            if (this.props.round == 0) {
-                var _messagelist = this.props.messagelist;
-                _messagelist.push("现在不是你的回合！");
-                this.props.setState({ messagelist: _messagelist });
-                return;
-            }
-            var newstate = (0, _action.doskill)(this.props.mystate, this.props.thatstate, id);
-            var messagelist = this.props.messagelist; //消息
-            messagelist.push("你使用了\"" + name + "\"");
-            newstate.mystate.messagelist = messagelist;
-            newstate.mystate.cardid.map(function (item, i) {
-                if (item == _this2.props.card) {
-                    newstate.mystate.cardid.splice(i, 1);
-                };
-            }); //删除手牌
-            this.props.setState(newstate);
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    funname: "getnewstate",
-                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
-                    message: "对方使用了\"" + name + "\""
-                }
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
-            var card = this.props.card;
-            if (this.props.show) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'card_box', onClick: this.usecard.bind(this, card.id, card.name) },
-                    _react2.default.createElement('div', { className: 'card_ion' }),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'card_name' },
-                        card.name
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'card_message' },
-                        card.message
-                    )
-                );
-            } else {
-                return _react2.default.createElement('div', { className: 'card_box_hide' });
-            }
-        }
-    }]);
-
-    return Card;
-}(_react2.default.Component);
-
-module.exports = Card;
-
-/***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3594,7 +3615,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(16);
+var _Card = __webpack_require__(10);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3635,7 +3656,7 @@ var HeroPlaceThat = function (_React$Component) {
         key: 'cardlist',
         value: function cardlist() {
             return this.props.thatstate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({ show: false }, card, { key: i }));
+                return _react2.default.createElement(_Card2.default, _extends({ state: "that" }, card, { key: i }));
             });
         }
     }, {
@@ -3817,7 +3838,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(11),A=__webpack_require__(7),C=__webpack_require__(5),fa=__webpack_require__(12),ha=__webpack_require__(13),ja=__webpack_require__(14),ka=__webpack_require__(8);
+var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(12),A=__webpack_require__(7),C=__webpack_require__(5),fa=__webpack_require__(13),ha=__webpack_require__(14),ja=__webpack_require__(15),ka=__webpack_require__(8);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -4109,7 +4130,7 @@ var invariant = __webpack_require__(4);
 var emptyObject = __webpack_require__(8);
 var warning = __webpack_require__(9);
 var emptyFunction = __webpack_require__(5);
-var checkPropTypes = __webpack_require__(10);
+var checkPropTypes = __webpack_require__(11);
 
 // TODO: this is special because it gets imported during build.
 
@@ -5604,13 +5625,13 @@ if (process.env.NODE_ENV !== "production") {
 var invariant = __webpack_require__(4);
 var React = __webpack_require__(0);
 var warning = __webpack_require__(9);
-var ExecutionEnvironment = __webpack_require__(11);
+var ExecutionEnvironment = __webpack_require__(12);
 var _assign = __webpack_require__(7);
 var emptyFunction = __webpack_require__(5);
-var checkPropTypes = __webpack_require__(10);
-var getActiveElement = __webpack_require__(12);
-var shallowEqual = __webpack_require__(13);
-var containsNode = __webpack_require__(14);
+var checkPropTypes = __webpack_require__(11);
+var getActiveElement = __webpack_require__(13);
+var shallowEqual = __webpack_require__(14);
+var containsNode = __webpack_require__(15);
 var emptyObject = __webpack_require__(8);
 var hyphenateStyleName = __webpack_require__(30);
 var camelizeStyleName = __webpack_require__(32);
@@ -23167,7 +23188,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n    .system_body .main_box .hero_place {\n      height: 20%;\n      background: #5fa1bf; }\n      .system_body .main_box .hero_place div {\n        float: left; }\n      .system_body .main_box .hero_place .attribute_list {\n        background: #64fff5;\n        height: 100%;\n        width: 15%;\n        margin-left: 1%; }\n        .system_body .main_box .hero_place .attribute_list .HP {\n          width: 100%;\n          background: #8bff04; }\n        .system_body .main_box .hero_place .attribute_list .MP {\n          width: 100%;\n          background: #6977ff; }\n        .system_body .main_box .hero_place .attribute_list .attack {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .armor {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .statelist {\n          width: 100%; }\n      .system_body .main_box .hero_place .card_list {\n        background: #64fff5;\n        height: 100%;\n        width: 62%;\n        margin-left: 1%; }\n      .system_body .main_box .hero_place .equipment_list {\n        background: #64fff5;\n        height: 100%;\n        width: 10%;\n        margin-left: 1%; }\n    .system_body .main_box .fight_place {\n      height: 60%; }\n", ""]);
+exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n    .system_body .main_box .hero_place {\n      height: 20%;\n      background: #5fa1bf; }\n      .system_body .main_box .hero_place div {\n        float: left; }\n      .system_body .main_box .hero_place .attribute_list {\n        background: #64fff5;\n        height: 100%;\n        width: 15%;\n        margin-left: 1%; }\n        .system_body .main_box .hero_place .attribute_list .HP {\n          width: 100%;\n          background: #8bff04; }\n        .system_body .main_box .hero_place .attribute_list .MP {\n          width: 100%;\n          background: #6977ff; }\n        .system_body .main_box .hero_place .attribute_list .attack {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .armor {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .statelist {\n          width: 100%; }\n      .system_body .main_box .hero_place .card_list {\n        background: #64fff5;\n        height: 100%;\n        width: 62%;\n        margin-left: 1%; }\n      .system_body .main_box .hero_place .equipment_list {\n        background: #64fff5;\n        height: 100%;\n        width: 10%;\n        margin-left: 1%; }\n", ""]);
 
 // exports
 
@@ -23187,7 +23208,7 @@ var _HeroSelect = __webpack_require__(61);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
-var _HeroPlaceMy = __webpack_require__(15);
+var _HeroPlaceMy = __webpack_require__(16);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
@@ -23224,7 +23245,7 @@ var _action = __webpack_require__(6);
 
 var _skill = __webpack_require__(49);
 
-var _HeroPlaceMy = __webpack_require__(15);
+var _HeroPlaceMy = __webpack_require__(16);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
@@ -23817,7 +23838,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  border: 1px solid #d2d2d2;\n  cursor: pointer;\n  transition: all 0.1s;\n  cursor: pointer; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_box:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2; }\n", ""]);
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 180px;\n  border: 1px solid #d2d2d2;\n  cursor: pointer;\n  transition: all 0.1s;\n  cursor: pointer; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_box:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2; }\n", ""]);
 
 // exports
 
@@ -24027,6 +24048,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _Card = __webpack_require__(10);
+
+var _Card2 = _interopRequireDefault(_Card);
+
 __webpack_require__(59);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -24050,28 +24075,40 @@ var FightPlace = function (_React$Component) {
     }
 
     _createClass(FightPlace, [{
-        key: "messagelist",
+        key: 'messagelist',
         value: function messagelist() {
             return this.props.messagelist.map(function (message, i) {
                 return _react2.default.createElement(
-                    "div",
-                    { className: "message_item", key: i },
+                    'div',
+                    { className: 'message_item', key: i },
                     message
                 );
             });
         }
     }, {
-        key: "render",
+        key: 'cardShowList',
+        value: function cardShowList() {
+            return this.props.cardShowList.map(function (card, i) {
+                return _react2.default.createElement(_Card2.default, { card: card, state: "show", key: i });
+            });
+        }
+    }, {
+        key: 'render',
         value: function render() {
+            this.props.cardShowList;
             return _react2.default.createElement(
-                "div",
-                { className: "fight_place" },
+                'div',
+                { className: 'fight_place' },
                 _react2.default.createElement(
-                    "div",
-                    { className: "fight_message" },
+                    'div',
+                    { className: 'fight_message' },
                     this.messagelist()
                 ),
-                ":"
+                _react2.default.createElement(
+                    'div',
+                    { className: 'cardShowList' },
+                    this.cardShowList()
+                )
             );
         }
     }]);
@@ -24140,7 +24177,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".fight_message {\n  width: 20%;\n  height: 100%;\n  overflow: auto;\n  border: 1px solid #666; }\n", ""]);
+exports.push([module.i, ".fight_place {\n  height: 60%;\n  position: relative; }\n  .fight_place .fight_message {\n    width: 20%;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute; }\n  .fight_place .cardShowList {\n    width: 100px;\n    height: 180px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n", ""]);
 
 // exports
 
