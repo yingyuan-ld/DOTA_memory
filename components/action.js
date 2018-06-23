@@ -22,9 +22,9 @@ export function shufflecards(arr){//洗牌
 }
 export function cardheap (state,obj){//洗牌结果
     if(state.small_cardheap.length==0){//判断是否第一次发牌
-        state.mystate.cardid = obj.small_cardheap.slice(8,16);
+        state.mystate.cardid = obj.small_cardheap.slice(6,11);
         state.thatstate = obj.mystate;
-        state.small_speed = 16
+        state.small_speed = 11
     }
     state.small_cardheap = obj.small_cardheap;
     state.big_cardheap = obj.big_cardheap;
@@ -34,6 +34,7 @@ export function getnewstate(thisstate,obj){
     let messagelist =thisstate.messagelist;
     if(!obj.message)console.info("缺少动作的message");
     messagelist.push(obj.message);
+    // let newstate = {mystate:obj.newstate.thatstate,thatstate:obj.newstate.mystate};
     let newstate = obj.newstate;
     newstate.messagelist = messagelist;
     return newstate;

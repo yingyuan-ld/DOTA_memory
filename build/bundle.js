@@ -883,9 +883,9 @@ function cardheap(state, obj) {
     //洗牌结果
     if (state.small_cardheap.length == 0) {
         //判断是否第一次发牌
-        state.mystate.cardid = obj.small_cardheap.slice(8, 16);
+        state.mystate.cardid = obj.small_cardheap.slice(6, 11);
         state.thatstate = obj.mystate;
-        state.small_speed = 16;
+        state.small_speed = 11;
     }
     state.small_cardheap = obj.small_cardheap;
     state.big_cardheap = obj.big_cardheap;
@@ -895,6 +895,7 @@ function getnewstate(thisstate, obj) {
     var messagelist = thisstate.messagelist;
     if (!obj.message) console.info("缺少动作的message");
     messagelist.push(obj.message);
+    // let newstate = {mystate:obj.newstate.thatstate,thatstate:obj.newstate.mystate};
     var newstate = obj.newstate;
     newstate.messagelist = messagelist;
     return newstate;
@@ -3303,15 +3304,28 @@ var HeroPlaceMy = function (_React$Component) {
     }, {
         key: 'roundOver',
         value: function roundOver() {
+            //回合结束
             var messagelist = this.props.messagelist;
-            messagelist.push("结束回合，现在是对方回合");
-            var round = { round: 0, messagelist: messagelist };
-            this.props.setState(round);
+            messagelist.push("结束回合");
+            var mystate = this.props.mystate;
+            for (var i = 0; i < mystate.status.length;) {
+                //状态处理
+                if (mystate.statusTime[i] == 1) {
+                    mystate.statusTime.splice(i, 1);
+                    mystate.statusObj[mystate.status[i]] && delete mystate.statusObj[mystate.status[i]];
+                    mystate.status.splice(i, 1);
+                } else {
+                    mystate.statusTime[i] -= 1;
+                    i++;
+                }
+            }
+            var newstate = { round: 0, messagelist: messagelist, mystate: mystate };
+            this.props.setState(newstate);
             this.props.socket.emit('totalk', {
                 id: this.props.thatid,
                 obj: {
                     funname: "getnewstate",
-                    newstate: { round: 1 },
+                    newstate: { round: 1, thatstate: mystate },
                     message: "对方回合结束，现在是你的回合"
                 }
             });
@@ -3435,19 +3449,29 @@ var Card = function (_React$Component) {
     _createClass(Card, [{
         key: 'usecard',
         value: function usecard(id, name) {
+            var _this2 = this;
+
             if (this.props.round == 0) {
-                var messagelist = this.props.messagelist;
-                messagelist.push("现在不是你的回合！");
-                this.props.setState({ messagelist: messagelist });
+                var _messagelist = this.props.messagelist;
+                _messagelist.push("现在不是你的回合！");
+                this.props.setState({ messagelist: _messagelist });
                 return;
             }
             var newstate = (0, _action.doskill)(this.props.mystate, this.props.thatstate, id);
+            var messagelist = this.props.messagelist; //消息
+            messagelist.push("你使用了\"" + name + "\"");
+            newstate.mystate.messagelist = messagelist;
+            newstate.mystate.cardid.map(function (item, i) {
+                if (item == _this2.props.card) {
+                    newstate.mystate.cardid.splice(i, 1);
+                };
+            }); //删除手牌
             this.props.setState(newstate);
             this.props.socket.emit('totalk', {
                 id: this.props.thatid,
                 obj: {
                     funname: "getnewstate",
-                    newstate: newstate,
+                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
                     message: "对方使用了\"" + name + "\""
                 }
             });
@@ -23246,8 +23270,41 @@ var PlayPage = function (_React$Component) {
                 //对手比你后进来
                 this.prepare_card(newProps.round, newProps.thatstate);
             }
-            if (this.props.round == 0 && newProps.round == 1) {//你的回合开始
+            if (this.props.round == 0 && newProps.round == 1) {
+                //你的回合开始
+                var mystate = this.props.mystate;
+                mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecov; //生命值恢复
+                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Mprecov; //魔法值恢复
+                mystate.money += 100; //金钱
+                if (mystate.cardid.length >= 8) {
+                    //手牌处理
+                    var messagelist = this.props.messagelist;
+                    messagelist.push("小伙，你手牌满了！");
+                    mystate.messagelist = messagelist;
+                } else {
+                    mystate.cardid.push(this.props.small_cardheap.slice(mystate.small_speed, 1));
+                    mystate.small_speed++;
+                }
+                for (var i = 0; i < mystate.status.length;) {
+                    //状态处理
+                    if (mystate.statusTime[i] == 1) {
+                        mystate.statusTime.splice(i, 1);
+                        mystate.statusObj[mystate.status[i]] && delete mystate.statusObj[mystate.status[i]];
+                        mystate.status.splice(i, 1);
+                    } else {
+                        mystate.statusTime[i] -= 1;
+                        i++;
+                    }
+                }
 
+                this.props.socket.emit('totalk', {
+                    id: this.props.thatid,
+                    obj: {
+                        funname: "getnewstate",
+                        newstate: { thatstate: mystate },
+                        message: "现在是对方回合"
+                    }
+                });
             }
         }
     }, {
@@ -23259,14 +23316,14 @@ var PlayPage = function (_React$Component) {
                 var big_cardheap = (0, _action.shufflecards)(_skill.big_skill); //洗牌
                 //抓牌↓
                 var mystate = this.props.mystate;
-                mystate.cardid = small_cardheap.slice(0, 8);
-                thatstate.cardid = small_cardheap.slice(8, 16);
+                mystate.cardid = small_cardheap.slice(0, 6);
+                thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
                     small_cardheap: small_cardheap,
                     big_cardheap: big_cardheap,
                     round: 1,
                     messagelist: ["你是先手"],
-                    small_speed: 16,
+                    small_speed: 11,
                     mystate: mystate,
                     thatstate: thatstate
                 });

@@ -25,8 +25,7 @@ class HeroPlaceMy extends React.Component{
     }
     roundOver(){//回合结束
         let messagelist = this.props.messagelist;
-        messagelist.push("结束回合，现在是对方回合");
-        this.props.setState(newstate);
+        messagelist.push("结束回合");
         let mystate = this.props.mystate;
         for(let i=0;i<mystate.status.length;){//状态处理
             if(mystate.statusTime[i]==1){
@@ -39,6 +38,7 @@ class HeroPlaceMy extends React.Component{
             }
         }
         let newstate= {round:0,messagelist:messagelist,mystate:mystate};
+        this.props.setState(newstate);
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
