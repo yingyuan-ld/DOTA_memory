@@ -1,5 +1,7 @@
 import React from 'react';
 import Card from '../Card/Card';
+import CardShowList from '../CardShowList/CardShowList';
+
 import "./FightPlace.scss";
 
 class FightPlace extends React.Component{
@@ -10,12 +12,8 @@ class FightPlace extends React.Component{
     }
     messagelist(){
         return this.props.messagelist.map((message,i)=>{
+            if(i==0)return; 
             return <div className="message_item" key={i}>{message}</div>
-        })
-    }
-    cardShowList(){
-        return this.props.cardShowList.map((card,i)=>{
-            return <Card card={card} state={"show"} key={i}/>
         })
     }
   	render() {
@@ -25,7 +23,10 @@ class FightPlace extends React.Component{
                 {this.messagelist()}
             </div>
             <div className="cardShowList">
-                {this.cardShowList()}
+                <CardShowList cardShowList={this.props.cardShowList.slice(0,this.props.cardShowList.length-1)}/>
+            </div>
+            <div className="cardShow">
+                {this.props.cardShowList[0]?<Card card={this.props.cardShowList[this.props.cardShowList.length-1]} state={"show"}/>:""}
             </div>
         </div>
   	}

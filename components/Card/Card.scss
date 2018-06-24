@@ -3,10 +3,10 @@
     position: relative;
     font-size: 12px;
     height: 180px;
-    border: 1px solid #d2d2d2;
-    cursor: pointer;
     transition: all 0.1s;
     cursor:pointer;
+    background: #fff;
+    overflow: hidden;
     .card_ion{
         background: green;
         width: 60px;
@@ -22,7 +22,7 @@
         margin: 5px;
     }
 }
-.card_box:hover{
+.card_my:hover{
     transform: translateY(-10%);
 }
 .card_box_hide{

@@ -3,47 +3,5 @@
     .main_box{
         width: 100%;
         height: 100%;
-        .hero_place{
-            height: 20%;
-            background: #5fa1bf;
-            div{
-                float: left;
-            }
-            .attribute_list{//属性列表
-                background: #64fff5;
-                height: 100%;
-                width: 15%;
-                margin-left: 1%;
-                .HP{
-                    width: 100%;
-                    background: #8bff04;
-                }
-                .MP{
-                    width: 100%;
-                    background: #6977ff;
-                }
-                .attack{
-                    width: 100%;
-                }
-                .armor{
-                    width: 100%;
-                }
-                .statelist{
-                    width: 100%;
-                }
-            }
-            .card_list{//卡牌列表
-                background: #64fff5;
-                height: 100%;
-                width: 62%;
-                margin-left: 1%;
-            }
-            .equipment_list{//装备列表
-                background: #64fff5;
-                height: 100%;
-                width: 10%;
-                margin-left: 1%;
-            }
-        }
     }
 }

@@ -70,6 +70,7 @@ class HeroPlaceMy extends React.Component{
                 {this.cardlist()}
             </div>
             <div className="equipment_list">
+                {"金钱:"+this.props.mystate.money}
                 {basic.equipment.map((equipment,i)=>{
                     <div></div>
                 })}

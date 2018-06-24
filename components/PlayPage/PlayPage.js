@@ -25,13 +25,14 @@ class PlayPage extends React.Component{
             mystate.Hp = mystate.Hp+mystate.Hprecove>mystate.maxHp?mystate.maxHp:mystate.Hp+mystate.Hprecov;//生命值恢复
             mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Mprecov;//魔法值恢复
             mystate.money+=100;//金钱
+            let messagelist = this.props.messagelist;
+            let small_speed = this.props.small_speed;
             if(mystate.cardid.length>=8){//手牌处理
-                let messagelist = this.props.messagelist;
                 messagelist.push("小伙，你手牌满了！");
                 mystate.messagelist = messagelist;
             }else{
-                mystate.cardid.push(this.props.small_cardheap.slice(mystate.small_speed,1));
-                mystate.small_speed++;
+                mystate.cardid.push(this.props.small_cardheap[small_speed]);
+                small_speed++;
             }
             for(let i=0;i<mystate.status.length;){//状态处理
                 if(mystate.statusTime[i]==1){
@@ -43,12 +44,12 @@ class PlayPage extends React.Component{
                     i++;
                 }
             }
-            
+            this.props.setState({mystate:mystate,small_speed:small_speed,messagelist:messagelist});
             this.props.socket.emit('totalk', {
                 id:this.props.thatid,
                 obj:{
                     funname:"getnewstate",
-                    newstate:{thatstate:mystate},
+                    newstate:{thatstate:mystate,small_speed:small_speed},
                     message:"现在是对方回合"
                 }
             });
@@ -60,6 +61,7 @@ class PlayPage extends React.Component{
             let big_cardheap = shufflecards(big_skill)//洗牌
             //抓牌↓
             let mystate = this.props.mystate;
+            mystate.money = 100;
             mystate.cardid = small_cardheap.slice(0,6);
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({

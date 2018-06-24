@@ -3047,7 +3047,7 @@ var Card = function (_React$Component) {
             if (this.props.state == "my") {
                 return _react2.default.createElement(
                     'div',
-                    { className: 'card_box', onClick: this.usecard.bind(this, card.id, card.name) },
+                    { className: 'card_box card_my', onClick: this.usecard.bind(this, card.id, card.name) },
                     _react2.default.createElement('div', { className: 'card_ion' }),
                     _react2.default.createElement(
                         'div',
@@ -3516,6 +3516,7 @@ var HeroPlaceMy = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'equipment_list' },
+                    "金钱:" + this.props.mystate.money,
                     basic.equipment.map(function (equipment, i) {
                         _react2.default.createElement('div', null);
                     })
@@ -23188,7 +23189,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n    .system_body .main_box .hero_place {\n      height: 20%;\n      background: #5fa1bf; }\n      .system_body .main_box .hero_place div {\n        float: left; }\n      .system_body .main_box .hero_place .attribute_list {\n        background: #64fff5;\n        height: 100%;\n        width: 15%;\n        margin-left: 1%; }\n        .system_body .main_box .hero_place .attribute_list .HP {\n          width: 100%;\n          background: #8bff04; }\n        .system_body .main_box .hero_place .attribute_list .MP {\n          width: 100%;\n          background: #6977ff; }\n        .system_body .main_box .hero_place .attribute_list .attack {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .armor {\n          width: 100%; }\n        .system_body .main_box .hero_place .attribute_list .statelist {\n          width: 100%; }\n      .system_body .main_box .hero_place .card_list {\n        background: #64fff5;\n        height: 100%;\n        width: 62%;\n        margin-left: 1%; }\n      .system_body .main_box .hero_place .equipment_list {\n        background: #64fff5;\n        height: 100%;\n        width: 10%;\n        margin-left: 1%; }\n", ""]);
+exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n", ""]);
 
 // exports
 
@@ -23297,14 +23298,15 @@ var PlayPage = function (_React$Component) {
                 mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecov; //生命值恢复
                 mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Mprecov; //魔法值恢复
                 mystate.money += 100; //金钱
+                var messagelist = this.props.messagelist;
+                var small_speed = this.props.small_speed;
                 if (mystate.cardid.length >= 8) {
                     //手牌处理
-                    var messagelist = this.props.messagelist;
                     messagelist.push("小伙，你手牌满了！");
                     mystate.messagelist = messagelist;
                 } else {
-                    mystate.cardid.push(this.props.small_cardheap.slice(mystate.small_speed, 1));
-                    mystate.small_speed++;
+                    mystate.cardid.push(this.props.small_cardheap[small_speed]);
+                    small_speed++;
                 }
                 for (var i = 0; i < mystate.status.length;) {
                     //状态处理
@@ -23317,12 +23319,12 @@ var PlayPage = function (_React$Component) {
                         i++;
                     }
                 }
-
+                this.props.setState({ mystate: mystate, small_speed: small_speed, messagelist: messagelist });
                 this.props.socket.emit('totalk', {
                     id: this.props.thatid,
                     obj: {
                         funname: "getnewstate",
-                        newstate: { thatstate: mystate },
+                        newstate: { thatstate: mystate, small_speed: small_speed },
                         message: "现在是对方回合"
                     }
                 });
@@ -23337,6 +23339,7 @@ var PlayPage = function (_React$Component) {
                 var big_cardheap = (0, _action.shufflecards)(_skill.big_skill); //洗牌
                 //抓牌↓
                 var mystate = this.props.mystate;
+                mystate.money = 100;
                 mystate.cardid = small_cardheap.slice(0, 6);
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
@@ -23838,7 +23841,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 180px;\n  border: 1px solid #d2d2d2;\n  cursor: pointer;\n  transition: all 0.1s;\n  cursor: pointer; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_box:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2; }\n", ""]);
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 180px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: #fff;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2; }\n", ""]);
 
 // exports
 
@@ -23966,7 +23969,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".hero_box {\n  background: #64fff5;\n  height: 100%;\n  width: 10%; }\n\n.hero_ion {\n  width: 100%; }\n\n.attack_btn {\n  text-align: center;\n  background: red; }\n\n.over_btn {\n  text-align: center;\n  background: blue; }\n", ""]);
+exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place div {\n    float: left; }\n  .hero_place .hero_box {\n    background: #64fff5;\n    height: 100%;\n    width: 100px; }\n    .hero_place .hero_box .hero_ion {\n      width: 100%; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px; }\n", ""]);
 
 // exports
 
@@ -24030,7 +24033,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".hero_box {\n  background: #64fff5;\n  height: 100%;\n  width: 10%; }\n\n.hero_ion {\n  width: 100%; }\n", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
 
@@ -24051,6 +24054,10 @@ var _react2 = _interopRequireDefault(_react);
 var _Card = __webpack_require__(10);
 
 var _Card2 = _interopRequireDefault(_Card);
+
+var _CardShowList = __webpack_require__(66);
+
+var _CardShowList2 = _interopRequireDefault(_CardShowList);
 
 __webpack_require__(59);
 
@@ -24078,18 +24085,12 @@ var FightPlace = function (_React$Component) {
         key: 'messagelist',
         value: function messagelist() {
             return this.props.messagelist.map(function (message, i) {
+                if (i == 0) return;
                 return _react2.default.createElement(
                     'div',
                     { className: 'message_item', key: i },
                     message
                 );
-            });
-        }
-    }, {
-        key: 'cardShowList',
-        value: function cardShowList() {
-            return this.props.cardShowList.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, { card: card, state: "show", key: i });
             });
         }
     }, {
@@ -24107,7 +24108,12 @@ var FightPlace = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'cardShowList' },
-                    this.cardShowList()
+                    _react2.default.createElement(_CardShowList2.default, { cardShowList: this.props.cardShowList.slice(0, this.props.cardShowList.length - 1) })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'cardShow' },
+                    this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], state: "show" }) : ""
                 )
             );
         }
@@ -24177,7 +24183,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".fight_place {\n  height: 60%;\n  position: relative; }\n  .fight_place .fight_message {\n    width: 20%;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute; }\n  .fight_place .cardShowList {\n    width: 100px;\n    height: 180px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n", ""]);
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-height: 300px;\n  position: relative; }\n  .fight_place .fight_message {\n    width: 200px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 180px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px);\n    border: 1px solid; }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 200px;\n    overflow: hidden; }\n", ""]);
 
 // exports
 
@@ -24412,6 +24418,146 @@ exports = module.exports = __webpack_require__(1)(false);
 
 // module
 exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(10);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+__webpack_require__(67);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CardShowList = function (_React$Component) {
+    _inherits(CardShowList, _React$Component);
+
+    function CardShowList() {
+        _classCallCheck(this, CardShowList);
+
+        var _this = _possibleConstructorReturn(this, (CardShowList.__proto__ || Object.getPrototypeOf(CardShowList)).call(this));
+
+        _this.state = {
+            index: 0 //当前显示的卡牌
+        };
+        return _this;
+    }
+
+    _createClass(CardShowList, [{
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(newProps) {
+            if (this.props.cardShowList.length < newProps.cardShowList.length) {
+                this.setState({ index: newProps.cardShowList.length - 1 });
+            }
+        }
+    }, {
+        key: 'cardShowList',
+        value: function cardShowList() {
+            var index = this.state.index;
+            return this.props.cardShowList.map(function (card, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) } },
+                    _react2.default.createElement(_Card2.default, { card: card, state: "show", key: i })
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'CardShow_box' },
+                this.cardShowList()
+            );
+        }
+    }]);
+
+    return CardShowList;
+}(_react2.default.Component);
+
+module.exports = CardShowList;
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(68);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Slide_box {\n  margin-bottom: -160px;\n  border: 1px solid;\n  position: relative; }\n", ""]);
 
 // exports
 

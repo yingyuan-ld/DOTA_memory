@@ -1,18 +1,27 @@
 .fight_place{
-    height: 60%;
+    height: calc(100% - 366px);
+    min-height: 300px;
     position: relative;
     .fight_message{
-        width: 20%;
+        width: 200px;
         height: 100%;
         overflow: auto;
         border: 1px solid #666;
         position: absolute;
     }
-    .cardShowList{
+    .cardShow{
         width: 100px;
         height: 180px;
         position: absolute;
         left: calc(50% - 50px);
         top: calc(50% - 90px);
+        border: 1px solid;
+    }
+    .cardShowList{    
+        position: absolute;
+        width: 102px;
+        height: 100%;
+        left: 200px;
+        overflow: hidden;
     }
 }
