@@ -2905,75 +2905,6 @@ module.exports = emptyObject;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyFunction = __webpack_require__(5);
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3091,6 +3022,75 @@ var Card = function (_React$Component) {
 module.exports = Card;
 
 /***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyFunction = __webpack_require__(5);
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = emptyFunction;
+
+if (process.env.NODE_ENV !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3106,7 +3106,7 @@ module.exports = Card;
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(4);
-  var warning = __webpack_require__(9);
+  var warning = __webpack_require__(10);
   var ReactPropTypesSecret = __webpack_require__(26);
   var loggedTypeFailures = {};
 }
@@ -3367,7 +3367,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(10);
+var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3616,7 +3616,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(10);
+var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3769,7 +3769,7 @@ var _DotaSystem = __webpack_require__(34);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(64);
+__webpack_require__(67);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4129,7 +4129,7 @@ if (process.env.NODE_ENV !== "production") {
 var _assign = __webpack_require__(7);
 var invariant = __webpack_require__(4);
 var emptyObject = __webpack_require__(8);
-var warning = __webpack_require__(9);
+var warning = __webpack_require__(10);
 var emptyFunction = __webpack_require__(5);
 var checkPropTypes = __webpack_require__(11);
 
@@ -5625,7 +5625,7 @@ if (process.env.NODE_ENV !== "production") {
 
 var invariant = __webpack_require__(4);
 var React = __webpack_require__(0);
-var warning = __webpack_require__(9);
+var warning = __webpack_require__(10);
 var ExecutionEnvironment = __webpack_require__(12);
 var _assign = __webpack_require__(7);
 var emptyFunction = __webpack_require__(5);
@@ -23205,7 +23205,7 @@ var _PlayPage = __webpack_require__(46);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(61);
+var _HeroSelect = __webpack_require__(64);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
@@ -24051,15 +24051,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(10);
+var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _CardShowList = __webpack_require__(66);
+var _CardShowList = __webpack_require__(59);
 
 var _CardShowList2 = _interopRequireDefault(_CardShowList);
 
-__webpack_require__(59);
+__webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24128,8 +24128,186 @@ module.exports = FightPlace;
 /* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
 
-var content = __webpack_require__(60);
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(9);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+__webpack_require__(60);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CardShowList = function (_React$Component) {
+    _inherits(CardShowList, _React$Component);
+
+    function CardShowList() {
+        _classCallCheck(this, CardShowList);
+
+        var _this = _possibleConstructorReturn(this, (CardShowList.__proto__ || Object.getPrototypeOf(CardShowList)).call(this));
+
+        _this.state = {
+            index: 0, //当前显示的卡牌
+            tempindex: 0, //当前显示的卡牌(参与计算用)
+            top: 92, //定位用
+            temptop: 92 //定位用(参与计算)
+        };
+        _this.mousemove = _this.mousemove.bind(_this);
+        _this.mouseup = _this.mouseup.bind(_this);
+        return _this;
+    }
+
+    _createClass(CardShowList, [{
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(newProps) {
+            if (this.props.cardShowList.length < newProps.cardShowList.length) {
+                var index = newProps.cardShowList.length - 1;
+                this.setState({ index: index, tempindex: index, top: 70 + 22 * index, temptop: 70 + 22 * index });
+            }
+        }
+    }, {
+        key: 'slide',
+        value: function slide(e) {
+            //添加监听
+            document.addEventListener("mousemove", this.mousemove, false);
+            document.addEventListener("mouseup", this.mouseup, false);
+            this.start = e.clientY;
+        }
+    }, {
+        key: 'mousemove',
+        value: function mousemove(e) {
+            var tempindex = this.state.tempindex;
+            var maxindex = this.props.cardShowList.length - 1;
+            tempindex += parseInt((this.start - e.clientY) / 22);
+            console.info(tempindex);
+            if (tempindex < 0) tempindex = 0;
+            if (tempindex > maxindex) tempindex = maxindex;
+            var temptop = this.state.temptop;
+            temptop += this.start - e.clientY;
+            this.setState({ index: tempindex, top: temptop });
+        }
+    }, {
+        key: 'mouseup',
+        value: function mouseup(e) {
+            console.info("移除监听");
+            var top = 70 + 22 * this.state.index;
+            this.setState({ tempindex: this.state.index, top: top, temptop: top });
+            document.removeEventListener("mousemove", this.mousemove, false);
+            document.removeEventListener("mouseup", this.mouseup, false);
+        }
+    }, {
+        key: 'cardShowList',
+        value: function cardShowList() {
+            var _this2 = this;
+
+            var index = this.state.index;
+            return this.props.cardShowList.map(function (card, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) }, onMouseDown: _this2.slide.bind(_this2) },
+                    _react2.default.createElement(_Card2.default, { card: card, state: "show", key: i })
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'CardShow_box', style: { top: "calc(50% - " + this.state.top + "px)" } },
+                this.cardShowList()
+            );
+        }
+    }]);
+
+    return CardShowList;
+}(_react2.default.Component);
+
+module.exports = CardShowList;
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(61);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Slide_box {\n  margin-bottom: -160px;\n  border: 1px solid;\n  position: relative; }\n\n.CardShow_box {\n  position: relative;\n  z-index: 0; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(63);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24175,7 +24353,7 @@ if(false) {
 }
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24189,7 +24367,7 @@ exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-he
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24201,7 +24379,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(62);
+__webpack_require__(65);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24295,11 +24473,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(63);
+var content = __webpack_require__(66);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24345,7 +24523,7 @@ if(false) {
 }
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24359,11 +24537,11 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(65);
+var content = __webpack_require__(68);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24409,146 +24587,6 @@ if(false) {
 }
 
 /***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Card = __webpack_require__(10);
-
-var _Card2 = _interopRequireDefault(_Card);
-
-__webpack_require__(67);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CardShowList = function (_React$Component) {
-    _inherits(CardShowList, _React$Component);
-
-    function CardShowList() {
-        _classCallCheck(this, CardShowList);
-
-        var _this = _possibleConstructorReturn(this, (CardShowList.__proto__ || Object.getPrototypeOf(CardShowList)).call(this));
-
-        _this.state = {
-            index: 0 //当前显示的卡牌
-        };
-        return _this;
-    }
-
-    _createClass(CardShowList, [{
-        key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps(newProps) {
-            if (this.props.cardShowList.length < newProps.cardShowList.length) {
-                this.setState({ index: newProps.cardShowList.length - 1 });
-            }
-        }
-    }, {
-        key: 'cardShowList',
-        value: function cardShowList() {
-            var index = this.state.index;
-            return this.props.cardShowList.map(function (card, i) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) } },
-                    _react2.default.createElement(_Card2.default, { card: card, state: "show", key: i })
-                );
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'CardShow_box' },
-                this.cardShowList()
-            );
-        }
-    }]);
-
-    return CardShowList;
-}(_react2.default.Component);
-
-module.exports = CardShowList;
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(68);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
 /* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24557,7 +24595,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".Slide_box {\n  margin-bottom: -160px;\n  border: 1px solid;\n  position: relative; }\n", ""]);
+exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none; }\n", ""]);
 
 // exports
 
