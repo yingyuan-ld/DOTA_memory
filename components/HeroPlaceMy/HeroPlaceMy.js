@@ -1,15 +1,13 @@
 import React from 'react';
 import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
-import StateIon from '../StateIon/StateIon';
+import BuffIon from '../BuffIon/BuffIon';
 import {state_base} from '../action';//计算状态影响下的属性
 import "./HeroPlaceMy.scss";
 
 class HeroPlaceMy extends React.Component{
     constructor(){
         super();
-        this.state = {
-        }
     }
     cardlist(){
         return this.props.mystate.cardid.map((card,i)=>{
@@ -17,23 +15,23 @@ class HeroPlaceMy extends React.Component{
         })
     }
     showstate(st){
-        let status = st.status;//状态数组
-        let statusTime = st.statusTime;//状态持续时间
-        return status.map((item,i)=>{
-            return <StateIon {...state_list[item]} statusTime={statusTime[i]} key={i}/>
+        let buff = st.buff;//状态数组
+        let buffTime = st.buffTime;//状态持续时间
+        return buff.map((item,i)=>{
+            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} key={i}/>
         });
     }
     roundOver(){//回合结束
         let messagelist = this.props.messagelist;
         messagelist.push("结束回合");
         let mystate = this.props.mystate;
-        for(let i=0;i<mystate.status.length;){//状态处理
-            if(mystate.statusTime[i]==1){
-                mystate.statusTime.splice(i,1);
-                mystate.statusObj[mystate.status[i]]&&delete mystate.statusObj[mystate.status[i]];
-                mystate.status.splice(i,1);
+        for(let i=0;i<mystate.buff.length;){//状态处理
+            if(mystate.buffTime[i]==1){
+                mystate.buffTime.splice(i,1);
+                mystate.buffObj[mystate.buff[i]]&&delete mystate.buffObj[mystate.buff[i]];
+                mystate.buff.splice(i,1);
             }else{
-                mystate.statusTime[i]-=1;
+                mystate.buffTime[i]-=1;
                 i++;
             }
         }
@@ -49,8 +47,7 @@ class HeroPlaceMy extends React.Component{
         });
     }
   	render() {
-          
-        let basic = state_base(this.props.mystate,this.props.thatstate);//计算状态影响下的属性
+        let basic = this.props.mystate;
         return <div className="hero_place">
             <div className="hero_box">
                 <div className="hero_ion">

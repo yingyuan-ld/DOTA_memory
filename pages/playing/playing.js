@@ -27,12 +27,13 @@ class Component extends React.Component{
                 Mprecove:50,//魔法值恢复速度
                 attack:40,//攻击力
                 armor:10,//护甲
-                status:[],//状态数组
-                statusTime:[],//状态持续时间
-                statusObj:{},//有些状态需要对象来存储
+                buff:[],//状态数组
+                buffTime:[],//状态持续时间
+                buffObj:{},//有些状态需要对象来存储
                 equipment:[],//装备列表
                 cardid:[],//卡牌数组
                 money:0,//金钱
+                moneyrecove:100,//金钱获得速度
             },
             round:0, //是否是我的回合 0不是 1是
             messagelist:[],//战斗记录

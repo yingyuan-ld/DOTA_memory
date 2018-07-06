@@ -9,13 +9,10 @@ class Card extends React.Component{
         }
     }
     usecard(id,name){
-        if(this.props.round==0){
-            let messagelist = this.props.messagelist;
-            messagelist.push("现在不是你的回合！");
-            this.props.setState({messagelist:messagelist});
-            return;
-        }
-        let newstate = doskill(this.props.mystate,this.props.thatstate,id);
+
+        let newstate = doskill(this.props,id);
+
+
         let messagelist = this.props.messagelist;//消息
         messagelist.push("你使用了\""+name+"\"");
         newstate.mystate.messagelist = messagelist;

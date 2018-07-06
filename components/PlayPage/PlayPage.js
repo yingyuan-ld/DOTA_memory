@@ -24,7 +24,7 @@ class PlayPage extends React.Component{
             let mystate = this.props.mystate;
             mystate.Hp = mystate.Hp+mystate.Hprecove>mystate.maxHp?mystate.maxHp:mystate.Hp+mystate.Hprecov;//生命值恢复
             mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Mprecov;//魔法值恢复
-            mystate.money+=100;//金钱
+            mystate.money+=mystate.moneyrecove;//金钱
             let messagelist = this.props.messagelist;
             let small_speed = this.props.small_speed;
             if(mystate.cardid.length>=8){//手牌处理
@@ -34,13 +34,13 @@ class PlayPage extends React.Component{
                 mystate.cardid.push(this.props.small_cardheap[small_speed]);
                 small_speed++;
             }
-            for(let i=0;i<mystate.status.length;){//状态处理
-                if(mystate.statusTime[i]==1){
-                    mystate.statusTime.splice(i,1);
-                    mystate.statusObj[mystate.status[i]]&&delete mystate.statusObj[mystate.status[i]];
-                    mystate.status.splice(i,1);
+            for(let i=0;i<mystate.buff.length;){//状态处理
+                if(mystate.buffTime[i]==1){
+                    mystate.buffTime.splice(i,1);
+                    mystate.buffObj[mystate.buff[i]]&&delete mystate.buffObj[mystate.buff[i]];
+                    mystate.buff.splice(i,1);
                 }else{
-                    mystate.statusTime[i]-=1;
+                    mystate.buffTime[i]-=1;
                     i++;
                 }
             }
@@ -92,10 +92,13 @@ class PlayPage extends React.Component{
     }
   	render() {
         console.info(this.props);
+        let myBasic = state_base(this.props.mystate,this.props.thatstate);//计算状态影响下的属性
+        let thatBasic = state_base(this.props.thatstate,this.props.mystate);//计算状态影响下的属性
+        let basic = {mystate:myBasic,thatstate:thatBasic}
         return<div className="main_box">
-            <HeroPlaceThat {...this.props}/>
+            <HeroPlaceThat {...this.props} {...basic}/>
             <FightPlace {...this.props}/>
-            <HeroPlaceMy {...this.props}/>
+            <HeroPlaceMy {...this.props} {...basic}/>
         </div>
   	}
 }

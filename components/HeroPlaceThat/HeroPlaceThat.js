@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
-import StateIon from '../StateIon/StateIon';
+import BuffIon from '../BuffIon/BuffIon';
 import {state_base} from '../action';//计算状态影响下的属性
 import "./HeroPlaceThat.scss";
 
@@ -16,15 +16,15 @@ class HeroPlaceThat extends React.Component{
             return <Card state={"that"} {...card} key={i}/>
         })
     }
-    showstate(st){
-        let status = st.status;//状态数组
-        let statusTime = st.statusTime;//状态持续时间
-        return status.map((item,i)=>{
-            return <StateIon {...state_list[item]} statusTime={statusTime[i]} key={i}/>
+    showstate(basic){
+        let buff = basic.buff;//状态数组
+        let buffTime = basic.buffTime;//状态持续时间
+        return buff.map((item,i)=>{
+            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} key={i}/>
         });
     }
   	render() {
-        let basic = state_base(this.props.thatstate,this.props.mystate);//计算状态影响下的属性
+        let basic = this.props.thatstate;
         if(basic.herotype===""||basic.herotype===undefined){
             return <div className="hero_place" >
                 对手正在准备中...
