@@ -11,7 +11,7 @@ class HeroPlaceMy extends React.Component{
     }
     cardlist(){
         return this.props.mystate.cardid.map((card,i)=>{
-            return <Card card={card} state={"my"} {...this.props} key={i}/>
+            return <Card {...this.props} card={card} state={"my"} key={i}/>
         })
     }
     showstate(st){

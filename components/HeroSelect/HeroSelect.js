@@ -31,7 +31,7 @@ class HeroSelect extends React.Component{
                 break;
         }
         let round = Math.random();//随机回合用
-        this.props.setState({mystate:mystate,playingSpeed:1,round:(this.props.round+round)});
+        this.props.setState({mystate:mystate,mystateBase:mystate,playingSpeed:1,round:(this.props.round+round)});
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{

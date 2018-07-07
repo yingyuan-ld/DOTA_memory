@@ -17,7 +17,8 @@ class Component extends React.Component{
     constructor(){
         super();
         this.state = {
-            mystate:{
+            mystateBase:{},//基础属性(排除状态影响)
+            mystate:{//计算属性(状态加成)
                 herotype:"",//英雄种类 0力量 1敏捷 2智力
                 maxHp:3500,//最大血量
                 Hp:3500,//当前血量

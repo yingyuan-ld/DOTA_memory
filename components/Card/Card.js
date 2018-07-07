@@ -13,22 +13,22 @@ class Card extends React.Component{
         let newstate = doskill(this.props,id);
 
 
-        let messagelist = this.props.messagelist;//消息
-        messagelist.push("你使用了\""+name+"\"");
-        newstate.mystate.messagelist = messagelist;
-        newstate.mystate.cardid.map((item,i)=>{
-            if(item==this.props.card){
-                newstate.mystate.cardid.splice(i,1);
-            };
-        });//删除手牌
-        let cardShowList = this.props.cardShowList;
-        cardShowList.push(this.props.card);//放入弃牌堆
+        // let messagelist = this.props.messagelist;//消息
+        // messagelist.push("你使用了\""+name+"\"");
+        // newstate.mystate.messagelist = messagelist;
+        // newstate.mystate.cardid.map((item,i)=>{
+        //     if(item==this.props.card){
+        //         newstate.mystate.cardid.splice(i,1);
+        //     };
+        // });//删除手牌
+        // let cardShowList = this.props.cardShowList;
+        // cardShowList.push(this.props.card);//放入弃牌堆
         this.props.setState(newstate);
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
-                newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate,cardShowList:cardShowList},
+                newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate,cardShowList:newstate.cardShowList},
                 message:"对方使用了\""+name+"\"",
             }
         });

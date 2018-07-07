@@ -33,8 +33,8 @@ export function cardheap (state,obj){//洗牌结果
     state.big_cardheap = obj.big_cardheap;
     return state;
 }
-export function getnewstate(thisstate,obj){
-    let messagelist =thisstate.messagelist;
+export function getnewstate(tate,obj){
+    let messagelist =tate.messagelist;
     if(!obj.message)console.info("缺少动作的message");
     messagelist.push(obj.message);
     // let newstate = {mystate:obj.newstate.thatstate,thatstate:obj.newstate.mystate};
@@ -98,6 +98,105 @@ export function state_base(mystate,thatstate){
     })
     return mystate;
 }
+function check_round (props){//判断回合
+    let mystate = props.mystate;
+    if(props.round==0){
+        props.messagelist.push("现在不是你的回合！");
+        return [false,props];
+    }else{
+        return [true,props];
+    }
+}
+function check_myBuff (props){//释放技能判定 己方负面状态
+    const debuff_doskill = {
+        0:"晕眩",
+        1:"沉默",
+        10:"超级新星",
+        14:"决斗",
+        22:"末日",
+        23:"回音重踏",
+        32:"战士怒吼",
+        34:"剑刃风暴",
+        36:"海妖之歌",
+        37:"石化",
+        55:"噩梦",
+        68:"极寒之拥",
+        87:"妖术",
+        88:"风杖"
+    }
+    let mystate = props.mystate;
+    mystate.buff.map((buffid)=>{//
+        if(debuff_doskill[buffid]){
+            props.messagelist.push("处于\""+debuff_doskill[buffid]+"\"状态,不能出牌！");
+            return [false,props];
+        }
+    });
+    return [true,props];
+}
+function check_thatBuff(props){//释放技能判定 对方防御状态
+    const defenbuff_doskill = {
+        34:"剑刃风暴",
+        36:"海妖之歌",
+        60:"魔免",
+        79:"暗影之舞",
+        88:"风杖"
+    };
+    let mystate = props.mystate;
+    mystate.buff.map((buffid)=>{//
+        if(defenbuff_doskill[buffid]){
+            props.messagelist.push("对方处于\""+defenbuff_doskill[buffid]+"\"状态！");
+            return [false,props];
+        }
+    });
+    return [true,props];
+}
+function check_checkMp (props,card){//判断剩余蓝量
+    let mystate = props.mystate;
+    if(mystate.Mp<card.do.mMp){
+        props.messagelist.push("剩余蓝量不够！");
+        return [false,props];
+    }else{
+        return [true,props];
+    }
+}
+function check_buffToSkill (props,card){
+    let mystate = props.mystate;
+    let thatstate = props.thatstate;
+    props.mystate.buff.map((buffid)=>{//
+        switch(buffid){
+            case 100://反击
+                card.do.mHp = card.do.mHp - parseInt(card.do.tHp/5);
+                break;
+            case 155://精气光环
+                break;
+            case 155://精气光环
+                break;
+            case 157://多重施法
+                break;
+        }
+    });
+    let tBuff= props.thatstate.buff;
+    for(let i=0;i< tBuff.length;i++){
+        switch(tBuff[i]){
+            case 103://活性护甲
+                Object.assign(card.do.tBuffObj, {103:thatstate.buffObj[103]+1});
+                break;
+            case 8://无光之盾
+                if(thatstate.buffObj[8]>card.do.tHp){
+                    Object.assign(card.do.tBuffObj, {8:thatstate.buffObj[8]-=card.do.tHp});
+                    card.do.tHp = 0;
+                }else{
+                    card.do.tHp = card.do.tHp - thatstate.buffObj[8];
+                    card.do.mHp = card.do.mHp - 100;
+                    props.thatstate.buff.splice(i,1);
+                    props.thatstate.buffTime.splice(i,1);
+                    i--;
+                }
+                break;
+        }
+    }
+    return [props,card];
+}
 export function doskill (props,cardid){//使用技能
     let mystate = props.mystate;
     let thatstate = props.thatstate;
@@ -106,181 +205,88 @@ export function doskill (props,cardid){//使用技能
     card = JSON.parse(JSON.stringify(card));
     let checked = true;//用于判断检查状态
 
-    for(key in card.do){
+    for(let key in card.do){
         let value = card.do[key]
         if(typeof(value)=="string")card.do[key] = parseInt(eval(value));
     }
-    [checked,props]= this.check.round(props);
+    [checked,props]= check_round(props);
     if(!checked)return props;
-    [checked,props] = this.check.myBuff(props);
+    [checked,props] = check_myBuff(props);
     if(!checked)return props;
 
     switch(card.state){
         case 0://可以被闪避的技能
-            [checked,props] = this.check.checkMp(props,card);
+            [checked,props] = check_checkMp(props,card);
             if(!checked)return props;
             //轮到那边的回合 后面再做
-            props = this.docard(props,card);
+            props = docard(props,card);
             break
         case 1://指向性技能
-            [checked,props] = this.check.checkMp(props,card);
+            [checked,props] = check_checkMp(props,card);
             if(!checked)return props;
-            [checked,props] = this.check.thatBuff(props);
+            [checked,props] = check_thatBuff(props);
             if(!checked)return props;
-            props = this.docard(props,card);
+            props = docard(props,card);
             break
         case 2://状态类技能
-            props = this.docard(props,card);
+            props = docard(props,card);
             break
     }
     return props;
 }
-let check = {
-    round:function(props){//判断回合
-        let mystate = props.mystate;
-        if(props.round==0){
-            props.messagelist.push("现在不是你的回合！");
-            return [false,props];
-        }else{
-            return [true,props];
-        }
-    },
-    myBuff:function(props){//释放技能判定 己方负面状态
-        const debuff_doskill = {
-            0:"晕眩",
-            1:"沉默",
-            10:"超级新星",
-            14:"决斗",
-            22:"末日",
-            23:"回音重踏",
-            32:"战士怒吼",
-            34:"剑刃风暴",
-            36:"海妖之歌",
-            37:"石化",
-            55:"噩梦",
-            68:"极寒之拥",
-            87:"妖术",
-            88:"风杖"
-        }
-        let mystate = props.mystate;
-        mystate.buff.map((buffid)=>{//
-            if(debuff_doskill[buffid]){
-                props.messagelist.push("处于\""+debuff_doskill[buffid]+"\"状态,不能出牌！");
-                return [false,props];
-            }
-        });
-        return [true,props];
-    },
-    thatBuff:function(props){//释放技能判定 对方防御状态
-        const defenbuff_doskill = {
-            34:"剑刃风暴",
-            36:"海妖之歌",
-            60:"魔免",
-            79:"暗影之舞",
-            88:"风杖"
-        };
-        let mystate = props.mystate;
-        mystate.buff.map((buffid)=>{//
-            if(defenbuff_doskill[buffid]){
-                props.messagelist.push("对方处于\""+defenbuff_doskill[buffid]+"\"状态！");
-                return [false,props];
-            }
-        });
-        return [true,props];
-    },
-    checkMp:function(props,card){//判断剩余蓝量
-        let mystate = props.mystate;
-        if(mystate.Mp<card.do.mMp){
-            props.messagelist.push("剩余蓝量不够！");
-            return [false,props];
-        }else{
-            return [true,props];
-        }
-    },
-    buffToSkill:function(props,card){
-        let mystate = props.mystate;
-        let thatstate = props.thatstate;
-        props.mystate.buff.map((buffid)=>{//
-            switch(buffid){
-                case 100://反击
-                    card.do.mHp = card.do.mHp - parseInt(card.do.tHp/5);
-                    break;
-                case 155://精气光环
-                    break;
-                case 155://精气光环
-                    break;
-                case 157://多重施法
-                    break;
-            }
-        });
-        let tBuff= props.thatstate.buff;
-        for(let i=0;i< tBuff.length;i++){
-            switch(tBuff[i]){
-                case 103://活性护甲
-                    Object.assign(card.do.tBuffObj, {103:thatstate.buffObj[103]+1});
-                    break;
-                case 8://无光之盾
-                    if(thatstate.buffObj[8]>card.do.tHp){
-                        Object.assign(card.do.tBuffObj, {8:thatstate.buffObj[8]-=card.do.tHp});
-                        card.do.tHp = 0;
-                    }else{
-                        card.do.tHp = card.do.tHp - thatstate.buffObj[8];
-                        card.do.mHp = card.do.mHp - 100;
-                        props.thatstate.buff.splice(i,1);
-                        props.thatstate.buffTime.splice(i,1);
-                        i--;
-                    }
-                    break;
-            }
-        }
-        return [props,card];
-    }
-}
 
 function docard(props,card){
-    let mystate = props.mystate;
-    let thatstate = props.thatstate;
+
+
+    let messagelist = props.messagelist;//消息
+    messagelist.push("你使用了\""+card.name+"\"");
+    props.mystate.messagelist = messagelist;
+    props.mystate.cardid.map((item,i)=>{
+        if(item==props.card){
+            props.mystate.cardid.splice(i,1);
+        };
+    });//删除手牌
+    props.cardShowList.push(props.card);//放入弃牌堆
+
     //技能作用时的判断
-    [props,card] = this.check.buffToSkill(props,card);
-    for(key in card.do){
+    [props,card] = check_buffToSkill(props,card);
+    for(let key in card.do){
         let value = card.do[key]
         switch(key){
             case "mMp":
-                mystate.Mp +=value;
+                props.mystate.Mp +=value;
                 break;
             case "mHp":
-                mystate.Hp +=value;
+                props.mystate.Hp +=value;
                 break;
             case "tMp":
-                thatstate.Mp +=value;
+                props.thatstate.Mp +=value;
                 break;
             case "tHp":
-                thatstate.Hp -=value;
+                props.thatstate.Hp -=value;
                 break;
             case "mBuff":
-                mystate.buff.push(value);
+                props.mystate.buff.push(value);
                 break;
             case "mBuffT":
-                mystate.buffTime.push(value);
+                props.mystate.buffTime.push(value);
                 break;
             case "tBuff":
-                thatstate.buff.push(value);
+                props.thatstate.buff.push(value);
                 break;
             case "tBuffT":
-                thatstate.buffTime.push(value);
+                props.thatstate.buffTime.push(value);
                 break;
             case "mBuffObj":
-                Object.assign(mystate.buffObj, value);
+                Object.assign(props.mystate.buffObj, value);
             case "tBuffObj":
-                Object.assign(thatstate.buffObj, value);
+                Object.assign(props.thatstate.buffObj, value);
                 break;
             case "special":
-                this.specialcard(props,card);
+                specialcard(props,card);
                 break;
         }
     }
-    props.mystate = mystate;
-    props.thatstate = thatstate;
     return props;
 }
 
