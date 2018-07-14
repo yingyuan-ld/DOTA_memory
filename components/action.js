@@ -44,58 +44,86 @@ export function getnewstate(tate,obj){
 }
 export function state_base(mystate,thatstate){
     if(!mystate.buff)return mystate;
-    mystate = deepCopy(mystate);
+    let stateBase = {
+        maxHp:3500,//最大血量
+        Hp:3500,//当前血量
+        Hprecove:10,//生命值恢复速度
+        maxMp:500,//最大蓝量
+        Mp:500,//当前蓝量
+        Mprecove:50,//魔法值恢复速度
+        attack:40,//攻击力
+        armor:10,//护甲
+    }
+    switch(mystate.herotype){
+        case 0:
+            stateBase.herotype=0;
+            stateBase.maxHp=4000;
+            stateBase.Hp=4000;
+            stateBase.Hprecove=15;
+            break;
+        case 1:
+            stateBase.herotype=1;
+            stateBase.attack=70;
+            stateBase.armor=15;
+            break;
+        case 2:
+            stateBase.herotype=2;
+            stateBase.maxHp=3000;
+            stateBase.Hp=3000;
+            stateBase.maxMp=600;
+            stateBase.Mp=600;
+            stateBase.Mprecove=60;
+            break;
+    }
     mystate.buff.map((key)=>{
         switch (key)
         {
             case 5://巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
-                mystate.armor-=10;
+                stateBase.armor-=10;
                 break;
             case 6://锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
-                mystate.attack-= parseInt(mystate.attack/2);
+                stateBase.attack-= parseInt(stateBase.attack/2);
                 break;                
             case 102://潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
-                mystate.attack+= (20+thatstate.cardid.length*10);
+                stateBase.attack+= (20+thatstate.cardid.length*10);
                 break;
             case 103://活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
-                mystate.armor+= (mystate.buffObj["103"]*10);
+                stateBase.armor+= (mystate.buffObj["103"]*10);
                 break;
             case 11://战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
-                mystate.armor+= 40;
+                stateBase.armor+= 40;
                 break;
             case 13://强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
-                mystate.attack+= mystate.attack;
+                stateBase.attack+= stateBase.attack;
                 break;
             case 16://嚎叫 0 本回合攻击加60
-                mystate.attack+= 60;
+                stateBase.attack+= 60;
                 break;
             case 113://野性驱使 2 攻击加30
-                mystate.attack+= 30;
+                stateBase.attack+= 30;
                 break;
             case 73://酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
-                mystate.armor-= 10;
-                mystate.Hprecove-= 50;
+                stateBase.armor-= 10;
+                stateBase.Hprecove-= 50;
                 break;
             case 99://巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
-                mystate.attack+= thatstate.cardid.length*10;
+                stateBase.attack+= thatstate.cardid.length*10;
                 break;
             case 18://战吼 2 三回合内增加自身30点护甲
-                mystate.armor+= 30;
+                stateBase.armor+= 30;
                 break;
             case 114://地精贪婪 2 每回合得到金钱数+50(持续3回合)
-                mystate.moneyrecove += 50;
+                stateBase.moneyrecove += 50;
                 break;
             case 115://龙族血统 2 每回合回复40点生命值(持续3回合)
-                mystate.Hprecove+= 40;
+                stateBase.Hprecove+= 40;
                 break;
             case 21://授予力量 2 本回合内攻击加80
-                mystate.attack+= 80;
+                stateBase.attack+= 80;
                 break;
-                
         }
-            
-                
     })
+    Object.assign(mystate, stateBase);
     return mystate;
 }
 function check_round (props){//判断回合
@@ -125,13 +153,15 @@ function check_myBuff (props){//释放技能判定 己方负面状态
         88:"风杖"
     }
     let mystate = props.mystate;
+    let res = [true,props];
     mystate.buff.map((buffid)=>{//
+        if(!res[0])return;
         if(debuff_doskill[buffid]){
             props.messagelist.push("处于\""+debuff_doskill[buffid]+"\"状态,不能出牌！");
-            return [false,props];
+            res = [false,props];
         }
     });
-    return [true,props];
+    return res;
 }
 function check_thatBuff(props){//释放技能判定 对方防御状态
     const defenbuff_doskill = {
@@ -197,11 +227,9 @@ function check_buffToSkill (props,card){
     }
     return [props,card];
 }
-export function doskill (props,cardid){//使用技能
+export function doskill (props,card){//使用技能
     let mystate = props.mystate;
     let thatstate = props.thatstate;
-    let index = cardid%1000;
-    let card = small_skill[index];
     card = JSON.parse(JSON.stringify(card));
     let checked = true;//用于判断检查状态
 
@@ -210,29 +238,29 @@ export function doskill (props,cardid){//使用技能
         if(typeof(value)=="string")card.do[key] = parseInt(eval(value));
     }
     [checked,props]= check_round(props);
-    if(!checked)return props;
+    if(!checked)return [false,props];
     [checked,props] = check_myBuff(props);
-    if(!checked)return props;
+    if(!checked)return [false,props];
 
     switch(card.state){
         case 0://可以被闪避的技能
             [checked,props] = check_checkMp(props,card);
-            if(!checked)return props;
+            if(!checked)return false;
             //轮到那边的回合 后面再做
             props = docard(props,card);
             break
         case 1://指向性技能
             [checked,props] = check_checkMp(props,card);
-            if(!checked)return props;
+            if(!checked)return [false,props];
             [checked,props] = check_thatBuff(props);
-            if(!checked)return props;
+            if(!checked)return [false,props];
             props = docard(props,card);
             break
         case 2://状态类技能
             props = docard(props,card);
             break
     }
-    return props;
+    return [true,props];
 }
 
 function docard(props,card){

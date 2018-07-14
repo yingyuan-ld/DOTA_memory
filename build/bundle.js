@@ -909,69 +909,99 @@ function getnewstate(tate, obj) {
 }
 function state_base(mystate, thatstate) {
     if (!mystate.buff) return mystate;
-    mystate = deepCopy(mystate);
+    var stateBase = {
+        maxHp: 3500, //最大血量
+        Hp: 3500, //当前血量
+        Hprecove: 10, //生命值恢复速度
+        maxMp: 500, //最大蓝量
+        Mp: 500, //当前蓝量
+        Mprecove: 50, //魔法值恢复速度
+        attack: 40, //攻击力
+        armor: 10 //护甲
+    };
+    switch (mystate.herotype) {
+        case 0:
+            stateBase.herotype = 0;
+            stateBase.maxHp = 4000;
+            stateBase.Hp = 4000;
+            stateBase.Hprecove = 15;
+            break;
+        case 1:
+            stateBase.herotype = 1;
+            stateBase.attack = 70;
+            stateBase.armor = 15;
+            break;
+        case 2:
+            stateBase.herotype = 2;
+            stateBase.maxHp = 3000;
+            stateBase.Hp = 3000;
+            stateBase.maxMp = 600;
+            stateBase.Mp = 600;
+            stateBase.Mprecove = 60;
+            break;
+    }
     mystate.buff.map(function (key) {
         switch (key) {
             case 5:
                 //巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
-                mystate.armor -= 10;
+                stateBase.armor -= 10;
                 break;
             case 6:
                 //锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
-                mystate.attack -= parseInt(mystate.attack / 2);
+                stateBase.attack -= parseInt(stateBase.attack / 2);
                 break;
             case 102:
                 //潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
-                mystate.attack += 20 + thatstate.cardid.length * 10;
+                stateBase.attack += 20 + thatstate.cardid.length * 10;
                 break;
             case 103:
                 //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
-                mystate.armor += mystate.buffObj["103"] * 10;
+                stateBase.armor += mystate.buffObj["103"] * 10;
                 break;
             case 11:
                 //战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
-                mystate.armor += 40;
+                stateBase.armor += 40;
                 break;
             case 13:
                 //强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
-                mystate.attack += mystate.attack;
+                stateBase.attack += stateBase.attack;
                 break;
             case 16:
                 //嚎叫 0 本回合攻击加60
-                mystate.attack += 60;
+                stateBase.attack += 60;
                 break;
             case 113:
                 //野性驱使 2 攻击加30
-                mystate.attack += 30;
+                stateBase.attack += 30;
                 break;
             case 73:
                 //酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
-                mystate.armor -= 10;
-                mystate.Hprecove -= 50;
+                stateBase.armor -= 10;
+                stateBase.Hprecove -= 50;
                 break;
             case 99:
                 //巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
-                mystate.attack += thatstate.cardid.length * 10;
+                stateBase.attack += thatstate.cardid.length * 10;
                 break;
             case 18:
                 //战吼 2 三回合内增加自身30点护甲
-                mystate.armor += 30;
+                stateBase.armor += 30;
                 break;
             case 114:
                 //地精贪婪 2 每回合得到金钱数+50(持续3回合)
-                mystate.moneyrecove += 50;
+                stateBase.moneyrecove += 50;
                 break;
             case 115:
                 //龙族血统 2 每回合回复40点生命值(持续3回合)
-                mystate.Hprecove += 40;
+                stateBase.Hprecove += 40;
                 break;
             case 21:
                 //授予力量 2 本回合内攻击加80
-                mystate.attack += 80;
+                stateBase.attack += 80;
                 break;
-
         }
     });
+    Object.assign(mystate, stateBase);
     return mystate;
 }
 function check_round(props) {
@@ -1003,14 +1033,16 @@ function check_myBuff(props) {
         88: "风杖"
     };
     var mystate = props.mystate;
+    var res = [true, props];
     mystate.buff.map(function (buffid) {
         //
+        if (!res[0]) return;
         if (debuff_doskill[buffid]) {
             props.messagelist.push("处于\"" + debuff_doskill[buffid] + "\"状态,不能出牌！");
-            return [false, props];
+            res = [false, props];
         }
     });
-    return [true, props];
+    return res;
 }
 function check_thatBuff(props) {
     //释放技能判定 对方防御状态
@@ -1086,12 +1118,10 @@ function check_buffToSkill(props, card) {
     }
     return [props, card];
 }
-function doskill(props, cardid) {
+function doskill(props, card) {
     //使用技能
     var mystate = props.mystate;
     var thatstate = props.thatstate;
-    var index = cardid % 1000;
-    var card = _skill.small_skill[index];
     card = JSON.parse(JSON.stringify(card));
     var checked = true; //用于判断检查状态
 
@@ -1107,7 +1137,7 @@ function doskill(props, cardid) {
     checked = _check_round2[0];
     props = _check_round2[1];
 
-    if (!checked) return props;
+    if (!checked) return [false, props];
 
     var _check_myBuff = check_myBuff(props);
 
@@ -1116,7 +1146,7 @@ function doskill(props, cardid) {
     checked = _check_myBuff2[0];
     props = _check_myBuff2[1];
 
-    if (!checked) return props;
+    if (!checked) return [false, props];
 
     switch (card.state) {
         case 0:
@@ -1128,7 +1158,7 @@ function doskill(props, cardid) {
             checked = _check_checkMp2[0];
             props = _check_checkMp2[1];
 
-            if (!checked) return props;
+            if (!checked) return false;
             //轮到那边的回合 后面再做
             props = docard(props, card);
             break;
@@ -1141,7 +1171,7 @@ function doskill(props, cardid) {
             checked = _check_checkMp4[0];
             props = _check_checkMp4[1];
 
-            if (!checked) return props;
+            if (!checked) return [false, props];
 
             var _check_thatBuff = check_thatBuff(props);
 
@@ -1150,7 +1180,7 @@ function doskill(props, cardid) {
             checked = _check_thatBuff2[0];
             props = _check_thatBuff2[1];
 
-            if (!checked) return props;
+            if (!checked) return [false, props];
             props = docard(props, card);
             break;
         case 2:
@@ -1158,7 +1188,7 @@ function doskill(props, cardid) {
             props = docard(props, card);
             break;
     }
-    return props;
+    return [true, props];
 }
 
 function docard(props, card) {
@@ -2883,6 +2913,8 @@ module.exports = emptyObject;
 "use strict";
 
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(0);
@@ -2917,20 +2949,14 @@ var Card = function (_React$Component) {
     _createClass(Card, [{
         key: 'usecard',
         value: function usecard(id, name) {
+            var _doskill = (0, _action.doskill)(this.props, this.props.card),
+                _doskill2 = _slicedToArray(_doskill, 2),
+                check = _doskill2[0],
+                newstate = _doskill2[1];
 
-            var newstate = (0, _action.doskill)(this.props, id);
-
-            // let messagelist = this.props.messagelist;//消息
-            // messagelist.push("你使用了\""+name+"\"");
-            // newstate.mystate.messagelist = messagelist;
-            // newstate.mystate.cardid.map((item,i)=>{
-            //     if(item==this.props.card){
-            //         newstate.mystate.cardid.splice(i,1);
-            //     };
-            // });//删除手牌
-            // let cardShowList = this.props.cardShowList;
-            // cardShowList.push(this.props.card);//放入弃牌堆
             this.props.setState(newstate);
+            if (check == false) return;
+
             this.props.socket.emit('totalk', {
                 id: this.props.thatid,
                 obj: {

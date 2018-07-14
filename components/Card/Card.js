@@ -10,20 +10,10 @@ class Card extends React.Component{
     }
     usecard(id,name){
 
-        let newstate = doskill(this.props,id);
-
-
-        // let messagelist = this.props.messagelist;//消息
-        // messagelist.push("你使用了\""+name+"\"");
-        // newstate.mystate.messagelist = messagelist;
-        // newstate.mystate.cardid.map((item,i)=>{
-        //     if(item==this.props.card){
-        //         newstate.mystate.cardid.splice(i,1);
-        //     };
-        // });//删除手牌
-        // let cardShowList = this.props.cardShowList;
-        // cardShowList.push(this.props.card);//放入弃牌堆
+        let [check,newstate] = doskill(this.props,this.props.card);
         this.props.setState(newstate);
+        if(check==false)return;
+
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
