@@ -2,9 +2,8 @@ import React from 'react';
 import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
-import {state_base} from '../action';//计算状态影响下的属性
+import {doAttack} from '../action';
 import "./HeroPlaceMy.scss";
-
 class HeroPlaceMy extends React.Component{
     constructor(){
         super();
@@ -19,6 +18,20 @@ class HeroPlaceMy extends React.Component{
         let buffTime = st.buffTime;//状态持续时间
         return buff.map((item,i)=>{
             return <BuffIon {...state_list[item]} buffTime={buffTime[i]} key={i}/>
+        });
+    }
+    attackBtn(){
+        let [attack,newstate] = doAttack(this.props);
+        this.props.setState(newstate);
+
+        if(attack==false)return;
+        this.props.socket.emit('totalk', {
+            id:this.props.thatid,
+            obj:{
+                funname:"getnewstate",
+                newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate},
+                message:attack=="miss"?"对方普通攻击MISS":"普通攻击对你造成\""+attack+"\"点伤害",
+            }
         });
     }
     roundOver(){//回合结束
@@ -53,12 +66,13 @@ class HeroPlaceMy extends React.Component{
                 <div className="hero_ion">
                     {basic.herotype==0?"力量":(basic.herotype==1?"敏捷":"智力")}
                 </div>
-                {this.props.round==1?<div className="attack_btn">{"普通攻击"}</div>:""}
+                {this.props.round==1?<div className="attack_btn" onClick={this.attackBtn.bind(this)}>
+                    {"普通攻击x"+basic.attackAccount+"↑"+basic.attackRecove}</div>:""}
                 {this.props.round==1?<div className="over_btn" onClick={this.roundOver.bind(this)}>{"回合结束"}</div>:""}
             </div>
             <div className="attribute_list">
-                <div className="HP">{basic.Hp+"/"+basic.maxHp+"+"+basic.Hprecove+"/s"}</div>
-                <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove+"/s"}</div>
+                <div className="HP">{basic.Hp+"/"+basic.maxHp+"+"+basic.Hprecove}</div>
+                <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
                 <div className="statelist">状态:{this.showstate(basic)}</div>

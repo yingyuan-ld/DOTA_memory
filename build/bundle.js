@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 20);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(25);
+  module.exports = __webpack_require__(24);
 } else {
-  module.exports = __webpack_require__(26);
+  module.exports = __webpack_require__(25);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -227,7 +227,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(38);
+var	fixUrls = __webpack_require__(37);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -857,9 +857,10 @@ exports.cardheap = cardheap;
 exports.getnewstate = getnewstate;
 exports.state_base = state_base;
 exports.doskill = doskill;
+exports.doAttack = doAttack;
 exports.specialcard = specialcard;
 
-var _skill = __webpack_require__(16);
+var _skill = __webpack_require__(49);
 
 function prepareOk(mystate, obj) {
     //准备开始
@@ -902,7 +903,6 @@ function getnewstate(tate, obj) {
     var messagelist = tate.messagelist;
     if (!obj.message) console.info("缺少动作的message");
     messagelist.push(obj.message);
-    // let newstate = {mystate:obj.newstate.thatstate,thatstate:obj.newstate.mystate};
     var newstate = obj.newstate;
     newstate.messagelist = messagelist;
     return newstate;
@@ -911,19 +911,17 @@ function state_base(mystate, thatstate) {
     if (!mystate.buff) return mystate;
     var stateBase = {
         maxHp: 3500, //最大血量
-        Hp: 3500, //当前血量
         Hprecove: 10, //生命值恢复速度
         maxMp: 500, //最大蓝量
-        Mp: 500, //当前蓝量
         Mprecove: 50, //魔法值恢复速度
         attack: 40, //攻击力
-        armor: 10 //护甲
+        armor: 10, //护甲
+        attackRecove: 1 //攻击速度
     };
     switch (mystate.herotype) {
         case 0:
             stateBase.herotype = 0;
             stateBase.maxHp = 4000;
-            stateBase.Hp = 4000;
             stateBase.Hprecove = 15;
             break;
         case 1:
@@ -934,9 +932,7 @@ function state_base(mystate, thatstate) {
         case 2:
             stateBase.herotype = 2;
             stateBase.maxHp = 3000;
-            stateBase.Hp = 3000;
             stateBase.maxMp = 600;
-            stateBase.Mp = 600;
             stateBase.Mprecove = 60;
             break;
     }
@@ -1006,7 +1002,6 @@ function state_base(mystate, thatstate) {
 }
 function check_round(props) {
     //判断回合
-    var mystate = props.mystate;
     if (props.round == 0) {
         props.messagelist.push("现在不是你的回合！");
         return [false, props];
@@ -1027,6 +1022,7 @@ function check_myBuff(props) {
         34: "剑刃风暴",
         36: "海妖之歌",
         37: "石化",
+        40: "烟幕",
         55: "噩梦",
         68: "极寒之拥",
         87: "妖术",
@@ -1076,30 +1072,23 @@ function check_checkMp(props, card) {
 function check_buffToSkill(props, card) {
     var mystate = props.mystate;
     var thatstate = props.thatstate;
-    props.mystate.buff.map(function (buffid) {
+    mystate.buff.map(function (buffid) {
         //
         switch (buffid) {
-            case 100:
-                //反击
-                card.do.mHp = card.do.mHp - parseInt(card.do.tHp / 5);
-                break;
-            case 155:
-                //精气光环
-                break;
-            case 155:
-                //精气光环
-                break;
             case 157:
                 //多重施法
+                if (Math.random() > 0.5) {
+                    card.do.tHp = parseInt(card.do.tHp * 1.5);
+                }
                 break;
         }
     });
     var tBuff = props.thatstate.buff;
     for (var i = 0; i < tBuff.length; i++) {
         switch (tBuff[i]) {
-            case 103:
-                //活性护甲
-                Object.assign(card.do.tBuffObj, { 103: thatstate.buffObj[103] + 1 });
+            case 2:
+                //虚无
+                card.do.tHp = parseInt(card.do.tHp * 1.5);
                 break;
             case 8:
                 //无光之盾
@@ -1113,6 +1102,18 @@ function check_buffToSkill(props, card) {
                     props.thatstate.buffTime.splice(i, 1);
                     i--;
                 }
+                break;
+            case 37:
+                //石化
+                card.do.tHp = 0;
+                break;
+            case 100:
+                //反击
+                card.do.mHp = card.do.mHp - parseInt(card.do.tHp / 5);
+                break;
+            case 103:
+                //活性护甲
+                Object.assign(card.do.tBuffObj, { 103: thatstate.buffObj[103] + 1 });
                 break;
         }
     }
@@ -1192,15 +1193,15 @@ function doskill(props, card) {
 }
 
 function docard(props, card) {
-
     var messagelist = props.messagelist; //消息
     messagelist.push("你使用了\"" + card.name + "\"");
     props.mystate.messagelist = messagelist;
     props.mystate.cardid.map(function (item, i) {
+        //删除手牌
         if (item == props.card) {
             props.mystate.cardid.splice(i, 1);
         };
-    }); //删除手牌
+    });
     props.cardShowList.push(props.card); //放入弃牌堆
 
     //技能作用时的判断
@@ -1250,6 +1251,315 @@ function docard(props, card) {
         }
     }
     return props;
+}
+
+function doAttack(props) {
+    //物理攻击方法
+    var mystate = props.mystate;
+    var thatstate = props.thatstate;
+    var checked = true; //用于判断检查状态
+
+    //检查回合
+    var _check_round3 = check_round(props);
+
+    var _check_round4 = _slicedToArray(_check_round3, 2);
+
+    checked = _check_round4[0];
+    props = _check_round4[1];
+    if (!checked) return [false, props];
+
+    //判断剩余攻击次数
+    var _check_attackAccount = check_attackAccount(props);
+
+    var _check_attackAccount2 = _slicedToArray(_check_attackAccount, 2);
+
+    checked = _check_attackAccount2[0];
+    props = _check_attackAccount2[1];
+    if (!checked) return [false, props];
+
+    //检查自己状态
+    var _attack_myBuff = attack_myBuff(props);
+
+    var _attack_myBuff2 = _slicedToArray(_attack_myBuff, 2);
+
+    checked = _attack_myBuff2[0];
+    props = _attack_myBuff2[1];
+    if (!checked) return [false, props];
+
+    //检查对方状态
+    var _attack_thatBuff = attack_thatBuff(props);
+
+    var _attack_thatBuff2 = _slicedToArray(_attack_thatBuff, 2);
+
+    checked = _attack_thatBuff2[0];
+    props = _attack_thatBuff2[1];
+    if (!checked) return [false, props];
+    props.mystate.attackAccount -= 1; //攻击机会减1
+
+    //此攻击miss
+    var _check_miss = check_miss(props);
+
+    var _check_miss2 = _slicedToArray(_check_miss, 2);
+
+    checked = _check_miss2[0];
+    props = _check_miss2[1];
+    if (checked == "miss") return ["miss", props];
+
+    //物理攻击作用时的判断
+    var Attack = { tHp: props.mystate.attack, mHp: 0 };
+    var armor = props.thatstate.armor;
+
+    var _attackBefore = attackBefore(props, Attack);
+
+    var _attackBefore2 = _slicedToArray(_attackBefore, 2);
+
+    Attack = _attackBefore2[0];
+    props = _attackBefore2[1];
+
+    Attack.tHp = parseInt(Attack.tHp * (1 - armor * 0.06 / (1 + armor * 0.06)));
+
+    var _attackAfter = attackAfter(props, Attack);
+
+    var _attackAfter2 = _slicedToArray(_attackAfter, 2);
+
+    Attack = _attackAfter2[0];
+    props = _attackAfter2[1];
+
+
+    for (var key in Attack) {
+        var value = Attack[key];
+        switch (key) {
+            case "mMp":
+                props.mystate.Mp += value;
+                break;
+            case "mHp":
+                props.mystate.Hp += value;
+                break;
+            case "tMp":
+                props.thatstate.Mp += value;
+                break;
+            case "tHp":
+                props.thatstate.Hp -= value;
+                break;
+            case "mBuff":
+                props.mystate.buff.push(value);
+                break;
+            case "mBuffT":
+                props.mystate.buffTime.push(value);
+                break;
+            case "tBuff":
+                props.thatstate.buff.push(value);
+                break;
+            case "tBuffT":
+                props.thatstate.buffTime.push(value);
+                break;
+            case "mBuffObj":
+                Object.assign(props.mystate.buffObj, value);
+            case "tBuffObj":
+                Object.assign(props.thatstate.buffObj, value);
+                break;
+        }
+    }
+    var messagelist = props.messagelist; //消息
+    messagelist.push("物理攻击造成" + Attack.tHp + "点伤害");
+    props.mystate.messagelist = messagelist;
+
+    return [Attack.tHp, props];
+}
+
+function check_attackAccount(props) {
+    //判断剩余攻击次数
+    var mystate = props.mystate;
+    if (mystate.attackAccount == 0) {
+        props.messagelist.push("没有剩余的攻击次数！");
+        return [false, props];
+    } else {
+        return [true, props];
+    }
+}
+function attack_myBuff(props) {
+    //物理攻击判断 己方状态
+    var debuff_doskill = {
+        0: "晕眩",
+        2: "虚无",
+        3: "缴械",
+        10: "超级新星",
+        23: "回音重踏",
+        28: "疯狂生长",
+        36: "海妖之歌",
+        37: "石化",
+        50: "虚妄之诺",
+        55: "噩梦",
+        68: "极寒之拥",
+        87: "妖术",
+        88: "风杖"
+    };
+    var mystate = props.mystate;
+    var res = [true, props];
+    mystate.buff.map(function (buffid) {
+        //
+        if (!res[0]) return;
+        if (debuff_doskill[buffid]) {
+            props.messagelist.push("处于\"" + debuff_doskill[buffid] + "\"状态,不能攻击！");
+            res = [false, props];
+        }
+    });
+    return res;
+}
+function attack_thatBuff(props) {
+    //物理攻击判断 对方状态
+    var debuff_doskill = {
+        2: "虚无",
+        24: "磁场",
+        36: "海妖之歌",
+        79: "暗影之舞",
+        88: "风杖"
+    };
+    var thatstate = props.thatstate;
+    var res = [true, props];
+    thatstate.buff.map(function (buffid) {
+        //
+        if (!res[0]) return;
+        if (debuff_doskill[buffid]) {
+            props.messagelist.push("对方处于\"" + debuff_doskill[buffid] + "\"状态,不能攻击！");
+            res = [false, props];
+        }
+    });
+    return res;
+}
+function check_miss(props) {
+    //物理攻击,判断miss
+    var mystate = props.mystate;
+    var thatstate = props.thatstate;
+    var res = [true, props];
+    var messagelist = props.messagelist; //消息
+    mystate.buff.map(function (buffid) {
+        switch (buffid) {
+            case 34:
+                //烟幕
+                if (Math.random() < 0.75) {
+                    messagelist.push("\"烟幕\"状态普通攻击MISS");
+                    res[0] = "miss";
+                    return;
+                };
+                break;
+            case 42:
+                //麻痹撕咬
+                if (Math.random() < 0.5) {
+                    messagelist.push("\"麻痹撕咬\"状态普通攻击MISS");
+                    res[0] = "miss";
+                    return;
+                };
+                break;
+            case 47:
+                //激光  该单位物理攻击100%miss
+                messagelist.push("\"激光\"状态普通攻击MISS");
+                res[0] = "miss";
+                return;
+                break;
+            case 57:
+                //旋风飞斧  该单位攻击有30%的概率miss
+                if (Math.random() < 0.3) {
+                    messagelist.push("\"麻痹撕咬\"状态普通攻击MISS");
+                    res[0] = "miss";
+                    return;
+                };
+                break;
+        }
+    });
+    props.mystate.messagelist = messagelist;
+    return res;
+}
+function attackBefore(props, Attack) {
+    var mystate = props.mystate;
+    var thatstate = props.thatstate;
+    mystate.buff.map(function (buffid) {
+        //
+        switch (buffid) {
+            case 97:
+                //巨力重击 有30%的概率使敌方晕眩一回合并附加40点攻击
+                if (Math.random() < 0.3) {
+                    Attack.tBuff = 0, Attack.tBuffT = 2, Attack.tHp += 40;
+                };
+                break;
+            case 112:
+                //致死打击 攻击时有60%的概率1.5倍攻击
+                if (Math.random() < 0.6) {
+                    Attack.tHp = parseInt(Attack.tHp * 1.5);
+                };
+                break;
+        }
+    });
+    var tBuff = props.thatstate.buff;
+    for (var i = 0; i < tBuff.length; i++) {
+        switch (tBuff[i]) {
+            case 37:
+                //石化
+                Attack.tHp *= 2;
+                break;
+        }
+    }
+    return [Attack, props];
+}
+
+function attackAfter(props, Attack) {
+    var mystate = props.mystate;
+    var thatstate = props.thatstate;
+    mystate.buff.map(function (buffid) {
+        //
+        switch (buffid) {
+            case 96:
+                //霜之哀伤
+                var key = thatstate.cardid.length * Math.random();
+                thatstate.cardid.splice(parseInt(key), 1);
+                break;
+            case 111:
+                //吸血光环 将对方受到伤害的30%转化成自己的生命值
+                Attack.mHp = Attack.mHp + parseInt(Attack.tHp * 0.3);
+                break;
+        }
+    });
+    var tBuff = props.thatstate.buff;
+    for (var i = 0; i < tBuff.length; i++) {
+        switch (tBuff[i]) {
+            case 105:
+                //反击螺旋
+                Attack.mHp -= 50;
+                break;
+            case 105:
+                //勇气之霎
+                if (Math.random() < 0.4) {
+                    thatstate.Hp += 100;
+                };
+                break;
+            case 8:
+                //无光之盾
+                if (thatstate.buffObj[8] > card.do.tHp) {
+                    Object.assign(card.do.tBuffObj, { 8: thatstate.buffObj[8] -= card.do.tHp });
+                    Attack.tHp = 0;
+                } else {
+                    Attack.tHp = Attack.tHp - thatstate.buffObj[8];
+                    Attack.mHp = Attack.mHp - 100;
+                    props.thatstate.buff.splice(i, 1);
+                    props.thatstate.buffTime.splice(i, 1);
+                    i--;
+                }
+                break;
+            case 100:
+                //反击
+                Attack.mHp = Attack.mHp - parseInt(Attack.tHp / 5);
+                break;
+            case 101:
+                //海妖外壳
+                Attack.tHp -= 50;
+                break;
+            case 103:
+                //活性护甲
+                Object.assign(Attack.tBuffObj, { 103: thatstate.buffObj[103] + 1 });
+                break;
+        }
+    }
+    return [Attack, props];
 }
 
 function specialcard(props, card) {
@@ -3103,7 +3413,7 @@ module.exports = warning;
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(4);
   var warning = __webpack_require__(10);
-  var ReactPropTypesSecret = __webpack_require__(27);
+  var ReactPropTypesSecret = __webpack_require__(26);
   var loggedTypeFailures = {};
 }
 
@@ -3321,7 +3631,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(28);
+var isTextNode = __webpack_require__(27);
 
 /*eslint-disable no-bitwise */
 
@@ -3355,573 +3665,7 @@ module.exports = containsNode;
 "use strict";
 
 
-var big_skill = [];
-var small_skill = [];
-big_skill[0] = { id: 0, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
-big_skill[1] = { id: 1, name: "毁灭", state: 0, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)" };
-big_skill[2] = { id: 2, name: "幽灵船", state: 0, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)" };
-big_skill[3] = { id: 3, name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
-big_skill[4] = { id: 4, name: "飞锯", state: 0, message: "使敌方受到敌方最大生命值的10%的伤害(可闪避)" };
-big_skill[5] = { id: 5, name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
-big_skill[6] = { id: 6, name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
-big_skill[7] = { id: 7, name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
-big_skill[8] = { id: 8, name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
-big_skill[9] = { id: 9, name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
-big_skill[10] = { id: 10, name: "回音击", state: 0, message: "造成敌方手牌数乘以60的伤害(可闪避)" };
-big_skill[11] = { id: 11, name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
-big_skill[12] = { id: 12, name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
-big_skill[13] = { id: 13, name: "变身", state: 2, message: "三回合内攻击加100" };
-big_skill[14] = { id: 14, name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
-big_skill[15] = { id: 15, name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
-big_skill[16] = { id: 16, name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
-big_skill[17] = { id: 17, name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
-big_skill[18] = { id: 18, name: "两级反转", state: 0, message: "造成100点伤害并晕眩对手3回合(可闪避)" };
-big_skill[19] = { id: 19, name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
-big_skill[20] = { id: 20, name: "裂地者", state: 0, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫(可闪避)" };
-big_skill[21] = { id: 21, name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
-big_skill[22] = { id: 22, name: "地震", state: 0, message: "对敌方造成300+敌方手牌数乘50的伤害(可闪避)" };
-big_skill[23] = { id: 23, name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
-big_skill[24] = { id: 24, name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
-big_skill[25] = { id: 25, name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
-big_skill[26] = { id: 26, name: "疯狂生长", state: 0, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免(可闪避)" };
-big_skill[27] = { id: 27, name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
-big_skill[29] = { id: 29, name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
-big_skill[28] = { id: 28, name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
-big_skill[30] = { id: 30, name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
-big_skill[31] = { id: 31, name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
-big_skill[32] = { id: 32, name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
-big_skill[33] = { id: 33, name: "无敌斩", state: 0, message: "快速普通攻击敌方6次(可闪避)" };
-big_skill[34] = { id: 34, name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
-big_skill[35] = { id: 35, name: "剧毒新星", state: 0, message: "对敌方造成300点伤害(可闪避)" };
-big_skill[36] = { id: 36, name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
-big_skill[37] = { id: 37, name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
-big_skill[38] = { id: 38, name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
-big_skill[39] = { id: 39, name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
-big_skill[40] = { id: 40, name: "海妖之歌", state: 0, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态(可闪避)" };
-big_skill[41] = { id: 41, name: "风暴之眼", state: 0, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害(可闪避)" };
-big_skill[42] = { id: 42, name: "石化凝视", state: 0, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍(可闪避)" };
-big_skill[43] = { id: 43, name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
-big_skill[44] = { id: 44, name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
-big_skill[45] = { id: 45, name: "时间结界", state: 0, message: "晕眩敌方2回合(可闪避)" };
-big_skill[46] = { id: 46, name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
-big_skill[47] = { id: 47, name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
-big_skill[48] = { id: 48, name: "月蚀", state: 0, message: "对敌方造成350点伤害(可闪避)" };
-big_skill[49] = { id: 49, name: "召唤飞弹", state: 0, message: "造成200加上,敌方手牌数乘30的伤害(可闪避)" };
-big_skill[50] = { id: 50, name: "编织", state: 0, message: "三回合内增加自己50点护甲,减少敌方50点护甲(可闪避)" };
-big_skill[51] = { id: 51, name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
-big_skill[52] = { id: 52, name: "极寒领域", state: 0, message: "对敌方造成350点伤害(可闪避)" };
-big_skill[53] = { id: 53, name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
-big_skill[54] = { id: 54, name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
-big_skill[55] = { id: 55, name: "死亡一指", state: 1, message: "造成600点伤害" };
-big_skill[56] = { id: 56, name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
-big_skill[57] = { id: 57, name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
-big_skill[58] = { id: 58, name: "神智之蚀", state: 0, message: "造成自己能量值减敌方能量值的数值乘以220的伤害(可闪避)" };
-big_skill[59] = { id: 59, name: "神灭斩", state: 1, message: "造成650点伤害" };
-big_skill[60] = { id: 60, name: "冰晶爆轰", state: 0, message: "对方血量低于15%时直接秒杀(可闪避)" };
-big_skill[61] = { id: 61, name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
-big_skill[62] = { id: 62, name: "黑洞", state: 0, message: "对敌方造成250点伤害并晕眩2回合无视魔免(可闪避)" };
-big_skill[63] = { id: 63, name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
-big_skill[64] = { id: 64, name: "上帝之手", state: 1, message: "回复己方500点生命值" };
-big_skill[65] = { id: 65, name: "脉冲新星", state: 0, message: "对敌方造成450点伤害(可闪避)" };
-big_skill[66] = { id: 66, name: "万火焚身", state: 0, message: "对敌方造成100点伤害，持续4回合(可闪避)" };
-big_skill[67] = { id: 67, name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
-big_skill[68] = { id: 68, name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
-big_skill[69] = { id: 69, name: "神秘之耀", state: 0, message: "对地方造成450点伤害(可闪避)" };
-big_skill[70] = { id: 70, name: "超声冲击波", state: 0, message: "对敌方造成400点伤害(可闪避)" };
-big_skill[71] = { id: 71, name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
-big_skill[72] = { id: 72, name: "连环霜冻", state: 0, message: "对敌方造成100*敌方手牌数的伤害(可闪避)" };
-big_skill[73] = { id: 73, name: "梦境缠绕", state: 0, message: "对敌方造成200点伤害并使敌方晕眩一回合(可闪避)" };
-big_skill[74] = { id: 74, name: "自然之怒", state: 0, message: "对敌方造成300点伤害(可闪避)" };
-big_skill[75] = { id: 75, name: "生命汲取", state: 0, message: "对敌方造成300点伤害，同时回复300点生命值(可闪避)" };
-big_skill[76] = { id: 76, name: "静态风暴", state: 0, message: "对敌方造成200点伤害并使敌方沉默一回合(可闪避)" };
-big_skill[77] = { id: 77, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
-
-small_skill[0] = { id: 1000, name: "雷霆之击", state: 1, mp: 100, message: "对敌方造成300点伤害" };
-small_skill[0].do = { mMp: -100, tHp: "300", tBuff: 0 };
-small_skill[1] = { id: 1001, name: "马蹄践踏", state: 0, mp: 50, message: "对敌方造成(50+敌方手牌数*10)点伤害并晕眩1回合(可闪避)" };
-small_skill[1].do = { mMp: -50, tHp: "50+thatstate.cardid.length*10", tBuff: 0, tBuffT: 2 };
-small_skill[2] = { id: 1002, name: "双刃剑", state: 1, mp: 0, message: "使自己和敌方同时受到150点伤害" };
-small_skill[2].do = { mMp: -0, mHp: -150, tHp: "150" };
-small_skill[3] = { id: 1003, name: "反击", state: 2, message: "被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)" };
-small_skill[3].do = { mBuff: 100, mBuffT: 6 };
-small_skill[4] = { id: 1004, name: "巨浪", state: 0, mp: 80, message: "减少敌方10点护甲(持续3回合)并对对方造成100点伤害(可闪避)" };
-small_skill[4].do = { mMp: -80, tHp: "100", tBuff: 5, tBuffT: 6 };
-small_skill[5] = { id: 1005, name: "海妖外壳", state: 2, message: "被动牌:受到普通攻击时可以减少50点伤害(持续3回合)" };
-small_skill[5].do = { mBuff: 101, mBuffT: 6 };
-small_skill[6] = { id: 1006, name: "锚击", state: 1, mp: 30, message: "造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)" };
-small_skill[6].do = { tHp: "50+thatstate.cardid.length*10", mp: 30, tBuff: 6, tBuffT: 6 };
-small_skill[7] = { id: 1007, name: "洪流", state: 0, mp: 80, message: "对敌方造成100点伤害并晕眩半回合(可闪避)" };
-small_skill[7].do = { mMp: -80, tHp: "100", tBuff: 0, tBuffT: 1 };
-small_skill[8] = { id: 1008, name: "潮汐使者", state: 2, message: "被动牌:使自己本回合增加20+对方手牌数*10点攻击力" };
-small_skill[8].do = { mBuff: 102, mBuffT: 2 };
-small_skill[9] = { id: 1009, name: "死亡旋风", state: 0, mp: 60, message: "对敌方造成200点伤害(可闪避)" };
-small_skill[9].do = { mMp: -60, tHp: "200" };
-small_skill[10] = { id: 1010, name: "伐木链锯", state: 0, mp: 30, message: "对敌方造成100点伤害(可闪避)" };
-small_skill[10].do = { mMp: -30, tHp: "100" };
-small_skill[11] = { id: 1011, name: "活性护甲", state: 2, message: "被动牌:每受到一次攻击增加10点护甲(持续3回合)" };
-small_skill[11].do = { mBuff: 103, mBuffT: 6, mBuffObj: { 103: 0 } };
-small_skill[12] = { id: 1012, name: "死亡缠绕", state: 1, mp: 50, message: "消耗自己100点生命,对敌方造成250点伤害" };
-small_skill[12].do = { mMp: -50, tHp: "250", mHp: -100 };
-small_skill[13] = { id: 1013, name: "无光之盾", state: 2, mp: 100, message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" };
-small_skill[13].do = { mMp: -100, mBuff: 8, mBuffT: 6, mBuffObj: { 8: 250 } };
-small_skill[14] = { id: 1014, name: "霜之哀伤", state: 2, message: "被动牌:本回合内攻击对手后可以去除对手一张手牌" };
-small_skill[14].do = { mBuff: 96, mBuffT: 2 };
-small_skill[15] = { id: 1015, name: "烈火精灵", state: 1, mp: 100, message: "对敌方造成90点伤害并且减少敌方100能量值" };
-small_skill[15].do = { mMp: -100, tHp: "90", tMp: -100 };
-small_skill[16] = { id: 1016, name: "烈日炎烤", state: 0, mp: 100, message: "对自己造成50点伤害并造成敌方现有生命值5%的伤害(可闪避)" };
-small_skill[16].do = { mMp: -100, mHp: -50, tHp: "thatstate.Hp*0.05" };
-small_skill[17] = { id: 1017, name: "战士怒吼", state: 0, mp: 100, message: "增加自己40点护甲,使敌方下一回合只可以攻击自己(可闪避)" };
-small_skill[17].do = { mMp: -100, mBuff: 11, mBuffT: 2, tBuff: 32, tBuffT: 2 };
-small_skill[18] = { id: 1018, name: "反击螺旋", state: 2, message: "被动牌:敌方普通攻击自己时会受到50点伤害(持续3回合)" };
-small_skill[18].do = { mBuff: 105, mBuffT: 6 };
-small_skill[19] = { id: 1019, name: "寒冰碎片", state: 0, mp: 50, message: "对敌方造成80点伤害(可闪避)" };
-small_skill[19].do = { mMp: -50, tHp: "80" };
-small_skill[20] = { id: 1020, name: "雪球", state: 0, mp: 80, message: "对敌方造成80点伤害并晕眩半回合(可闪避)" };
-small_skill[20].do = { mMp: -80, tHp: "80", tBuff: 0, tBuffT: 1 };
-small_skill[21] = { id: 1021, name: "沟壑", state: 0, mp: 100, message: "对敌方造成(90+敌方手牌数*10)点伤害并晕眩一回合(可闪避)" };
-small_skill[21].do = { mMp: -100, tHp: "90+thatstate.cardid.length*10", tBuff: 0, tBuffT: 2 };
-small_skill[22] = { id: 1022, name: "强化图腾", state: 2, mp: 50, message: "使自己攻击力变为现在攻击力的2倍(持续半回合)" };
-small_skill[22].do = { mMp: -50, mBuff: 13, mBuffT: 1 };
-small_skill[23] = { id: 1023, name: "余震", state: 2, message: "被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合" };
-small_skill[23].do = { mBuff: 107, mBuffT: 1 };
-small_skill[24] = { id: 1024, name: "混乱之箭", state: 1, message: "随机对敌方造成1-200的伤害，并晕眩1-2回合" };
-small_skill[24].do = { mMp: -100, tHp: "Math.random()*200", tBuff: 0, tBuffT: "Math.random()*2" };
-small_skill[25] = { id: 1025, name: "实相裂隙", state: 1, mp: 30, message: "造成50+物理攻击的伤害" };
-small_skill[25].do = { mMp: -30, tHp: "50+mystate.attack" };
-small_skill[26] = { id: 1026, name: "致命一击", state: 2, message: "被动牌:攻击时有40%的概率双倍攻击(持续3回合)" };
-small_skill[26].do = { mBuff: 108, mBuffT: 6 };
-small_skill[27] = { id: 1027, name: "幽光之魂", state: 0, mp: 50, message: "对敌方造成130点伤害(可闪避)" };
-small_skill[27].do = { mMp: -50, tHp: "130" };
-small_skill[28] = { id: 1028, name: "压倒性优势", state: 0, mp: 80, message: "对敌方造成敌方手牌乘以30的伤害(可闪避)" };
-small_skill[28].do = { mMp: 80, tHp: "thatstate.cardid.length*30" };
-small_skill[29] = { id: 1029, name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
-small_skill[29].do = { mBuff: 109, mBuffT: 6 };
-small_skill[30] = { id: 1030, name: "强攻", state: 1, mp: 80, message: "回复100点生命值并造成物理攻击的伤害" };
-small_skill[30].do = { mMp: 80, mHp: 100, tHp: "mystate.attack" };
-small_skill[31] = { id: 1031, name: "冥火暴击", state: 0, mp: 100, message: "对敌方造成150点伤害并晕眩1回合(可闪避)" };
-small_skill[31].do = { mMp: -100, tHp: "150", tBuff: 0, tBuffT: 2 };
-small_skill[32] = { id: 1032, name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" };
-small_skill[32].do = { mBuff: 11, mBuffT: 6 };
-small_skill[33] = { id: 1033, name: "致死打击", state: 2, message: "被动牌:攻击时有60%的概率1.5倍攻击(持续3回合)" };
-small_skill[33].do = { mBuff: 12, mBuffT: 6 };
-small_skill[34] = { id: 1034, name: "嚎叫", state: 2, mp: 50, message: "本回合攻击加60" };
-small_skill[34].do = { mMp: -50, mBuff: 16, mBuffT: 2 };
-small_skill[35] = { id: 1035, name: "野性驱使", state: 2, message: "被动牌:攻击加30(持续3回合)" };
-small_skill[35].do = { mBuff: 113, mBuffT: 6 };
-small_skill[36] = { id: 1036, name: "酸性喷雾", state: 0, mp: 80, message: "三回合内降低敌方10点防御并造成50点伤害(可闪避)" };
-small_skill[36].do = { mMp: -80, tBuff: 73, tBuffT: 6 };
-small_skill[37] = { id: 1037, name: "不稳定物", state: 0, mp: 50, message: "50%使对方晕眩两回合50%使自己晕眩一回合(可闪避)" };
-small_skill[37].do = { special: true };
-small_skill[38] = { id: 1038, name: "地精贪婪", state: 2, message: "被动牌:每回合得到金钱数+10(持续3回合)" };
-small_skill[38].do = { mBuff: 114, mBuffT: 6 };
-small_skill[39] = { id: 1039, name: "暗影冲刺", state: 0, mp: 50, message: "对敌方造成60点伤害并眩晕半回合(可闪避)" };
-small_skill[39].do = { mMp: -50, tHp: "60", tBuff: 0, tBuffT: 1 };
-small_skill[40] = { id: 1040, name: "巨力重击", state: 2, message: "被动牌:攻击时有30%的概率使敌方晕眩一回合并造成40点伤害(持续3回合)" };
-small_skill[40].do = { tHp: "40", mBuff: 97, mBuffT: 6 };
-small_skill[41] = { id: 1041, name: "风暴之锤", state: 0, mp: 100, message: "对敌方造成100点伤害并晕眩一回合(可闪避)" };
-small_skill[41].do = { mMp: -100, tHp: "100", tBuff: 0, tBuffT: 2 };
-small_skill[42] = { id: 1042, name: "巨力挥舞", state: 2, message: "被动牌:普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)" };
-small_skill[42].do = { mBuff: 99, mBuffT: 6 };
-small_skill[43] = { id: 1043, name: "战吼", state: 2, mp: 30, message: "三回合内增加自身30点护甲" };
-small_skill[43].do = { mMp: -30, mBuff: 18, mBuffT: 6 };
-small_skill[44] = { id: 1044, name: "火焰气息", state: 0, mp: 90, message: "对敌方造成200点伤害(可闪避)" };
-small_skill[44].do = { mMp: -90, tHp: "200" };
-small_skill[45] = { id: 1045, name: "神龙摆尾", state: 1, mp: 80, message: "对敌方造成50点伤害并晕眩一回合" };
-small_skill[45].do = { mMp: -80, tHp: "50", tBuff: 0, tBuffT: 2 };
-small_skill[46] = { id: 1046, name: "龙族血统", state: 2, message: "被动牌:每回合回复40点生命值(持续3回合)" };
-small_skill[46].do = { mBuff: 116, mBuffT: 6 };
-small_skill[47] = { id: 1047, name: "震荡波", state: 0, mp: 90, message: "对敌方造成200点伤害(可闪避)" };
-small_skill[47].do = { mMp: -90, tHp: "200" };
-small_skill[48] = { id: 1048, name: "授予力量", state: 2, mp: 50, message: "本回合内攻击加80" };
-small_skill[48].do = { mMp: -50, mBuff: 21, mBuffT: 2 };
-small_skill[49] = { id: 1049, name: "獠牙冲刺", state: 0, mp: 50, message: "对敌方造成100点伤害(可闪避)" };
-small_skill[49].do = { mMp: -50, tHp: "100" };
-small_skill[50] = { id: 1050, name: "吞噬", state: 2, mp: 100, message: "将对方的随机一张牌,转化为100金币" };
-small_skill[50].do = { special: true
-
-  // small_skill[51] = {id:1051,name:"焦土",state: 1 ,mp:80,message:"敌方掉80血，自己回复80血"}
-  // small_skill[51].do = {mMp:-80};
-  // small_skill[52] = {id:1052,name:"回音重踏",state: 0 ,mp:100,message:"使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态(可闪避)"}
-  // small_skill[52].do = {mMp:-100};
-  // small_skill[53] = {id:1053,name:"自然秩序",state: 2 ,message:"被动牌:使对方护甲归0"}
-  // small_skill[53].do = {mBuff:,mBuffT:}
-  // small_skill[54] = {id:1054,name:"洗礼",state: 0 ,mp:100,message:"回复自己100点生命值,并造成100伤害(可闪避)"}
-  // small_skill[54].do = {mMp:-100};
-  // small_skill[55] = {id:1055,name:"驱逐",state: 2 ,mp:50,message:"使自己魔免两回合，可以被散失"}
-  // small_skill[55].do = {mMp:-50,mBuff:,mBuffT:}
-  // small_skill[56] = {id:1056,name:"掘地穿刺",state: 0 ,mp:100,message:"对敌方造成100点伤害并晕眩一回合(可闪避)"}
-  // small_skill[56].do = {mMp:-100,tHp:"100"};
-  // small_skill[57] = {id:1057,name:"沙尘暴",state: 0 ,message:"对敌方造成40点伤害，敌方的下一回合不可以攻击自己(可闪避)"}
-  // small_skill[57].do = {tHp:"40"};
-  // small_skill[58] = {id:1058,name:"雷击",state: 1 ,message:"对敌方造成140点伤害"}
-  // small_skill[58].do = {tHp:"140"};
-  // small_skill[59] = {id:1059,name:"投掷",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
-  // small_skill[59].do = {tHp:"80"};
-  // small_skill[60] = {id:1060,name:"崎岖外表",state: 2 ,message:"被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合"}
-  // small_skill[60].do = {mBuff:,mBuffT:}
-  // small_skill[61] = {id:1061,name:"山崩",state: 0 ,message:"对敌方造成30点伤害并晕眩一回合(可闪避)"}
-  // small_skill[61].do = {tHp:"30"};
-  // small_skill[62] = {id:1062,name:"火焰风暴",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
-  // small_skill[62].do = {tHp:"90"};
-  // small_skill[63] = {id:1063,name:"怨念深渊",state: 0 ,message:"使对方晕眩半回合(可闪避)"}
-  // small_skill[63].do = {};
-  // small_skill[64] = {id:1064,name:"衰退光环",state: 2 ,message:"被动牌:减少对方50%攻击力"}
-  // small_skill[64].do = {mBuff:,mBuffT:}
-  // small_skill[65] = {id:1065,name:"活血术",state: 1 ,message:"增加自己当前攻击力的血量"}
-  // small_skill[65].do = {};
-  // small_skill[66] = {id:1066,name:"沸血之矛",state: 2 ,message:"消耗自身50点生命值使本回合内攻击加100"}
-  // small_skill[66].do = {mBuff:,mBuffT:}
-  // small_skill[67] = {id:1067,name:"狂战士之血",state: 2 ,message:"被动牌:血量低于50%时每次普通攻击可以不消耗能量格多攻击一次"}
-  // small_skill[67].do = {mBuff:,mBuffT:}
-  // small_skill[68] = {id:1068,name:"静电场",state: 2 ,message:"被动牌:每次释放任何技能都会对敌方造成40点伤害"}
-  // small_skill[68].do = {tHp:"40",mBuff:,mBuffT:}
-  // small_skill[69] = {id:1069,name:"腐朽",state: 0 ,message:"可以对敌方造成70点伤害(可闪避)"}
-  // small_skill[69].do = {tHp:"70"};
-  // small_skill[70] = {id:1070,name:"噬魂",state: 1 ,message:"造成己方和敌方手牌数的总和乘以15的伤害"}
-  // small_skill[70].do = {tHp:"己方和敌方手牌数的总和乘以15"};
-  // small_skill[71] = {id:1071,name:"狂暴",state: 2 ,message:"可以使自己魔免一回合"}
-  // small_skill[71].do = {mBuff:,mBuffT:}
-  // small_skill[72] = {id:1072,name:"盛宴",state: 2 ,message:"被动牌:普通攻击时将对方现有生命值的2%转化为自身生命"}
-  // small_skill[72].do = {mBuff:,mBuffT:}
-  // small_skill[73] = {id:1073,name:"撕裂伤口",state: 1 ,message:"本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命"}
-  // small_skill[73].do = {};
-  // small_skill[74] = {id:1074,name:"野性之斧",state: 0 ,message:"对敌方造成150点伤害(可闪避)"}
-  // small_skill[74].do = {tHp:"150"};
-  // small_skill[75] = {id:1075,name:"寄生种子",state: 1 ,message:"使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌"}
-  // small_skill[75].do = {};
-  // small_skill[76] = {id:1076,name:"活体护甲",state: 2 ,message:"受到物理伤害减少20点持续2回合每回合加40点血"}
-  // small_skill[76].do = {mBuff:,mBuffT:}
-  // small_skill[77] = {id:1077,name:"腐烂",state: 1 ,message:"自己掉100点血，对方掉180点血"}
-  // small_skill[77].do = {};
-  // small_skill[78] = {id:1078,name:"腐肉堆积",state: 2 ,message:"被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限"}
-  // small_skill[78].do = {mBuff:,mBuffT:}
-  // small_skill[79] = {id:1079,name:"雷霆一击",state: 0 ,message:"对敌方造成80点伤害"}
-  // small_skill[79].do = {tHp:"80"};
-  // small_skill[80] = {id:1080,name:"醉酒云雾",state: 1 ,message:"2回合内使敌方的普通攻击有75%的概率打不中"}
-  // small_skill[80].do = {};
-  // small_skill[81] = {id:1081,name:"醉拳",state: 2 ,message:"被动牌:受到普通攻击时有40%的概率mis"}
-  // small_skill[81].do = {mBuff:,mBuffT:}
-  // small_skill[82] = {id:1082,name:"虚空",state: 1 ,message:"对敌方造成130点伤害"}
-  // small_skill[82].do = {tHp:"130"};
-  // small_skill[83] = {id:1083,name:"伤残恐惧",state: 1 ,message:"使敌方2回合内不可以使用技能"}
-  // small_skill[83].do = {};
-  // small_skill[84] = {id:1084,name:"重击",state: 2 ,message:"被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害"}
-  // small_skill[84].do = {mBuff:,mBuffT:}
-  // small_skill[85] = {id:1085,name:"鱼人碎击",state: 0 ,message:"对敌方造成60点伤害并晕眩一回合(可闪避)"}
-  // small_skill[85].do = {tHp:"60"};
-  // small_skill[86] = {id:1086,name:"群星坠落",state: 0 ,message:"对敌方造成40加上敌方手牌乘10的伤害(可闪避)"}
-  // small_skill[86].do = {tHp:"40加上敌方手牌乘10"};
-  // small_skill[87] = {id:1087,name:"月神之箭",state: 0 ,message:"有50%的概率使敌方晕眩二回合(可闪避)"}
-  // small_skill[87].do = {};
-  // small_skill[88] = {id:1088,name:"波浪形态",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
-  // small_skill[88].do = {tHp:"70"};
-  // small_skill[89] = {id:1089,name:"变体攻击",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
-  // small_skill[89].do = {tHp:"50"};
-  // small_skill[90] = {id:1090,name:"法力损毁",state: 2 ,message:"被动牌:普通攻击成功后可以削减敌方一点能量值"}
-  // small_skill[90].do = {mBuff:,mBuffT:}
-  // small_skill[91] = {id:1091,name:"自杀攻击",state: 0 ,message:"对自己和敌方同时造成500点伤害(可闪避)"}
-  // small_skill[91].do = {tHp:"500"};
-  // small_skill[92] = {id:1092,name:"忽悠",state: 3 ,message:"可以闪避一次敌方的攻击"}
-  // small_skill[92].do = {};
-  // small_skill[93] = {id:1093,name:"地之突袭",state: 2 ,message:"被动牌:攻击力加30"}
-  // small_skill[93].do = {mBuff:,mBuffT:}
-  // small_skill[94] = {id:1094,name:"穿刺",state: 0 ,message:"造成70点伤害并晕眩敌方一回合(可闪避)"}
-  // small_skill[94].do = {tHp:"70"};
-  // small_skill[95] = {id:1095,name:"法力燃烧",state: 1 ,message:"减少敌方3点能量值"}
-  // small_skill[95].do = {};
-  // small_skill[96] = {id:1096,name:"带刺外壳",state: 2 ,message:"被动牌:每回合可以抵挡一次指向性法术"}
-  // small_skill[96].do = {mBuff:,mBuffT:}
-  // small_skill[97] = {id:1097,name:"魔法箭",state: 1 ,message:"造成80点伤害并晕眩敌方一回合"}
-  // small_skill[97].do = {tHp:"80"};
-  // small_skill[98] = {id:1098,name:"恐怖波动",state: 0 ,message:"减少敌方10点护甲并造成20点伤害(可闪避)"}
-  // small_skill[98].do = {tHp:"20"};
-  // small_skill[99] = {id:1099,name:"命令光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
-  // small_skill[99].do = {mBuff:,mBuffT:}
-  // small_skill[100] = {id:1100,name:"霜冻之箭",state: 1 ,message:"可以削减敌方2点能量值"}
-  // small_skill[100].do = {};
-  // small_skill[101] = {id:1101,name:"沉默魔法",state: 0 ,message:"敌方在一回合内不可以使用技能(可闪避)"}
-  // small_skill[101].do = {};
-  // small_skill[102] = {id:1102,name:"强击光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
-  // small_skill[102].do = {mBuff:,mBuffT:}
-  // small_skill[103] = {id:1103,name:"灵魂之矛",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
-  // small_skill[103].do = {tHp:"90"};
-  // small_skill[104] = {id:1104,name:"神出鬼没",state: 3 ,message:"可以闪避一次敌方的攻击"}
-  // small_skill[104].do = {};
-  // small_skill[105] = {id:1105,name:"磁场",state: 2 ,message:"使自己在两回合内物理免疫"}
-  // small_skill[105].do = {mBuff:,mBuffT:}
-  // small_skill[106] = {id:1106,name:"闪光冤魂",state: 0 ,message:"对敌方造成100点伤害(可闪避)"}
-  // small_skill[106].do = {tHp:"100"};
-  // small_skill[107] = {id:1107,name:"窒息之刃",state: 0 ,message:"对敌方造成30点伤害使用后回复一点能量值(可闪避)"}
-  // small_skill[107].do = {tHp:"30"};
-  // small_skill[108] = {id:1108,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
-  // small_skill[108].do = {};
-  // small_skill[109] = {id:1109,name:"模糊",state: 2 ,message:"被动牌:敌方在普通攻击你时有70%的概率mis"}
-  // small_skill[109].do = {mBuff:,mBuffT:}
-  // small_skill[110] = {id:1110,name:"火焰壁垒",state: 2 ,message:"被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值"}
-  // small_skill[110].do = {mBuff:,mBuffT:}
-  // small_skill[111] = {id:1111,name:"无影拳",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
-  // small_skill[111].do = {tHp:"70"};
-  // small_skill[112] = {id:1112,name:"榴霰弹",state: 0 ,message:"对敌方造成60点伤害(可闪避)"}
-  // small_skill[112].do = {tHp:"60"};
-  // small_skill[113] = {id:1113,name:"爆头",state: 2 ,message:"被动牌:攻击时有40%的概率附加100点伤害"}
-  // small_skill[113].do = {mBuff:,mBuffT:}
-  // small_skill[114] = {id:1114,name:"剑刃风暴",state: 0 ,message:"一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害(可闪避)"}
-  // small_skill[114].do = {tHp:"50"};
-  // small_skill[115] = {id:1115,name:"弧形闪电",state: 1 ,message:"对敌方造成80点伤害"}
-  // small_skill[115].do = {tHp:"80"};
-  // small_skill[116] = {id:1116,name:"剑舞",state: 2 ,message:"被动牌:攻击时有60%的概率1.5倍暴击"}
-  // small_skill[116].do = {mBuff:,mBuffT:}
-  // small_skill[117] = {id:1117,name:"狂战士之怒",state: 2 ,message:"被动牌:本回合内加70点攻击"}
-  // small_skill[117].do = {mBuff:,mBuffT:}
-  // small_skill[118] = {id:1118,name:"热血战魂",state: 2 ,message:"被动牌:加30点攻击"}
-  // small_skill[118].do = {mBuff:,mBuffT:}
-  // small_skill[119] = {id:1119,name:"旋风飞斧",state: 0 ,message:"对敌方造成40点伤害并使敌方攻击有30%的概率mis(可闪避)"}
-  // small_skill[119].do = {tHp:"40"};
-  // small_skill[120] = {id:1120,name:"肉钩",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
-  // small_skill[120].do = {tHp:"80"};
-  // small_skill[121] = {id:1121,name:"瘴气",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
-  // small_skill[121].do = {tHp:"70"};
-  // small_skill[122] = {id:1122,name:"毒刺",state: 2 ,message:"被动牌:攻击时对敌方额外造成20点伤害"}
-  // small_skill[122].do = {tHp:"20",mBuff:,mBuffT:}
-  // small_skill[123] = {id:1123,name:"扫射",state: 2 ,message:"攻击力加40"}
-  // small_skill[123].do = {mBuff:,mBuffT:}
-  // small_skill[124] = {id:1124,name:"灼热之箭",state: 2 ,message:"本回合内攻击加50"}
-  // small_skill[124].do = {mBuff:,mBuffT:}
-  // small_skill[125] = {id:1125,name:"变身",state: 2 ,message:"永久增加20点攻击力"}
-  // small_skill[125].do = {mBuff:,mBuffT:}
-  // small_skill[126] = {id:1126,name:"连击",state: 2 ,message:"被动牌:每次攻击降低敌方10点护甲"}
-  // small_skill[126].do = {mBuff:,mBuffT:}
-  // small_skill[127] = {id:1127,name:"蝗虫群",state: 1 ,message:"对敌方造成60点伤害并永久降低5点护甲"}
-  // small_skill[127].do = {tHp:"60"};
-  // small_skill[128] = {id:1128,name:"毒性攻击",state: 2 ,message:"被动牌:本回合攻击力加40"}
-  // small_skill[128].do = {mBuff:,mBuffT:}
-  // small_skill[129] = {id:1129,name:"幽冥剧毒",state: 2 ,message:"被动牌:敌方血量低于50%时,攻击附加50点伤害"}
-  // small_skill[129].do = {mBuff:,mBuffT:}
-  // small_skill[130] = {id:1130,name:"腐蚀外表",state: 2 ,message:"被动牌:受到敌方的任何攻击之后敌方会掉40点血"}
-  // small_skill[130].do = {mBuff:,mBuffT:}
-  // small_skill[131] = {id:1131,name:"等离子场",state: 2 ,message:"3回合内敌方每次对你使用指向性技能时会减少100点生命值"}
-  // small_skill[131].do = {mBuff:,mBuffT:}
-  // small_skill[132] = {id:1132,name:"静电连接",state: 1 ,message:"永久性减少敌方5点攻击,自己增加5点攻击"}
-  // small_skill[132].do = {};
-  // small_skill[133] = {id:1133,name:"投掷飞镖",state: 1 ,message:"对敌方造成80点伤害"}
-  // small_skill[133].do = {tHp:"80"};
-  // small_skill[134] = {id:1134,name:"忍术",state: 2 ,message:"被动牌:攻击时有40%的概率双倍暴击"}
-  // small_skill[134].do = {mBuff:,mBuffT:}
-  // small_skill[135] = {id:1135,name:"分裂箭",state: 2 ,message:"被动牌:攻击力增加敌方手牌数乘以15的数值"}
-  // small_skill[135].do = {mBuff:,mBuffT:}
-  // small_skill[136] = {id:1136,name:"秘术异蛇",state: 0 ,message:"造成敌手牌数乘以20的伤害(可闪避)"}
-  // small_skill[136].do = {tHp:"敌手牌数乘以20"};
-  // small_skill[137] = {id:1137,name:"魔法护盾",state: 2 ,message:"被动牌:受到伤害时一点能量值可以抵挡一次伤害"}
-  // small_skill[137].do = {mBuff:,mBuffT:}
-  // small_skill[138] = {id:1138,name:"折光",state: 2 ,message:"5回合内抵挡4次伤害"}
-  // small_skill[138].do = {mBuff:,mBuffT:}
-  // small_skill[139] = {id:1139,name:"黑暗契约",state: 2 ,message:"下回合双方损失50点生命值,可以清除自己身上所有状态"}
-  // small_skill[139].do = {mBuff:,mBuffT:}
-  // small_skill[140] = {id:1140,name:"能量转换",state: 2 ,message:"被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击"}
-  // small_skill[140].do = {mBuff:,mBuffT:}
-  // small_skill[141] = {id:1141,name:"超级力量",state: 2 ,message:"3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害"}
-  // small_skill[141].do = {tHp:"自己攻击乘2",mBuff:,mBuffT:}
-  // small_skill[142] = {id:1142,name:"怒意狂击",state: 2 ,message:"被动牌:每次普通攻击成功后攻击力会增加20"}
-  // small_skill[142].do = {mBuff:,mBuffT:}
-  // small_skill[143] = {id:1143,name:"回到过去",state: 2 ,message:"被动牌:受到任何攻击时有25%的概率免疫"}
-  // small_skill[143].do = {mBuff:,mBuffT:}
-  // small_skill[144] = {id:1144,name:"时间锁定",state: 2 ,message:"被动牌:普通攻击时有25%的概率使敌方晕眩一回合"}
-  // small_skill[144].do = {mBuff:,mBuffT:}
-  // small_skill[145] = {id:1145,name:"血之狂暴",state: 1 ,message:"使敌方2回合内无法使用技能"}
-  // small_skill[145].do = {};
-  // small_skill[146] = {id:1146,name:"屠戮",state: 2 ,message:"被动牌:敌方每减少一张牌会使自己增加30点生命值"}
-  // small_skill[146].do = {mBuff:,mBuffT:}
-  // small_skill[147] = {id:1147,name:"嗜血渴望",state: 2 ,message:"被动牌:敌方血量低于50%时，自己增加50点攻击"}
-  // small_skill[147].do = {mBuff:,mBuffT:}
-  // small_skill[148] = {id:1148,name:"烟幕",state: 0 ,message:"使敌方在1回合内攻击有75%的概率mis,并不可以使用技能(可闪避)"}
-  // small_skill[148].do = {};
-  // small_skill[149] = {id:1149,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
-  // small_skill[149].do = {};
-  // small_skill[150] = {id:1150,name:"魔王降临",state: 2 ,message:"被动牌:减少敌方20点护甲"}
-  // small_skill[150].do = {mBuff:,mBuffT:}
-  // small_skill[151] = {id:1151,name:"毁灭阴影",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
-  // small_skill[151].do = {tHp:"90"};
-  // small_skill[152] = {id:1152,name:"支配死灵",state: 2 ,message:"被动牌:敌方每减少一张牌,你可以永久增加2点攻击"}
-  // small_skill[152].do = {mBuff:,mBuffT:}
-  // small_skill[153] = {id:1153,name:"幽鬼之刃",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
-  // small_skill[153].do = {tHp:"80"};
-  // small_skill[154] = {id:1154,name:"荒芜",state: 2 ,message:"被动牌:增加30点攻击"}
-  // small_skill[154].do = {mBuff:,mBuffT:}
-  // small_skill[155] = {id:1155,name:"折射",state: 2 ,message:"被动牌:反弹自己受到一切伤害的25%"}
-  // small_skill[155].do = {mBuff:,mBuffT:}
-  // small_skill[156] = {id:1156,name:"麻痹撕咬",state: 2 ,message:"被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis"}
-  // small_skill[156].do = {mBuff:,mBuffT:}
-  // small_skill[157] = {id:1157,name:"月光",state: 1 ,message:"对敌方造成90点伤害"}
-  // small_skill[157].do = {tHp:"90"};
-  // small_skill[158] = {id:1158,name:"月之祝福",state: 2 ,message:"被动牌:攻击力加60"}
-  // small_skill[158].do = {mBuff:,mBuffT:}
-  // small_skill[159] = {id:1159,name:"月刃",state: 2 ,message:"被动牌:攻击力加敌方手牌数乘10的数值"}
-  // small_skill[159].do = {mBuff:,mBuffT:}
-  // small_skill[160] = {id:1160,name:"高射火炮",state: 2 ,message:"本回合内攻击增加70"}
-  // small_skill[160].do = {mBuff:,mBuffT:}
-  // small_skill[161] = {id:1161,name:"追踪导弹",state: 0 ,message:"造成160点伤害(可闪避)"}
-  // small_skill[161].do = {tHp:"160"};
-  // small_skill[162] = {id:1162,name:"灵魂猎手",state: 0 ,message:"一回合内使敌方额外承受25%的伤害(可闪避)"}
-  // small_skill[162].do = {};
-  // small_skill[163] = {id:1163,name:"薄葬",state: 2 ,message:"三回合内不会死亡"}
-  // small_skill[163].do = {mBuff:,mBuffT:}
-  // small_skill[164] = {id:1164,name:"暗影波",state: 0 ,message:"回复自己手牌数乘以25点的生命(可闪避)"}
-  // small_skill[164].do = {};
-  // small_skill[165] = {id:1165,name:"叉形闪电",state: 1 ,message:"对敌方造成90点伤害"}
-  // small_skill[165].do = {tHp:"90"};
-  // small_skill[166] = {id:1166,name:"妖术",state: 1 ,message:"将敌方变成小羊,持续1回合"}
-  // small_skill[166].do = {};
-  // small_skill[167] = {id:1167,name:"枷锁",state: 1 ,message:"自己摸一张牌,敌方受到50点伤害"}
-  // small_skill[167].do = {};
-  // small_skill[168] = {id:1168,name:"烈焰破击",state: 0 ,message:"对敌方造成100点伤害(可闪避)"}
-  // small_skill[168].do = {tHp:"100"};
-  // small_skill[169] = {id:1169,name:"冰霜新星",state: 0 ,message:"对敌方造成60点伤害(可闪避)"}
-  // small_skill[169].do = {tHp:"60"};
-  // small_skill[170] = {id:1170,name:"冰封禁制",state: 1 ,message:"对敌方造成30点伤害并晕眩一回合"}
-  // small_skill[170].do = {tHp:"30"};
-  // small_skill[171] = {id:1171,name:"辉煌光环",state: 2 ,message:"被动牌:每回合可以额外回复1点能量值"}
-  // small_skill[171].do = {mBuff:,mBuffT:}
-  // small_skill[172] = {id:1172,name:"静默诅咒",state: 1 ,message:"减少敌方1点能量值"}
-  // small_skill[172].do = {};
-  // small_skill[173] = {id:1173,name:"智慧之刃",state: 2 ,message:"本回合内攻击力增加自己能量值乘以20的数值"}
-  // small_skill[173].do = {mBuff:,mBuffT:}
-  // small_skill[174] = {id:1174,name:"遗言",state: 1 ,message:"对敌方造成60点伤害,并沉默1回合"}
-  // small_skill[174].do = {tHp:"60"};
-  // small_skill[175] = {id:1175,name:"弱化能流",state: 1 ,message:"永久减少敌方10点攻击"}
-  // small_skill[175].do = {};
-  // small_skill[176] = {id:1176,name:"激光",state: 1 ,message:"造成100点伤害并使敌方下1回合攻击100%mis"}
-  // small_skill[176].do = {tHp:"100"};
-  // small_skill[177] = {id:1177,name:"热导飞弹",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[177].do = {tHp:"100"};
-  // small_skill[178] = {id:1178,name:"法力汲取",state: 1 ,message:"减少敌方两点能量格,自己增加两点能量格"}
-  // small_skill[178].do = {};
-  // small_skill[179] = {id:1179,name:"超负荷",state: 2 ,message:"被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击"}
-  // small_skill[179].do = {mBuff:,mBuffT:}
-  // small_skill[180] = {id:1180,name:"束缚之箭",state: 1 ,message:"造成40点伤害晕眩敌方半回合"}
-  // small_skill[180].do = {tHp:"40"};
-  // small_skill[181] = {id:1181,name:"强力一击",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[181].do = {tHp:"100"};
-  // small_skill[182] = {id:1182,name:"冲击波",state: 0 ,message:"造成130点伤害"}
-  // small_skill[182].do = {tHp:"130"};
-  // small_skill[183] = {id:1183,name:"法力流失",state: 1 ,message:"3回合内敌方任何攻击所需能量值加1"}
-  // small_skill[183].do = {};
-  // small_skill[184] = {id:1184,name:"查克拉魔法",state: 1 ,message:"瞬间将自身能量值回满"}
-  // small_skill[184].do = {};
-  // small_skill[185] = {id:1185,name:"严寒烧灼",state: 2 ,message:"2回合内增加敌方现有生命值2%的攻击力"}
-  // small_skill[185].do = {mBuff:,mBuffT:}
-  // small_skill[186] = {id:1186,name:"碎裂冲击",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[186].do = {tHp:"100"};
-  // small_skill[187] = {id:1187,name:"极寒之拥",state: 2 ,message:"使自己加100点护甲回复100点生命,但本回合不可以再出牌"}
-  // small_skill[187].do = {mBuff:,mBuffT:}
-  // small_skill[188] = {id:1188,name:"离子外壳",state: 1 ,message:"对敌方造成80点伤害"}
-  // small_skill[188].do = {tHp:"80"};
-  // small_skill[189] = {id:1189,name:"凤凰冲击",state: 3 ,message:"减少自身100点生命值，闪避对方一次攻击"}
-  // small_skill[189].do = {};
-  // small_skill[190] = {id:1190,name:"秘法天球",state: 2 ,message:"本回合增加能量值乘以25的攻击力"}
-  // small_skill[190].do = {mBuff:,mBuffT:}
-  // small_skill[191] = {id:1191,name:"星体禁锢",state: 1 ,message:"使对方减少2点能量格,并轮空一回合"}
-  // small_skill[191].do = {};
-  // small_skill[192] = {id:1192,name:"精气光环",state: 2 ,message:"被动牌:释放技能时有50%的概率加1点能量值"}
-  // small_skill[192].do = {mBuff:,mBuffT:}
-  // small_skill[193] = {id:1193,name:"龙破斩",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[193].do = {tHp:"100"};
-  // small_skill[194] = {id:1194,name:"光击阵",state: 0 ,message:"造成80点伤害并晕眩1回合(可闪避)"}
-  // small_skill[194].do = {tHp:"80"};
-  // small_skill[195] = {id:1195,name:"寒冰之触",state: 1 ,message:"对敌方造成80点伤害并晕眩半回合"}
-  // small_skill[195].do = {tHp:"80"};
-  // small_skill[196] = {id:1196,name:"火焰爆轰",state: 1 ,message:"造成80点伤害并晕眩敌方1回合"}
-  // small_skill[196].do = {tHp:"80"};
-  // small_skill[197] = {id:1197,name:"引燃",state: 1 ,message:"造成150点伤害"}
-  // small_skill[197].do = {tHp:"150"};
-  // small_skill[198] = {id:1198,name:"嗜血术",state: 2 ,message:"3回合内增加自己30点攻击力"}
-  // small_skill[198].do = {mBuff:,mBuffT:}
-  // small_skill[199] = {id:1199,name:"憎恶",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
-  // small_skill[199].do = {tHp:"50"};
-  // small_skill[200] = {id:1200,name:"午夜凋零",state: 0 ,message:"造成80点伤害(可闪避)"}
-  // small_skill[200].do = {tHp:"80"};
-  // small_skill[201] = {id:1201,name:"命运赦令",state: 1 ,message:"使敌方1回合不可以攻击并且所受的物理伤害增加100%"}
-  // small_skill[201].do = {};
-  // small_skill[202] = {id:1202,name:"涤罪之焰",state: 1 ,message:"对敌方造成150点伤害"}
-  // small_skill[202].do = {tHp:"150"};
-  // small_skill[203] = {id:1203,name:"忠诚考验",state: 1 ,message:"随机对敌方造成50-300点伤害"}
-  // small_skill[203].do = {tHp:"50-300"};
-  // small_skill[204] = {id:1204,name:"麻痹陷阱",state: 0 ,message:"对敌方晕眩一回合(可闪避)"}
-  // small_skill[204].do = {};
-  // small_skill[205] = {id:1205,name:"恶魔赦令",state: 1 ,message:"三回合内每回合对敌方造成80点伤害"}
-  // small_skill[205].do = {tHp:"80"};
-  // small_skill[206] = {id:1206,name:"致命连接",state: 1 ,message:"本回合内对敌方额外造成手牌数0.1倍技能伤害 "}
-  // small_skill[206].do = {};
-  // small_skill[207] = {id:1207,name:"暗言术",state: 1 ,message:"使己方回复100点生命值并对敌方造成100点伤害"}
-  // small_skill[207].do = {tHp:"100"};
-  // small_skill[208] = {id:1208,name:"冰火交加",state: 0 ,message:"对敌方造成150点伤害(可闪避)"}
-  // small_skill[208].do = {tHp:"150"};
-  // small_skill[209] = {id:1209,name:"冰封路径",state: 0 ,message:"使敌方晕眩一回合(可闪避)"}
-  // small_skill[209].do = {};
-  // small_skill[210] = {id:1210,name:"液态火",state: 1 ,message:"对敌方造成150点伤害"}
-  // small_skill[210].do = {tHp:"150"};
-  // small_skill[211] = {id:1211,name:"死亡脉冲",state: 0 ,message:"对敌方造成100点伤害，同时回复100点生命值(可闪避)"}
-  // small_skill[211].do = {tHp:"100"};
-  // small_skill[212] = {id:1212,name:"竭心光环",state: 2 ,message:"被动牌:每回合减少敌方2%生命值"}
-  // small_skill[212].do = {mBuff:,mBuffT:}
-  // small_skill[213] = {id:1213,name:"施虐之心",state: 2 ,message:"被动牌:每对敌方造成200点伤害回复1点能量格和100点生命"}
-  // small_skill[213].do = {tHp:"200",mBuff:,mBuffT:}
-  // small_skill[214] = {id:1214,name:"灵魂超度",state: 0 ,message:"对敌方造成自己损失血量10%的伤害(可闪避)"}
-  // small_skill[214].do = {tHp:"自己损失血量10%"};
-  // small_skill[215] = {id:1215,name:"食腐蝙群",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[215].do = {tHp:"200"};
-  // small_skill[216] = {id:1216,name:"上古封印",state: 0 ,message:"使敌方承受1.5倍魔法伤害，并使敌方沉默一回合(可闪避)"}
-  // small_skill[216].do = {};
-  // small_skill[217] = {id:1217,name:"奥术箭",state: 0 ,message:"对敌方造成50*其能量格的伤害(可闪避)"}
-  // small_skill[217].do = {tHp:"50*其能量格"};
-  // small_skill[218] = {id:1218,name:"暗影突袭",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[218].do = {tHp:"200"};
-  // small_skill[219] = {id:1219,name:"闪烁",state: 3 ,message:"可闪避敌方一次技能，对无视闪避技能无效"}
-  // small_skill[219].do = {};
-  // small_skill[220] = {id:1220,name:"痛苦尖叫",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[220].do = {tHp:"200"};
-  // small_skill[221] = {id:1221,name:"虚弱",state: 1 ,message:"3回合内降低敌方30点攻击力"}
-  // small_skill[221].do = {};
-  // small_skill[222] = {id:1222,name:"蚀脑",state: 1 ,message:"对敌方造成200点伤害，同时回复100点生命值"}
-  // small_skill[222].do = {tHp:"200"};
-  // small_skill[223] = {id:1223,name:"噩梦",state: 1 ,message:"使敌方沉睡一回合不能摸牌，己方也不能进行攻击"}
-  // small_skill[223].do = {};
-  // small_skill[224] = {id:1224,name:"霜冻新星",state: 1 ,message:"对地敌方造成200点伤害"}
-  // small_skill[224].do = {tHp:"200"};
-  // small_skill[225] = {id:1225,name:"霜冻护甲",state: 2 ,message:"2回合内增加20点护甲"}
-  // small_skill[225].do = {mBuff:,mBuffT:}
-  // small_skill[226] = {id:1226,name:"邪恶祭祀",state: 1 ,message:"消耗50点生命，回复3点能量"}
-  // small_skill[226].do = {};
-  // small_skill[227] = {id:1227,name:"麻痹药剂",state: 0 ,message:"使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合(可闪避)"}
-  // small_skill[227].do = {};
-  // small_skill[228] = {id:1228,name:"巫毒回复术",state: 1 ,message:"回复150点生命"}
-  // small_skill[228].do = {};
-  // small_skill[229] = {id:1229,name:"诅咒",state: 0 ,message:"使敌方3回合后受到3回合内受到总伤害的25%(可闪避)"}
-  // small_skill[229].do = {};
-  // small_skill[230] = {id:1230,name:"相位转移",state: 3 ,message:"免疫一次任何伤害"}
-  // small_skill[230].do = {};
-  // small_skill[231] = {id:1231,name:"新月之痕",state: 0 ,message:"对敌方造成100点伤害并使对方沉默一回合(可闪避)"}
-  // small_skill[231].do = {tHp:"100"};
-  // small_skill[232] = {id:1232,name:"不可侵犯",state: 2 ,message:"被动牌:使对方普通攻击时消耗双倍能量格"}
-  // small_skill[232].do = {mBuff:,mBuffT:}
-  // small_skill[233] = {id:1233,name:"自然之助",state: 1 ,message:"回复自身200点生命值"}
-  // small_skill[233].do = {};
-  // small_skill[234] = {id:1234,name:"幽冥爆轰",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[234].do = {tHp:"200"};
-  // small_skill[235] = {id:1235,name:"幽冥守卫",state: 1 ,message:"对敌方造成敌方消耗能量格*100的伤害"}
-  // small_skill[235].do = {tHp:"敌方消耗能量格*100"};
-  // small_skill[236] = {id:1236,name:"衰老",state: 1 ,message:"使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害"}
-  // small_skill[236].do = {};
-  // small_skill[237] = {id:1237,name:"雷霆之击",state: 1 ,message:"对敌方造成200点伤害"}
-  // small_skill[237].do = {tHp:"200"};
-
-};module.exports = { big_skill: big_skill, small_skill: small_skill };
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -3935,11 +3679,11 @@ var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(18);
+var _stateflie = __webpack_require__(17);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _BuffIon = __webpack_require__(19);
+var _BuffIon = __webpack_require__(18);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
@@ -3953,8 +3697,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //计算状态影响下的属性
-
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var HeroPlaceMy = function (_React$Component) {
     _inherits(HeroPlaceMy, _React$Component);
@@ -3981,6 +3724,26 @@ var HeroPlaceMy = function (_React$Component) {
             var buffTime = st.buffTime; //状态持续时间
             return buff.map(function (item, i) {
                 return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], key: i }));
+            });
+        }
+    }, {
+        key: 'attackBtn',
+        value: function attackBtn() {
+            var _doAttack = (0, _action.doAttack)(this.props),
+                _doAttack2 = _slicedToArray(_doAttack, 2),
+                attack = _doAttack2[0],
+                newstate = _doAttack2[1];
+
+            this.props.setState(newstate);
+
+            if (attack == false) return;
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
+                    message: attack == "miss" ? "对方普通攻击MISS" : "普通攻击对你造成\"" + attack + "\"点伤害"
+                }
             });
         }
     }, {
@@ -4029,8 +3792,8 @@ var HeroPlaceMy = function (_React$Component) {
                     ),
                     this.props.round == 1 ? _react2.default.createElement(
                         'div',
-                        { className: 'attack_btn' },
-                        "普通攻击"
+                        { className: 'attack_btn', onClick: this.attackBtn.bind(this) },
+                        "普通攻击x" + basic.attackAccount + "↑" + basic.attackRecove
                     ) : "",
                     this.props.round == 1 ? _react2.default.createElement(
                         'div',
@@ -4044,12 +3807,12 @@ var HeroPlaceMy = function (_React$Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'HP' },
-                        basic.Hp + "/" + basic.maxHp + "+" + basic.Hprecove + "/s"
+                        basic.Hp + "/" + basic.maxHp + "+" + basic.Hprecove
                     ),
                     _react2.default.createElement(
                         'div',
                         { className: 'MP' },
-                        basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove + "/s"
+                        basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove
                     ),
                     _react2.default.createElement(
                         'div',
@@ -4091,17 +3854,17 @@ var HeroPlaceMy = function (_React$Component) {
 module.exports = HeroPlaceMy;
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,出牌,使用装备" }, { id: 1, name: "沉默", message: "使该单位无法出牌" }, { id: 2, name: "虚无", message: "使该单位无法攻击,所受魔法伤害增加" }, { id: 3, name: "缴械", message: "使该单位无法攻击" }, { id: 4, name: "死亡契约", message: "该单位的攻击力暴涨了 (90)" }, { id: 5, name: "巨浪", message: "减少10点护甲" }, { id: 6, name: "锚击", message: "增加敌方手牌数乘以10的攻击" }, { id: 7, name: "船游", message: "受到伤害减半" }, { id: 8, name: "无光之盾", message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" }, { id: 9, name: "回光返照", message: "将受到的伤害转化为自己的生命值" }, { id: 10, name: "超级新星", message: "承受6次攻击则死亡,否则重生" }, { id: 11, name: "战士怒吼", message: "增加40点护甲" }, { id: 12, name: "海象挥击", message: "攻击力变为现在攻击力的4倍" }, { id: 13, name: "强化图腾", message: "攻击力变为现在攻击力的2倍" }, { id: 14, name: "决斗", message: "强制攻击,无法使用装备，技能" }, { id: 15, name: "变身", message: "攻击加100" }, { id: 16, name: "嚎叫", message: "攻击加60" }, { id: 17, name: "化学狂暴", message: "攻击加40并且每回合回复100点生命值" }, { id: 18, name: "战吼", message: "增加30点护甲" }, { id: 19, name: "神之力量", message: "攻击翻倍" }, { id: 20, name: "真龙形态", message: "攻击力增加装备数目乘以15" }, { id: 21, name: "授予力量", message: "攻击加80" }, { id: 22, name: "末日", message: "每回合造成100点伤害,不能使用技能和物品" }, { id: 23, name: "回音重踏", message: "晕眩状态,受到任何伤害都会解除" }, { id: 24, name: "磁场", message: "物理免疫" }, { id: 25, name: "守护天使", message: "物理免疫" }, { id: 26, name: "血肉傀儡", message: "对方每少一张牌加80点生命" }, { id: 27, name: "狂暴", message: "魔法免疫" }, { id: 28, name: "疯狂生长", message: "无法攻击" }, { id: 29, name: "活体护甲", message: "受到物理伤害减少20每回合加40点血" }, { id: 30, name: "醉酒云雾", message: "普通攻击有75%的概率打不中" }, { id: 31, name: "伤害加深", message: "护甲减少100点" }, { id: 32, name: "战士怒吼2", message: "强迫攻击,无法使用技能物品" }, { id: 33, name: "火焰壁垒", message: "抵挡150点魔法伤害,对方每回合减少30点生命值" }, { id: 34, name: "剑刃风暴", message: "使自己魔免,不可以攻击和出牌" }, { id: 35, name: "战斗专注", message: "普通攻击时可以多攻击敌方一次" }, { id: 36, name: "海妖之歌", message: "处于无敌状态" }, { id: 37, name: "石化凝视", message: "晕眩且魔免,但受到的物理伤害加倍" }, { id: 38, name: "折光", message: "抵挡伤害" }, { id: 39, name: "割裂", message: "自己每减少一张牌会减少200点生命值" }, { id: 40, name: "烟幕", message: "攻击有75%的概率miss,并不可以使用技能" }, { id: 41, name: "魔王降临", message: "减少20点护甲" }, { id: 42, name: "麻痹撕咬", message: "该单位50%概率攻击miss" }, { id: 43, name: "极度饥渴", message: "该单位攻击+80,且将对敌方造成伤害转化为己方生命值" }, { id: 44, name: "灵魂猎手", message: "该单位承受伤害加深25%" }, { id: 45, name: "编织", message: "该单位护甲+50" }, { id: 46, name: "薄葬", message: "该单位不会死亡" }, { id: 47, name: "激光", message: "该单位物理攻击100%miss" }, { id: 48, name: "超负荷", message: "空" }, { id: 49, name: "法力流失", message: "该单位攻击所需能量值+1" }, { id: 50, name: "虚妄之诺", message: "该单位不能攻击" }, { id: 51, name: "命运赦令", message: "该单位不能攻击切所受物理伤害加倍" }, { id: 52, name: "恶魔赦令", message: "该单位每回合对敌方造成80点伤害" }, { id: 53, name: "致命链接", message: "该单位承受1.5倍技能伤害" }, { id: 54, name: "虚弱", message: "该单位攻击力-30" }, { id: 55, name: "噩梦", message: "该单位沉睡中,不能出牌,攻击和使用装备" }, { id: 56, name: "诅咒", message: "该单位能量值-1" }, { id: 57, name: "旋风飞斧", message: "该单位攻击有30%的概率miss" }, { id: 58, name: "血之狂暴", message: "该单位无法使用技能" }, { id: 59, name: "超级力量", message: "普通攻击成功后额外对敌方造成该单位双倍攻击的伤害" }, { id: 60, name: "魔免", message: "魔法免疫" }, { id: 61, name: "撕裂伤口", message: "将该单位受到的普通攻击伤害转化为生命值" }, { id: 62, name: "衰退光环", message: "该单位攻击力减半" }, { id: 63, name: "自然秩序", message: "该单位护甲归0" }, { id: 64, name: "编织", message: "该单位护甲-50" }, { id: 65, name: "高射火炮", message: "该单位攻击+70" }, { id: 66, name: "嗜血术", message: "该单位攻击+30" }, { id: 67, name: "灼热之箭", message: "该单位攻击+50" }, { id: 68, name: "极寒之拥", message: "该单位护甲+100,且不可攻击,出牌和实用装备" }, { id: 69, name: "毒性攻击", message: "该单位攻击+40" }, { id: 70, name: "狂战士之怒", message: "该单位血量<50%时,攻击次数+1且不消耗能量格" }, { id: 71, name: "扫射", message: "该单位攻击+40" }, { id: 72, name: "沸血之矛", message: "该单位攻击+100" }, { id: 73, name: "酸性喷雾", message: "该单位护甲-10" }, { id: 74, name: "严寒灼烧", message: "增加敌方当前生命值2%的攻击力" }, { id: 75, name: "火力聚焦", message: "该单位攻击-50,攻击次数+2" }, { id: 76, name: "智慧之刃", message: "增加该单位20倍能量值的攻击力" }, { id: 77, name: "霜冻护甲", message: "该单位护甲+20" }, { id: 78, name: "秘法天球", message: "增加该单位25倍能量值的攻击力" }, { id: 79, name: "暗影之舞", message: "令该单位处于无法受到攻击状态" }, { id: 80, name: "激怒", message: "增加该单位当前生命5%的攻击力" }, { id: 81, name: "暗杀", message: "" }, { id: 82, name: "撒旦", message: "将受到伤害转化为生命值" }, { id: 83, name: "刃甲", message: "反弹任何伤害,对魔免状态无效" }, { id: 84, name: "勇气徽章", message: "敌方护甲-10,己方护甲-10" }, { id: 85, name: "林肯", message: "抵挡一次指向性法术(对装备的法术无效)" }, { id: 86, name: "鬼手", message: "回合结束时HP-100" }, { id: 87, name: "妖术", message: "使该单位无法攻击,出牌,使用装备" }, { id: 88, name: "风杖", message: "使该单位无法攻击,出牌,使用装备,并且无敌" }, { id: 89, name: "黑暗契约", message: "状态结束后清除所有状态,并造成伤害" }, { id: 90, name: "竭心光环", message: "每回合减少敌方0.1%生命值" }, { id: 91, name: "施虐之心", message: "每对敌方造成200点伤害回复1点能量格和100点生命" }, { id: 92, name: "不可侵犯", message: "使对方普通攻击时消耗双倍能量格" }, { id: 93, name: "魔王降临", message: "减少敌方20点护甲" }, { id: 94, name: "屠戮", message: "敌方每减少一张手牌自己回复30点生命" }, { id: 95, name: "静电场", message: "每次释放任何技能都会对敌方造成40点伤害" }, { id: 96, name: "霜之哀伤", message: "攻击成功后会弃置敌方一张手牌" }, { id: 97, name: "巨力重击", message: "攻击时有30%的概率晕眩敌方一回合并额外造成40点伤害" }, { id: 98, name: "月刃", message: "攻击力加敌方手牌数乘10的数值" }, { id: 99, name: "巨力挥舞", message: "普通攻击时增加加敌方手牌数乘10的攻击力" }, { id: 100, name: "反击", message: "在自己受到伤害时对敌方造成自身承受伤害的20%" }, { id: 101, name: "海妖外壳", message: "受到普通攻击时可以减少50点伤害" }, { id: 102, name: "潮汐使者", message: "使自己本回合增加20+对方手牌数*10点攻击力" }, { id: 103, name: "活性护甲", message: "每受到一次攻击增加10点护甲" }, { id: 104, name: "回光返照", message: "受到的伤害都会增加自己的生命值" }, { id: 105, name: "反击螺旋", message: "敌方普通攻击自己时会受到50点伤害(持续3回合)" }, { id: 106, name: "战意", message: "每释放一次技能可以增加20点攻击力" }, { id: 107, name: "余震", message: "半合内自己使用任何技能都会使敌方眩晕半回合" }, { id: 108, name: "致命一击", message: "攻击时有40%的概率双倍攻击(持续3回合)" }, { id: 109, name: "勇气之霎", message: "受到普通攻击时有40%的概率增加自己100点血" }, { id: 110, name: "重生", message: "死亡后可以重生，重生后拥有400点生命值" }, { id: 111, name: "吸血光环", message: "普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" }, { id: 112, name: "致死打击", message: "攻击时有60%的概率1.5倍攻击" }, { id: 113, name: "野性驱使", message: "攻击加30" }, { id: 114, name: "地精贪婪", message: "每回合得到金钱数+10" }, { id: 115, name: "龙族血统", message: "每回合回复40点生命值" }, { id: 116, name: "自然秩序", message: "令对方护甲归0" }, { id: 117, name: "崎岖外表", message: "敌方在普通攻击你时有30%的概率晕眩一回合" }, { id: 118, name: "衰退光环", message: "减少对方50%攻击力" }, { id: 119, name: "狂战士之血", message: "血量低于50%时每次普通攻击可以多攻击一次" }, { id: 120, name: "盛宴", message: "普通攻击时将对方现有生命值的2%转化为自身生命" }, { id: 121, name: "活体护甲", message: "免疫三次敌方的普通攻击" }, { id: 122, name: "腐肉堆积", message: "敌方每少一张手牌自己加40点血，并且加40点血量上限" }, { id: 123, name: "醉拳", message: "受到普通攻击时有40%的概率mis" }, { id: 124, name: "重击", message: "攻击时有40%的概率击晕敌方半回合并附加70点伤害" }, { id: 125, name: "法力损毁", message: "普通攻击成功后可以削减敌方一点能量值" }, { id: 126, name: "地之突袭", message: "攻击力加30" }, { id: 127, name: "带刺外壳", message: "每回合可以抵挡一次指向性法术" }, { id: 128, name: "命令光环", message: "增加25%的攻击力" }, { id: 129, name: "强击光环", message: "增加25%的攻击力" }, { id: 130, name: "射手天赋", message: "增加150点攻击力" }, { id: 131, name: "模糊", message: "敌方在普通攻击你时有70%的概率mis" }, { id: 132, name: "恩赐解脱", message: "攻击时有30%的概率4倍暴击" }, { id: 133, name: "爆头", message: "攻击时有40%的概率附加100点伤害" }, { id: 134, name: "剑舞", message: "攻击时有60%的概率1.5倍暴击" }, { id: 135, name: "热血战魂", message: "加30点攻击" }, { id: 136, name: "毒刺", message: "攻击时对敌方额外造成20点伤害" }, { id: 137, name: "幽冥剧毒", message: "敌方血量低于50%时,攻击附加50点伤害" }, { id: 138, name: "腐蚀外表", message: "受到敌方的任何攻击之后敌方会掉40点血" }, { id: 139, name: "等离子场", message: "敌方每次对你使用指向性技能时会减少100点生命值" }, { id: 140, name: "忍术", message: "攻击时有40%的概率双倍暴击" }, { id: 141, name: "分裂箭", message: "攻击力增加敌方手牌数乘以15的数值" }, { id: 142, name: "魔法护盾", message: "受到伤害时一点能量值可以抵挡100点伤害" }, { id: 143, name: "能量转换", message: "每次攻击永久减少敌方1点攻击力,并增加该单位2点攻击" }, { id: 144, name: "怒意狂击", message: "每次普通攻击成功后攻击力会增加20" }, { id: 145, name: "回到过去", message: "受到任何攻击时有25%的概率免疫" }, { id: 146, name: "时间锁定", message: "普通攻击时有25%的概率使敌方晕眩一回合" }, { id: 147, name: "嗜血渴望", message: "敌方血量低于50%时，该单位增加50点攻击" }, { id: 148, name: "支配死灵", message: "敌方每减少一张牌,该单位可以永久增加2点攻击" }, { id: 149, name: "荒芜", message: "增加30点攻击" }, { id: 150, name: "折射", message: "反弹自己受到一切伤害的25%" }, { id: 151, name: "麻痹撕咬", message: "普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" }, { id: 152, name: "月之祝福", message: "攻击力加60" }, { id: 153, name: "辉煌光环", message: "每回合可以额外回复1点能量值" }, { id: 154, name: "超负荷", message: "每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" }, { id: 155, name: "精气光环", message: "释放技能时有50%的概率加100点能量值" }, { id: 156, name: "连击", message: "每次攻击降低敌方10点护甲" }, { id: 157, name: "多重施法", message: "释放技能时有50%的概率2倍暴击" }, { id: 158, name: "嗜血术", message: "增加自己30点攻击力" }];
+var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,出牌,使用装备" }, { id: 1, name: "沉默", message: "使该单位无法出牌" }, { id: 2, name: "虚无", message: "使该单位无法攻击,所受魔法伤害增加" }, { id: 3, name: "缴械", message: "使该单位无法攻击" }, { id: 4, name: "死亡契约", message: "该单位的攻击力暴涨了 (90)" }, { id: 5, name: "巨浪", message: "减少10点护甲" }, { id: 6, name: "锚击", message: "增加敌方手牌数乘以10的攻击" }, { id: 7, name: "船游", message: "受到伤害减半" }, { id: 8, name: "无光之盾", message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" }, { id: 9, name: "回光返照", message: "将受到的伤害转化为自己的生命值" }, { id: 10, name: "超级新星", message: "承受6次攻击则死亡,否则重生" }, { id: 11, name: "战士怒吼", message: "增加40点护甲" }, { id: 12, name: "海象挥击", message: "攻击力变为现在攻击力的4倍" }, { id: 13, name: "强化图腾", message: "攻击力变为现在攻击力的2倍" }, { id: 14, name: "决斗", message: "强制攻击,无法使用装备，技能" }, { id: 15, name: "变身", message: "攻击加100" }, { id: 16, name: "嚎叫", message: "攻击加60" }, { id: 17, name: "化学狂暴", message: "攻击加40并且每回合回复100点生命值" }, { id: 18, name: "战吼", message: "增加30点护甲" }, { id: 19, name: "神之力量", message: "攻击翻倍" }, { id: 20, name: "真龙形态", message: "攻击力增加装备数目乘以15" }, { id: 21, name: "授予力量", message: "攻击加80" }, { id: 22, name: "末日", message: "每回合造成100点伤害,不能使用技能和物品" }, { id: 23, name: "回音重踏", message: "晕眩状态,受到任何伤害都会解除" }, { id: 24, name: "磁场", message: "物理免疫" }, { id: 25, name: "守护天使", message: "物理免疫" }, { id: 26, name: "血肉傀儡", message: "对方每少一张牌加80点生命" }, { id: 27, name: "狂暴", message: "魔法免疫" }, { id: 28, name: "疯狂生长", message: "无法攻击" }, { id: 29, name: "活体护甲", message: "受到物理伤害减少20每回合加40点血" }, { id: 30, name: "醉酒云雾", message: "普通攻击有75%的概率打不中" }, { id: 31, name: "伤害加深", message: "护甲减少100点" }, { id: 32, name: "战士怒吼2", message: "强迫攻击,无法使用技能物品" }, { id: 33, name: "火焰壁垒", message: "抵挡150点魔法伤害,对方每回合减少30点生命值" }, { id: 34, name: "剑刃风暴", message: "使自己魔免,不可以攻击和出牌" }, { id: 35, name: "战斗专注", message: "普通攻击时可以多攻击敌方一次" }, { id: 36, name: "海妖之歌", message: "处于无敌状态" }, { id: 37, name: "石化凝视", message: "晕眩且魔免,但受到的物理伤害加倍" }, { id: 38, name: "折光", message: "抵挡伤害" }, { id: 39, name: "割裂", message: "自己每减少一张牌会减少200点生命值" }, { id: 40, name: "烟幕", message: "攻击有75%的概率miss,并不可以使用技能" }, { id: 41, name: "魔王降临", message: "减少20点护甲" }, { id: 42, name: "麻痹撕咬", message: "该单位50%概率攻击miss" }, { id: 43, name: "极度饥渴", message: "该单位攻击+80,且将对敌方造成伤害转化为己方生命值" }, { id: 44, name: "灵魂猎手", message: "该单位承受伤害加深25%" }, { id: 45, name: "编织", message: "该单位护甲+50" }, { id: 46, name: "薄葬", message: "该单位不会死亡" }, { id: 47, name: "激光", message: "该单位物理攻击100%miss" }, { id: 48, name: "超负荷", message: "空" }, { id: 49, name: "法力流失", message: "该单位攻击所需能量值+1" }, { id: 50, name: "虚妄之诺", message: "该单位不能攻击" }, { id: 51, name: "命运赦令", message: "该单位不能攻击切所受物理伤害加倍" }, { id: 52, name: "恶魔赦令", message: "该单位每回合对敌方造成80点伤害" }, { id: 53, name: "致命链接", message: "该单位承受1.5倍技能伤害" }, { id: 54, name: "虚弱", message: "该单位攻击力-30" }, { id: 55, name: "噩梦", message: "该单位沉睡中,不能出牌,攻击和使用装备" }, { id: 56, name: "诅咒", message: "该单位能量值-1" }, { id: 57, name: "旋风飞斧", message: "该单位攻击有30%的概率miss" }, { id: 58, name: "血之狂暴", message: "该单位无法使用技能" }, { id: 59, name: "超级力量", message: "普通攻击成功后额外对敌方造成该单位双倍攻击的伤害" }, { id: 60, name: "魔免", message: "魔法免疫" }, { id: 61, name: "撕裂伤口", message: "将该单位受到的普通攻击伤害转化为生命值" }, { id: 62, name: "衰退光环", message: "该单位攻击力减半" }, { id: 63, name: "自然秩序", message: "该单位护甲归0" }, { id: 64, name: "编织", message: "该单位护甲-50" }, { id: 65, name: "高射火炮", message: "该单位攻击+70" }, { id: 66, name: "嗜血术", message: "该单位攻击+30" }, { id: 67, name: "灼热之箭", message: "该单位攻击+50" }, { id: 68, name: "极寒之拥", message: "该单位护甲+100,且不可攻击,出牌和实用装备" }, { id: 69, name: "毒性攻击", message: "该单位攻击+40" }, { id: 70, name: "狂战士之怒", message: "该单位血量<50%时,攻击次数+1且不消耗能量格" }, { id: 71, name: "扫射", message: "该单位攻击+40" }, { id: 72, name: "沸血之矛", message: "该单位攻击+100" }, { id: 73, name: "酸性喷雾", message: "该单位护甲-10" }, { id: 74, name: "严寒灼烧", message: "增加敌方当前生命值2%的攻击力" }, { id: 75, name: "火力聚焦", message: "该单位攻击-50,攻击次数+2" }, { id: 76, name: "智慧之刃", message: "增加该单位20倍能量值的攻击力" }, { id: 77, name: "霜冻护甲", message: "该单位护甲+20" }, { id: 78, name: "秘法天球", message: "增加该单位25倍能量值的攻击力" }, { id: 79, name: "暗影之舞", message: "令该单位处于无法受到攻击状态" }, { id: 80, name: "激怒", message: "增加该单位当前生命5%的攻击力" }, { id: 81, name: "暗杀", message: "" }, { id: 82, name: "撒旦", message: "将受到伤害转化为生命值" }, { id: 83, name: "刃甲", message: "反弹任何伤害,对魔免状态无效" }, { id: 84, name: "勇气徽章", message: "敌方护甲-10,己方护甲-10" }, { id: 85, name: "林肯", message: "抵挡一次指向性法术(对装备的法术无效)" }, { id: 86, name: "鬼手", message: "回合结束时HP-100" }, { id: 87, name: "妖术", message: "使该单位无法攻击,出牌,使用装备" }, { id: 88, name: "风杖", message: "使该单位无法攻击,出牌,使用装备,并且无敌" }, { id: 89, name: "黑暗契约", message: "状态结束后清除所有状态,并造成伤害" }, { id: 90, name: "竭心光环", message: "每回合减少敌方0.1%生命值" }, { id: 91, name: "施虐之心", message: "每对敌方造成200点伤害回复1点能量格和100点生命" }, { id: 92, name: "不可侵犯", message: "使对方普通攻击时消耗双倍能量格" }, { id: 93, name: "魔王降临", message: "减少敌方20点护甲" }, { id: 94, name: "屠戮", message: "敌方每减少一张手牌自己回复30点生命" }, { id: 95, name: "静电场", message: "每次释放任何技能都会对敌方造成40点伤害" }, { id: 96, name: "霜之哀伤", message: "攻击成功后会弃置敌方一张手牌" }, { id: 97, name: "巨力重击", message: "攻击时有30%的概率晕眩敌方一回合并附加40点攻击" }, { id: 98, name: "月刃", message: "攻击力加敌方手牌数乘10的数值" }, { id: 99, name: "巨力挥舞", message: "普通攻击时增加加敌方手牌数乘10的攻击力" }, { id: 100, name: "反击", message: "在自己受到伤害时对敌方造成自身承受伤害的20%" }, { id: 101, name: "海妖外壳", message: "受到普通攻击时可以减少50点伤害" }, { id: 102, name: "潮汐使者", message: "使自己本回合增加20+对方手牌数*10点攻击力" }, { id: 103, name: "活性护甲", message: "每受到一次攻击增加10点护甲" }, { id: 104, name: "回光返照", message: "受到的伤害都会增加自己的生命值" }, { id: 105, name: "反击螺旋", message: "敌方普通攻击自己时会受到50点伤害(持续3回合)" }, { id: 106, name: "战意", message: "每释放一次技能可以增加20点攻击力" }, { id: 107, name: "余震", message: "半合内自己使用任何技能都会使敌方眩晕半回合" }, { id: 108, name: "致命一击", message: "攻击时有40%的概率双倍攻击(持续3回合)" }, { id: 109, name: "勇气之霎", message: "受到普通攻击时有40%的概率增加自己100点血" }, { id: 110, name: "重生", message: "死亡后可以重生，重生后拥有400点生命值" }, { id: 111, name: "吸血光环", message: "普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" }, { id: 112, name: "致死打击", message: "攻击时有60%的概率1.5倍攻击" }, { id: 113, name: "野性驱使", message: "攻击加30" }, { id: 114, name: "地精贪婪", message: "每回合得到金钱数+10" }, { id: 115, name: "龙族血统", message: "每回合回复40点生命值" }, { id: 116, name: "自然秩序", message: "令对方护甲归0" }, { id: 117, name: "崎岖外表", message: "敌方在普通攻击你时有30%的概率晕眩一回合" }, { id: 118, name: "衰退光环", message: "减少对方50%攻击力" }, { id: 119, name: "狂战士之血", message: "血量低于50%时每次普通攻击可以多攻击一次" }, { id: 120, name: "盛宴", message: "普通攻击时将对方现有生命值的2%转化为自身生命" }, { id: 121, name: "活体护甲", message: "免疫三次敌方的普通攻击" }, { id: 122, name: "腐肉堆积", message: "敌方每少一张手牌自己加40点血，并且加40点血量上限" }, { id: 123, name: "醉拳", message: "受到普通攻击时有40%的概率mis" }, { id: 124, name: "重击", message: "攻击时有40%的概率击晕敌方半回合并附加70点伤害" }, { id: 125, name: "法力损毁", message: "普通攻击成功后可以削减敌方一点能量值" }, { id: 126, name: "地之突袭", message: "攻击力加30" }, { id: 127, name: "带刺外壳", message: "每回合可以抵挡一次指向性法术" }, { id: 128, name: "命令光环", message: "增加25%的攻击力" }, { id: 129, name: "强击光环", message: "增加25%的攻击力" }, { id: 130, name: "射手天赋", message: "增加150点攻击力" }, { id: 131, name: "模糊", message: "敌方在普通攻击你时有70%的概率mis" }, { id: 132, name: "恩赐解脱", message: "攻击时有30%的概率4倍暴击" }, { id: 133, name: "爆头", message: "攻击时有40%的概率附加100点伤害" }, { id: 134, name: "剑舞", message: "攻击时有60%的概率1.5倍暴击" }, { id: 135, name: "热血战魂", message: "加30点攻击" }, { id: 136, name: "毒刺", message: "攻击时对敌方额外造成20点伤害" }, { id: 137, name: "幽冥剧毒", message: "敌方血量低于50%时,攻击附加50点伤害" }, { id: 138, name: "腐蚀外表", message: "受到敌方的任何攻击之后敌方会掉40点血" }, { id: 139, name: "等离子场", message: "敌方每次对你使用指向性技能时会减少100点生命值" }, { id: 140, name: "忍术", message: "攻击时有40%的概率双倍暴击" }, { id: 141, name: "分裂箭", message: "攻击力增加敌方手牌数乘以15的数值" }, { id: 142, name: "魔法护盾", message: "受到伤害时一点能量值可以抵挡100点伤害" }, { id: 143, name: "能量转换", message: "每次攻击永久减少敌方1点攻击力,并增加该单位2点攻击" }, { id: 144, name: "怒意狂击", message: "每次普通攻击成功后攻击力会增加20" }, { id: 145, name: "回到过去", message: "受到任何攻击时有25%的概率免疫" }, { id: 146, name: "时间锁定", message: "普通攻击时有25%的概率使敌方晕眩一回合" }, { id: 147, name: "嗜血渴望", message: "敌方血量低于50%时，该单位增加50点攻击" }, { id: 148, name: "支配死灵", message: "敌方每减少一张牌,该单位可以永久增加2点攻击" }, { id: 149, name: "荒芜", message: "增加30点攻击" }, { id: 150, name: "折射", message: "反弹自己受到一切伤害的25%" }, { id: 151, name: "麻痹撕咬", message: "普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" }, { id: 152, name: "月之祝福", message: "攻击力加60" }, { id: 153, name: "辉煌光环", message: "每回合可以额外回复1点能量值" }, { id: 154, name: "超负荷", message: "每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" }, { id: 155, name: "精气光环", message: "释放技能时有50%的概率加100点能量值" }, { id: 156, name: "连击", message: "每次攻击降低敌方10点护甲" }, { id: 157, name: "多重施法", message: "释放技能时有50%的概率2倍暴击" }, { id: 158, name: "嗜血术", message: "增加自己30点攻击力" }];
 module.exports = state_list;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4159,7 +3922,7 @@ var BuffIon = function (_React$Component) {
 module.exports = BuffIon;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4177,11 +3940,11 @@ var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(18);
+var _stateflie = __webpack_require__(17);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _BuffIon = __webpack_require__(19);
+var _BuffIon = __webpack_require__(18);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
@@ -4301,20 +4064,20 @@ var HeroPlaceThat = function (_React$Component) {
 module.exports = HeroPlaceThat;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(22);
+module.exports = __webpack_require__(21);
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _reactDom = __webpack_require__(23);
+var _reactDom = __webpack_require__(22);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -4322,7 +4085,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DotaSystem = __webpack_require__(35);
+var _DotaSystem = __webpack_require__(34);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
@@ -4334,7 +4097,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(_DotaSystem2.default, null), document.getElementById("box")); //react-dom，仅在项目顶层使用
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4372,15 +4135,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(24);
+  module.exports = __webpack_require__(23);
 } else {
-  module.exports = __webpack_require__(30);
+  module.exports = __webpack_require__(29);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4633,7 +4396,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4662,7 +4425,7 @@ Y=X&&W||X;module.exports=Y["default"]?Y["default"]:Y;
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6084,7 +5847,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6103,7 +5866,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6118,7 +5881,7 @@ module.exports = ReactPropTypesSecret;
  * @typechecks
  */
 
-var isNode = __webpack_require__(29);
+var isNode = __webpack_require__(28);
 
 /**
  * @param {*} object The object to check.
@@ -6131,7 +5894,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6159,7 +5922,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6191,8 +5954,8 @@ var getActiveElement = __webpack_require__(13);
 var shallowEqual = __webpack_require__(14);
 var containsNode = __webpack_require__(15);
 var emptyObject = __webpack_require__(8);
-var hyphenateStyleName = __webpack_require__(31);
-var camelizeStyleName = __webpack_require__(33);
+var hyphenateStyleName = __webpack_require__(30);
+var camelizeStyleName = __webpack_require__(32);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -22821,7 +22584,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22836,7 +22599,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(32);
+var hyphenate = __webpack_require__(31);
 
 var msPattern = /^ms-/;
 
@@ -22863,7 +22626,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22899,7 +22662,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22914,7 +22677,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(34);
+var camelize = __webpack_require__(33);
 
 var msPattern = /^-ms-/;
 
@@ -22942,7 +22705,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22977,7 +22740,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22991,17 +22754,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(36);
+__webpack_require__(35);
 
-var _login = __webpack_require__(39);
+var _login = __webpack_require__(38);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(40);
+var _Prepare = __webpack_require__(39);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(43);
+var _playing = __webpack_require__(42);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -23071,11 +22834,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(37);
+var content = __webpack_require__(36);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23121,7 +22884,7 @@ if(false) {
 }
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23135,7 +22898,7 @@ exports.push([module.i, "body {\n  margin: 0px;\n  padding: 0px; }\n\n.system_bo
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports) {
 
 
@@ -23230,7 +22993,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23321,7 +23084,7 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23333,7 +23096,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(41);
+__webpack_require__(40);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23510,11 +23273,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(42);
+var content = __webpack_require__(41);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23560,7 +23323,7 @@ if(false) {
 }
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23574,7 +23337,7 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .
 
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23588,11 +23351,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(44);
+__webpack_require__(43);
 
 var _action = __webpack_require__(6);
 
-var _index = __webpack_require__(46);
+var _index = __webpack_require__(45);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -23635,6 +23398,8 @@ var Component = function (_React$Component) {
                 Mp: 500, //当前蓝量
                 Mprecove: 50, //魔法值恢复速度
                 attack: 40, //攻击力
+                attackAccount: 0, //剩余攻击次数
+                attackRecove: 1, //攻击速度
                 armor: 10, //护甲
                 buff: [], //状态数组
                 buffTime: [], //状态持续时间
@@ -23690,11 +23455,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(45);
+var content = __webpack_require__(44);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23740,7 +23505,7 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23754,13 +23519,13 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _PlayPage = __webpack_require__(47);
+var _PlayPage = __webpack_require__(46);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
@@ -23768,11 +23533,11 @@ var _HeroSelect = __webpack_require__(64);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
-var _HeroPlaceMy = __webpack_require__(17);
+var _HeroPlaceMy = __webpack_require__(16);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(20);
+var _HeroPlaceThat = __webpack_require__(19);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -23787,7 +23552,7 @@ var common = {
 module.exports = common;
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23801,17 +23566,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(48);
+__webpack_require__(47);
 
 var _action = __webpack_require__(6);
 
-var _skill = __webpack_require__(16);
+var _skill = __webpack_require__(49);
 
-var _HeroPlaceMy = __webpack_require__(17);
+var _HeroPlaceMy = __webpack_require__(16);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(20);
+var _HeroPlaceThat = __webpack_require__(19);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -23856,8 +23621,9 @@ var PlayPage = function (_React$Component) {
             if (this.props.round == 0 && newProps.round == 1) {
                 //你的回合开始
                 var mystate = this.props.mystate;
-                mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecov; //生命值恢复
-                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Mprecov; //魔法值恢复
+                mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecove; //生命值恢复
+                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Hprecove; //魔法值恢复
+                mystate.attackAccount += mystate.attackRecove; //普攻恢复
                 mystate.money += mystate.moneyrecove; //金钱
                 var messagelist = this.props.messagelist;
                 var small_speed = this.props.small_speed;
@@ -23907,6 +23673,7 @@ var PlayPage = function (_React$Component) {
                     small_cardheap: small_cardheap,
                     big_cardheap: big_cardheap,
                     round: 1,
+                    attackAccount: 1,
                     messagelist: ["你是先手"],
                     small_speed: 11,
                     mystate: mystate,
@@ -23953,11 +23720,11 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(49);
+var content = __webpack_require__(48);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24003,7 +23770,7 @@ if(false) {
 }
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24015,6 +23782,574 @@ exports.push([module.i, "", ""]);
 
 // exports
 
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var big_skill = [];
+var small_skill = [];
+big_skill[0] = { id: 0, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
+big_skill[1] = { id: 1, name: "毁灭", state: 0, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)" };
+big_skill[2] = { id: 2, name: "幽灵船", state: 0, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)" };
+big_skill[3] = { id: 3, name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
+big_skill[4] = { id: 4, name: "飞锯", state: 0, message: "使敌方受到敌方最大生命值的10%的伤害(可闪避)" };
+big_skill[5] = { id: 5, name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
+big_skill[6] = { id: 6, name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
+big_skill[7] = { id: 7, name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
+big_skill[8] = { id: 8, name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
+big_skill[9] = { id: 9, name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
+big_skill[10] = { id: 10, name: "回音击", state: 0, message: "造成敌方手牌数乘以60的伤害(可闪避)" };
+big_skill[11] = { id: 11, name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
+big_skill[12] = { id: 12, name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
+big_skill[13] = { id: 13, name: "变身", state: 2, message: "三回合内攻击加100" };
+big_skill[14] = { id: 14, name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
+big_skill[15] = { id: 15, name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
+big_skill[16] = { id: 16, name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
+big_skill[17] = { id: 17, name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
+big_skill[18] = { id: 18, name: "两级反转", state: 0, message: "造成100点伤害并晕眩对手3回合(可闪避)" };
+big_skill[19] = { id: 19, name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
+big_skill[20] = { id: 20, name: "裂地者", state: 0, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫(可闪避)" };
+big_skill[21] = { id: 21, name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
+big_skill[22] = { id: 22, name: "地震", state: 0, message: "对敌方造成300+敌方手牌数乘50的伤害(可闪避)" };
+big_skill[23] = { id: 23, name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
+big_skill[24] = { id: 24, name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
+big_skill[25] = { id: 25, name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
+big_skill[26] = { id: 26, name: "疯狂生长", state: 0, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免(可闪避)" };
+big_skill[27] = { id: 27, name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
+big_skill[29] = { id: 29, name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
+big_skill[28] = { id: 28, name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
+big_skill[30] = { id: 30, name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
+big_skill[31] = { id: 31, name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
+big_skill[32] = { id: 32, name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
+big_skill[33] = { id: 33, name: "无敌斩", state: 0, message: "快速普通攻击敌方6次(可闪避)" };
+big_skill[34] = { id: 34, name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
+big_skill[35] = { id: 35, name: "剧毒新星", state: 0, message: "对敌方造成300点伤害(可闪避)" };
+big_skill[36] = { id: 36, name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
+big_skill[37] = { id: 37, name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
+big_skill[38] = { id: 38, name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
+big_skill[39] = { id: 39, name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
+big_skill[40] = { id: 40, name: "海妖之歌", state: 0, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态(可闪避)" };
+big_skill[41] = { id: 41, name: "风暴之眼", state: 0, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害(可闪避)" };
+big_skill[42] = { id: 42, name: "石化凝视", state: 0, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍(可闪避)" };
+big_skill[43] = { id: 43, name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
+big_skill[44] = { id: 44, name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
+big_skill[45] = { id: 45, name: "时间结界", state: 0, message: "晕眩敌方2回合(可闪避)" };
+big_skill[46] = { id: 46, name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
+big_skill[47] = { id: 47, name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
+big_skill[48] = { id: 48, name: "月蚀", state: 0, message: "对敌方造成350点伤害(可闪避)" };
+big_skill[49] = { id: 49, name: "召唤飞弹", state: 0, message: "造成200加上,敌方手牌数乘30的伤害(可闪避)" };
+big_skill[50] = { id: 50, name: "编织", state: 0, message: "三回合内增加自己50点护甲,减少敌方50点护甲(可闪避)" };
+big_skill[51] = { id: 51, name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
+big_skill[52] = { id: 52, name: "极寒领域", state: 0, message: "对敌方造成350点伤害(可闪避)" };
+big_skill[53] = { id: 53, name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
+big_skill[54] = { id: 54, name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
+big_skill[55] = { id: 55, name: "死亡一指", state: 1, message: "造成600点伤害" };
+big_skill[56] = { id: 56, name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
+big_skill[57] = { id: 57, name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
+big_skill[58] = { id: 58, name: "神智之蚀", state: 0, message: "造成自己能量值减敌方能量值的数值乘以220的伤害(可闪避)" };
+big_skill[59] = { id: 59, name: "神灭斩", state: 1, message: "造成650点伤害" };
+big_skill[60] = { id: 60, name: "冰晶爆轰", state: 0, message: "对方血量低于15%时直接秒杀(可闪避)" };
+big_skill[61] = { id: 61, name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
+big_skill[62] = { id: 62, name: "黑洞", state: 0, message: "对敌方造成250点伤害并晕眩2回合无视魔免(可闪避)" };
+big_skill[63] = { id: 63, name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
+big_skill[64] = { id: 64, name: "上帝之手", state: 1, message: "回复己方500点生命值" };
+big_skill[65] = { id: 65, name: "脉冲新星", state: 0, message: "对敌方造成450点伤害(可闪避)" };
+big_skill[66] = { id: 66, name: "万火焚身", state: 0, message: "对敌方造成100点伤害，持续4回合(可闪避)" };
+big_skill[67] = { id: 67, name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
+big_skill[68] = { id: 68, name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
+big_skill[69] = { id: 69, name: "神秘之耀", state: 0, message: "对地方造成450点伤害(可闪避)" };
+big_skill[70] = { id: 70, name: "超声冲击波", state: 0, message: "对敌方造成400点伤害(可闪避)" };
+big_skill[71] = { id: 71, name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
+big_skill[72] = { id: 72, name: "连环霜冻", state: 0, message: "对敌方造成100*敌方手牌数的伤害(可闪避)" };
+big_skill[73] = { id: 73, name: "梦境缠绕", state: 0, message: "对敌方造成200点伤害并使敌方晕眩一回合(可闪避)" };
+big_skill[74] = { id: 74, name: "自然之怒", state: 0, message: "对敌方造成300点伤害(可闪避)" };
+big_skill[75] = { id: 75, name: "生命汲取", state: 0, message: "对敌方造成300点伤害，同时回复300点生命值(可闪避)" };
+big_skill[76] = { id: 76, name: "静态风暴", state: 0, message: "对敌方造成200点伤害并使敌方沉默一回合(可闪避)" };
+big_skill[77] = { id: 77, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
+
+small_skill[0] = { id: 1000, name: "雷霆之击", state: 1, mp: 100, message: "对敌方造成300点伤害" };
+small_skill[0].do = { mMp: -100, tHp: "300" };
+small_skill[1] = { id: 1001, name: "马蹄践踏", state: 0, mp: 50, message: "对敌方造成(50+敌方手牌数*10)点伤害并晕眩1回合(可闪避)" };
+small_skill[1].do = { mMp: -50, tHp: "50+thatstate.cardid.length*10", tBuff: 0, tBuffT: 2 };
+small_skill[2] = { id: 1002, name: "双刃剑", state: 1, mp: 0, message: "使自己和敌方同时受到150点伤害" };
+small_skill[2].do = { mMp: -0, mHp: -150, tHp: "150" };
+small_skill[3] = { id: 1003, name: "反击", state: 2, message: "被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)" };
+small_skill[3].do = { mBuff: 100, mBuffT: 6 };
+small_skill[4] = { id: 1004, name: "巨浪", state: 0, mp: 80, message: "减少敌方10点护甲(持续3回合)并对对方造成100点伤害(可闪避)" };
+small_skill[4].do = { mMp: -80, tHp: "100", tBuff: 5, tBuffT: 6 };
+small_skill[5] = { id: 1005, name: "海妖外壳", state: 2, message: "被动牌:受到普通攻击时可以减少50点伤害(持续3回合)" };
+small_skill[5].do = { mBuff: 101, mBuffT: 6 };
+small_skill[6] = { id: 1006, name: "锚击", state: 1, mp: 30, message: "造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)" };
+small_skill[6].do = { tHp: "50+thatstate.cardid.length*10", mp: 30, tBuff: 6, tBuffT: 6 };
+small_skill[7] = { id: 1007, name: "洪流", state: 0, mp: 80, message: "对敌方造成100点伤害并晕眩半回合(可闪避)" };
+small_skill[7].do = { mMp: -80, tHp: "100", tBuff: 0, tBuffT: 1 };
+small_skill[8] = { id: 1008, name: "潮汐使者", state: 2, message: "被动牌:使自己本回合增加20+对方手牌数*10点攻击力" };
+small_skill[8].do = { mBuff: 102, mBuffT: 2 };
+small_skill[9] = { id: 1009, name: "死亡旋风", state: 0, mp: 60, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[9].do = { mMp: -60, tHp: "200" };
+small_skill[10] = { id: 1010, name: "伐木链锯", state: 0, mp: 30, message: "对敌方造成100点伤害(可闪避)" };
+small_skill[10].do = { mMp: -30, tHp: "100" };
+small_skill[11] = { id: 1011, name: "活性护甲", state: 2, message: "被动牌:每受到一次攻击增加10点护甲(持续3回合)" };
+small_skill[11].do = { mBuff: 103, mBuffT: 6, mBuffObj: { 103: 0 } };
+small_skill[12] = { id: 1012, name: "死亡缠绕", state: 1, mp: 50, message: "消耗自己100点生命,对敌方造成250点伤害" };
+small_skill[12].do = { mMp: -50, tHp: "250", mHp: -100 };
+small_skill[13] = { id: 1013, name: "无光之盾", state: 2, mp: 100, message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" };
+small_skill[13].do = { mMp: -100, mBuff: 8, mBuffT: 6, mBuffObj: { 8: 250 } };
+small_skill[14] = { id: 1014, name: "霜之哀伤", state: 2, message: "被动牌:本回合内攻击对手后可以去除对手一张手牌" };
+small_skill[14].do = { mBuff: 96, mBuffT: 2 };
+small_skill[15] = { id: 1015, name: "烈火精灵", state: 1, mp: 100, message: "对敌方造成90点伤害并且减少敌方100能量值" };
+small_skill[15].do = { mMp: -100, tHp: "90", tMp: -100 };
+small_skill[16] = { id: 1016, name: "烈日炎烤", state: 0, mp: 100, message: "对自己造成50点伤害并造成敌方现有生命值5%的伤害(可闪避)" };
+small_skill[16].do = { mMp: -100, mHp: -50, tHp: "thatstate.Hp*0.05" };
+small_skill[17] = { id: 1017, name: "战士怒吼", state: 0, mp: 100, message: "增加自己40点护甲,使敌方下一回合只可以攻击自己(可闪避)" };
+small_skill[17].do = { mMp: -100, mBuff: 11, mBuffT: 2, tBuff: 32, tBuffT: 2 };
+small_skill[18] = { id: 1018, name: "反击螺旋", state: 2, message: "被动牌:敌方普通攻击自己时会受到50点伤害(持续3回合)" };
+small_skill[18].do = { mBuff: 105, mBuffT: 6 };
+small_skill[19] = { id: 1019, name: "寒冰碎片", state: 0, mp: 50, message: "对敌方造成80点伤害(可闪避)" };
+small_skill[19].do = { mMp: -50, tHp: "80" };
+small_skill[20] = { id: 1020, name: "雪球", state: 0, mp: 80, message: "对敌方造成80点伤害并晕眩半回合(可闪避)" };
+small_skill[20].do = { mMp: -80, tHp: "80", tBuff: 0, tBuffT: 1 };
+small_skill[21] = { id: 1021, name: "沟壑", state: 0, mp: 100, message: "对敌方造成(90+敌方手牌数*10)点伤害并晕眩一回合(可闪避)" };
+small_skill[21].do = { mMp: -100, tHp: "90+thatstate.cardid.length*10", tBuff: 0, tBuffT: 2 };
+small_skill[22] = { id: 1022, name: "强化图腾", state: 2, mp: 50, message: "使自己攻击力变为现在攻击力的2倍(持续半回合)" };
+small_skill[22].do = { mMp: -50, mBuff: 13, mBuffT: 1 };
+small_skill[23] = { id: 1023, name: "余震", state: 2, message: "被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合" };
+small_skill[23].do = { mBuff: 107, mBuffT: 1 };
+small_skill[24] = { id: 1024, name: "混乱之箭", state: 1, message: "随机对敌方造成1-200的伤害，并晕眩1-2回合" };
+small_skill[24].do = { mMp: -100, tHp: "Math.random()*200", tBuff: 0, tBuffT: "Math.random()*2" };
+small_skill[25] = { id: 1025, name: "实相裂隙", state: 1, mp: 30, message: "造成50+物理攻击的伤害" };
+small_skill[25].do = { mMp: -30, tHp: "50+mystate.attack" };
+small_skill[26] = { id: 1026, name: "致命一击", state: 2, message: "被动牌:攻击时有40%的概率双倍攻击(持续3回合)" };
+small_skill[26].do = { mBuff: 108, mBuffT: 6 };
+small_skill[27] = { id: 1027, name: "幽光之魂", state: 0, mp: 50, message: "对敌方造成130点伤害(可闪避)" };
+small_skill[27].do = { mMp: -50, tHp: "130" };
+small_skill[28] = { id: 1028, name: "压倒性优势", state: 0, mp: 80, message: "对敌方造成敌方手牌乘以30的伤害(可闪避)" };
+small_skill[28].do = { mMp: 80, tHp: "thatstate.cardid.length*30" };
+small_skill[29] = { id: 1029, name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
+small_skill[29].do = { mBuff: 109, mBuffT: 6 };
+small_skill[30] = { id: 1030, name: "强攻", state: 1, mp: 80, message: "回复100点生命值并造成物理攻击的伤害" };
+small_skill[30].do = { mMp: 80, mHp: 100, tHp: "mystate.attack" };
+small_skill[31] = { id: 1031, name: "冥火暴击", state: 0, mp: 100, message: "对敌方造成150点伤害并晕眩1回合(可闪避)" };
+small_skill[31].do = { mMp: -100, tHp: "150", tBuff: 0, tBuffT: 2 };
+small_skill[32] = { id: 1032, name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" };
+small_skill[32].do = { mBuff: 111, mBuffT: 6 };
+small_skill[33] = { id: 1033, name: "致死打击", state: 2, message: "被动牌:攻击时有60%的概率1.5倍攻击(持续3回合)" };
+small_skill[33].do = { mBuff: 112, mBuffT: 6 };
+small_skill[34] = { id: 1034, name: "嚎叫", state: 2, mp: 50, message: "本回合攻击加60" };
+small_skill[34].do = { mMp: -50, mBuff: 16, mBuffT: 2 };
+small_skill[35] = { id: 1035, name: "野性驱使", state: 2, message: "被动牌:攻击加30(持续3回合)" };
+small_skill[35].do = { mBuff: 113, mBuffT: 6 };
+small_skill[36] = { id: 1036, name: "酸性喷雾", state: 0, mp: 80, message: "三回合内降低敌方10点防御并造成50点伤害(可闪避)" };
+small_skill[36].do = { mMp: -80, tBuff: 73, tBuffT: 6 };
+small_skill[37] = { id: 1037, name: "不稳定物", state: 0, mp: 50, message: "50%使对方晕眩两回合50%使自己晕眩一回合(可闪避)" };
+small_skill[37].do = { special: true };
+small_skill[38] = { id: 1038, name: "地精贪婪", state: 2, message: "被动牌:每回合得到金钱数+10(持续3回合)" };
+small_skill[38].do = { mBuff: 114, mBuffT: 6 };
+small_skill[39] = { id: 1039, name: "暗影冲刺", state: 0, mp: 50, message: "对敌方造成60点伤害并眩晕半回合(可闪避)" };
+small_skill[39].do = { mMp: -50, tHp: "60", tBuff: 0, tBuffT: 1 };
+small_skill[40] = { id: 1040, name: "巨力重击", state: 2, message: "被动牌:攻击时有30%的概率使敌方晕眩一回合并附加40点攻击(持续3回合)" };
+small_skill[40].do = { tHp: "40", mBuff: 97, mBuffT: 6 };
+small_skill[41] = { id: 1041, name: "风暴之锤", state: 0, mp: 100, message: "对敌方造成100点伤害并晕眩一回合(可闪避)" };
+small_skill[41].do = { mMp: -100, tHp: "100", tBuff: 0, tBuffT: 2 };
+small_skill[42] = { id: 1042, name: "巨力挥舞", state: 2, message: "被动牌:普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)" };
+small_skill[42].do = { mBuff: 99, mBuffT: 6 };
+small_skill[43] = { id: 1043, name: "战吼", state: 2, mp: 30, message: "三回合内增加自身30点护甲" };
+small_skill[43].do = { mMp: -30, mBuff: 18, mBuffT: 6 };
+small_skill[44] = { id: 1044, name: "火焰气息", state: 0, mp: 90, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[44].do = { mMp: -90, tHp: "200" };
+small_skill[45] = { id: 1045, name: "神龙摆尾", state: 1, mp: 80, message: "对敌方造成50点伤害并晕眩一回合" };
+small_skill[45].do = { mMp: -80, tHp: "50", tBuff: 0, tBuffT: 2 };
+small_skill[46] = { id: 1046, name: "龙族血统", state: 2, message: "被动牌:每回合回复40点生命值(持续3回合)" };
+small_skill[46].do = { mBuff: 116, mBuffT: 6 };
+small_skill[47] = { id: 1047, name: "震荡波", state: 0, mp: 90, message: "对敌方造成200点伤害(可闪避)" };
+small_skill[47].do = { mMp: -90, tHp: "200" };
+small_skill[48] = { id: 1048, name: "授予力量", state: 2, mp: 50, message: "本回合内攻击加80" };
+small_skill[48].do = { mMp: -50, mBuff: 21, mBuffT: 2 };
+small_skill[49] = { id: 1049, name: "獠牙冲刺", state: 0, mp: 50, message: "对敌方造成100点伤害(可闪避)" };
+small_skill[49].do = { mMp: -50, tHp: "100" };
+small_skill[50] = { id: 1050, name: "吞噬", state: 2, mp: 100, message: "将对方的随机一张牌,转化为100金币" };
+small_skill[50].do = { special: true
+
+  // small_skill[51] = {id:1051,name:"焦土",state: 1 ,mp:80,message:"敌方掉80血，自己回复80血"}
+  // small_skill[51].do = {mMp:-80};
+  // small_skill[52] = {id:1052,name:"回音重踏",state: 0 ,mp:100,message:"使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态(可闪避)"}
+  // small_skill[52].do = {mMp:-100};
+  // small_skill[53] = {id:1053,name:"自然秩序",state: 2 ,message:"被动牌:使对方护甲归0"}
+  // small_skill[53].do = {mBuff:,mBuffT:}
+  // small_skill[54] = {id:1054,name:"洗礼",state: 0 ,mp:100,message:"回复自己100点生命值,并造成100伤害(可闪避)"}
+  // small_skill[54].do = {mMp:-100};
+  // small_skill[55] = {id:1055,name:"驱逐",state: 2 ,mp:50,message:"使自己魔免两回合，可以被散失"}
+  // small_skill[55].do = {mMp:-50,mBuff:,mBuffT:}
+  // small_skill[56] = {id:1056,name:"掘地穿刺",state: 0 ,mp:100,message:"对敌方造成100点伤害并晕眩一回合(可闪避)"}
+  // small_skill[56].do = {mMp:-100,tHp:"100"};
+  // small_skill[57] = {id:1057,name:"沙尘暴",state: 0 ,message:"对敌方造成40点伤害，敌方的下一回合不可以攻击自己(可闪避)"}
+  // small_skill[57].do = {tHp:"40"};
+  // small_skill[58] = {id:1058,name:"雷击",state: 1 ,message:"对敌方造成140点伤害"}
+  // small_skill[58].do = {tHp:"140"};
+  // small_skill[59] = {id:1059,name:"投掷",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
+  // small_skill[59].do = {tHp:"80"};
+  // small_skill[60] = {id:1060,name:"崎岖外表",state: 2 ,message:"被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合"}
+  // small_skill[60].do = {mBuff:,mBuffT:}
+  // small_skill[61] = {id:1061,name:"山崩",state: 0 ,message:"对敌方造成30点伤害并晕眩一回合(可闪避)"}
+  // small_skill[61].do = {tHp:"30"};
+  // small_skill[62] = {id:1062,name:"火焰风暴",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
+  // small_skill[62].do = {tHp:"90"};
+  // small_skill[63] = {id:1063,name:"怨念深渊",state: 0 ,message:"使对方晕眩半回合(可闪避)"}
+  // small_skill[63].do = {};
+  // small_skill[64] = {id:1064,name:"衰退光环",state: 2 ,message:"被动牌:减少对方50%攻击力"}
+  // small_skill[64].do = {mBuff:,mBuffT:}
+  // small_skill[65] = {id:1065,name:"活血术",state: 1 ,message:"增加自己当前攻击力的血量"}
+  // small_skill[65].do = {};
+  // small_skill[66] = {id:1066,name:"沸血之矛",state: 2 ,message:"消耗自身50点生命值使本回合内攻击加100"}
+  // small_skill[66].do = {mBuff:,mBuffT:}
+  // small_skill[67] = {id:1067,name:"狂战士之血",state: 2 ,message:"被动牌:血量低于50%时每次普通攻击可以不消耗能量格多攻击一次"}
+  // small_skill[67].do = {mBuff:,mBuffT:}
+  // small_skill[68] = {id:1068,name:"静电场",state: 2 ,message:"被动牌:每次释放任何技能都会对敌方造成40点伤害"}
+  // small_skill[68].do = {tHp:"40",mBuff:,mBuffT:}
+  // small_skill[69] = {id:1069,name:"腐朽",state: 0 ,message:"可以对敌方造成70点伤害(可闪避)"}
+  // small_skill[69].do = {tHp:"70"};
+  // small_skill[70] = {id:1070,name:"噬魂",state: 1 ,message:"造成己方和敌方手牌数的总和乘以15的伤害"}
+  // small_skill[70].do = {tHp:"己方和敌方手牌数的总和乘以15"};
+  // small_skill[71] = {id:1071,name:"狂暴",state: 2 ,message:"可以使自己魔免一回合"}
+  // small_skill[71].do = {mBuff:,mBuffT:}
+  // small_skill[72] = {id:1072,name:"盛宴",state: 2 ,message:"被动牌:普通攻击时将对方现有生命值的2%转化为自身生命"}
+  // small_skill[72].do = {mBuff:,mBuffT:}
+  // small_skill[73] = {id:1073,name:"撕裂伤口",state: 1 ,message:"本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命"}
+  // small_skill[73].do = {};
+  // small_skill[74] = {id:1074,name:"野性之斧",state: 0 ,message:"对敌方造成150点伤害(可闪避)"}
+  // small_skill[74].do = {tHp:"150"};
+  // small_skill[75] = {id:1075,name:"寄生种子",state: 1 ,message:"使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌"}
+  // small_skill[75].do = {};
+  // small_skill[76] = {id:1076,name:"活体护甲",state: 2 ,message:"受到物理伤害减少20点持续2回合每回合加40点血"}
+  // small_skill[76].do = {mBuff:,mBuffT:}
+  // small_skill[77] = {id:1077,name:"腐烂",state: 1 ,message:"自己掉100点血，对方掉180点血"}
+  // small_skill[77].do = {};
+  // small_skill[78] = {id:1078,name:"腐肉堆积",state: 2 ,message:"被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限"}
+  // small_skill[78].do = {mBuff:,mBuffT:}
+  // small_skill[79] = {id:1079,name:"雷霆一击",state: 0 ,message:"对敌方造成80点伤害"}
+  // small_skill[79].do = {tHp:"80"};
+  // small_skill[80] = {id:1080,name:"醉酒云雾",state: 1 ,message:"2回合内使敌方的普通攻击有75%的概率打不中"}
+  // small_skill[80].do = {};
+  // small_skill[81] = {id:1081,name:"醉拳",state: 2 ,message:"被动牌:受到普通攻击时有40%的概率mis"}
+  // small_skill[81].do = {mBuff:,mBuffT:}
+  // small_skill[82] = {id:1082,name:"虚空",state: 1 ,message:"对敌方造成130点伤害"}
+  // small_skill[82].do = {tHp:"130"};
+  // small_skill[83] = {id:1083,name:"伤残恐惧",state: 1 ,message:"使敌方2回合内不可以使用技能"}
+  // small_skill[83].do = {};
+  // small_skill[84] = {id:1084,name:"重击",state: 2 ,message:"被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害"}
+  // small_skill[84].do = {mBuff:,mBuffT:}
+  // small_skill[85] = {id:1085,name:"鱼人碎击",state: 0 ,message:"对敌方造成60点伤害并晕眩一回合(可闪避)"}
+  // small_skill[85].do = {tHp:"60"};
+  // small_skill[86] = {id:1086,name:"群星坠落",state: 0 ,message:"对敌方造成40加上敌方手牌乘10的伤害(可闪避)"}
+  // small_skill[86].do = {tHp:"40加上敌方手牌乘10"};
+  // small_skill[87] = {id:1087,name:"月神之箭",state: 0 ,message:"有50%的概率使敌方晕眩二回合(可闪避)"}
+  // small_skill[87].do = {};
+  // small_skill[88] = {id:1088,name:"波浪形态",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
+  // small_skill[88].do = {tHp:"70"};
+  // small_skill[89] = {id:1089,name:"变体攻击",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
+  // small_skill[89].do = {tHp:"50"};
+  // small_skill[90] = {id:1090,name:"法力损毁",state: 2 ,message:"被动牌:普通攻击成功后可以削减敌方一点能量值"}
+  // small_skill[90].do = {mBuff:,mBuffT:}
+  // small_skill[91] = {id:1091,name:"自杀攻击",state: 0 ,message:"对自己和敌方同时造成500点伤害(可闪避)"}
+  // small_skill[91].do = {tHp:"500"};
+  // small_skill[92] = {id:1092,name:"忽悠",state: 3 ,message:"可以闪避一次敌方的攻击"}
+  // small_skill[92].do = {};
+  // small_skill[93] = {id:1093,name:"地之突袭",state: 2 ,message:"被动牌:攻击力加30"}
+  // small_skill[93].do = {mBuff:,mBuffT:}
+  // small_skill[94] = {id:1094,name:"穿刺",state: 0 ,message:"造成70点伤害并晕眩敌方一回合(可闪避)"}
+  // small_skill[94].do = {tHp:"70"};
+  // small_skill[95] = {id:1095,name:"法力燃烧",state: 1 ,message:"减少敌方3点能量值"}
+  // small_skill[95].do = {};
+  // small_skill[96] = {id:1096,name:"带刺外壳",state: 2 ,message:"被动牌:每回合可以抵挡一次指向性法术"}
+  // small_skill[96].do = {mBuff:,mBuffT:}
+  // small_skill[97] = {id:1097,name:"魔法箭",state: 1 ,message:"造成80点伤害并晕眩敌方一回合"}
+  // small_skill[97].do = {tHp:"80"};
+  // small_skill[98] = {id:1098,name:"恐怖波动",state: 0 ,message:"减少敌方10点护甲并造成20点伤害(可闪避)"}
+  // small_skill[98].do = {tHp:"20"};
+  // small_skill[99] = {id:1099,name:"命令光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
+  // small_skill[99].do = {mBuff:,mBuffT:}
+  // small_skill[100] = {id:1100,name:"霜冻之箭",state: 1 ,message:"可以削减敌方2点能量值"}
+  // small_skill[100].do = {};
+  // small_skill[101] = {id:1101,name:"沉默魔法",state: 0 ,message:"敌方在一回合内不可以使用技能(可闪避)"}
+  // small_skill[101].do = {};
+  // small_skill[102] = {id:1102,name:"强击光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
+  // small_skill[102].do = {mBuff:,mBuffT:}
+  // small_skill[103] = {id:1103,name:"灵魂之矛",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
+  // small_skill[103].do = {tHp:"90"};
+  // small_skill[104] = {id:1104,name:"神出鬼没",state: 3 ,message:"可以闪避一次敌方的攻击"}
+  // small_skill[104].do = {};
+  // small_skill[105] = {id:1105,name:"磁场",state: 2 ,message:"使自己在两回合内物理免疫"}
+  // small_skill[105].do = {mBuff:,mBuffT:}
+  // small_skill[106] = {id:1106,name:"闪光冤魂",state: 0 ,message:"对敌方造成100点伤害(可闪避)"}
+  // small_skill[106].do = {tHp:"100"};
+  // small_skill[107] = {id:1107,name:"窒息之刃",state: 0 ,message:"对敌方造成30点伤害使用后回复一点能量值(可闪避)"}
+  // small_skill[107].do = {tHp:"30"};
+  // small_skill[108] = {id:1108,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
+  // small_skill[108].do = {};
+  // small_skill[109] = {id:1109,name:"模糊",state: 2 ,message:"被动牌:敌方在普通攻击你时有70%的概率mis"}
+  // small_skill[109].do = {mBuff:,mBuffT:}
+  // small_skill[110] = {id:1110,name:"火焰壁垒",state: 2 ,message:"被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值"}
+  // small_skill[110].do = {mBuff:,mBuffT:}
+  // small_skill[111] = {id:1111,name:"无影拳",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
+  // small_skill[111].do = {tHp:"70"};
+  // small_skill[112] = {id:1112,name:"榴霰弹",state: 0 ,message:"对敌方造成60点伤害(可闪避)"}
+  // small_skill[112].do = {tHp:"60"};
+  // small_skill[113] = {id:1113,name:"爆头",state: 2 ,message:"被动牌:攻击时有40%的概率附加100点伤害"}
+  // small_skill[113].do = {mBuff:,mBuffT:}
+  // small_skill[114] = {id:1114,name:"剑刃风暴",state: 0 ,message:"一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害(可闪避)"}
+  // small_skill[114].do = {tHp:"50"};
+  // small_skill[115] = {id:1115,name:"弧形闪电",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[115].do = {tHp:"80"};
+  // small_skill[116] = {id:1116,name:"剑舞",state: 2 ,message:"被动牌:攻击时有60%的概率1.5倍暴击"}
+  // small_skill[116].do = {mBuff:,mBuffT:}
+  // small_skill[117] = {id:1117,name:"狂战士之怒",state: 2 ,message:"被动牌:本回合内加70点攻击"}
+  // small_skill[117].do = {mBuff:,mBuffT:}
+  // small_skill[118] = {id:1118,name:"热血战魂",state: 2 ,message:"被动牌:加30点攻击"}
+  // small_skill[118].do = {mBuff:,mBuffT:}
+  // small_skill[119] = {id:1119,name:"旋风飞斧",state: 0 ,message:"对敌方造成40点伤害并使敌方攻击有30%的概率mis(可闪避)"}
+  // small_skill[119].do = {tHp:"40"};
+  // small_skill[120] = {id:1120,name:"肉钩",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
+  // small_skill[120].do = {tHp:"80"};
+  // small_skill[121] = {id:1121,name:"瘴气",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
+  // small_skill[121].do = {tHp:"70"};
+  // small_skill[122] = {id:1122,name:"毒刺",state: 2 ,message:"被动牌:攻击时对敌方额外造成20点伤害"}
+  // small_skill[122].do = {tHp:"20",mBuff:,mBuffT:}
+  // small_skill[123] = {id:1123,name:"扫射",state: 2 ,message:"攻击力加40"}
+  // small_skill[123].do = {mBuff:,mBuffT:}
+  // small_skill[124] = {id:1124,name:"灼热之箭",state: 2 ,message:"本回合内攻击加50"}
+  // small_skill[124].do = {mBuff:,mBuffT:}
+  // small_skill[125] = {id:1125,name:"变身",state: 2 ,message:"永久增加20点攻击力"}
+  // small_skill[125].do = {mBuff:,mBuffT:}
+  // small_skill[126] = {id:1126,name:"连击",state: 2 ,message:"被动牌:每次攻击降低敌方10点护甲"}
+  // small_skill[126].do = {mBuff:,mBuffT:}
+  // small_skill[127] = {id:1127,name:"蝗虫群",state: 1 ,message:"对敌方造成60点伤害并永久降低5点护甲"}
+  // small_skill[127].do = {tHp:"60"};
+  // small_skill[128] = {id:1128,name:"毒性攻击",state: 2 ,message:"被动牌:本回合攻击力加40"}
+  // small_skill[128].do = {mBuff:,mBuffT:}
+  // small_skill[129] = {id:1129,name:"幽冥剧毒",state: 2 ,message:"被动牌:敌方血量低于50%时,攻击附加50点伤害"}
+  // small_skill[129].do = {mBuff:,mBuffT:}
+  // small_skill[130] = {id:1130,name:"腐蚀外表",state: 2 ,message:"被动牌:受到敌方的任何攻击之后敌方会掉40点血"}
+  // small_skill[130].do = {mBuff:,mBuffT:}
+  // small_skill[131] = {id:1131,name:"等离子场",state: 2 ,message:"3回合内敌方每次对你使用指向性技能时会减少100点生命值"}
+  // small_skill[131].do = {mBuff:,mBuffT:}
+  // small_skill[132] = {id:1132,name:"静电连接",state: 1 ,message:"永久性减少敌方5点攻击,自己增加5点攻击"}
+  // small_skill[132].do = {};
+  // small_skill[133] = {id:1133,name:"投掷飞镖",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[133].do = {tHp:"80"};
+  // small_skill[134] = {id:1134,name:"忍术",state: 2 ,message:"被动牌:攻击时有40%的概率双倍暴击"}
+  // small_skill[134].do = {mBuff:,mBuffT:}
+  // small_skill[135] = {id:1135,name:"分裂箭",state: 2 ,message:"被动牌:攻击力增加敌方手牌数乘以15的数值"}
+  // small_skill[135].do = {mBuff:,mBuffT:}
+  // small_skill[136] = {id:1136,name:"秘术异蛇",state: 0 ,message:"造成敌手牌数乘以20的伤害(可闪避)"}
+  // small_skill[136].do = {tHp:"敌手牌数乘以20"};
+  // small_skill[137] = {id:1137,name:"魔法护盾",state: 2 ,message:"被动牌:受到伤害时一点能量值可以抵挡一次伤害"}
+  // small_skill[137].do = {mBuff:,mBuffT:}
+  // small_skill[138] = {id:1138,name:"折光",state: 2 ,message:"5回合内抵挡4次伤害"}
+  // small_skill[138].do = {mBuff:,mBuffT:}
+  // small_skill[139] = {id:1139,name:"黑暗契约",state: 2 ,message:"下回合双方损失50点生命值,可以清除自己身上所有状态"}
+  // small_skill[139].do = {mBuff:,mBuffT:}
+  // small_skill[140] = {id:1140,name:"能量转换",state: 2 ,message:"被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击"}
+  // small_skill[140].do = {mBuff:,mBuffT:}
+  // small_skill[141] = {id:1141,name:"超级力量",state: 2 ,message:"3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害"}
+  // small_skill[141].do = {tHp:"自己攻击乘2",mBuff:,mBuffT:}
+  // small_skill[142] = {id:1142,name:"怒意狂击",state: 2 ,message:"被动牌:每次普通攻击成功后攻击力会增加20"}
+  // small_skill[142].do = {mBuff:,mBuffT:}
+  // small_skill[143] = {id:1143,name:"回到过去",state: 2 ,message:"被动牌:受到任何攻击时有25%的概率免疫"}
+  // small_skill[143].do = {mBuff:,mBuffT:}
+  // small_skill[144] = {id:1144,name:"时间锁定",state: 2 ,message:"被动牌:普通攻击时有25%的概率使敌方晕眩一回合"}
+  // small_skill[144].do = {mBuff:,mBuffT:}
+  // small_skill[145] = {id:1145,name:"血之狂暴",state: 1 ,message:"使敌方2回合内无法使用技能"}
+  // small_skill[145].do = {};
+  // small_skill[146] = {id:1146,name:"屠戮",state: 2 ,message:"被动牌:敌方每减少一张牌会使自己增加30点生命值"}
+  // small_skill[146].do = {mBuff:,mBuffT:}
+  // small_skill[147] = {id:1147,name:"嗜血渴望",state: 2 ,message:"被动牌:敌方血量低于50%时，自己增加50点攻击"}
+  // small_skill[147].do = {mBuff:,mBuffT:}
+  // small_skill[148] = {id:1148,name:"烟幕",state: 0 ,message:"使敌方在1回合内攻击有75%的概率mis,并不可以使用技能(可闪避)"}
+  // small_skill[148].do = {};
+  // small_skill[149] = {id:1149,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
+  // small_skill[149].do = {};
+  // small_skill[150] = {id:1150,name:"魔王降临",state: 2 ,message:"被动牌:减少敌方20点护甲"}
+  // small_skill[150].do = {mBuff:,mBuffT:}
+  // small_skill[151] = {id:1151,name:"毁灭阴影",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
+  // small_skill[151].do = {tHp:"90"};
+  // small_skill[152] = {id:1152,name:"支配死灵",state: 2 ,message:"被动牌:敌方每减少一张牌,你可以永久增加2点攻击"}
+  // small_skill[152].do = {mBuff:,mBuffT:}
+  // small_skill[153] = {id:1153,name:"幽鬼之刃",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
+  // small_skill[153].do = {tHp:"80"};
+  // small_skill[154] = {id:1154,name:"荒芜",state: 2 ,message:"被动牌:增加30点攻击"}
+  // small_skill[154].do = {mBuff:,mBuffT:}
+  // small_skill[155] = {id:1155,name:"折射",state: 2 ,message:"被动牌:反弹自己受到一切伤害的25%"}
+  // small_skill[155].do = {mBuff:,mBuffT:}
+  // small_skill[156] = {id:1156,name:"麻痹撕咬",state: 2 ,message:"被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis"}
+  // small_skill[156].do = {mBuff:,mBuffT:}
+  // small_skill[157] = {id:1157,name:"月光",state: 1 ,message:"对敌方造成90点伤害"}
+  // small_skill[157].do = {tHp:"90"};
+  // small_skill[158] = {id:1158,name:"月之祝福",state: 2 ,message:"被动牌:攻击力加60"}
+  // small_skill[158].do = {mBuff:,mBuffT:}
+  // small_skill[159] = {id:1159,name:"月刃",state: 2 ,message:"被动牌:攻击力加敌方手牌数乘10的数值"}
+  // small_skill[159].do = {mBuff:,mBuffT:}
+  // small_skill[160] = {id:1160,name:"高射火炮",state: 2 ,message:"本回合内攻击增加70"}
+  // small_skill[160].do = {mBuff:,mBuffT:}
+  // small_skill[161] = {id:1161,name:"追踪导弹",state: 0 ,message:"造成160点伤害(可闪避)"}
+  // small_skill[161].do = {tHp:"160"};
+  // small_skill[162] = {id:1162,name:"灵魂猎手",state: 0 ,message:"一回合内使敌方额外承受25%的伤害(可闪避)"}
+  // small_skill[162].do = {};
+  // small_skill[163] = {id:1163,name:"薄葬",state: 2 ,message:"三回合内不会死亡"}
+  // small_skill[163].do = {mBuff:,mBuffT:}
+  // small_skill[164] = {id:1164,name:"暗影波",state: 0 ,message:"回复自己手牌数乘以25点的生命(可闪避)"}
+  // small_skill[164].do = {};
+  // small_skill[165] = {id:1165,name:"叉形闪电",state: 1 ,message:"对敌方造成90点伤害"}
+  // small_skill[165].do = {tHp:"90"};
+  // small_skill[166] = {id:1166,name:"妖术",state: 1 ,message:"将敌方变成小羊,持续1回合"}
+  // small_skill[166].do = {};
+  // small_skill[167] = {id:1167,name:"枷锁",state: 1 ,message:"自己摸一张牌,敌方受到50点伤害"}
+  // small_skill[167].do = {};
+  // small_skill[168] = {id:1168,name:"烈焰破击",state: 0 ,message:"对敌方造成100点伤害(可闪避)"}
+  // small_skill[168].do = {tHp:"100"};
+  // small_skill[169] = {id:1169,name:"冰霜新星",state: 0 ,message:"对敌方造成60点伤害(可闪避)"}
+  // small_skill[169].do = {tHp:"60"};
+  // small_skill[170] = {id:1170,name:"冰封禁制",state: 1 ,message:"对敌方造成30点伤害并晕眩一回合"}
+  // small_skill[170].do = {tHp:"30"};
+  // small_skill[171] = {id:1171,name:"辉煌光环",state: 2 ,message:"被动牌:每回合可以额外回复1点能量值"}
+  // small_skill[171].do = {mBuff:,mBuffT:}
+  // small_skill[172] = {id:1172,name:"静默诅咒",state: 1 ,message:"减少敌方1点能量值"}
+  // small_skill[172].do = {};
+  // small_skill[173] = {id:1173,name:"智慧之刃",state: 2 ,message:"本回合内攻击力增加自己能量值乘以20的数值"}
+  // small_skill[173].do = {mBuff:,mBuffT:}
+  // small_skill[174] = {id:1174,name:"遗言",state: 1 ,message:"对敌方造成60点伤害,并沉默1回合"}
+  // small_skill[174].do = {tHp:"60"};
+  // small_skill[175] = {id:1175,name:"弱化能流",state: 1 ,message:"永久减少敌方10点攻击"}
+  // small_skill[175].do = {};
+  // small_skill[176] = {id:1176,name:"激光",state: 1 ,message:"造成100点伤害并使敌方下1回合攻击100%mis"}
+  // small_skill[176].do = {tHp:"100"};
+  // small_skill[177] = {id:1177,name:"热导飞弹",state: 0 ,message:"造成100点伤害(可闪避)"}
+  // small_skill[177].do = {tHp:"100"};
+  // small_skill[178] = {id:1178,name:"法力汲取",state: 1 ,message:"减少敌方两点能量格,自己增加两点能量格"}
+  // small_skill[178].do = {};
+  // small_skill[179] = {id:1179,name:"超负荷",state: 2 ,message:"被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击"}
+  // small_skill[179].do = {mBuff:,mBuffT:}
+  // small_skill[180] = {id:1180,name:"束缚之箭",state: 1 ,message:"造成40点伤害晕眩敌方半回合"}
+  // small_skill[180].do = {tHp:"40"};
+  // small_skill[181] = {id:1181,name:"强力一击",state: 0 ,message:"造成100点伤害(可闪避)"}
+  // small_skill[181].do = {tHp:"100"};
+  // small_skill[182] = {id:1182,name:"冲击波",state: 0 ,message:"造成130点伤害"}
+  // small_skill[182].do = {tHp:"130"};
+  // small_skill[183] = {id:1183,name:"法力流失",state: 1 ,message:"3回合内敌方任何攻击所需能量值加1"}
+  // small_skill[183].do = {};
+  // small_skill[184] = {id:1184,name:"查克拉魔法",state: 1 ,message:"瞬间将自身能量值回满"}
+  // small_skill[184].do = {};
+  // small_skill[185] = {id:1185,name:"严寒烧灼",state: 2 ,message:"2回合内增加敌方现有生命值2%的攻击力"}
+  // small_skill[185].do = {mBuff:,mBuffT:}
+  // small_skill[186] = {id:1186,name:"碎裂冲击",state: 0 ,message:"造成100点伤害(可闪避)"}
+  // small_skill[186].do = {tHp:"100"};
+  // small_skill[187] = {id:1187,name:"极寒之拥",state: 2 ,message:"使自己加100点护甲回复100点生命,但本回合不可以再出牌"}
+  // small_skill[187].do = {mBuff:,mBuffT:}
+  // small_skill[188] = {id:1188,name:"离子外壳",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[188].do = {tHp:"80"};
+  // small_skill[189] = {id:1189,name:"凤凰冲击",state: 3 ,message:"减少自身100点生命值，闪避对方一次攻击"}
+  // small_skill[189].do = {};
+  // small_skill[190] = {id:1190,name:"秘法天球",state: 2 ,message:"本回合增加能量值乘以25的攻击力"}
+  // small_skill[190].do = {mBuff:,mBuffT:}
+  // small_skill[191] = {id:1191,name:"星体禁锢",state: 1 ,message:"使对方减少2点能量格,并轮空一回合"}
+  // small_skill[191].do = {};
+  // small_skill[192] = {id:1192,name:"精气光环",state: 2 ,message:"被动牌:释放技能时有50%的概率加1点能量值"}
+  // small_skill[192].do = {mBuff:,mBuffT:}
+  // small_skill[193] = {id:1193,name:"龙破斩",state: 0 ,message:"造成100点伤害(可闪避)"}
+  // small_skill[193].do = {tHp:"100"};
+  // small_skill[194] = {id:1194,name:"光击阵",state: 0 ,message:"造成80点伤害并晕眩1回合(可闪避)"}
+  // small_skill[194].do = {tHp:"80"};
+  // small_skill[195] = {id:1195,name:"寒冰之触",state: 1 ,message:"对敌方造成80点伤害并晕眩半回合"}
+  // small_skill[195].do = {tHp:"80"};
+  // small_skill[196] = {id:1196,name:"火焰爆轰",state: 1 ,message:"造成80点伤害并晕眩敌方1回合"}
+  // small_skill[196].do = {tHp:"80"};
+  // small_skill[197] = {id:1197,name:"引燃",state: 1 ,message:"造成150点伤害"}
+  // small_skill[197].do = {tHp:"150"};
+  // small_skill[198] = {id:1198,name:"嗜血术",state: 2 ,message:"3回合内增加自己30点攻击力"}
+  // small_skill[198].do = {mBuff:,mBuffT:}
+  // small_skill[199] = {id:1199,name:"憎恶",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
+  // small_skill[199].do = {tHp:"50"};
+  // small_skill[200] = {id:1200,name:"午夜凋零",state: 0 ,message:"造成80点伤害(可闪避)"}
+  // small_skill[200].do = {tHp:"80"};
+  // small_skill[201] = {id:1201,name:"命运赦令",state: 1 ,message:"使敌方1回合不可以攻击并且所受的物理伤害增加100%"}
+  // small_skill[201].do = {};
+  // small_skill[202] = {id:1202,name:"涤罪之焰",state: 1 ,message:"对敌方造成150点伤害"}
+  // small_skill[202].do = {tHp:"150"};
+  // small_skill[203] = {id:1203,name:"忠诚考验",state: 1 ,message:"随机对敌方造成50-300点伤害"}
+  // small_skill[203].do = {tHp:"50-300"};
+  // small_skill[204] = {id:1204,name:"麻痹陷阱",state: 0 ,message:"对敌方晕眩一回合(可闪避)"}
+  // small_skill[204].do = {};
+  // small_skill[205] = {id:1205,name:"恶魔赦令",state: 1 ,message:"三回合内每回合对敌方造成80点伤害"}
+  // small_skill[205].do = {tHp:"80"};
+  // small_skill[206] = {id:1206,name:"致命连接",state: 1 ,message:"本回合内对敌方额外造成手牌数0.1倍技能伤害 "}
+  // small_skill[206].do = {};
+  // small_skill[207] = {id:1207,name:"暗言术",state: 1 ,message:"使己方回复100点生命值并对敌方造成100点伤害"}
+  // small_skill[207].do = {tHp:"100"};
+  // small_skill[208] = {id:1208,name:"冰火交加",state: 0 ,message:"对敌方造成150点伤害(可闪避)"}
+  // small_skill[208].do = {tHp:"150"};
+  // small_skill[209] = {id:1209,name:"冰封路径",state: 0 ,message:"使敌方晕眩一回合(可闪避)"}
+  // small_skill[209].do = {};
+  // small_skill[210] = {id:1210,name:"液态火",state: 1 ,message:"对敌方造成150点伤害"}
+  // small_skill[210].do = {tHp:"150"};
+  // small_skill[211] = {id:1211,name:"死亡脉冲",state: 0 ,message:"对敌方造成100点伤害，同时回复100点生命值(可闪避)"}
+  // small_skill[211].do = {tHp:"100"};
+  // small_skill[212] = {id:1212,name:"竭心光环",state: 2 ,message:"被动牌:每回合减少敌方2%生命值"}
+  // small_skill[212].do = {mBuff:,mBuffT:}
+  // small_skill[213] = {id:1213,name:"施虐之心",state: 2 ,message:"被动牌:每对敌方造成200点伤害回复1点能量格和100点生命"}
+  // small_skill[213].do = {tHp:"200",mBuff:,mBuffT:}
+  // small_skill[214] = {id:1214,name:"灵魂超度",state: 0 ,message:"对敌方造成自己损失血量10%的伤害(可闪避)"}
+  // small_skill[214].do = {tHp:"自己损失血量10%"};
+  // small_skill[215] = {id:1215,name:"食腐蝙群",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
+  // small_skill[215].do = {tHp:"200"};
+  // small_skill[216] = {id:1216,name:"上古封印",state: 0 ,message:"使敌方承受1.5倍魔法伤害，并使敌方沉默一回合(可闪避)"}
+  // small_skill[216].do = {};
+  // small_skill[217] = {id:1217,name:"奥术箭",state: 0 ,message:"对敌方造成50*其能量格的伤害(可闪避)"}
+  // small_skill[217].do = {tHp:"50*其能量格"};
+  // small_skill[218] = {id:1218,name:"暗影突袭",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
+  // small_skill[218].do = {tHp:"200"};
+  // small_skill[219] = {id:1219,name:"闪烁",state: 3 ,message:"可闪避敌方一次技能，对无视闪避技能无效"}
+  // small_skill[219].do = {};
+  // small_skill[220] = {id:1220,name:"痛苦尖叫",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
+  // small_skill[220].do = {tHp:"200"};
+  // small_skill[221] = {id:1221,name:"虚弱",state: 1 ,message:"3回合内降低敌方30点攻击力"}
+  // small_skill[221].do = {};
+  // small_skill[222] = {id:1222,name:"蚀脑",state: 1 ,message:"对敌方造成200点伤害，同时回复100点生命值"}
+  // small_skill[222].do = {tHp:"200"};
+  // small_skill[223] = {id:1223,name:"噩梦",state: 1 ,message:"使敌方沉睡一回合不能摸牌，己方也不能进行攻击"}
+  // small_skill[223].do = {};
+  // small_skill[224] = {id:1224,name:"霜冻新星",state: 1 ,message:"对地敌方造成200点伤害"}
+  // small_skill[224].do = {tHp:"200"};
+  // small_skill[225] = {id:1225,name:"霜冻护甲",state: 2 ,message:"2回合内增加20点护甲"}
+  // small_skill[225].do = {mBuff:,mBuffT:}
+  // small_skill[226] = {id:1226,name:"邪恶祭祀",state: 1 ,message:"消耗50点生命，回复3点能量"}
+  // small_skill[226].do = {};
+  // small_skill[227] = {id:1227,name:"麻痹药剂",state: 0 ,message:"使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合(可闪避)"}
+  // small_skill[227].do = {};
+  // small_skill[228] = {id:1228,name:"巫毒回复术",state: 1 ,message:"回复150点生命"}
+  // small_skill[228].do = {};
+  // small_skill[229] = {id:1229,name:"诅咒",state: 0 ,message:"使敌方3回合后受到3回合内受到总伤害的25%(可闪避)"}
+  // small_skill[229].do = {};
+  // small_skill[230] = {id:1230,name:"相位转移",state: 3 ,message:"免疫一次任何伤害"}
+  // small_skill[230].do = {};
+  // small_skill[231] = {id:1231,name:"新月之痕",state: 0 ,message:"对敌方造成100点伤害并使对方沉默一回合(可闪避)"}
+  // small_skill[231].do = {tHp:"100"};
+  // small_skill[232] = {id:1232,name:"不可侵犯",state: 2 ,message:"被动牌:使对方普通攻击时消耗双倍能量格"}
+  // small_skill[232].do = {mBuff:,mBuffT:}
+  // small_skill[233] = {id:1233,name:"自然之助",state: 1 ,message:"回复自身200点生命值"}
+  // small_skill[233].do = {};
+  // small_skill[234] = {id:1234,name:"幽冥爆轰",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
+  // small_skill[234].do = {tHp:"200"};
+  // small_skill[235] = {id:1235,name:"幽冥守卫",state: 1 ,message:"对敌方造成敌方消耗能量格*100的伤害"}
+  // small_skill[235].do = {tHp:"敌方消耗能量格*100"};
+  // small_skill[236] = {id:1236,name:"衰老",state: 1 ,message:"使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害"}
+  // small_skill[236].do = {};
+  // small_skill[237] = {id:1237,name:"雷霆之击",state: 1 ,message:"对敌方造成200点伤害"}
+  // small_skill[237].do = {tHp:"200"};
+
+};module.exports = { big_skill: big_skill, small_skill: small_skill };
 
 /***/ }),
 /* 50 */

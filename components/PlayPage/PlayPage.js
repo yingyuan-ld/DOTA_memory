@@ -22,8 +22,9 @@ class PlayPage extends React.Component{
         }
         if(this.props.round==0&&newProps.round==1){//你的回合开始
             let mystate = this.props.mystate;
-            mystate.Hp = mystate.Hp+mystate.Hprecove>mystate.maxHp?mystate.maxHp:mystate.Hp+mystate.Hprecov;//生命值恢复
-            mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Mprecov;//魔法值恢复
+            mystate.Hp = mystate.Hp+mystate.Hprecove>mystate.maxHp?mystate.maxHp:mystate.Hp+mystate.Hprecove;//生命值恢复
+            mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Hprecove;//魔法值恢复
+            mystate.attackAccount += mystate.attackRecove//普攻恢复
             mystate.money+=mystate.moneyrecove;//金钱
             let messagelist = this.props.messagelist;
             let small_speed = this.props.small_speed;
@@ -68,6 +69,7 @@ class PlayPage extends React.Component{
                 small_cardheap:small_cardheap,
                 big_cardheap:big_cardheap,
                 round:1,
+                attackAccount:1,
                 messagelist:["你是先手"],
                 small_speed:11,
                 mystate:mystate,
