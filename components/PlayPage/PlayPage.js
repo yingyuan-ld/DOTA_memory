@@ -63,13 +63,13 @@ class PlayPage extends React.Component{
             //抓牌↓
             let mystate = this.props.mystate;
             mystate.money = 100;
+            mystate.attackAccount = 1,
             mystate.cardid = small_cardheap.slice(0,6);
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({
                 small_cardheap:small_cardheap,
                 big_cardheap:big_cardheap,
                 round:1,
-                attackAccount:1,
                 messagelist:["你是先手"],
                 small_speed:11,
                 mystate:mystate,

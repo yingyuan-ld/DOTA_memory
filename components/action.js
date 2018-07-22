@@ -129,6 +129,29 @@ function check_round (props){//判断回合
         return [true,props];
     }
 }
+function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
+    let bufflist = props[MorT].buff;
+    let bufflistTime = props[MorT].buffTime;
+    buff.map((buffkey,i)=>{//i
+        let needadd = true;
+        for(let I = bufflist.length-1;I>=0;I--){//I
+            if(bufflist[I]==buffkey){
+                bufflist.splice(I,1);
+                bufflist.push(buffkey);
+                let oldT = bufflistTime.splice(I,1)[0];
+                bufflistTime.push(buffT[i]>oldT?buffT[i]:oldT);
+            }
+        }
+        if(needadd){
+            bufflist.push(buff[i]);
+            bufflistTime.push(buffT[i]);
+        }
+        Object.assign(props.thatstate.buffObj, buffObj);
+    });
+    props[MorT].buff = bufflist;
+    props[MorT].buffTime = bufflistTime;
+    return props;
+}
 function check_myBuff (props){//释放技能判定 己方负面状态
     const debuff_doskill = {
         0:"晕眩",
@@ -193,6 +216,10 @@ function check_buffToSkill (props,card){
                 if(Math.random()>0.5){
                     card.do.tHp = parseInt(card.do.tHp*1.5);
                 }
+                break;
+            case 107://余震 半合内自己使用任何技能都会使敌方眩晕半回合
+                card.do.tBuff.push(0);
+                card.do.tBuffT.push(1);
                 break;
         }
     });
@@ -292,21 +319,31 @@ function docard(props,card){
                 props.thatstate.Hp -=value;
                 break;
             case "mBuff":
-                props.mystate.buff.push(value);
+                // if(typeof value=="object"){//buff 可能是数字 可能是数组,这是个临时的逻辑
+                    props = addBuff(props,"mystate",card.do.mBuff,card.do.mBuffT,card.do.mBuffObj)//添加buff方法
+                // }else{
+                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
+                //     props.mystate.buff.push(value);
+                // }
                 break;
             case "mBuffT":
-                props.mystate.buffTime.push(value);
-                break;
-            case "tBuff":
-                props.thatstate.buff.push(value);
-                break;
-            case "tBuffT":
-                props.thatstate.buffTime.push(value);
+                // if(typeof card.do.mBuff!="object")props.mystate.buffTime.push(value);
                 break;
             case "mBuffObj":
-                Object.assign(props.mystate.buffObj, value);
+                // if(typeof card.do.mBuff!="object")Object.assign(props.mystate.buffObj, value);
+            case "tBuff":
+                // if(typeof value=="object"){
+                    props = addBuff(props,"thatstate",value,card.do.tBuffT,card.do.tBuffObj)//添加buff方法
+                // }else{
+                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
+                //     props.thatstate.buff.push(value);
+                // }
+                break;
+            case "tBuffT":
+                // if(typeof card.do.tBuff!="object")props.thatstate.buffTime.push(value);
+                break;
             case "tBuffObj":
-                Object.assign(props.thatstate.buffObj, value);
+                // if(typeof card.do.tBuff!="object")Object.assign(props.thatstate.buffObj, value);
                 break;
             case "special":
                 specialcard(props,card);
@@ -348,7 +385,7 @@ export function doAttack (props){//物理攻击方法
                 props.mystate.Mp +=value;
                 break;
             case "mHp":
-                props.mystate.Hp +=value;
+                props.mystate.Hp =(props.mystate.Hp+value)>props.mystate.maxHp?props.mystate.maxHp:props.mystate.Hp+value;
                 break;
             case "tMp":
                 props.thatstate.Mp +=value;
@@ -357,21 +394,31 @@ export function doAttack (props){//物理攻击方法
                 props.thatstate.Hp -=value;
                 break;
             case "mBuff":
-                props.mystate.buff.push(value);
+                // if(typeof value=="object"){//buff 可能是数字 可能是数组,这是个临时的逻辑
+                    props = addBuff(props,"mystate",Attack.mBuff,Attack.mBuffT,Attack.mBuffObj)//添加buff方法
+                // }else{
+                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
+                //     props.mystate.buff.push(value);
+                // }
                 break;
             case "mBuffT":
-                props.mystate.buffTime.push(value);
-                break;
-            case "tBuff":
-                props.thatstate.buff.push(value);
-                break;
-            case "tBuffT":
-                props.thatstate.buffTime.push(value);
+                // if(typeof Attack.mBuff!="object")props.mystate.buffTime.push(value);
                 break;
             case "mBuffObj":
-                Object.assign(props.mystate.buffObj, value);
+                // if(typeof Attack.mBuff!="object")Object.assign(props.mystate.buffObj, value);
+            case "tBuff":
+                // if(typeof value=="object"){
+                    props = addBuff(props,"thatstate",value,Attack.tBuffT,Attack.tBuffObj)//添加buff方法
+                // }else{
+                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
+                //     props.thatstate.buff.push(value);
+                // }
+                break;
+            case "tBuffT":
+                // if(typeof Attack.tBuff!="object")props.thatstate.buffTime.push(value);
+                break;
             case "tBuffObj":
-                Object.assign(props.thatstate.buffObj, value);
+                // if(typeof Attack.tBuff!="object")Object.assign(props.thatstate.buffObj, value);
                 break;
         }
     }
@@ -555,7 +602,6 @@ function attackAfter(props,Attack){
     }
     return [Attack,props];
 }
-
 
 
 
