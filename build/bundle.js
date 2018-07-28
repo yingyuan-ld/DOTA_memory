@@ -1029,7 +1029,7 @@ function addBuff(props, MorT, buff, buffT, buffObj) {
             bufflist.push(buff[i]);
             bufflistTime.push(buffT[i]);
         }
-        Object.assign(props.thatstate.buffObj, buffObj);
+        Object.assign(props[MorT].buffObj, buffObj);
     });
     props[MorT].buff = bufflist;
     props[MorT].buffTime = bufflistTime;
@@ -1098,6 +1098,20 @@ function check_checkMp(props, card) {
 function check_buffToSkill(props, card) {
     var mystate = props.mystate;
     var thatstate = props.thatstate;
+    //// 排除undefind影响
+    // let standardDO = {
+    //     mMp:0,
+    //     mHp:0,
+    //     tMp:0,
+    //     tHp:0,
+    //     mBuff:"",
+    //     mBuffT:"",
+    //     mBuffObj:"",
+    //     tBuff:"",
+    //     tBuffT:"",
+    //     tBuffObj:"",
+    // }
+    // Object.assign(standardDO,card.do);
     mystate.buff.map(function (buffid) {
         //
         switch (buffid) {
@@ -1109,8 +1123,8 @@ function check_buffToSkill(props, card) {
                 break;
             case 107:
                 //余震 半合内自己使用任何技能都会使敌方眩晕半回合
-                card.do.tBuff.push(0);
-                card.do.tBuffT.push(1);
+                card.do.tBuff = card.do.tBuff ? card.do.tBuff.push(0) : [0];
+                card.do.tBuffT = card.do.tBuffT ? card.do.tBuffT.push(1) : [1];
                 break;
         }
     });
@@ -1123,8 +1137,8 @@ function check_buffToSkill(props, card) {
                 break;
             case 8:
                 //无光之盾
-                if (thatstate.buffObj[8] > card.do.tHp) {
-                    Object.assign(card.do.tBuffObj, { 8: thatstate.buffObj[8] -= card.do.tHp });
+                if (thatstate.buffObj[8] > (card.do.tHp || 0)) {
+                    Object.assign(card.do.tBuffObj || {}, { 8: thatstate.buffObj[8] -= card.do.tHp });
                     card.do.tHp = 0;
                 } else {
                     card.do.tHp = card.do.tHp - thatstate.buffObj[8];
@@ -1257,34 +1271,13 @@ function docard(props, card) {
                 props.thatstate.Mp += value;
                 break;
             case "tHp":
-                props.thatstate.Hp -= value;
+                props.thatstate.Hp -= value * 10;
                 break;
             case "mBuff":
-                // if(typeof value=="object"){//buff 可能是数字 可能是数组,这是个临时的逻辑
                 props = addBuff(props, "mystate", card.do.mBuff, card.do.mBuffT, card.do.mBuffObj); //添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.mystate.buff.push(value);
-                // }
                 break;
-            case "mBuffT":
-                // if(typeof card.do.mBuff!="object")props.mystate.buffTime.push(value);
-                break;
-            case "mBuffObj":
-            // if(typeof card.do.mBuff!="object")Object.assign(props.mystate.buffObj, value);
             case "tBuff":
-                // if(typeof value=="object"){
                 props = addBuff(props, "thatstate", value, card.do.tBuffT, card.do.tBuffObj); //添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.thatstate.buff.push(value);
-                // }
-                break;
-            case "tBuffT":
-                // if(typeof card.do.tBuff!="object")props.thatstate.buffTime.push(value);
-                break;
-            case "tBuffObj":
-                // if(typeof card.do.tBuff!="object")Object.assign(props.thatstate.buffObj, value);
                 break;
             case "special":
                 specialcard(props, card);
@@ -1380,34 +1373,13 @@ function doAttack(props) {
                 props.thatstate.Mp += value;
                 break;
             case "tHp":
-                props.thatstate.Hp -= value;
+                props.thatstate.Hp -= value * 10;
                 break;
             case "mBuff":
-                // if(typeof value=="object"){//buff 可能是数字 可能是数组,这是个临时的逻辑
                 props = addBuff(props, "mystate", Attack.mBuff, Attack.mBuffT, Attack.mBuffObj); //添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.mystate.buff.push(value);
-                // }
                 break;
-            case "mBuffT":
-                // if(typeof Attack.mBuff!="object")props.mystate.buffTime.push(value);
-                break;
-            case "mBuffObj":
-            // if(typeof Attack.mBuff!="object")Object.assign(props.mystate.buffObj, value);
             case "tBuff":
-                // if(typeof value=="object"){
                 props = addBuff(props, "thatstate", value, Attack.tBuffT, Attack.tBuffObj); //添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.thatstate.buff.push(value);
-                // }
-                break;
-            case "tBuffT":
-                // if(typeof Attack.tBuff!="object")props.thatstate.buffTime.push(value);
-                break;
-            case "tBuffObj":
-                // if(typeof Attack.tBuff!="object")Object.assign(props.thatstate.buffObj, value);
                 break;
         }
     }
@@ -1585,8 +1557,8 @@ function attackAfter(props, Attack) {
                 break;
             case 8:
                 //无光之盾
-                if (thatstate.buffObj[8] > card.do.tHp) {
-                    Object.assign(card.do.tBuffObj, { 8: thatstate.buffObj[8] -= card.do.tHp });
+                if (thatstate.buffObj[8] > (Attack.tHp || 0)) {
+                    Object.assign(Attack.tBuffObj || {}, { 8: thatstate.buffObj[8] -= Attack.tHp });
                     Attack.tHp = 0;
                 } else {
                     Attack.tHp = Attack.tHp - thatstate.buffObj[8];
@@ -1606,7 +1578,7 @@ function attackAfter(props, Attack) {
                 break;
             case 103:
                 //活性护甲
-                Object.assign(Attack.tBuffObj, { 103: thatstate.buffObj[103] + 1 });
+                Object.assign(Attack.tBuffObj || {}, { 103: thatstate.buffObj[103] + 1 });
                 break;
         }
     }
@@ -4372,6 +4344,7 @@ var HeroPlaceMy = function (_React$Component) {
             var messagelist = this.props.messagelist;
             messagelist.push("结束回合");
             var mystate = this.props.mystate;
+            mystate.attackAccount = ("." + mystate.attackAccount * 100 % 100) * 1; //攻击机会重置
             for (var i = 0; i < mystate.buff.length;) {
                 //状态处理
                 if (mystate.buffTime[i] == 1) {
@@ -4393,6 +4366,16 @@ var HeroPlaceMy = function (_React$Component) {
                     message: "对方回合结束，现在是你的回合"
                 }
             });
+        }
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            //判断游戏结束
+            if (this.props.mystate.Hp <= 0) {
+                alert("你输了");
+                console.info("你输了");
+                this.props.next_process({ progress_state: 1 });
+            }
         }
     }, {
         key: 'render',
@@ -4426,7 +4409,7 @@ var HeroPlaceMy = function (_React$Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'HP' },
-                        basic.Hp + "/" + basic.maxHp + "+" + basic.Hprecove
+                        (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove
                     ),
                     _react2.default.createElement(
                         'div',
@@ -4609,6 +4592,16 @@ var HeroPlaceThat = function (_React$Component) {
             });
         }
     }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            //判断游戏结束
+            if (this.props.thatstate.Hp <= 0) {
+                alert("你赢了");
+                console.info("你赢了");
+                prevProps.next_process({ progress_state: 1 });
+            }
+        }
+    }, {
         key: 'render',
         value: function render() {
             var basic = this.props.thatstate;
@@ -4637,7 +4630,7 @@ var HeroPlaceThat = function (_React$Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'HP' },
-                        basic.Hp + "/" + basic.maxHp + "+" + basic.Hprecove + "/s"
+                        (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove + "/s"
                     ),
                     _react2.default.createElement(
                         'div',
@@ -23425,9 +23418,6 @@ var Component = function (_React$Component) {
     }
 
     _createClass(Component, [{
-        key: "componentWillMount",
-        value: function componentWillMount() {}
-    }, {
         key: "next_process",
         value: function next_process(newdata) {
             //进行到下一个流程
@@ -24287,6 +24277,10 @@ var PlayPage = function (_React$Component) {
                 var mystate = this.props.mystate;
                 mystate.money = 100;
                 mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
+
+                mystate.cardid[0] = { id: 1023, name: "余震", state: 2, message: "被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合" };
+                mystate.cardid[0].do = { mBuff: [107], mBuffT: [1] };
+
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
                     small_cardheap: small_cardheap,
@@ -24836,8 +24830,8 @@ var CardShowList = function (_React$Component) {
             return this.props.cardShowList.map(function (card, i) {
                 return _react2.default.createElement(
                     'div',
-                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) }, onMouseDown: _this2.slide.bind(_this2) },
-                    _react2.default.createElement(_Card2.default, { card: card, state: "show", key: i })
+                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) }, onMouseDown: _this2.slide.bind(_this2), key: i },
+                    _react2.default.createElement(_Card2.default, { card: card, state: "show" })
                 );
             });
         }

@@ -38,6 +38,7 @@ class HeroPlaceMy extends React.Component{
         let messagelist = this.props.messagelist;
         messagelist.push("结束回合");
         let mystate = this.props.mystate;
+        mystate.attackAccount = ("."+(mystate.attackAccount*100%100))*1;//攻击机会重置
         for(let i=0;i<mystate.buff.length;){//状态处理
             if(mystate.buffTime[i]==1){
                 mystate.buffTime.splice(i,1);
@@ -59,6 +60,14 @@ class HeroPlaceMy extends React.Component{
             }
         });
     }
+    componentDidUpdate(){
+        //判断游戏结束
+        if(this.props.mystate.Hp<=0){
+            alert("你输了");
+            console.info("你输了");
+            this.props.next_process({progress_state:1});
+        }
+    }
   	render() {
         let basic = this.props.mystate;
         return <div className="hero_place">
@@ -71,7 +80,7 @@ class HeroPlaceMy extends React.Component{
                 {this.props.round==1?<div className="over_btn" onClick={this.roundOver.bind(this)}>{"回合结束"}</div>:""}
             </div>
             <div className="attribute_list">
-                <div className="HP">{basic.Hp+"/"+basic.maxHp+"+"+basic.Hprecove}</div>
+                <div className="HP">{(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+"+"+basic.Hprecove}</div>
                 <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>

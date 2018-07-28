@@ -146,7 +146,7 @@ function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
             bufflist.push(buff[i]);
             bufflistTime.push(buffT[i]);
         }
-        Object.assign(props.thatstate.buffObj, buffObj);
+        Object.assign(props[MorT].buffObj, buffObj);
     });
     props[MorT].buff = bufflist;
     props[MorT].buffTime = bufflistTime;
@@ -210,6 +210,20 @@ function check_checkMp (props,card){//判断剩余蓝量
 function check_buffToSkill (props,card){
     let mystate = props.mystate;
     let thatstate = props.thatstate;
+    //// 排除undefind影响
+    // let standardDO = {
+    //     mMp:0,
+    //     mHp:0,
+    //     tMp:0,
+    //     tHp:0,
+    //     mBuff:"",
+    //     mBuffT:"",
+    //     mBuffObj:"",
+    //     tBuff:"",
+    //     tBuffT:"",
+    //     tBuffObj:"",
+    // }
+    // Object.assign(standardDO,card.do);
     mystate.buff.map((buffid)=>{//
         switch(buffid){
             case 157://多重施法
@@ -218,8 +232,8 @@ function check_buffToSkill (props,card){
                 }
                 break;
             case 107://余震 半合内自己使用任何技能都会使敌方眩晕半回合
-                card.do.tBuff.push(0);
-                card.do.tBuffT.push(1);
+                card.do.tBuff = card.do.tBuff?card.do.tBuff.push(0):[0];
+                card.do.tBuffT = card.do.tBuffT?card.do.tBuffT.push(1):[1];
                 break;
         }
     });
@@ -230,8 +244,8 @@ function check_buffToSkill (props,card){
                 card.do.tHp = parseInt(card.do.tHp*1.5);
                 break;
             case 8://无光之盾
-                if(thatstate.buffObj[8]>card.do.tHp){
-                    Object.assign(card.do.tBuffObj, {8:thatstate.buffObj[8]-=card.do.tHp});
+                if(thatstate.buffObj[8]>(card.do.tHp||0)){
+                    Object.assign(card.do.tBuffObj||{}, {8:thatstate.buffObj[8]-=card.do.tHp});
                     card.do.tHp = 0;
                 }else{
                     card.do.tHp = card.do.tHp - thatstate.buffObj[8];
@@ -316,34 +330,13 @@ function docard(props,card){
                 props.thatstate.Mp +=value;
                 break;
             case "tHp":
-                props.thatstate.Hp -=value;
+                props.thatstate.Hp -=value*10;
                 break;
             case "mBuff":
-                // if(typeof value=="object"){//buff 可能是数字 可能是数组,这是个临时的逻辑
-                    props = addBuff(props,"mystate",card.do.mBuff,card.do.mBuffT,card.do.mBuffObj)//添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.mystate.buff.push(value);
-                // }
+                props = addBuff(props,"mystate",card.do.mBuff,card.do.mBuffT,card.do.mBuffObj)//添加buff方法
                 break;
-            case "mBuffT":
-                // if(typeof card.do.mBuff!="object")props.mystate.buffTime.push(value);
-                break;
-            case "mBuffObj":
-                // if(typeof card.do.mBuff!="object")Object.assign(props.mystate.buffObj, value);
             case "tBuff":
-                // if(typeof value=="object"){
-                    props = addBuff(props,"thatstate",value,card.do.tBuffT,card.do.tBuffObj)//添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.thatstate.buff.push(value);
-                // }
-                break;
-            case "tBuffT":
-                // if(typeof card.do.tBuff!="object")props.thatstate.buffTime.push(value);
-                break;
-            case "tBuffObj":
-                // if(typeof card.do.tBuff!="object")Object.assign(props.thatstate.buffObj, value);
+                props = addBuff(props,"thatstate",value,card.do.tBuffT,card.do.tBuffObj)//添加buff方法
                 break;
             case "special":
                 specialcard(props,card);
@@ -391,34 +384,13 @@ export function doAttack (props){//物理攻击方法
                 props.thatstate.Mp +=value;
                 break;
             case "tHp":
-                props.thatstate.Hp -=value;
+                props.thatstate.Hp -=value*10;
                 break;
             case "mBuff":
-                // if(typeof value=="object"){//buff 可能是数字 可能是数组,这是个临时的逻辑
                     props = addBuff(props,"mystate",Attack.mBuff,Attack.mBuffT,Attack.mBuffObj)//添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.mystate.buff.push(value);
-                // }
                 break;
-            case "mBuffT":
-                // if(typeof Attack.mBuff!="object")props.mystate.buffTime.push(value);
-                break;
-            case "mBuffObj":
-                // if(typeof Attack.mBuff!="object")Object.assign(props.mystate.buffObj, value);
             case "tBuff":
-                // if(typeof value=="object"){
                     props = addBuff(props,"thatstate",value,Attack.tBuffT,Attack.tBuffObj)//添加buff方法
-                // }else{
-                //     console.info("buff 可能是数字 可能是数组,这是个临时的逻辑");
-                //     props.thatstate.buff.push(value);
-                // }
-                break;
-            case "tBuffT":
-                // if(typeof Attack.tBuff!="object")props.thatstate.buffTime.push(value);
-                break;
-            case "tBuffObj":
-                // if(typeof Attack.tBuff!="object")Object.assign(props.thatstate.buffObj, value);
                 break;
         }
     }
@@ -578,8 +550,8 @@ function attackAfter(props,Attack){
                 };
                 break;
             case 8://无光之盾
-                if(thatstate.buffObj[8]>card.do.tHp){
-                    Object.assign(card.do.tBuffObj, {8:thatstate.buffObj[8]-=card.do.tHp});
+                if(thatstate.buffObj[8]>(Attack.tHp||0)){
+                    Object.assign(Attack.tBuffObj||{}, {8:thatstate.buffObj[8]-=Attack.tHp});
                     Attack.tHp = 0;
                 }else{
                     Attack.tHp = Attack.tHp - thatstate.buffObj[8];
@@ -596,7 +568,7 @@ function attackAfter(props,Attack){
                 Attack.tHp -= 50;
                 break;
             case 103://活性护甲
-                Object.assign(Attack.tBuffObj, {103:thatstate.buffObj[103]+1});
+                Object.assign(Attack.tBuffObj||{}, {103:thatstate.buffObj[103]+1});
                 break;
         }
     }

@@ -24,8 +24,6 @@ class Component extends React.Component{
             progress_state:0
         }
     }
-    componentWillMount(){
-    }
     next_process(newdata){//进行到下一个流程
         let state = this.state;
         state = Object.assign(state,newdata);

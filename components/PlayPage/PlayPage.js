@@ -65,6 +65,10 @@ class PlayPage extends React.Component{
             mystate.money = 100;
             mystate.attackAccount = 1,
             mystate.cardid = small_cardheap.slice(0,6);
+
+mystate.cardid[0] = {id:1023,name:"余震",state: 2 ,message:"被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合"}
+mystate.cardid[0].do = {mBuff:[107],mBuffT:[1]}
+
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({
                 small_cardheap:small_cardheap,

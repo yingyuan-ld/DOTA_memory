@@ -46,8 +46,8 @@ class CardShowList extends React.Component{
     cardShowList(){
         let index = this.state.index;
         return this.props.cardShowList.map((card,i)=>{
-            return <div className="Slide_box" style={{zIndex:(index-Math.abs(i-index))}} onMouseDown={this.slide.bind(this)}>
-                    <Card card={card} state={"show"} key={i}/>
+            return <div className="Slide_box" style={{zIndex:(index-Math.abs(i-index))}} onMouseDown={this.slide.bind(this)} key={i}>
+                    <Card card={card} state={"show"}/>
                 </div>
         })
     }

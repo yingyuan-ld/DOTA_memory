@@ -23,6 +23,14 @@ class HeroPlaceThat extends React.Component{
             return <BuffIon {...state_list[item]} buffTime={buffTime[i]} key={i}/>
         });
     }
+    componentDidUpdate(){
+        //判断游戏结束
+        if(this.props.thatstate.Hp<=0){
+            alert("你赢了");
+            console.info("你赢了");
+            prevProps.next_process({progress_state:1});
+        }
+    }
   	render() {
         let basic = this.props.thatstate;
         if(basic.herotype===""||basic.herotype===undefined){
@@ -37,7 +45,7 @@ class HeroPlaceThat extends React.Component{
                 </div>
             </div>
             <div className="attribute_list">
-                <div className="HP">{basic.Hp+"/"+basic.maxHp+"+"+basic.Hprecove+"/s"}</div>
+                <div className="HP">{(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+"+"+basic.Hprecove+"/s"}</div>
                 <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove+"/s"}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
