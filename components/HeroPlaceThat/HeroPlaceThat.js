@@ -4,6 +4,7 @@ import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
 import {state_base} from '../action';//计算状态影响下的属性
 import "./HeroPlaceThat.scss";
+var socket = io();
 
 class HeroPlaceThat extends React.Component{
     constructor(){
@@ -28,7 +29,11 @@ class HeroPlaceThat extends React.Component{
         if(this.props.thatstate.Hp<=0){
             alert("你赢了");
             console.info("你赢了");
-            prevProps.next_process({progress_state:1});
+            this.props.next_process({progress_state:1});
+            socket.emit('fightResult', {
+                id:this.props.myid,
+                name:this.props.myname
+            }); 
         }
     }
   	render() {

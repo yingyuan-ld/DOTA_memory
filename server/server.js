@@ -21,6 +21,7 @@ const io = require('socket.io')(server);
 var history = new Array();
 var persenObj = {};//登录人员对象
 var persenAry = [];//登录人员数组
+var messageAry = [];//消息数组数组
 io.on('connection', function(socket){
     socket.on('login', function(name){//接收登录信息
         var res = {};
@@ -120,6 +121,14 @@ io.on('connection', function(socket){
             value:'玩家"'+res.name+'"离开了...'
         });
     });
+    socket.on('fightResult', function(res){//战斗结果
+        for(i in persenAry){
+            if(persenAry[i].id===res.id){
+                persenAry[i].state = "free"
+            }
+        }
+        getpersen(persenAry);
+    });
     socket.on('totalk', function(res){//游戏交互
         // console.info(res);
         io.to(res.id).emit('totalk',res);
@@ -131,6 +140,8 @@ let getpersen = function(persenAry){
     io.in('prepare room').emit('getpersen', persenAry);
 }
 let getmessage = function(message){
-    io.in('prepare room').emit('getmessage', message);
+    messageAry.push(message);
+    if(messageAry.length>100)messageAry.shift();
+    io.in('prepare room').emit('getmessage', messageAry);
 }
 console.log('Server running at http://127.0.0.1:8088/');

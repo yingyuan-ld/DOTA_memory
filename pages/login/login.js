@@ -28,6 +28,10 @@ class login extends React.Component{
   	}
   	send(){
 		let that = this;
+		if(that.state.myname===""){
+			alert("名字必填");
+			return;
+		}
 		this.props.socket.emit('login', that.state.myname);
   	}
   	render() {

@@ -1271,7 +1271,7 @@ function docard(props, card) {
                 props.thatstate.Mp += value;
                 break;
             case "tHp":
-                props.thatstate.Hp -= value * 10;
+                props.thatstate.Hp -= value * 100;
                 break;
             case "mBuff":
                 props = addBuff(props, "mystate", card.do.mBuff, card.do.mBuffT, card.do.mBuffObj); //添加buff方法
@@ -4290,6 +4290,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var socket = io();
+
 var HeroPlaceMy = function (_React$Component) {
     _inherits(HeroPlaceMy, _React$Component);
 
@@ -4375,6 +4377,10 @@ var HeroPlaceMy = function (_React$Component) {
                 alert("你输了");
                 console.info("你输了");
                 this.props.next_process({ progress_state: 1 });
+                socket.emit('fightResult', {
+                    id: this.props.myid,
+                    name: this.props.myname
+                });
             }
         }
     }, {
@@ -4563,6 +4569,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //计算状态影响下的属性
 
 
+var socket = io();
+
 var HeroPlaceThat = function (_React$Component) {
     _inherits(HeroPlaceThat, _React$Component);
 
@@ -4598,7 +4606,11 @@ var HeroPlaceThat = function (_React$Component) {
             if (this.props.thatstate.Hp <= 0) {
                 alert("你赢了");
                 console.info("你赢了");
-                prevProps.next_process({ progress_state: 1 });
+                this.props.next_process({ progress_state: 1 });
+                socket.emit('fightResult', {
+                    id: this.props.myid,
+                    name: this.props.myname
+                });
             }
         }
     }, {
@@ -23664,6 +23676,10 @@ var login = function (_React$Component) {
 		key: "send",
 		value: function send() {
 			var that = this;
+			if (that.state.myname === "") {
+				alert("名字必填");
+				return;
+			}
 			this.props.socket.emit('login', that.state.myname);
 		}
 	}, {
@@ -23747,12 +23763,13 @@ var Component = function (_React$Component) {
             this.props.socket.on('getpersen', function (persenAry) {
                 //刷新人员列表
                 _this2.setState({ persenAry: persenAry });
+                console.info("刷新人员列表");
             });
             this.props.socket.on('getmessage', function (mewmessage) {
                 //刷新消息
-                var message = _this2.state.message;
-                message.push(mewmessage);
-                _this2.setState({ message: message });
+                // let message = this.state.message;
+                // message.push(mewmessage);
+                _this2.setState({ message: mewmessage });
             });
 
             this.props.socket.on('getFight', function (res) {

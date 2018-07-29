@@ -4,6 +4,7 @@ import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
 import {doAttack} from '../action';
 import "./HeroPlaceMy.scss";
+var socket = io();
 class HeroPlaceMy extends React.Component{
     constructor(){
         super();
@@ -66,6 +67,10 @@ class HeroPlaceMy extends React.Component{
             alert("你输了");
             console.info("你输了");
             this.props.next_process({progress_state:1});
+            socket.emit('fightResult', {
+                id:this.props.myid,
+                name:this.props.myname
+            }); 
         }
     }
   	render() {

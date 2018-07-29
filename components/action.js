@@ -330,7 +330,7 @@ function docard(props,card){
                 props.thatstate.Mp +=value;
                 break;
             case "tHp":
-                props.thatstate.Hp -=value*10;
+                props.thatstate.Hp -=value*100;
                 break;
             case "mBuff":
                 props = addBuff(props,"mystate",card.do.mBuff,card.do.mBuffT,card.do.mBuffObj)//添加buff方法

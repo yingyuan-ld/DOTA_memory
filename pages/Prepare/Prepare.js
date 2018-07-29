@@ -19,11 +19,12 @@ class Component extends React.Component{
         }
         this.props.socket.on('getpersen', (persenAry)=>{//刷新人员列表
             this.setState({persenAry:persenAry});
+            console.info("刷新人员列表");
         })
         this.props.socket.on('getmessage', (mewmessage)=>{//刷新消息
-            let message = this.state.message;
-            message.push(mewmessage);
-            this.setState({message:message});
+            // let message = this.state.message;
+            // message.push(mewmessage);
+            this.setState({message:mewmessage});
         })
         
         this.props.socket.on('getFight', (res)=>{//接收挑战
