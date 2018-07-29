@@ -140,6 +140,7 @@ function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
                 bufflist.push(buffkey);
                 let oldT = bufflistTime.splice(I,1)[0];
                 bufflistTime.push(buffT[i]>oldT?buffT[i]:oldT);
+                needadd = false;
             }
         }
         if(needadd){
@@ -330,7 +331,7 @@ function docard(props,card){
                 props.thatstate.Mp +=value;
                 break;
             case "tHp":
-                props.thatstate.Hp -=value*100;
+                props.thatstate.Hp -=value;
                 break;
             case "mBuff":
                 props = addBuff(props,"mystate",card.do.mBuff,card.do.mBuffT,card.do.mBuffObj)//添加buff方法
@@ -384,7 +385,7 @@ export function doAttack (props){//物理攻击方法
                 props.thatstate.Mp +=value;
                 break;
             case "tHp":
-                props.thatstate.Hp -=value*10;
+                props.thatstate.Hp -=value;
                 break;
             case "mBuff":
                     props = addBuff(props,"mystate",Attack.mBuff,Attack.mBuffT,Attack.mBuffObj)//添加buff方法

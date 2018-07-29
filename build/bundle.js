@@ -1023,6 +1023,7 @@ function addBuff(props, MorT, buff, buffT, buffObj) {
                 bufflist.push(buffkey);
                 var oldT = bufflistTime.splice(I, 1)[0];
                 bufflistTime.push(buffT[i] > oldT ? buffT[i] : oldT);
+                needadd = false;
             }
         }
         if (needadd) {
@@ -1271,7 +1272,7 @@ function docard(props, card) {
                 props.thatstate.Mp += value;
                 break;
             case "tHp":
-                props.thatstate.Hp -= value * 100;
+                props.thatstate.Hp -= value;
                 break;
             case "mBuff":
                 props = addBuff(props, "mystate", card.do.mBuff, card.do.mBuffT, card.do.mBuffObj); //添加buff方法
@@ -1373,7 +1374,7 @@ function doAttack(props) {
                 props.thatstate.Mp += value;
                 break;
             case "tHp":
-                props.thatstate.Hp -= value * 10;
+                props.thatstate.Hp -= value;
                 break;
             case "mBuff":
                 props = addBuff(props, "mystate", Attack.mBuff, Attack.mBuffT, Attack.mBuffObj); //添加buff方法
@@ -3308,7 +3309,7 @@ var Card = function (_React$Component) {
                 return _react2.default.createElement(
                     'div',
                     { className: 'card_box card_my', onClick: this.usecard.bind(this, card.id, card.name) },
-                    _react2.default.createElement('div', { className: 'card_ion' }),
+                    _react2.default.createElement('div', { className: 'card_ion', style: { background: "url(./server/skillImg/" + card.id + ".jpg) no-repeat center" } }),
                     _react2.default.createElement(
                         'div',
                         { className: 'card_name' },
@@ -24295,8 +24296,8 @@ var PlayPage = function (_React$Component) {
                 mystate.money = 100;
                 mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
 
-                mystate.cardid[0] = { id: 1023, name: "余震", state: 2, message: "被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合" };
-                mystate.cardid[0].do = { mBuff: [107], mBuffT: [1] };
+                // mystate.cardid[0] = {id:1023,name:"余震",state: 2 ,message:"被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合"}
+                // mystate.cardid[0].do = {mBuff:[107],mBuffT:[1]}
 
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({

@@ -28,7 +28,7 @@ class Card extends React.Component{
         let card = this.props.card
         if(this.props.state=="my"){
             return <div className="card_box card_my" onClick={this.usecard.bind(this,card.id,card.name)}>
-                <div className="card_ion"></div>
+                <div className="card_ion" style={{background: "url(./server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
                 <div className="card_name">{card.name}</div>
                 <div className="card_message">{card.message}</div>
             </div>
