@@ -7,9 +7,11 @@ class BuffIon extends React.Component{
     }
   	render() {
         // {id:0,name:"晕眩",message:"使该单位无法攻击,出牌,使用装备"},
-        return <div className="BuffIon_box" >
-            <div>{this.props.name}</div>
-            <div>{this.props.message}</div>
+        return <div className="BuffIon_box" style={{background: "url(./server/stateImg/"+this.props.id+".jpg) no-repeat center"}}>
+            <div className="tooltip">
+                <div>{this.props.name}</div>
+                <div>{this.props.message}</div>
+            </div>
         </div>
     }
 }

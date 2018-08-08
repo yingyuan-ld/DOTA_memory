@@ -9,12 +9,10 @@ var socket = io();
 class HeroPlaceThat extends React.Component{
     constructor(){
         super();
-        this.state = {
-        }
     }
     cardlist(){
         return this.props.thatstate.cardid.map((card,i)=>{
-            return <Card state={"that"} {...card} key={i}/>
+            return <Card cardfor={"that"} {...card} key={i}/>
         })
     }
     showstate(basic){

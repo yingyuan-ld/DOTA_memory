@@ -26,7 +26,7 @@ class FightPlace extends React.Component{
                 <CardShowList cardShowList={this.props.cardShowList.slice(0,this.props.cardShowList.length-1)}/>
             </div>
             <div className="cardShow">
-                {this.props.cardShowList[0]?<Card card={this.props.cardShowList[this.props.cardShowList.length-1]} state={"show"}/>:""}
+                {this.props.cardShowList[0]?<Card card={this.props.cardShowList[this.props.cardShowList.length-1]} cardfor={"show"}/>:""}
             </div>
         </div>
   	}

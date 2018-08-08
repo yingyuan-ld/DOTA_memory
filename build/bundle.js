@@ -3274,10 +3274,7 @@ var Card = function (_React$Component) {
     function Card() {
         _classCallCheck(this, Card);
 
-        var _this = _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).call(this));
-
-        _this.state = {};
-        return _this;
+        return _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).call(this));
     }
 
     _createClass(Card, [{
@@ -3305,10 +3302,12 @@ var Card = function (_React$Component) {
         value: function render() {
             // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
             var card = this.props.card;
-            if (this.props.state == "my") {
+            console.info(card);
+            if (this.props.cardfor != "that") {
                 return _react2.default.createElement(
                     'div',
-                    { className: 'card_box card_my', onClick: this.usecard.bind(this, card.id, card.name) },
+                    { className: this.props.cardfor == "my" ? "card_box card_my" : "card_box",
+                        onClick: this.props.cardfor == "my" ? this.usecard.bind(this, card.id, card.name) : "" },
                     _react2.default.createElement('div', { className: 'card_ion', style: { background: "url(./server/skillImg/" + card.id + ".jpg) no-repeat center" } }),
                     _react2.default.createElement(
                         'div',
@@ -3322,26 +3321,16 @@ var Card = function (_React$Component) {
                     )
                 );
             }
-            if (this.props.state == "show") {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'card_box' },
-                    _react2.default.createElement('div', { className: 'card_ion' }),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'card_name' },
-                        card.name
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'card_message' },
-                        card.message
-                    )
-                );
-            }
-            if (this.props.state == "that") {
+            if (this.props.cardfor == "that") {
                 return _react2.default.createElement('div', { className: 'card_box_hide' });
             }
+            // if(this.props.cardfor=="show"){
+            //     return <div className="card_box">
+            //         <div className="card_ion" style={{background: "url(./server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
+            //         <div className="card_name">{card.name}</div>
+            //         <div className="card_message">{card.message}</div>
+            //     </div>
+            // }
             return _react2.default.createElement('div', { className: 'card_box_hide' });
         }
     }]);
@@ -4308,7 +4297,7 @@ var HeroPlaceMy = function (_React$Component) {
             var _this2 = this;
 
             return this.props.mystate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({}, _this2.props, { card: card, state: "my", key: i }));
+                return _react2.default.createElement(_Card2.default, _extends({}, _this2.props, { card: card, cardfor: "my", key: i }));
             });
         }
     }, {
@@ -4510,16 +4499,20 @@ var BuffIon = function (_React$Component) {
             // {id:0,name:"晕眩",message:"使该单位无法攻击,出牌,使用装备"},
             return _react2.default.createElement(
                 "div",
-                { className: "BuffIon_box" },
+                { className: "BuffIon_box", style: { background: "url(./server/stateImg/" + this.props.id + ".jpg) no-repeat center" } },
                 _react2.default.createElement(
                     "div",
-                    null,
-                    this.props.name
-                ),
-                _react2.default.createElement(
-                    "div",
-                    null,
-                    this.props.message
+                    { className: "tooltip" },
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.name
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.message
+                    )
                 )
             );
         }
@@ -4578,17 +4571,14 @@ var HeroPlaceThat = function (_React$Component) {
     function HeroPlaceThat() {
         _classCallCheck(this, HeroPlaceThat);
 
-        var _this = _possibleConstructorReturn(this, (HeroPlaceThat.__proto__ || Object.getPrototypeOf(HeroPlaceThat)).call(this));
-
-        _this.state = {};
-        return _this;
+        return _possibleConstructorReturn(this, (HeroPlaceThat.__proto__ || Object.getPrototypeOf(HeroPlaceThat)).call(this));
     }
 
     _createClass(HeroPlaceThat, [{
         key: 'cardlist',
         value: function cardlist() {
             return this.props.thatstate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({ state: "that" }, card, { key: i }));
+                return _react2.default.createElement(_Card2.default, _extends({ cardfor: "that" }, card, { key: i }));
             });
         }
     }, {
@@ -24536,7 +24526,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".BuffIon_box {\n  height: 20px;\n  width: 20px;\n  float: left;\n  background: red;\n  overflow: hidden;\n  font-size: 12px;\n  margin: 5px; }\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n  width: 20px;\n  float: left;\n  background-size: 20px !important;\n  overflow: hidden;\n  font-size: 12px;\n  margin: 5px; }\n  .BuffIon_box .tooltip {\n    visibility: hidden;\n    width: 120px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 0;\n    /* 定位 */\n    position: absolute;\n    z-index: 1;\n    visibility: visible; }\n", ""]);
 
 // exports
 
@@ -24744,7 +24734,7 @@ var FightPlace = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'cardShow' },
-                    this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], state: "show" }) : ""
+                    this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], cardfor: "show" }) : ""
                 )
             );
         }
