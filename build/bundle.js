@@ -4306,7 +4306,7 @@ var HeroPlaceMy = function (_React$Component) {
             var buff = st.buff; //状态数组
             var buffTime = st.buffTime; //状态持续时间
             return buff.map(function (item, i) {
-                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], key: i }));
+                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], buffObj: st.buffObj, key: i }));
             });
         }
     }, {
@@ -4506,7 +4506,17 @@ var BuffIon = function (_React$Component) {
                     _react2.default.createElement(
                         "div",
                         null,
-                        this.props.name
+                        this.props.name,
+                        _react2.default.createElement(
+                            "div",
+                            { className: "Buff_time" },
+                            this.props.buffTime
+                        ),
+                        this.props.buffObj[this.props.id] ? _react2.default.createElement(
+                            "div",
+                            { className: "Buff_obj" },
+                            this.props.buffObj[this.props.id]
+                        ) : ""
                     ),
                     _react2.default.createElement(
                         "div",
@@ -4587,7 +4597,7 @@ var HeroPlaceThat = function (_React$Component) {
             var buff = basic.buff; //状态数组
             var buffTime = basic.buffTime; //状态持续时间
             return buff.map(function (item, i) {
-                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], key: i }));
+                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], buffObj: basic.buffObj, key: i }));
             });
         }
     }, {
@@ -24289,6 +24299,9 @@ var PlayPage = function (_React$Component) {
                 // mystate.cardid[0] = {id:1023,name:"余震",state: 2 ,message:"被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合"}
                 // mystate.cardid[0].do = {mBuff:[107],mBuffT:[1]}
 
+                // mystate.cardid[0] = {id:1013,name:"无光之盾",state: 2 ,mp:100,message:"最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)"}
+                // mystate.cardid[0].do = {mMp:-100,mBuff:[8],mBuffT:[6],mBuffObj:{8:250}}
+
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
                     small_cardheap: small_cardheap,
@@ -24462,7 +24475,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 180px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: #fff;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2; }\n", ""]);
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 180px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: #fff;\n  overflow: hidden;\n  float: left; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  background: #666;\n  border: 1px solid #d2d2d2;\n  float: left; }\n", ""]);
 
 // exports
 
@@ -24526,7 +24539,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n  width: 20px;\n  float: left;\n  background-size: 20px !important;\n  overflow: hidden;\n  font-size: 12px;\n  margin: 5px; }\n  .BuffIon_box .tooltip {\n    visibility: hidden;\n    width: 120px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 0;\n    /* 定位 */\n    position: absolute;\n    z-index: 1;\n    visibility: visible; }\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n  width: 20px;\n  float: left;\n  background-size: 20px !important;\n  position: relative;\n  font-size: 12px;\n  margin: 5px; }\n  .BuffIon_box .tooltip {\n    visibility: hidden;\n    width: 120px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 0;\n    position: absolute;\n    z-index: 1;\n    transform: translate(-50px, -100%);\n    top: -7px; }\n    .BuffIon_box .tooltip .Buff_time {\n      color: blue;\n      display: inline-block;\n      margin: 0px 5px; }\n    .BuffIon_box .tooltip .Buff_obj {\n      color: red;\n      display: inline-block;\n      margin: 0px 5px; }\n  .BuffIon_box .tooltip:after {\n    content: \"\";\n    width: 20px;\n    height: 20px;\n    background-color: black;\n    transform: rotate(45deg);\n    -ms-transform: rotate(45deg);\n    /* IE 9 */\n    -moz-transform: rotate(45deg);\n    /* Firefox */\n    -webkit-transform: rotate(45deg);\n    /* Safari 和 Chrome */\n    -o-transform: rotate(45deg);\n    /* Opera */\n    position: absolute;\n    left: calc(50% - 9px);\n    top: calc(100% - 17px);\n    z-index: -1; }\n\n.BuffIon_box:hover .tooltip {\n  visibility: visible; }\n", ""]);
 
 // exports
 
@@ -24590,7 +24603,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place div {\n    float: left; }\n  .hero_place .hero_box {\n    background: #64fff5;\n    height: 100%;\n    width: 100px; }\n    .hero_place .hero_box .hero_ion {\n      width: 100%; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px; }\n", ""]);
+exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 100px; }\n    .hero_place .hero_box .hero_ion {\n      width: 100%; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n", ""]);
 
 // exports
 

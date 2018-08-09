@@ -69,6 +69,9 @@ class PlayPage extends React.Component{
 // mystate.cardid[0] = {id:1023,name:"余震",state: 2 ,message:"被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合"}
 // mystate.cardid[0].do = {mBuff:[107],mBuffT:[1]}
 
+// mystate.cardid[0] = {id:1013,name:"无光之盾",state: 2 ,mp:100,message:"最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)"}
+// mystate.cardid[0].do = {mMp:-100,mBuff:[8],mBuffT:[6],mBuffObj:{8:250}}
+
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({
                 small_cardheap:small_cardheap,

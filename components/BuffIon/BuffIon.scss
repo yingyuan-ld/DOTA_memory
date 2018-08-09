@@ -15,11 +15,37 @@
 	    border-radius: 6px;
 	    padding: 5px 0;
 
-	    /* 定位 */
 	    position: absolute;
 	    z-index: 1;
-    visibility: visible;
+     	transform: translate(-50px, -100%);
+     	top: -7px;
+     	.Buff_time{
+     		color: blue;
+		    display: inline-block;
+		    margin: 0px 5px;
+     	}
+     	.Buff_obj{
+     		color: red;
+		    display: inline-block;
+		    margin: 0px 5px;
+     	}
+	}
+	.tooltip:after{
+		content: "";
+		width:20px;
+		height: 20px;
+	    background-color: black;
+		transform:rotate(45deg);
+		-ms-transform:rotate(45deg); 	/* IE 9 */
+		-moz-transform:rotate(45deg); 	/* Firefox */
+		-webkit-transform:rotate(45deg); /* Safari 和 Chrome */
+		-o-transform:rotate(45deg); 	/* Opera */
+	    position: absolute;
+	    left: calc(50% - 9px);
+    	top: calc(100% - 17px);
+	    z-index: -1;
 	}
 }
 .BuffIon_box:hover .tooltip{
+    visibility: visible;
 }

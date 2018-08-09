@@ -18,7 +18,7 @@ class HeroPlaceMy extends React.Component{
         let buff = st.buff;//状态数组
         let buffTime = st.buffTime;//状态持续时间
         return buff.map((item,i)=>{
-            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} key={i}/>
+            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} buffObj={st.buffObj} key={i}/>
         });
     }
     attackBtn(){

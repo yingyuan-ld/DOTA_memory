@@ -19,7 +19,7 @@ class HeroPlaceThat extends React.Component{
         let buff = basic.buff;//状态数组
         let buffTime = basic.buffTime;//状态持续时间
         return buff.map((item,i)=>{
-            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} key={i}/>
+            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} buffObj={basic.buffObj} key={i}/>
         });
     }
     componentDidUpdate(){
