@@ -77,9 +77,7 @@ class HeroPlaceMy extends React.Component{
         let basic = this.props.mystate;
         return <div className="hero_place">
             <div className="hero_box">
-                <div className="hero_ion">
-                    {basic.herotype==0?"力量":(basic.herotype==1?"敏捷":"智力")}
-                </div>
+                <div className={"hero_ion hero_ion_"+basic.herotype} />
                 {this.props.round==1?<div className="attack_btn" onClick={this.attackBtn.bind(this)}>
                     {"普通攻击x"+basic.attackAccount+"↑"+basic.attackRecove}</div>:""}
                 {this.props.round==1?<div className="over_btn" onClick={this.roundOver.bind(this)}>{"回合结束"}</div>:""}

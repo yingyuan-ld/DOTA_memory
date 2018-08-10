@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from '../Card/Card';
 import CardShowList from '../CardShowList/CardShowList';
+import Shoping from '../Shoping/Shoping';
 
 import "./FightPlace.scss";
 
@@ -8,6 +9,7 @@ class FightPlace extends React.Component{
     constructor(){
         super();
         this.state = {
+            shoping:false,
         }
     }
     messagelist(){
@@ -15,6 +17,9 @@ class FightPlace extends React.Component{
             if(i==0)return; 
             return <div className="message_item" key={i}>{message}</div>
         })
+    }
+    goshoping(){
+        this.setState({shoping:!this.state.shoping});
     }
   	render() {
         this.props.cardShowList
@@ -28,6 +33,10 @@ class FightPlace extends React.Component{
             <div className="cardShow">
                 {this.props.cardShowList[0]?<Card card={this.props.cardShowList[this.props.cardShowList.length-1]} cardfor={"show"}/>:""}
             </div>
+            <div className="shop" onClick={this.goshoping.bind(this)}/>
+            <Shoping 
+                show={this.state.shoping}
+                goshoping={this.goshoping.bind(this)}/>
         </div>
   	}
 }

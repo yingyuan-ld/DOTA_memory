@@ -2,12 +2,11 @@
     width: 100px;
     position: relative;
     font-size: 12px;
-    height: 180px;
+    height: 160px;
     transition: all 0.1s;
     cursor:pointer;
-    background: #fff;
+    background: url(./cardready.jpg) no-repeat center;
     overflow: hidden;
-    float: left;
     .card_ion{
         background: green;
         width: 60px;
@@ -30,8 +29,7 @@
     width: 100px;
     position: relative;
     font-size: 12px;
-    height: 100%;
-    background: #666;
-    border: 1px solid #d2d2d2;
+    height: 160px;
+    background: url(./cardhide.jpg) no-repeat center;
     float: left;
 }

@@ -43,9 +43,7 @@ class HeroPlaceThat extends React.Component{
         }
         return <div className="hero_place">
             <div className="hero_box">
-                <div className="hero_ion">
-                    {basic.herotype==0?"力量":(basic.herotype==1?"敏捷":"智力")}
-                </div>
+                <div className={"hero_ion hero_ion_"+basic.herotype} />
             </div>
             <div className="attribute_list">
                 <div className="HP">{(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+"+"+basic.Hprecove+"/s"}</div>

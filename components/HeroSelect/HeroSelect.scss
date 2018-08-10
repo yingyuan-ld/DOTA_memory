@@ -1,0 +1,21 @@
+.heroSelect{
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    padding-top: calc(50% - 200px);
+    .heropicture{
+		width: 200px;
+		height: 300px;
+	    margin: 0px 10px 30px 10px;
+	    display: inline-block;
+    }
+	.hero0{
+		background: url(./0.jpg) no-repeat center;
+	}
+	.hero1{
+		background: url(./1.jpg) no-repeat center;
+	}
+	.hero2{
+		background: url(./2.jpg) no-repeat center;
+	}
+}

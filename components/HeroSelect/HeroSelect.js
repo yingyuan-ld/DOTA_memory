@@ -42,11 +42,10 @@ class HeroSelect extends React.Component{
         });
     }
   	render() {
-        return<div>
-                <h1>请选择英雄</h1>
-                <div onClick={this.coeckhero.bind(this,0)}>力量</div>
-                <div onClick={this.coeckhero.bind(this,1)}>敏捷</div>
-                <div onClick={this.coeckhero.bind(this,2)}>智力</div>
+        return<div className="heroSelect">
+                <div className="hero0 heropicture" onClick={this.coeckhero.bind(this,0)} />
+                <div className="hero1 heropicture" onClick={this.coeckhero.bind(this,1)} />
+                <div className="hero2 heropicture" onClick={this.coeckhero.bind(this,2)} />
             </div>
   	}
 }

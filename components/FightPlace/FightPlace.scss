@@ -11,11 +11,10 @@
     }
     .cardShow{
         width: 100px;
-        height: 180px;
+        height: 160px;
         position: absolute;
         left: calc(50% - 50px);
         top: calc(50% - 90px);
-        border: 1px solid;
     }
     .cardShowList{    
         position: absolute;
@@ -23,5 +22,13 @@
         height: 100%;
         left: 200px;
         overflow: hidden;
+    }
+    .shop{
+        width: 80px;
+        height: 80px;
+        background: red;
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
     }
 }
