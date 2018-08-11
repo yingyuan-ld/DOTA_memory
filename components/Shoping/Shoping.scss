@@ -4,4 +4,20 @@
     position: absolute;
     right: 0px;
     background: blue;
+    transition: all 0.1s;
+    .back{
+        background: red;
+        right: 0px;
+        position: absolute;
+        bottom: 0px;
+        color: #fff;
+        padding: 0px 5px;
+        line-height: 20px;
+    }
+}
+.room_show{
+    transform: translateX(0px);
+}
+.room_hide{
+    transform: translateX(300px);
 }

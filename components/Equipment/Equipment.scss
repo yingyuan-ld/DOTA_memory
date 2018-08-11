@@ -1,0 +1,44 @@
+.equipment{
+    width: 70px;
+    height: 70px;
+    margin: 1px 3px 1px 2px;
+    float: left;
+    position: relative;
+/*    .tooltip {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        font-size: 12px;
+        position: absolute;
+        z-index: 1;
+        transform: translate(-27px, -100%);
+        top: -4px;
+        .price{
+            color: red;
+            display: inline-block;
+            margin: 0px 5px;
+        }
+    }
+    .tooltip:after{
+        content: "";
+        width:20px;
+        height: 20px;
+        background-color: black;
+        transform:rotate(45deg);
+        -ms-transform:rotate(45deg);  
+        -moz-transform:rotate(45deg);  
+        -webkit-transform:rotate(45deg); 
+        -o-transform:rotate(45deg);  
+        position: absolute;
+        left: calc(50% - 9px);
+        top: calc(100% - 17px);
+        z-index: -1;
+    }*/
+}
+.equipment:hover .tooltip{
+    visibility: visible;
+}
