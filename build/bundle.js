@@ -3257,7 +3257,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _action = __webpack_require__(6);
 
-__webpack_require__(51);
+__webpack_require__(54);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4289,9 +4289,13 @@ var _BuffIon = __webpack_require__(20);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
+var _Equipment = __webpack_require__(73);
+
+var _Equipment2 = _interopRequireDefault(_Equipment);
+
 var _action = __webpack_require__(6);
 
-__webpack_require__(57);
+__webpack_require__(60);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4395,6 +4399,38 @@ var HeroPlaceMy = function (_React$Component) {
             }
         }
     }, {
+        key: 'showtip',
+        value: function showtip(item, e) {
+            // console.info(e.target)
+            this.props.setState({ Tooltip: {
+                    show: true,
+                    place: [e.clientX, e.clientY],
+                    name: item.name,
+                    redT: item.price,
+                    message: item.message
+                } });
+        }
+    }, {
+        key: 'closetip',
+        value: function closetip() {
+            this.props.setState({ Tooltip: { show: false } });
+        }
+    }, {
+        key: 'showEquipment',
+        value: function showEquipment(equipments) {
+            var _this3 = this;
+
+            return equipments.map(function (item, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'posi_tion',
+                        onMouseOver: _this3.showtip.bind(_this3, item),
+                        onMouseOut: _this3.closetip.bind(_this3) },
+                    _react2.default.createElement(_Equipment2.default, item)
+                );
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             var basic = this.props.mystate;
@@ -4455,9 +4491,7 @@ var HeroPlaceMy = function (_React$Component) {
                     'div',
                     { className: 'equipment_list' },
                     "金钱:" + this.props.mystate.money,
-                    basic.equipment.map(function (equipment, i) {
-                        _react2.default.createElement('div', null);
-                    })
+                    this.showEquipment(basic.equipment)
                 )
             );
         }
@@ -4491,7 +4525,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(55);
+__webpack_require__(58);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4579,7 +4613,7 @@ var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
 var _action = __webpack_require__(6);
 
-__webpack_require__(62);
+__webpack_require__(65);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23995,11 +24029,11 @@ __webpack_require__(45);
 
 var _action = __webpack_require__(6);
 
-var _Tooltip = __webpack_require__(73);
+var _Tooltip = __webpack_require__(47);
 
 var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
-var _index = __webpack_require__(47);
+var _index = __webpack_require__(50);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -24172,7 +24206,137 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 "use strict";
 
 
-var _PlayPage = __webpack_require__(48);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(48);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Tooltip = function (_React$Component) {
+    _inherits(Tooltip, _React$Component);
+
+    function Tooltip() {
+        _classCallCheck(this, Tooltip);
+
+        return _possibleConstructorReturn(this, (Tooltip.__proto__ || Object.getPrototypeOf(Tooltip)).call(this));
+    }
+
+    _createClass(Tooltip, [{
+        key: "render",
+        value: function render() {
+            if (this.props.show) {
+                return _react2.default.createElement(
+                    "div",
+                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px" } },
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.name,
+                        _react2.default.createElement(
+                            "div",
+                            { className: "redTitle" },
+                            this.props.redT
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.message
+                    )
+                );
+            } else {
+                return _react2.default.createElement("div", null);
+            }
+        }
+    }]);
+
+    return Tooltip;
+}(_react2.default.Component);
+
+module.exports = Tooltip;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(49);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-100%, -100%); }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block;\n    margin: 0px 5px; }\n\n/*    .Tooltip:after{\n        content: \"\";\n        width:20px;\n        height: 20px;\n        background-color: black;\n        transform:rotate(45deg);\n        -ms-transform:rotate(45deg);  \n        -moz-transform:rotate(45deg);  \n        -webkit-transform:rotate(45deg); \n        -o-transform:rotate(45deg);  \n        position: absolute;\n        left: calc(50% - 9px);\n        top: calc(100% - 17px);\n        z-index: -1;\n    }*/\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _PlayPage = __webpack_require__(51);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
@@ -24199,7 +24363,7 @@ var common = {
 module.exports = common;
 
 /***/ }),
-/* 48 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24213,7 +24377,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(49);
+__webpack_require__(52);
 
 var _action = __webpack_require__(6);
 
@@ -24227,7 +24391,7 @@ var _HeroPlaceThat = __webpack_require__(21);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
-var _FightPlace = __webpack_require__(64);
+var _FightPlace = __webpack_require__(67);
 
 var _FightPlace2 = _interopRequireDefault(_FightPlace);
 
@@ -24372,11 +24536,11 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 49 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(50);
+var content = __webpack_require__(53);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24422,7 +24586,7 @@ if(false) {
 }
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24436,11 +24600,11 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(52);
+var content = __webpack_require__(55);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24486,7 +24650,7 @@ if(false) {
 }
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var escape = __webpack_require__(11);
@@ -24495,29 +24659,29 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(53)) + ") no-repeat center;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  background: url(" + escape(__webpack_require__(54)) + ") no-repeat center;\n  float: left; }\n", ""]);
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(56)) + ") no-repeat center;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  background: url(" + escape(__webpack_require__(57)) + ") no-repeat center;\n  float: left; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "c02156dc8e2f723f107e92d09f12c96e.jpg";
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "ff72ff859aa2438bfcf81643da7cfb07.jpg";
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(56);
+var content = __webpack_require__(59);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24563,7 +24727,7 @@ if(false) {
 }
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24577,11 +24741,11 @@ exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n 
 
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(58);
+var content = __webpack_require__(61);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24627,7 +24791,7 @@ if(false) {
 }
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var escape = __webpack_require__(11);
@@ -24636,35 +24800,35 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 99px; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(59)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(60)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(61)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n", ""]);
+exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 99px; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(62)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(63)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(64)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 59 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "39b2cd7f0573ca557a783a1e18790d00.png";
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "4dfb8588d816512e0e5bcbc130c9bae6.png";
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "68581be6cf33b6e63d62332dcc4cbe59.png";
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(63);
+var content = __webpack_require__(66);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24710,7 +24874,7 @@ if(false) {
 }
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24724,7 +24888,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24742,11 +24906,11 @@ var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _CardShowList = __webpack_require__(65);
+var _CardShowList = __webpack_require__(68);
 
 var _CardShowList2 = _interopRequireDefault(_CardShowList);
 
-var _Shoping = __webpack_require__(68);
+var _Shoping = __webpack_require__(71);
 
 var _Shoping2 = _interopRequireDefault(_Shoping);
 
@@ -24826,7 +24990,7 @@ var FightPlace = function (_React$Component) {
 module.exports = FightPlace;
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24842,7 +25006,7 @@ var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-__webpack_require__(66);
+__webpack_require__(69);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24940,11 +25104,11 @@ var CardShowList = function (_React$Component) {
 module.exports = CardShowList;
 
 /***/ }),
-/* 66 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(67);
+var content = __webpack_require__(70);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24990,7 +25154,7 @@ if(false) {
 }
 
 /***/ }),
-/* 67 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -25004,7 +25168,7 @@ exports.push([module.i, ".Slide_box {\n  margin-bottom: -140px;\n  border: 1px s
 
 
 /***/ }),
-/* 68 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25016,11 +25180,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _equipment = __webpack_require__(69);
+var _equipment = __webpack_require__(72);
 
 var _equipment2 = _interopRequireDefault(_equipment);
 
-var _Equipment = __webpack_require__(70);
+var _Equipment = __webpack_require__(73);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
@@ -25080,7 +25244,7 @@ var Shoping = function (_React$Component) {
                 return;
             }
             mystate.money -= price; //金钱
-            mystate.equipment.push(equipment.id);
+            mystate.equipment.push(equipment);
             newstate.messagelist.push("你购买了\"" + equipment.name + "\"");
             this.props.setState(newstate);
 
@@ -25135,7 +25299,7 @@ var Shoping = function (_React$Component) {
 module.exports = Shoping;
 
 /***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25169,7 +25333,7 @@ equipment[21] = { id: 21, name: "黯灭", price: "￥35", message: "攻击时降
 module.exports = equipment;
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25181,7 +25345,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(71);
+__webpack_require__(74);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25213,11 +25377,11 @@ var Equipment = function (_React$Component) {
 module.exports = Equipment;
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(72);
+var content = __webpack_require__(75);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -25263,136 +25427,6 @@ if(false) {
 }
 
 /***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".equipment {\n  width: 70px;\n  height: 70px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(74);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Tooltip = function (_React$Component) {
-    _inherits(Tooltip, _React$Component);
-
-    function Tooltip() {
-        _classCallCheck(this, Tooltip);
-
-        return _possibleConstructorReturn(this, (Tooltip.__proto__ || Object.getPrototypeOf(Tooltip)).call(this));
-    }
-
-    _createClass(Tooltip, [{
-        key: "render",
-        value: function render() {
-            if (this.props.show) {
-                return _react2.default.createElement(
-                    "div",
-                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px" } },
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        this.props.name,
-                        _react2.default.createElement(
-                            "div",
-                            { className: "redTitle" },
-                            this.props.redT
-                        )
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        this.props.message
-                    )
-                );
-            } else {
-                return _react2.default.createElement("div", null);
-            }
-        }
-    }]);
-
-    return Tooltip;
-}(_react2.default.Component);
-
-module.exports = Tooltip;
-
-/***/ }),
-/* 74 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(75);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -25401,7 +25435,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-100%, -100%); }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block;\n    margin: 0px 5px; }\n\n/*    .Tooltip:after{\n        content: \"\";\n        width:20px;\n        height: 20px;\n        background-color: black;\n        transform:rotate(45deg);\n        -ms-transform:rotate(45deg);  \n        -moz-transform:rotate(45deg);  \n        -webkit-transform:rotate(45deg); \n        -o-transform:rotate(45deg);  \n        position: absolute;\n        left: calc(50% - 9px);\n        top: calc(100% - 17px);\n        z-index: -1;\n    }*/\n", ""]);
+exports.push([module.i, ".equipment {\n  width: 70px;\n  height: 70px; }\n", ""]);
 
 // exports
 

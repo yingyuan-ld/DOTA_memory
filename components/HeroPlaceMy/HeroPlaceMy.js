@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
+import Equipment from '../Equipment/Equipment';
 import {doAttack} from '../action';
 import "./HeroPlaceMy.scss";
 var socket = io();
@@ -73,6 +74,29 @@ class HeroPlaceMy extends React.Component{
             }); 
         }
     }
+
+    showtip(item,e){
+        // console.info(e.target)
+        this.props.setState({Tooltip:{
+            show:true,
+            place:[e.clientX,e.clientY],
+            name:item.name,
+            redT:item.price,
+            message:item.message,
+        }})
+    }
+    closetip(){
+        this.props.setState({Tooltip:{show:false}});
+    }
+    showEquipment(equipments){
+        return equipments.map((item,i)=>{
+            return <div className="posi_tion"
+                        onMouseOver={this.showtip.bind(this,item)}
+                        onMouseOut={this.closetip.bind(this)}>
+                    <Equipment {...item}/>
+                </div>
+            })
+    }
   	render() {
         let basic = this.props.mystate;
         return <div className="hero_place">
@@ -94,9 +118,7 @@ class HeroPlaceMy extends React.Component{
             </div>
             <div className="equipment_list">
                 {"金钱:"+this.props.mystate.money}
-                {basic.equipment.map((equipment,i)=>{
-                    <div></div>
-                })}
+                {this.showEquipment(basic.equipment)}
             </div>
         </div>
   	}

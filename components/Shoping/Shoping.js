@@ -39,7 +39,7 @@ class Shoping extends React.Component{
             return;
         }
         mystate.money-=price;//金钱
-        mystate.equipment.push(equipment.id);
+        mystate.equipment.push(equipment);
         newstate.messagelist.push("你购买了\""+equipment.name+"\"");
         this.props.setState(newstate);
 
