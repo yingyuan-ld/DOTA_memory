@@ -22,7 +22,6 @@ class FightPlace extends React.Component{
         this.setState({shoping:!this.state.shoping});
     }
   	render() {
-        this.props.cardShowList
         return <div className="fight_place">
             <div className="fight_message">
                 {this.messagelist()}
@@ -35,6 +34,7 @@ class FightPlace extends React.Component{
             </div>
             <div className="shop" onClick={this.goshoping.bind(this)}/>
             <Shoping 
+                {...this.props}
                 show={this.state.shoping}
                 goshoping={this.goshoping.bind(this)}/>
         </div>

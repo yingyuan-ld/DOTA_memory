@@ -100,7 +100,6 @@ class PlayPage extends React.Component{
         }
     }
   	render() {
-        console.info(this.props);
         let myBasic = state_base(this.props.mystate,this.props.thatstate);//计算状态影响下的属性
         let thatBasic = state_base(this.props.thatstate,this.props.mystate);//计算状态影响下的属性
         let basic = {mystate:myBasic,thatstate:thatBasic}

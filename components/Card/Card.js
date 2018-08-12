@@ -24,7 +24,6 @@ class Card extends React.Component{
   	render() {
         // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
         let card = this.props.card
-        console.info(card);
         if(this.props.cardfor!="that"){
             return <div className={this.props.cardfor=="my"?"card_box card_my":"card_box"}
                         onClick={this.props.cardfor=="my"?this.usecard.bind(this,card.id,card.name):""}>

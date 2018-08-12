@@ -1,6 +1,7 @@
 import React from 'react';
 import "./playing.scss";
 import {prepareOk,cardheap,getnewstate} from '../../components/action';
+import Tooltip from '../../components/Tooltip/Tooltip';
 // import {HeroSelect,PlayPage} from '../../components/index';
 import PAGES from '../../components/index';
 const ACTION = {
@@ -50,6 +51,8 @@ class Component extends React.Component{
             thatstate:{},//对手状态
 
             playingSpeed:0,//游戏进度
+
+            Tooltip:{},//
         }
     }
 
@@ -66,6 +69,7 @@ class Component extends React.Component{
                 setState={this.setState.bind(this)}
                 {...this.props}
                 {...this.state}/>
+            <Tooltip {...this.state.Tooltip}/>
         </div>;
   	}
 }

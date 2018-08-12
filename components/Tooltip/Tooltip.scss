@@ -1,5 +1,4 @@
     .Tooltip {
-        visibility: hidden;
         width: 120px;
         background-color: black;
         color: #fff;
@@ -9,15 +8,14 @@
         font-size: 12px;
         position: absolute;
         z-index: 1;
-        transform: translate(-27px, -100%);
-        top: -4px;
-        .redmessage{
+        transform: translate(-100%, -100%);
+        .redTitle{
             color: red;
             display: inline-block;
             margin: 0px 5px;
         }
     }
-    .Tooltip:after{
+/*    .Tooltip:after{
         content: "";
         width:20px;
         height: 20px;
@@ -31,4 +29,4 @@
         left: calc(50% - 9px);
         top: calc(100% - 17px);
         z-index: -1;
-    }
+    }*/

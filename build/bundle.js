@@ -741,6 +741,108 @@ process.umask = function() { return 0; };
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var validateFormat = function validateFormat(format) {};
+
+if (process.env.NODE_ENV !== 'production') {
+  validateFormat = function validateFormat(format) {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  };
+}
+
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+}
+
+module.exports = invariant;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+module.exports = emptyFunction;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
@@ -3018,108 +3120,6 @@ function specialcard(props, card) {
 }
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (process.env.NODE_ENV !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-module.exports = emptyFunction;
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3255,7 +3255,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(6);
 
 __webpack_require__(51);
 
@@ -3302,7 +3302,6 @@ var Card = function (_React$Component) {
         value: function render() {
             // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
             var card = this.props.card;
-            console.info(card);
             if (this.props.cardfor != "that") {
                 return _react2.default.createElement(
                     'div',
@@ -3355,7 +3354,7 @@ module.exports = Card;
 
 
 
-var emptyFunction = __webpack_require__(6);
+var emptyFunction = __webpack_require__(5);
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -3446,7 +3445,7 @@ module.exports = function escape(url) {
 
 
 if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(5);
+  var invariant = __webpack_require__(4);
   var warning = __webpack_require__(10);
   var ReactPropTypesSecret = __webpack_require__(28);
   var loggedTypeFailures = {};
@@ -4290,7 +4289,7 @@ var _BuffIon = __webpack_require__(20);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(6);
 
 __webpack_require__(57);
 
@@ -4578,7 +4577,7 @@ var _BuffIon = __webpack_require__(20);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(6);
 
 __webpack_require__(62);
 
@@ -4728,7 +4727,7 @@ var _DotaSystem = __webpack_require__(36);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(79);
+__webpack_require__(86);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4798,7 +4797,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(5),ea=__webpack_require__(0),m=__webpack_require__(13),A=__webpack_require__(7),C=__webpack_require__(6),fa=__webpack_require__(14),ha=__webpack_require__(15),ja=__webpack_require__(16),ka=__webpack_require__(8);
+var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(13),A=__webpack_require__(7),C=__webpack_require__(5),fa=__webpack_require__(14),ha=__webpack_require__(15),ja=__webpack_require__(16),ka=__webpack_require__(8);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -5048,7 +5047,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(7),n=__webpack_require__(5),p=__webpack_require__(8),q=__webpack_require__(6),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(7),n=__webpack_require__(4),p=__webpack_require__(8),q=__webpack_require__(5),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -5086,10 +5085,10 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var _assign = __webpack_require__(7);
-var invariant = __webpack_require__(5);
+var invariant = __webpack_require__(4);
 var emptyObject = __webpack_require__(8);
 var warning = __webpack_require__(10);
-var emptyFunction = __webpack_require__(6);
+var emptyFunction = __webpack_require__(5);
 var checkPropTypes = __webpack_require__(12);
 
 // TODO: this is special because it gets imported during build.
@@ -6582,12 +6581,12 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var invariant = __webpack_require__(5);
+var invariant = __webpack_require__(4);
 var React = __webpack_require__(0);
 var warning = __webpack_require__(10);
 var ExecutionEnvironment = __webpack_require__(13);
 var _assign = __webpack_require__(7);
-var emptyFunction = __webpack_require__(6);
+var emptyFunction = __webpack_require__(5);
 var checkPropTypes = __webpack_require__(12);
 var getActiveElement = __webpack_require__(14);
 var shallowEqual = __webpack_require__(15);
@@ -23994,7 +23993,11 @@ var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(45);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(6);
+
+var _Tooltip = __webpack_require__(73);
+
+var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
 var _index = __webpack_require__(47);
 
@@ -24061,7 +24064,9 @@ var Component = function (_React$Component) {
             cardShowList: [], //出牌历史
             thatstate: {}, //对手状态
 
-            playingSpeed: 0 //游戏进度
+            playingSpeed: 0, //游戏进度
+
+            Tooltip: {} //
         };
         return _this;
     }
@@ -24085,7 +24090,8 @@ var Component = function (_React$Component) {
                 { className: 'system_body' },
                 _react2.default.createElement(Field, _extends({
                     setState: this.setState.bind(this)
-                }, this.props, this.state))
+                }, this.props, this.state)),
+                _react2.default.createElement(_Tooltip2.default, this.state.Tooltip)
             );
         }
     }]);
@@ -24170,7 +24176,7 @@ var _PlayPage = __webpack_require__(48);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(73);
+var _HeroSelect = __webpack_require__(80);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
@@ -24209,7 +24215,7 @@ var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(49);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(6);
 
 var _skill = __webpack_require__(17);
 
@@ -24347,7 +24353,6 @@ var PlayPage = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            console.info(this.props);
             var myBasic = (0, _action.state_base)(this.props.mystate, this.props.thatstate); //计算状态影响下的属性
             var thatBasic = (0, _action.state_base)(this.props.thatstate, this.props.mystate); //计算状态影响下的属性
             var basic = { mystate: myBasic, thatstate: thatBasic };
@@ -24725,6 +24730,8 @@ exports.push([module.i, "", ""]);
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(0);
@@ -24743,7 +24750,7 @@ var _Shoping = __webpack_require__(68);
 
 var _Shoping2 = _interopRequireDefault(_Shoping);
 
-__webpack_require__(71);
+__webpack_require__(78);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24787,7 +24794,6 @@ var FightPlace = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            this.props.cardShowList;
             return _react2.default.createElement(
                 'div',
                 { className: 'fight_place' },
@@ -24807,9 +24813,9 @@ var FightPlace = function (_React$Component) {
                     this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], cardfor: "show" }) : ""
                 ),
                 _react2.default.createElement('div', { className: 'shop', onClick: this.goshoping.bind(this) }),
-                _react2.default.createElement(_Shoping2.default, {
+                _react2.default.createElement(_Shoping2.default, _extends({}, this.props, {
                     show: this.state.shoping,
-                    goshoping: this.goshoping.bind(this) })
+                    goshoping: this.goshoping.bind(this) }))
             );
         }
     }]);
@@ -25010,19 +25016,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _equipment = __webpack_require__(86);
+var _equipment = __webpack_require__(69);
 
 var _equipment2 = _interopRequireDefault(_equipment);
 
-var _Equipment = __webpack_require__(81);
+var _Equipment = __webpack_require__(70);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
-var _Tooltip = __webpack_require__(87);
-
-var _Tooltip2 = _interopRequireDefault(_Tooltip);
-
-__webpack_require__(69);
+__webpack_require__(76);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25043,8 +25045,53 @@ var Shoping = function (_React$Component) {
 
     _createClass(Shoping, [{
         key: 'showtip',
-        value: function showtip(i) {
-            console.info(i);
+        value: function showtip(i, e) {
+            // console.info(e.target)
+            this.props.setState({ Tooltip: {
+                    show: true,
+                    place: [e.clientX, e.clientY],
+                    name: _equipment2.default[i].name,
+                    redT: _equipment2.default[i].price,
+                    message: _equipment2.default[i].message
+                } });
+        }
+    }, {
+        key: 'closetip',
+        value: function closetip() {
+            this.props.setState({ Tooltip: { show: false } });
+        }
+    }, {
+        key: 'buyone',
+        value: function buyone(i) {
+            console.info(this.props);
+            var equipment = _equipment2.default[i];
+            var price = equipment.price.slice(1) * 1;
+            var newstate = this.props;
+            var mystate = this.props.mystate;
+
+            if (mystate.equipment.length >= 6) {
+                newstate.messagelist.push("物品栏不够");
+                this.props.setState(mystate);
+                return;
+            }
+            if (price > mystate.money) {
+                newstate.messagelist.push("还差" + (price - mystate.money) + "金购买\"" + equipment.name + "\"");
+                this.props.setState(mystate);
+                return;
+            }
+            mystate.money -= price; //金钱
+            mystate.equipment.push(equipment.id);
+            newstate.messagelist.push("你购买了\"" + equipment.name + "\"");
+            this.props.setState(newstate);
+
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { thatstate: mystate },
+                    message: "对方购买了\"" + equipment.name + "\""
+                }
+            });
         }
     }, {
         key: 'showEquipment',
@@ -25054,7 +25101,10 @@ var Shoping = function (_React$Component) {
             return _equipment2.default.map(function (item, i) {
                 return _react2.default.createElement(
                     'div',
-                    { onMouseOver: _this2.showtip.bind(_this2, i) },
+                    { className: 'posi_tion',
+                        onMouseOver: _this2.showtip.bind(_this2, i),
+                        onMouseOut: _this2.closetip.bind(_this2),
+                        onClick: _this2.buyone.bind(_this2, i) },
                     _react2.default.createElement(_Equipment2.default, item)
                 );
             });
@@ -25070,7 +25120,6 @@ var Shoping = function (_React$Component) {
                     { className: "shop_room" },
                     this.showEquipment()
                 ),
-                _react2.default.createElement(_Tooltip2.default, null),
                 _react2.default.createElement(
                     'div',
                     { className: 'back', onClick: this.props.goshoping },
@@ -25089,8 +25138,280 @@ module.exports = Shoping;
 /* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
 
-var content = __webpack_require__(70);
+
+var equipment = [];
+
+equipment[0] = { id: 0, name: "达贡之神力", price: "￥35", message: "对敌方造成250点伤害,CD5回合" };
+equipment[1] = { id: 1, name: "深渊战刃", price: "￥30", message: "攻击+30 【主动使用】使敌方晕眩一回合,无视魔免,CD4回合" };
+equipment[2] = { id: 2, name: "秘法鞋", price: "￥20", message: "能量值+3,CD3回合" };
+equipment[3] = { id: 3, name: "虚灵之刃", price: "￥20", message: "使敌方和自己同时进入虚无状态一回合 虚无状态下受到法术伤害加40%,物理伤害免疫,CD5回合" };
+equipment[4] = { id: 4, name: "天堂之戟", price: "￥25", message: "攻击力+30 敌方下一回合无法普通攻击,CD4回合" };
+equipment[5] = { id: 5, name: "撒旦之邪力", price: "￥50", message: "血量+200,血量上限+200 普通攻击对敌方造成伤害时可以将伤害的20%转化成自己的生命值 【开启状态】一回合内将伤害转化为生命值,CD5回合" };
+equipment[6] = { id: 6, name: "刃甲", price: "￥30", message: "护甲+10 【开启状态】一回合内反弹任何伤害，CD3回合" };
+equipment[7] = { id: 7, name: "邪恶镰刀", price: "￥45", message: "能量格上限+1,能量回复+1 【主动使用】将敌方变羊一回合.CD3回合" };
+equipment[8] = { id: 8, name: "散失之刃", price: "￥35", message: "普通攻击成功敌方能量值-1 每回合最多削减敌方一点能量值 【主动使用】净化敌方的所有buff,CD3回合" };
+equipment[9] = { id: 9, name: "勇气勋章", price: "￥20", message: "护甲+10 【主动使用】敌方护甲-10,己方护甲-10,持续一回合,CD两回合" };
+equipment[10] = { id: 10, name: "BKB", price: "￥50", message: "攻击力+15 【主动使用】魔法免疫一回合,CD4回合" };
+equipment[11] = { id: 11, name: "灵魂之戒", price: "￥20", message: "每回合HP+5 【主动使用】HP+50,能量格+1,CD1回合" };
+equipment[12] = { id: 12, name: "梅肯斯姆", price: "￥40", message: "每回合HP+10 【主动使用】HP+100,CD5回合" };
+equipment[13] = { id: 13, name: "Eull的神圣法杖", price: "￥30", message: "能量回复+1 【主动使用】一回合内无敌,CD4回合" };
+equipment[14] = { id: 14, name: "紫怨", price: "￥30", message: "能量上限+1,攻击+5 【主动使用】使敌方在一回合内无法放技能,CD4回合" };
+equipment[15] = { id: 15, name: "食尸鬼王的臂章", price: "￥35", message: "攻击+10 【开启状态】HP+300,攻击+30,每回合结束HP-100 【关闭】HP-300,不会致死,攻击-30" };
+equipment[16] = { id: 16, name: "林肯法球", price: "￥45", message: "能量格上限+1,能量回复+1 每3回合可以抵挡一次指向性法术(对装备的法术无效)" };
+equipment[17] = { id: 17, name: "辉耀", price: "￥60", message: "攻击+45,敌方每回合HP-40" };
+equipment[18] = { id: 18, name: "狂战斧", price: "￥35", message: "攻击+25 攻击时额外增加攻击=5倍敌方手牌数" };
+equipment[19] = { id: 19, name: "蝴蝶", price: "￥35", message: "攻击+30 敌方的普通攻击有30%的概率丢失" };
+equipment[20] = { id: 20, name: "圣剑", price: "￥80", message: "攻击+150" };
+equipment[21] = { id: 21, name: "黯灭", price: "￥35", message: "攻击时降低敌方40点护甲" };
+
+module.exports = equipment;
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(71);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Equipment = function (_React$Component) {
+    _inherits(Equipment, _React$Component);
+
+    function Equipment() {
+        _classCallCheck(this, Equipment);
+
+        return _possibleConstructorReturn(this, (Equipment.__proto__ || Object.getPrototypeOf(Equipment)).call(this));
+    }
+
+    _createClass(Equipment, [{
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement("div", { className: "equipment", style: { background: "url(./server/equipmentImg/" + this.props.id + ".png) no-repeat center" } });
+        }
+    }]);
+
+    return Equipment;
+}(_react2.default.Component);
+
+module.exports = Equipment;
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(72);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".equipment {\n  width: 70px;\n  height: 70px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(74);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Tooltip = function (_React$Component) {
+    _inherits(Tooltip, _React$Component);
+
+    function Tooltip() {
+        _classCallCheck(this, Tooltip);
+
+        return _possibleConstructorReturn(this, (Tooltip.__proto__ || Object.getPrototypeOf(Tooltip)).call(this));
+    }
+
+    _createClass(Tooltip, [{
+        key: "render",
+        value: function render() {
+            if (this.props.show) {
+                return _react2.default.createElement(
+                    "div",
+                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px" } },
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.name,
+                        _react2.default.createElement(
+                            "div",
+                            { className: "redTitle" },
+                            this.props.redT
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.message
+                    )
+                );
+            } else {
+                return _react2.default.createElement("div", null);
+            }
+        }
+    }]);
+
+    return Tooltip;
+}(_react2.default.Component);
+
+module.exports = Tooltip;
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(75);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-100%, -100%); }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block;\n    margin: 0px 5px; }\n\n/*    .Tooltip:after{\n        content: \"\";\n        width:20px;\n        height: 20px;\n        background-color: black;\n        transform:rotate(45deg);\n        -ms-transform:rotate(45deg);  \n        -moz-transform:rotate(45deg);  \n        -webkit-transform:rotate(45deg); \n        -o-transform:rotate(45deg);  \n        position: absolute;\n        left: calc(50% - 9px);\n        top: calc(100% - 17px);\n        z-index: -1;\n    }*/\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(77);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -25136,7 +25457,7 @@ if(false) {
 }
 
 /***/ }),
-/* 70 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -25144,17 +25465,17 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".shop_room {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  background: blue;\n  transition: all 0.1s; }\n  .shop_room .back {\n    background: red;\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
+exports.push([module.i, ".shop_room {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  background: blue;\n  transition: all 0.1s; }\n  .shop_room .back {\n    background: red;\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px; }\n  .shop_room .posi_tion {\n    float: left;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 71 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(72);
+var content = __webpack_require__(79);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -25200,7 +25521,7 @@ if(false) {
 }
 
 /***/ }),
-/* 72 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -25214,7 +25535,7 @@ exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-he
 
 
 /***/ }),
-/* 73 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25226,7 +25547,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(74);
+__webpack_require__(81);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25303,11 +25624,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 74 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(75);
+var content = __webpack_require__(82);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -25353,7 +25674,7 @@ if(false) {
 }
 
 /***/ }),
-/* 75 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var escape = __webpack_require__(11);
@@ -25362,35 +25683,35 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".heroSelect {\n  height: 100%;\n  width: 100%;\n  text-align: center;\n  padding-top: calc(50% - 200px); }\n  .heroSelect .heropicture {\n    width: 200px;\n    height: 300px;\n    margin: 0px 10px 30px 10px;\n    display: inline-block; }\n  .heroSelect .hero0 {\n    background: url(" + escape(__webpack_require__(76)) + ") no-repeat center; }\n  .heroSelect .hero1 {\n    background: url(" + escape(__webpack_require__(77)) + ") no-repeat center; }\n  .heroSelect .hero2 {\n    background: url(" + escape(__webpack_require__(78)) + ") no-repeat center; }\n", ""]);
+exports.push([module.i, ".heroSelect {\n  height: 100%;\n  width: 100%;\n  text-align: center;\n  padding-top: calc(50% - 200px); }\n  .heroSelect .heropicture {\n    width: 200px;\n    height: 300px;\n    margin: 0px 10px 30px 10px;\n    display: inline-block; }\n  .heroSelect .hero0 {\n    background: url(" + escape(__webpack_require__(83)) + ") no-repeat center; }\n  .heroSelect .hero1 {\n    background: url(" + escape(__webpack_require__(84)) + ") no-repeat center; }\n  .heroSelect .hero2 {\n    background: url(" + escape(__webpack_require__(85)) + ") no-repeat center; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 76 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "aa958e8558b0308a86b38c3f7f51093f.jpg";
 
 /***/ }),
-/* 77 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "67589ccb55f496d32d5cfacc4148d6d4.jpg";
 
 /***/ }),
-/* 78 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "669049914c0d2ae64e40fe0f79f7a92e.jpg";
 
 /***/ }),
-/* 79 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(80);
+var content = __webpack_require__(87);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -25436,7 +25757,7 @@ if(false) {
 }
 
 /***/ }),
-/* 80 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -25445,278 +25766,6 @@ exports = module.exports = __webpack_require__(1)(false);
 
 // module
 exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(84);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Equipment = function (_React$Component) {
-    _inherits(Equipment, _React$Component);
-
-    function Equipment() {
-        _classCallCheck(this, Equipment);
-
-        return _possibleConstructorReturn(this, (Equipment.__proto__ || Object.getPrototypeOf(Equipment)).call(this));
-    }
-
-    _createClass(Equipment, [{
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement("div", { className: "equipment", style: { background: "url(./server/equipmentImg/" + this.props.id + ".png) no-repeat center" } });
-        }
-    }]);
-
-    return Equipment;
-}(_react2.default.Component);
-
-module.exports = Equipment;
-
-/***/ }),
-/* 82 */,
-/* 83 */,
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(85);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".equipment {\n  width: 70px;\n  height: 70px;\n  margin: 1px 3px 1px 2px;\n  float: left;\n  position: relative;\n  /*    .tooltip {\n        visibility: hidden;\n        width: 120px;\n        background-color: black;\n        color: #fff;\n        text-align: center;\n        border-radius: 6px;\n        padding: 5px 0;\n        font-size: 12px;\n        position: absolute;\n        z-index: 1;\n        transform: translate(-27px, -100%);\n        top: -4px;\n        .price{\n            color: red;\n            display: inline-block;\n            margin: 0px 5px;\n        }\n    }\n    .tooltip:after{\n        content: \"\";\n        width:20px;\n        height: 20px;\n        background-color: black;\n        transform:rotate(45deg);\n        -ms-transform:rotate(45deg);  \n        -moz-transform:rotate(45deg);  \n        -webkit-transform:rotate(45deg); \n        -o-transform:rotate(45deg);  \n        position: absolute;\n        left: calc(50% - 9px);\n        top: calc(100% - 17px);\n        z-index: -1;\n    }*/ }\n\n.equipment:hover .tooltip {\n  visibility: visible; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var equipment = [];
-
-equipment[0] = { id: 0, name: "达贡之神力", price: "￥35", message: "对敌方造成250点伤害,CD5回合" };
-equipment[1] = { id: 1, name: "深渊战刃", price: "￥30", message: "攻击+30 【主动使用】使敌方晕眩一回合,无视魔免,CD4回合" };
-equipment[2] = { id: 2, name: "秘法鞋", price: "￥20", message: "能量值+3,CD3回合" };
-equipment[3] = { id: 3, name: "虚灵之刃", price: "￥20", message: "使敌方和自己同时进入虚无状态一回合 虚无状态下受到法术伤害加40%,物理伤害免疫,CD5回合" };
-equipment[4] = { id: 4, name: "天堂之戟", price: "￥25", message: "攻击力+30 敌方下一回合无法普通攻击,CD4回合" };
-equipment[5] = { id: 5, name: "撒旦之邪力", price: "￥50", message: "血量+200,血量上限+200 普通攻击对敌方造成伤害时可以将伤害的20%转化成自己的生命值 【开启状态】一回合内将伤害转化为生命值,CD5回合" };
-equipment[6] = { id: 6, name: "刃甲", price: "￥30", message: "护甲+10 【开启状态】一回合内反弹任何伤害，CD3回合" };
-equipment[7] = { id: 7, name: "邪恶镰刀", price: "￥45", message: "能量格上限+1,能量回复+1 【主动使用】将敌方变羊一回合.CD3回合" };
-equipment[8] = { id: 8, name: "散失之刃", price: "￥35", message: "普通攻击成功敌方能量值-1 每回合最多削减敌方一点能量值 【主动使用】净化敌方的所有buff,CD3回合" };
-equipment[9] = { id: 9, name: "勇气勋章", price: "￥20", message: "护甲+10 【主动使用】敌方护甲-10,己方护甲-10,持续一回合,CD两回合" };
-equipment[10] = { id: 10, name: "BKB", price: "￥50", message: "攻击力+15 【主动使用】魔法免疫一回合,CD4回合" };
-equipment[11] = { id: 11, name: "灵魂之戒", price: "￥20", message: "每回合HP+5 【主动使用】HP+50,能量格+1,CD1回合" };
-equipment[12] = { id: 12, name: "梅肯斯姆", price: "￥40", message: "每回合HP+10 【主动使用】HP+100,CD5回合" };
-equipment[13] = { id: 13, name: "Eull的神圣法杖", price: "￥30", message: "能量回复+1 【主动使用】一回合内无敌,CD4回合" };
-equipment[14] = { id: 14, name: "紫怨", price: "￥30", message: "能量上限+1,攻击+5 【主动使用】使敌方在一回合内无法放技能,CD4回合" };
-equipment[15] = { id: 15, name: "食尸鬼王的臂章", price: "￥35", message: "攻击+10 【开启状态】HP+300,攻击+30,每回合结束HP-100 【关闭】HP-300,不会致死,攻击-30" };
-equipment[16] = { id: 16, name: "林肯法球", price: "￥45", message: "能量格上限+1,能量回复+1 每3回合可以抵挡一次指向性法术(对装备的法术无效)" };
-equipment[17] = { id: 17, name: "辉耀", price: "￥60", message: "攻击+45,敌方每回合HP-40" };
-equipment[18] = { id: 18, name: "狂战斧", price: "￥35", message: "攻击+25 攻击时额外增加攻击=5倍敌方手牌数" };
-equipment[19] = { id: 19, name: "蝴蝶", price: "￥35", message: "攻击+30 敌方的普通攻击有30%的概率丢失" };
-equipment[20] = { id: 20, name: "圣剑", price: "￥80", message: "攻击+150" };
-equipment[21] = { id: 21, name: "黯灭", price: "￥35", message: "攻击时降低敌方40点护甲" };
-
-module.exports = equipment;
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(90);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Tooltip = function (_React$Component) {
-    _inherits(Tooltip, _React$Component);
-
-    function Tooltip() {
-        _classCallCheck(this, Tooltip);
-
-        return _possibleConstructorReturn(this, (Tooltip.__proto__ || Object.getPrototypeOf(Tooltip)).call(this));
-    }
-
-    _createClass(Tooltip, [{
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "Tooltip" },
-                _react2.default.createElement(
-                    "div",
-                    null,
-                    this.props.name,
-                    _react2.default.createElement(
-                        "div",
-                        { className: "redmessage" },
-                        this.props.price
-                    )
-                ),
-                _react2.default.createElement(
-                    "div",
-                    null,
-                    this.props.message
-                )
-            );
-        }
-    }]);
-
-    return Tooltip;
-}(_react2.default.Component);
-
-module.exports = Tooltip;
-
-/***/ }),
-/* 88 */,
-/* 89 */,
-/* 90 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(91);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 91 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".Tooltip {\n  visibility: hidden;\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-27px, -100%);\n  top: -4px; }\n  .Tooltip .redmessage {\n    color: red;\n    display: inline-block;\n    margin: 0px 5px; }\n\n.Tooltip:after {\n  content: \"\";\n  width: 20px;\n  height: 20px;\n  background-color: black;\n  transform: rotate(45deg);\n  -ms-transform: rotate(45deg);\n  -moz-transform: rotate(45deg);\n  -webkit-transform: rotate(45deg);\n  -o-transform: rotate(45deg);\n  position: absolute;\n  left: calc(50% - 9px);\n  top: calc(100% - 17px);\n  z-index: -1; }\n", ""]);
 
 // exports
 
