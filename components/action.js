@@ -199,6 +199,7 @@ function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
     let bufflist = props[MorT].buff;
     let bufflistTime = props[MorT].buffTime;
     buff.map((buffkey,i)=>{//i
+        if(typeof(buffT[i])=="string")buffT[i] = parseInt(eval(buffT[i]));//字符串的时间,转换成数字
         let needadd = true;
         for(let I = bufflist.length-1;I>=0;I--){//I
             if(bufflist[I]==buffkey){
@@ -628,6 +629,64 @@ function attackAfter(props,Attack){
     return [Attack,props];
 }
 
+export function doEquip (props,card){//使用技能
+    let mystate = props.mystate;
+    let thatstate = props.thatstate;
+    card = JSON.parse(JSON.stringify(card));
+    let checked = true;//用于判断检查状态
+
+    for(let key in card.do){
+        let value = card.do[key]
+        if(typeof(value)=="string")card.do[key] = parseInt(eval(value));
+    }
+    [checked,props]= check_round(props);
+    if(!checked)return [false,props];
+
+    //check_myBuff(props);
+    //释放技能判定 己方负面状态
+    const debuff_doskill = {
+        0:"晕眩",
+        10:"超级新星",
+        14:"决斗",
+        22:"末日",
+        23:"回音重踏",
+        32:"战士怒吼",
+        34:"剑刃风暴",
+        36:"海妖之歌",
+        37:"石化",
+        55:"噩梦",
+        68:"极寒之拥",
+        87:"妖术",
+        88:"风杖"
+    }
+    let res = [true,props];
+    mystate.buff.map((buffid)=>{//
+        if(!res[0])return;
+        if(debuff_doskill[buffid]){
+            props.messagelist.push("处于\""+debuff_doskill[buffid]+"\"状态,不能出牌！");
+            res = [false,props];
+        }
+    });
+    [checked,props] = res;
+//---------------------------------------
+
+
+    switch(card.state){
+        case 1://指向性装备技能
+            [checked,props] = check_checkMp(props,card);
+            if(!checked)return [false,props];
+            [checked,props] = check_thatBuff(props);
+            if(!checked)return [false,props];
+            props = docard(props,card);
+            break
+        case 2://非指向性
+            [checked,props] = check_checkMp(props,card);
+            if(!checked)return [false,props];
+            props = docard(props,card);
+            break
+    }
+    return [true,props];
+}
 
 
 
