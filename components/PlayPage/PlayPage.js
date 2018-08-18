@@ -82,7 +82,6 @@ class PlayPage extends React.Component{
                 mystate:mystate,
                 thatstate:thatstate
             });
-            console.info("emit_totalk");
             this.props.socket.emit('totalk', {
                 id:this.props.thatid,
                 obj:{

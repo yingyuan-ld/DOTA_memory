@@ -19,7 +19,6 @@ class Component extends React.Component{
         }
         this.props.socket.on('getpersen', (persenAry)=>{//刷新人员列表
             this.setState({persenAry:persenAry});
-            console.info("刷新人员列表");
         })
         this.props.socket.on('getmessage', (mewmessage)=>{//刷新消息
             // let message = this.state.message;
@@ -83,7 +82,6 @@ class Component extends React.Component{
         this.props.socket.emit('sendmessage', this.state.mymessage);
     }
   	render() {
-        console.info(this.state);
         return <div className="prepare_body">
             <h1>请选择一个玩家</h1>
             <div className="Chat_record">

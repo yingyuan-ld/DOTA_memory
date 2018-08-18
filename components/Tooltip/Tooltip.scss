@@ -9,24 +9,17 @@
         position: absolute;
         z-index: 1;
         transform: translate(-100%, -100%);
-        .redTitle{
-            color: red;
+        .yeloTitle{
+            color: yellow;
+            display: inline-block;
+        }
+        .blueTitle{
+            color: blue;
             display: inline-block;
             margin: 0px 5px;
         }
+        .redTitle{
+            color: red;
+            display: inline-block;
+        }
     }
-/*    .Tooltip:after{
-        content: "";
-        width:20px;
-        height: 20px;
-        background-color: black;
-        transform:rotate(45deg);
-        -ms-transform:rotate(45deg);  
-        -moz-transform:rotate(45deg);  
-        -webkit-transform:rotate(45deg); 
-        -o-transform:rotate(45deg);  
-        position: absolute;
-        left: calc(50% - 9px);
-        top: calc(100% - 17px);
-        z-index: -1;
-    }*/

@@ -76,12 +76,12 @@ class HeroPlaceMy extends React.Component{
     }
 
     showtip(item,e){
-        // console.info(e.target)
         this.props.setState({Tooltip:{
             show:true,
             place:[e.clientX,e.clientY],
             name:item.name,
-            redT:item.price,
+            blueT:item.mp,
+            redT:item.CD,
             message:item.message,
         }})
     }
@@ -90,10 +90,10 @@ class HeroPlaceMy extends React.Component{
     }
     showEquipment(equipments){
         return equipments.map((item,i)=>{
-            return <div className="posi_tion"
+            return <div className="posi_tion" key={i}
                         onMouseOver={this.showtip.bind(this,item)}
                         onMouseOut={this.closetip.bind(this)}>
-                    <Equipment {...item}/>
+                    <Equipment {...this.props} equipment={item} equipfor={"my"}/>
                 </div>
             })
     }
@@ -117,7 +117,7 @@ class HeroPlaceMy extends React.Component{
                 {this.cardlist()}
             </div>
             <div className="equipment_list">
-                {"金钱:"+this.props.mystate.money}
+                <div>{"金钱:"+this.props.mystate.money}</div>
                 {this.showEquipment(basic.equipment)}
             </div>
         </div>

@@ -9,12 +9,13 @@ class Shoping extends React.Component{
         super();
     }
     showtip(i,e){
-        // console.info(e.target)
         this.props.setState({Tooltip:{
             show:true,
             place:[e.clientX,e.clientY],
             name:equipmentFile[i].name,
-            redT:equipmentFile[i].price,
+            yeloT:equipmentFile[i].price,
+            blueT:equipmentFile[i].mp,
+            redT:equipmentFile[i].CD,
             message:equipmentFile[i].message,
         }})
     }
@@ -22,7 +23,6 @@ class Shoping extends React.Component{
         this.props.setState({Tooltip:{show:false}});
     }
     buyone(i){
-        console.info(this.props);
         let equipment = equipmentFile[i];
         let price = equipment.price.slice(1)*1
         let newstate = this.props;
@@ -54,11 +54,11 @@ class Shoping extends React.Component{
     }
     showEquipment(){
         return equipmentFile.map((item,i)=>{
-            return <div className="posi_tion"
+            return <div className="posi_tion" key={i}
                         onMouseOver={this.showtip.bind(this,i)}
                         onMouseOut={this.closetip.bind(this)}
                         onClick={this.buyone.bind(this,i)}>
-                    <Equipment {...item}/>
+                    <Equipment equipment={item}/>
                 </div>
             })
     }
