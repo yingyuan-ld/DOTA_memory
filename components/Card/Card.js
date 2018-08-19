@@ -1,5 +1,5 @@
 import React from 'react';
-import {doskill} from '../action';//使用技能
+import {doAttack} from '../action';//使用技能
 import "./Card.scss";
 
 class Card extends React.Component{
@@ -8,7 +8,7 @@ class Card extends React.Component{
     }
     usecard(id,name){
 
-        let [check,newstate] = doskill(this.props,this.props.card);
+        let [check,newstate] = doAttack(this.props,this.props.card,"card");
         this.props.setState(newstate);
         if(check==false)return;
 

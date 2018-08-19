@@ -23,16 +23,24 @@ class HeroPlaceMy extends React.Component{
         });
     }
     attackBtn(){
-        let [attack,newstate] = doAttack(this.props);
+
+        let attack = {
+            name:"普通攻击",
+            state: 1,
+            do:{
+                tHp:this.props.mystate.attack
+            }
+        }
+        let [check,newstate] = doAttack(this.props,attack,"attack");
         this.props.setState(newstate);
 
-        if(attack==false)return;
+        if(check==false)return;
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
                 newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate},
-                message:attack=="miss"?"对方普通攻击MISS":"普通攻击对你造成\""+attack+"\"点伤害",
+                message:check=="miss"?"对方普通攻击MISS":"普通攻击对你造成\""+check+"\"点伤害",
             }
         });
     }
