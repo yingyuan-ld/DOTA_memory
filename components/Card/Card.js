@@ -26,7 +26,7 @@ class Card extends React.Component{
         let card = this.props.card
         if(this.props.cardfor!="that"){
             return <div className={this.props.cardfor=="my"?"card_box card_my":"card_box"}
-                        onClick={this.props.cardfor=="my"?this.usecard.bind(this,card.id,card.name):""}>
+                        onClick={this.props.cardfor=="my"?this.usecard.bind(this,card.id,card.name):()=>{}}>
                 <div className="card_ion" style={{background: "url(./server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
                 <div className="card_name">{card.name}</div>
                 <div className="card_message">{card.message}</div>
@@ -35,13 +35,6 @@ class Card extends React.Component{
         if(this.props.cardfor=="that"){
             return <div className="card_box_hide" />
         }
-        // if(this.props.cardfor=="show"){
-        //     return <div className="card_box">
-        //         <div className="card_ion" style={{background: "url(./server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
-        //         <div className="card_name">{card.name}</div>
-        //         <div className="card_message">{card.message}</div>
-        //     </div>
-        // }
         return <div className="card_box_hide" />
   	}
 }

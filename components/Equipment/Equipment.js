@@ -1,5 +1,5 @@
 import React from 'react';
-import {doEquip} from '../action';//使用技能
+import {doAttack} from '../action';//使用技能
 import "./Equipment.scss";
 
 class Equipment extends React.Component{
@@ -8,7 +8,7 @@ class Equipment extends React.Component{
     }
     useEquip(equipment){
 
-        let [check,newstate] = doEquip(this.props,equipment);
+        let [check,newstate] = doAttack(this.props,equipment,"equipt");
         this.props.setState(newstate);
         if(check==false)return;
 

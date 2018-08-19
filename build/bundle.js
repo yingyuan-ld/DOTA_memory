@@ -759,6 +759,12 @@ exports.specialcard = specialcard;
 
 var _skill = __webpack_require__(17);
 
+var _setUpData = __webpack_require__(89);
+
+var _setUpData2 = _interopRequireDefault(_setUpData);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function prepareOk(mystate, obj) {
     //准备开始
     mystate.round -= obj.round;
@@ -806,181 +812,16 @@ function getnewstate(tate, obj) {
 }
 function state_base(mystate, thatstate) {
     if (!mystate.buff) return mystate;
-    var stateBase = {
-        maxHp: 3500, //最大血量
-        Hprecove: 10, //生命值恢复速度
-        maxMp: 500, //最大蓝量
-        Mprecove: 50, //魔法值恢复速度
-        attack: 40, //攻击力
-        armor: 10, //护甲
-        attackRecove: 1 //攻击速度
-    };
-    switch (mystate.herotype) {
-        case 0:
-            stateBase.herotype = 0;
-            stateBase.maxHp = 4000;
-            stateBase.Hprecove = 15;
-            break;
-        case 1:
-            stateBase.herotype = 1;
-            stateBase.attack = 70;
-            stateBase.armor = 15;
-            break;
-        case 2:
-            stateBase.herotype = 2;
-            stateBase.maxHp = 3000;
-            stateBase.maxMp = 600;
-            stateBase.Mprecove = 60;
-            break;
-    }
+    var stateBase = _setUpData2.default.herotype[mystate.herotype]; //英雄型号
+    stateBase = JSON.parse(JSON.stringify(stateBase));
     mystate.equipment.map(function (equp) {
-        switch (equp.id) {
-            case 0:
-                //达贡之神力
-                break;
-            case 1:
-                //深渊战刃
-                stateBase.attack += 30;
-                break;
-            case 2:
-                //秘法鞋
-                break;
-            case 3:
-                //虚灵之刃
-                break;
-            case 4:
-                //天堂之戟
-                stateBase.attack += 30;
-                break;
-            case 5:
-                //撒旦之邪力
-                break;
-            case 6:
-                //刃甲
-                stateBase.armor += 10;
-                break;
-            case 7:
-                //邪恶镰刀
-                stateBase.maxMp += 100;
-                stateBase.Mprecove += 10;
-                break;
-            case 8:
-                //散失之刃
-                break;
-            case 9:
-                //勇气勋章
-                stateBase.armor += 10;
-                break;
-            case 10:
-                //BKB
-                stateBase.attack += 15;
-                break;
-            case 11:
-                //灵魂之戒
-                stateBase.Hprecove += 10;
-                break;
-            case 12:
-                //梅肯斯姆
-                stateBase.Hprecove += 10;
-                break;
-            case 13:
-                //Eull的神圣法杖
-                stateBase.Mprecove += 10;
-                break;
-            case 14:
-                //紫怨
-                stateBase.maxMp += 100;
-                stateBase.Mprecove += 10;
-                break;
-            case 15:
-                //食尸鬼王的臂章
-                stateBase.attack += 10;
-                break;
-            case 16:
-                //林肯法球
-                stateBase.maxMp += 100;
-                stateBase.Mprecove += 10;
-                break;
-            case 17:
-                //辉耀
-                stateBase.attack += 45;
-                break;
-            case 18:
-                //狂战斧
-                stateBase.attack += 25 + thatstate.cardid.length * 5;
-                break;
-            case 19:
-                //蝴蝶
-                stateBase.attack += 30;
-                break;
-            case 20:
-                //圣剑
-                stateBase.attack += 150;
-                break;
-            case 21:
-                //暗灭
-                break;
-        }
+        //装备遍历
+        stateBase = _setUpData2.default.equiptTo_base[equp.id](stateBase, mystate, thatstate);
     });
     mystate.buff.map(function (key) {
-        switch (key) {
-            case 5:
-                //巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
-                stateBase.armor -= 10;
-                break;
-            case 6:
-                //锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
-                stateBase.attack -= parseInt(stateBase.attack / 2);
-                break;
-            case 102:
-                //潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
-                stateBase.attack += 20 + thatstate.cardid.length * 10;
-                break;
-            case 103:
-                //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
-                stateBase.armor += mystate.buffObj["103"] * 10;
-                break;
-            case 11:
-                //战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
-                stateBase.armor += 40;
-                break;
-            case 13:
-                //强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
-                stateBase.attack += stateBase.attack;
-                break;
-            case 16:
-                //嚎叫 0 本回合攻击加60
-                stateBase.attack += 60;
-                break;
-            case 113:
-                //野性驱使 2 攻击加30
-                stateBase.attack += 30;
-                break;
-            case 73:
-                //酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
-                stateBase.armor -= 10;
-                stateBase.Hprecove -= 50;
-                break;
-            case 99:
-                //巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
-                stateBase.attack += thatstate.cardid.length * 10;
-                break;
-            case 18:
-                //战吼 2 三回合内增加自身30点护甲
-                stateBase.armor += 30;
-                break;
-            case 114:
-                //地精贪婪 2 每回合得到金钱数+50(持续3回合)
-                stateBase.moneyrecove += 50;
-                break;
-            case 115:
-                //龙族血统 2 每回合回复40点生命值(持续3回合)
-                stateBase.Hprecove += 40;
-                break;
-            case 21:
-                //授予力量 2 本回合内攻击加80
-                stateBase.attack += 80;
-                break;
+        //状态遍历
+        if (_setUpData2.default.buffTo_base[key]) {
+            stateBase = _setUpData2.default.buffTo_base[key](stateBase, mystate, thatstate);
         }
     });
     Object.assign(mystate, stateBase);
@@ -1036,67 +877,14 @@ function check_checkMp(props, card) {
 
 function check_myBuff(props, type) {
     //释放技能判定 己方负面状态
-    var whatToDo = {
-        card: "出牌",
-        attack: "攻击",
-        equipt: "使用装备"
-    };
-    var statconst = {
-        buffTocard: {
-            0: "晕眩",
-            1: "沉默",
-            10: "超级新星",
-            14: "决斗",
-            22: "末日",
-            23: "回音重踏",
-            32: "战士怒吼",
-            34: "剑刃风暴",
-            36: "海妖之歌",
-            37: "石化",
-            40: "烟幕",
-            55: "噩梦",
-            68: "极寒之拥",
-            87: "妖术",
-            88: "风杖"
-        },
-        buffToattack: {
-            0: "晕眩",
-            2: "虚无",
-            3: "缴械",
-            10: "超级新星",
-            23: "回音重踏",
-            28: "疯狂生长",
-            36: "海妖之歌",
-            37: "石化",
-            50: "虚妄之诺",
-            55: "噩梦",
-            68: "极寒之拥",
-            87: "妖术",
-            88: "风杖"
-        },
-        buffToequipt: {
-            0: "晕眩",
-            3: "缴械",
-            10: "超级新星",
-            14: "决斗",
-            22: "末日",
-            23: "回音重踏",
-            34: "剑刃风暴",
-            36: "海妖之歌",
-            37: "石化",
-            55: "噩梦",
-            68: "极寒之拥",
-            87: "妖术",
-            88: "风杖"
-        }
-    };
     var mystate = props.mystate;
     var res = [true, props];
     mystate.buff.map(function (buffid) {
         //
         if (!res[0]) return;
-        if (statconst["buffTo" + type][buffid]) {
-            props.messagelist.push("处于\"" + statconst["buffTo" + type][buffid] + "\"状态,不能" + whatToDo[type] + "！");
+        if (_setUpData2.default["muBuffTo_" + type][buffid]) {
+            //已经设定好的状态判断
+            props.messagelist.push("处于\"" + _setUpData2.default["muBuffTo_" + type][buffid] + "\"状态,不能" + _setUpData2.default.whatToDo[type] + "！");
             res = [false, props];
         }
     });
@@ -1104,43 +892,13 @@ function check_myBuff(props, type) {
 }
 function attack_thatBuff(props, type) {
     //物理攻击判断 对方状态
-    var whatToDo = {
-        card: "出牌",
-        attack: "攻击",
-        equipt: "使用装备"
-    };
-    var statconst = {
-        buffTocard: {
-            10: "超级新星",
-            34: "剑刃风暴",
-            36: "海妖之歌",
-            60: "魔免",
-            79: "暗影之舞",
-            88: "风杖"
-        },
-        buffToattack: {
-            2: "虚无",
-            24: "磁场",
-            36: "海妖之歌",
-            79: "暗影之舞",
-            88: "风杖"
-        },
-        buffToequipt: {
-            10: "超级新星",
-            34: "剑刃风暴",
-            36: "海妖之歌",
-            60: "魔免",
-            79: "暗影之舞",
-            88: "风杖"
-        }
-    };
     var thatstate = props.thatstate;
     var res = [true, props];
     thatstate.buff.map(function (buffid) {
         //
         if (!res[0]) return;
-        if (statconst["buffTo" + type][buffid]) {
-            props.messagelist.push("对方处于\"" + statconst["buffTo" + type][buffid] + "\"状态,不能" + whatToDo[type] + "！");
+        if (_setUpData2.default["thatBuffTo_" + type][buffid]) {
+            props.messagelist.push("对方处于\"" + _setUpData2.default["thatBuffTo_" + type][buffid] + "\"状态,不能" + _setUpData2.default.whatToDo[type] + "！");
             res = [false, props];
         }
     });
@@ -1808,7 +1566,7 @@ var Card = function (_React$Component) {
                 return _react2.default.createElement(
                     'div',
                     { className: this.props.cardfor == "my" ? "card_box card_my" : "card_box",
-                        onClick: this.props.cardfor == "my" ? this.usecard.bind(this, card.id, card.name) : "" },
+                        onClick: this.props.cardfor == "my" ? this.usecard.bind(this, card.id, card.name) : function () {} },
                     _react2.default.createElement('div', { className: 'card_ion', style: { background: "url(./server/skillImg/" + card.id + ".jpg) no-repeat center" } }),
                     _react2.default.createElement(
                         'div',
@@ -1825,13 +1583,6 @@ var Card = function (_React$Component) {
             if (this.props.cardfor == "that") {
                 return _react2.default.createElement('div', { className: 'card_box_hide' });
             }
-            // if(this.props.cardfor=="show"){
-            //     return <div className="card_box">
-            //         <div className="card_ion" style={{background: "url(./server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
-            //         <div className="card_name">{card.name}</div>
-            //         <div className="card_message">{card.message}</div>
-            //     </div>
-            // }
             return _react2.default.createElement('div', { className: 'card_box_hide' });
         }
     }]);
@@ -3139,10 +2890,10 @@ var Equipment = function (_React$Component) {
     _createClass(Equipment, [{
         key: 'useEquip',
         value: function useEquip(equipment) {
-            var _doEquip = (0, _action.doEquip)(this.props, equipment),
-                _doEquip2 = _slicedToArray(_doEquip, 2),
-                check = _doEquip2[0],
-                newstate = _doEquip2[1];
+            var _doAttack = (0, _action.doAttack)(this.props, equipment, "equipt"),
+                _doAttack2 = _slicedToArray(_doAttack, 2),
+                check = _doAttack2[0],
+                newstate = _doAttack2[1];
 
             this.props.setState(newstate);
             if (check == false) return;
@@ -24377,6 +24128,306 @@ exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 
 
 // exports
 
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+    whatToDo: {
+        card: "出牌",
+        attack: "攻击",
+        equipt: "使用装备"
+    },
+    muBuffTo_card: {
+        0: "晕眩",
+        1: "沉默",
+        10: "超级新星",
+        14: "决斗",
+        22: "末日",
+        23: "回音重踏",
+        32: "战士怒吼",
+        34: "剑刃风暴",
+        36: "海妖之歌",
+        37: "石化",
+        40: "烟幕",
+        55: "噩梦",
+        68: "极寒之拥",
+        87: "妖术",
+        88: "风杖"
+    },
+    muBuffTo_attack: {
+        0: "晕眩",
+        2: "虚无",
+        3: "缴械",
+        10: "超级新星",
+        23: "回音重踏",
+        28: "疯狂生长",
+        36: "海妖之歌",
+        37: "石化",
+        50: "虚妄之诺",
+        55: "噩梦",
+        68: "极寒之拥",
+        87: "妖术",
+        88: "风杖"
+    },
+    muBuffTo_equipt: {
+        0: "晕眩",
+        3: "缴械",
+        10: "超级新星",
+        14: "决斗",
+        22: "末日",
+        23: "回音重踏",
+        34: "剑刃风暴",
+        36: "海妖之歌",
+        37: "石化",
+        55: "噩梦",
+        68: "极寒之拥",
+        87: "妖术",
+        88: "风杖"
+    },
+    thatBuffTo_card: {
+        10: "超级新星",
+        34: "剑刃风暴",
+        36: "海妖之歌",
+        60: "魔免",
+        79: "暗影之舞",
+        88: "风杖"
+    },
+    thatBuffTo_attack: {
+        2: "虚无",
+        24: "磁场",
+        36: "海妖之歌",
+        79: "暗影之舞",
+        88: "风杖"
+    },
+    thatBuffTo_equipt: {
+        10: "超级新星",
+        34: "剑刃风暴",
+        36: "海妖之歌",
+        60: "魔免",
+        79: "暗影之舞",
+        88: "风杖"
+    },
+    herotype: {
+        0: {
+            maxHp: 4000, //最大血量
+            Hprecove: 15, //生命值恢复速度
+            maxMp: 500, //最大蓝量
+            Mprecove: 50, //魔法值恢复速度
+            attack: 40, //攻击力
+            armor: 10, //护甲
+            attackRecove: 1, //攻击速度
+            herotype: 0
+        },
+        1: {
+            maxHp: 3500, //最大血量
+            Hprecove: 10, //生命值恢复速度
+            maxMp: 500, //最大蓝量
+            Mprecove: 50, //魔法值恢复速度
+            attack: 70, //攻击力
+            armor: 15, //护甲
+            attackRecove: 1, //攻击速度
+            herotype: 1
+        },
+        2: {
+            maxHp: 3000, //最大血量
+            Hprecove: 10, //生命值恢复速度
+            maxMp: 600, //最大蓝量
+            Mprecove: 60, //魔法值恢复速度
+            attack: 40, //攻击力
+            armor: 10, //护甲
+            attackRecove: 1, //攻击速度
+            herotype: 2
+        }
+    },
+    equiptTo_base: {
+        0: function _(base) {
+            //达贡之神力
+            return base;
+        },
+        1: function _(base) {
+            //深渊战刃
+            base.attack += 30;
+            return base;
+        },
+        2: function _(base) {
+            //秘法鞋
+            return base;
+        },
+        3: function _(base) {
+            //虚灵之刃
+            return base;
+        },
+        4: function _(base) {
+            //天堂之戟
+            base.attack += 30;
+            return base;
+        },
+        5: function _(base) {
+            //撒旦之邪力
+            return base;
+        },
+        6: function _(base) {
+            //刃甲
+            base.armor += 10;
+            return base;
+        },
+        7: function _(base) {
+            //邪恶镰刀
+            base.maxMp += 100;
+            base.Mprecove += 10;
+            return base;
+        },
+        8: function _(base) {
+            //散失之刃
+            return base;
+        },
+        9: function _(base) {
+            //勇气勋章
+            base.armor += 10;
+            return base;
+        },
+        10: function _(base) {
+            //BKB
+            base.attack += 15;
+            return base;
+        },
+        11: function _(base) {
+            //灵魂之戒
+            base.Hprecove += 10;
+            return base;
+        },
+        12: function _(base) {
+            //梅肯斯姆
+            base.Hprecove += 10;
+            return base;
+        },
+        13: function _(base) {
+            //Eull的神圣法杖
+            base.Mprecove += 10;
+            return base;
+        },
+        14: function _(base) {
+            //紫怨
+            base.maxMp += 100;
+            base.Mprecove += 10;
+            return base;
+        },
+        15: function _(base) {
+            //食尸鬼王的臂章
+            base.attack += 10;
+            return base;
+        },
+        16: function _(base) {
+            //林肯法球
+            base.maxMp += 100;
+            base.Mprecove += 10;
+            return base;
+        },
+        17: function _(base) {
+            //辉耀
+            base.attack += 45;
+            return base;
+        },
+        18: function _(base, Mstate, Tstate) {
+            //狂战斧
+            base.attack += 25 + Tstate.cardid.length * 5;
+            return base;
+        },
+        19: function _(base) {
+            //蝴蝶
+            base.attack += 30;
+            return base;
+        },
+        20: function _(base) {
+            //圣剑
+            base.attack += 150;
+            return base;
+        },
+        21: function _(base) {
+            //暗灭
+            return base;
+        }
+    },
+    buffTo_base: {
+        5: function _(base) {
+            //巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
+            base.armor -= 10;
+            return base;
+        },
+        6: function _(base) {
+            //锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
+            base.attack -= parseInt(base.attack / 2);
+            return base;
+        },
+        102: function _(base, Mstate, Tstate) {
+            //潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
+            base.attack += 20 + Tstate.cardid.length * 10;
+            return base;
+        },
+        103: function _(base, Mstate, Tstate) {
+            //活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
+            base.armor += Mstate.buffObj["103"] * 10;
+            return base;
+        },
+        11: function _(base) {
+            //战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
+            base.armor += 40;
+            return base;
+        },
+        13: function _(base) {
+            //强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
+            base.attack += base.attack;
+            return base;
+        },
+        16: function _(base) {
+            //嚎叫 0 本回合攻击加60
+            base.attack += 60;
+            return base;
+        },
+        113: function _(base) {
+            //野性驱使 2 攻击加30
+            base.attack += 30;
+            return base;
+        },
+        73: function _(base) {
+            //酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
+            base.armor -= 10;
+            base.Hprecove -= 50;
+            return base;
+        },
+        99: function _(base, Mstate, Tstate) {
+            //巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
+            base.attack += Tstate.cardid.length * 10;
+            return base;
+        },
+        18: function _(base) {
+            //战吼 2 三回合内增加自身30点护甲
+            base.armor += 30;
+            return base;
+        },
+        114: function _(base) {
+            //地精贪婪 2 每回合得到金钱数+50(持续3回合)
+            base.moneyrecove += 50;
+            return base;
+        },
+        115: function _(base) {
+            //龙族血统 2 每回合回复40点生命值(持续3回合)
+            base.Hprecove += 40;
+            return base;
+        },
+        21: function _(base) {
+            //授予力量 2 本回合内攻击加80
+            base.attack += 80;
+            return base;
+        }
+    }
+
+};
 
 /***/ })
 /******/ ]);

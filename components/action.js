@@ -1,4 +1,5 @@
 import {big_skill,small_skill} from '../server/skill';
+import setUpData from './setUpData';
 
 
 export function prepareOk (mystate,obj){//准备开始
@@ -43,145 +44,14 @@ export function getnewstate(tate,obj){
 }
 export function state_base(mystate,thatstate){
     if(!mystate.buff)return mystate;
-    let stateBase = {
-        maxHp:3500,//最大血量
-        Hprecove:10,//生命值恢复速度
-        maxMp:500,//最大蓝量
-        Mprecove:50,//魔法值恢复速度
-        attack:40,//攻击力
-        armor:10,//护甲
-        attackRecove:1,//攻击速度
-    }
-    switch(mystate.herotype){
-        case 0:
-            stateBase.herotype=0;
-            stateBase.maxHp=4000;
-            stateBase.Hprecove=15;
-            break;
-        case 1:
-            stateBase.herotype=1;
-            stateBase.attack=70;
-            stateBase.armor=15;
-            break;
-        case 2:
-            stateBase.herotype=2;
-            stateBase.maxHp=3000;
-            stateBase.maxMp=600;
-            stateBase.Mprecove=60;
-            break;
-    }
-    mystate.equipment.map((equp)=>{
-        switch(equp.id){
-            case 0://达贡之神力
-                break;
-            case 1://深渊战刃
-                stateBase.attack+= 30;
-                break;
-            case 2://秘法鞋
-                break;
-            case 3://虚灵之刃
-                break;
-            case 4://天堂之戟
-                stateBase.attack+= 30;
-                break;
-            case 5://撒旦之邪力
-                break;
-            case 6://刃甲
-                stateBase.armor+=10;
-                break;
-            case 7://邪恶镰刀
-                stateBase.maxMp+=100;
-                stateBase.Mprecove+=10;
-                break;
-            case 8://散失之刃
-                break;
-            case 9://勇气勋章
-                stateBase.armor+=10;
-                break;
-            case 10://BKB
-                stateBase.attack+= 15;
-                break;
-            case 11://灵魂之戒
-                stateBase.Hprecove+=10;
-                break;
-            case 12://梅肯斯姆
-                stateBase.Hprecove+=10;
-                break;
-            case 13://Eull的神圣法杖
-                stateBase.Mprecove+=10;
-                break;
-            case 14://紫怨
-                stateBase.maxMp+=100;
-                stateBase.Mprecove+=10;
-                break;
-            case 15://食尸鬼王的臂章
-                stateBase.attack+= 10;
-                break;
-            case 16://林肯法球
-                stateBase.maxMp+=100;
-                stateBase.Mprecove+=10;
-                break;
-            case 17://辉耀
-                stateBase.attack+= 45;
-                break;
-            case 18://狂战斧
-                stateBase.attack+= (25+thatstate.cardid.length*5);
-                break;
-            case 19://蝴蝶
-                stateBase.attack+= 30;
-                break;
-            case 20://圣剑
-                stateBase.attack+= 150;
-                break; 
-            case 21://暗灭
-                break; 
-        }
+    let stateBase = setUpData.herotype[mystate.herotype];//英雄型号
+    stateBase = JSON.parse(JSON.stringify(stateBase));
+    mystate.equipment.map((equp)=>{//装备遍历
+        stateBase = setUpData.equiptTo_base[equp.id](stateBase,mystate,thatstate);
     })
-    mystate.buff.map((key)=>{
-        switch (key){
-            case 5://巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
-                stateBase.armor-=10;
-                break;
-            case 6://锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
-                stateBase.attack-= parseInt(stateBase.attack/2);
-                break;                
-            case 102://潮汐使者 2 使自己本回合增加20+对方手牌数*10点攻击力
-                stateBase.attack+= (20+thatstate.cardid.length*10);
-                break;
-            case 103://活性护甲 2 每受到一次攻击增加10点护甲(持续3回合)
-                stateBase.armor+= (mystate.buffObj["103"]*10);
-                break;
-            case 11://战士怒吼 0 增加自己40点护甲,使敌方下一回合只可以攻击自己
-                stateBase.armor+= 40;
-                break;
-            case 13://强化图腾 2 使自己攻击力变为现在攻击力的2倍(持续半回合)
-                stateBase.attack+= stateBase.attack;
-                break;
-            case 16://嚎叫 0 本回合攻击加60
-                stateBase.attack+= 60;
-                break;
-            case 113://野性驱使 2 攻击加30
-                stateBase.attack+= 30;
-                break;
-            case 73://酸性喷雾 0 三回合降低敌方10点护甲并造成50点伤害
-                stateBase.armor-= 10;
-                stateBase.Hprecove-= 50;
-                break;
-            case 99://巨力挥舞 2 普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)
-                stateBase.attack+= thatstate.cardid.length*10;
-                break;
-            case 18://战吼 2 三回合内增加自身30点护甲
-                stateBase.armor+= 30;
-                break;
-            case 114://地精贪婪 2 每回合得到金钱数+50(持续3回合)
-                stateBase.moneyrecove += 50;
-                break;
-            case 115://龙族血统 2 每回合回复40点生命值(持续3回合)
-                stateBase.Hprecove+= 40;
-                break;
-            case 21://授予力量 2 本回合内攻击加80
-                stateBase.attack+= 80;
-                break;
+    mystate.buff.map((key)=>{//状态遍历
+        if(setUpData.buffTo_base[key]){
+            stateBase = setUpData.buffTo_base[key](stateBase,mystate,thatstate);
         }
     })
     Object.assign(mystate, stateBase);
@@ -231,108 +101,24 @@ function check_checkMp (props,card){//判断剩余蓝量
 }
 
 function check_myBuff (props,type){//释放技能判定 己方负面状态
-    const whatToDo = {
-        card:"出牌",
-        attack:"攻击",
-        equipt:"使用装备"
-    }
-    let statconst = {
-        buffTocard : {
-            0:"晕眩",
-            1:"沉默",
-            10:"超级新星",
-            14:"决斗",
-            22:"末日",
-            23:"回音重踏",
-            32:"战士怒吼",
-            34:"剑刃风暴",
-            36:"海妖之歌",
-            37:"石化",
-            40:"烟幕",
-            55:"噩梦",
-            68:"极寒之拥",
-            87:"妖术",
-            88:"风杖"
-        },
-        buffToattack : {
-            0:"晕眩",
-            2:"虚无",
-            3:"缴械",
-            10:"超级新星",
-            23:"回音重踏",
-            28:"疯狂生长",
-            36:"海妖之歌",
-            37:"石化",
-            50:"虚妄之诺",
-            55:"噩梦",
-            68:"极寒之拥",
-            87:"妖术",
-            88:"风杖"
-        },
-        buffToequipt : {
-            0:"晕眩",
-            3:"缴械",
-            10:"超级新星",
-            14:"决斗",
-            22:"末日",
-            23:"回音重踏",
-            34:"剑刃风暴",
-            36:"海妖之歌",
-            37:"石化",
-            55:"噩梦",
-            68:"极寒之拥",
-            87:"妖术",
-            88:"风杖"
-        }
-    }
     let mystate = props.mystate;
     let res = [true,props];
     mystate.buff.map((buffid)=>{//
         if(!res[0])return;
-        if(statconst["buffTo"+type][buffid]){
-            props.messagelist.push("处于\""+statconst["buffTo"+type][buffid]+"\"状态,不能"+whatToDo[type]+"！");
+        if(setUpData["muBuffTo_"+type][buffid]){//已经设定好的状态判断
+            props.messagelist.push("处于\""+setUpData["muBuffTo_"+type][buffid]+"\"状态,不能"+setUpData.whatToDo[type]+"！");
             res = [false,props];
         }
     });
     return res;
 }
 function attack_thatBuff (props,type){//物理攻击判断 对方状态
-    const whatToDo = {
-        card:"出牌",
-        attack:"攻击",
-        equipt:"使用装备"
-    }
-    let statconst = {
-        buffTocard : {
-            10:"超级新星",
-            34:"剑刃风暴",
-            36:"海妖之歌",
-            60:"魔免",
-            79:"暗影之舞",
-            88:"风杖"
-        },
-        buffToattack : {
-            2:"虚无",
-            24:"磁场",
-            36:"海妖之歌",
-            79:"暗影之舞",
-            88:"风杖"
-        },
-        buffToequipt : {
-            10:"超级新星",
-            34:"剑刃风暴",
-            36:"海妖之歌",
-            60:"魔免",
-            79:"暗影之舞",
-            88:"风杖"
-        }
-    }
     let thatstate = props.thatstate;
     let res = [true,props];
     thatstate.buff.map((buffid)=>{//
         if(!res[0])return;
-        if(statconst["buffTo"+type][buffid]){
-            props.messagelist.push("对方处于\""+statconst["buffTo"+type][buffid]+"\"状态,不能"+whatToDo[type]+"！");
+        if(setUpData["thatBuffTo_"+type][buffid]){
+            props.messagelist.push("对方处于\""+setUpData["thatBuffTo_"+type][buffid]+"\"状态,不能"+setUpData.whatToDo[type]+"！");
             res = [false,props];
         }
     });
