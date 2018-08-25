@@ -1,5 +1,30 @@
 .equipment{
 	width: 100%;
 	height: 100%;
+    cursor: pointer;
     background-size: contain !important;
+    .shadow_box{
+    	width: 100%;
+    	height: 100%;
+    	.box{
+    		width: 50%;
+    		height: 100%;
+    		float: left;
+     		overflow: hidden;
+    		.shadow_left{
+    			height: 100%;
+    			width: 200%;
+			    background-color: #03101A;
+			    opacity: 0.5;
+    			transform-origin: right;
+    		}
+    		.shadow_right{
+    			height: 100%;
+    			width: 200%;
+			    background-color: #03101A;
+			    opacity: 0.5;
+    			transform-origin: left;
+    		}
+    	}
+    }
 }

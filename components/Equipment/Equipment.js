@@ -22,10 +22,18 @@ class Equipment extends React.Component{
         });
     }
   	render() {
+        let equipmentready = (this.props.equipfor=="my"&&this.props.equipment.CD&&!this.props.equipment.CDnow)?this.useEquip.bind(this,this.props.equipment):()=>{}
         return <div className="equipment" 
         	style={{background: "url(./server/equipmentImg/"+this.props.equipment.id+".png) no-repeat center"}}
-        	onClick={this.props.equipfor=="my"?this.useEquip.bind(this,this.props.equipment):()=>{}}>
-
+        	onClick={equipmentready}>
+            {this.props.equipment.CDnow?<div className="shadow_box">
+                <div className="box">
+                    <div className="shadow_left" />
+                </div>
+                <div className="box">
+                    <div className="shadow_right" />
+                </div>
+            </div>:""}
         </div>
   	}
 }

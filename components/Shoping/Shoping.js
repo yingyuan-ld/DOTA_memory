@@ -15,7 +15,7 @@ class Shoping extends React.Component{
             name:equipmentFile[i].name,
             yeloT:equipmentFile[i].price,
             blueT:equipmentFile[i].mp,
-            redT:equipmentFile[i].CD,
+            redT:equipmentFile[i].CD?"CD:"+equipmentFile[i].CD/2:"",
             message:equipmentFile[i].message,
         }})
     }

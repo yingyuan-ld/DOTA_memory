@@ -210,6 +210,7 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
         [Attack,props] = attackAfter(props,Attack);
     }
     if(type=="equipt"){
+        [checked,props] = check_checkMp(props,Attack);//检查剩余蓝量
         //装备
     }
     let DO = Attack.do;
@@ -247,7 +248,7 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
     }
     props.mystate.messagelist = messagelist;
 
-    return [true,props];
+    return [type=="attack"?Attack.do.tHp:true,props];
 }
 
 function check_attackAccount (props){//判断剩余攻击次数

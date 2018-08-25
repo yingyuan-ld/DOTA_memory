@@ -759,7 +759,7 @@ exports.specialcard = specialcard;
 
 var _skill = __webpack_require__(17);
 
-var _setUpData = __webpack_require__(89);
+var _setUpData = __webpack_require__(48);
 
 var _setUpData2 = _interopRequireDefault(_setUpData);
 
@@ -1057,7 +1057,14 @@ function doAttack(props, Attack, type) {
         props = _attackAfter2[1];
     }
     if (type == "equipt") {
+        //检查剩余蓝量
         //装备
+        var _check_checkMp3 = check_checkMp(props, Attack);
+
+        var _check_checkMp4 = _slicedToArray(_check_checkMp3, 2);
+
+        checked = _check_checkMp4[0];
+        props = _check_checkMp4[1];
     }
     var DO = Attack.do;
     for (var key in DO) {
@@ -1094,7 +1101,7 @@ function doAttack(props, Attack, type) {
     }
     props.mystate.messagelist = messagelist;
 
-    return [true, props];
+    return [type == "attack" ? Attack.do.tHp : true, props];
 }
 
 function check_attackAccount(props) {
@@ -1517,7 +1524,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _action = __webpack_require__(4);
 
-__webpack_require__(55);
+__webpack_require__(56);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2548,7 +2555,7 @@ var _Equipment2 = _interopRequireDefault(_Equipment);
 
 var _action = __webpack_require__(4);
 
-__webpack_require__(63);
+__webpack_require__(64);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2668,7 +2675,7 @@ var HeroPlaceMy = function (_React$Component) {
                     place: [e.clientX, e.clientY],
                     name: item.name,
                     blueT: item.mp,
-                    redT: item.CD,
+                    redT: item.CD ? "CD:" + item.CD / 2 : "",
                     message: item.message
                 } });
         }
@@ -2791,7 +2798,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(59);
+__webpack_require__(60);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2867,7 +2874,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _action = __webpack_require__(4);
 
-__webpack_require__(61);
+__webpack_require__(62);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2910,9 +2917,27 @@ var Equipment = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            return _react2.default.createElement('div', { className: 'equipment',
-                style: { background: "url(./server/equipmentImg/" + this.props.equipment.id + ".png) no-repeat center" },
-                onClick: this.props.equipfor == "my" ? this.useEquip.bind(this, this.props.equipment) : function () {} });
+            var equipmentready = this.props.equipfor == "my" && this.props.equipment.CD && !this.props.equipment.CDnow ? this.useEquip.bind(this, this.props.equipment) : function () {};
+            return _react2.default.createElement(
+                'div',
+                { className: 'equipment',
+                    style: { background: "url(./server/equipmentImg/" + this.props.equipment.id + ".png) no-repeat center" },
+                    onClick: equipmentready },
+                this.props.equipment.CDnow ? _react2.default.createElement(
+                    'div',
+                    { className: 'shadow_box' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'box' },
+                        _react2.default.createElement('div', { className: 'shadow_left' })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'box' },
+                        _react2.default.createElement('div', { className: 'shadow_right' })
+                    )
+                ) : ""
+            );
         }
     }]);
 
@@ -2950,7 +2975,7 @@ var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
 var _action = __webpack_require__(4);
 
-__webpack_require__(68);
+__webpack_require__(69);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3098,7 +3123,7 @@ var _DotaSystem = __webpack_require__(37);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(87);
+__webpack_require__(88);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22364,11 +22389,11 @@ __webpack_require__(46);
 
 var _action = __webpack_require__(4);
 
-var _Tooltip = __webpack_require__(48);
+var _Tooltip = __webpack_require__(49);
 
 var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
-var _index = __webpack_require__(51);
+var _index = __webpack_require__(52);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -22536,1601 +22561,6 @@ exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .
 
 /***/ }),
 /* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(49);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Tooltip = function (_React$Component) {
-    _inherits(Tooltip, _React$Component);
-
-    function Tooltip() {
-        _classCallCheck(this, Tooltip);
-
-        return _possibleConstructorReturn(this, (Tooltip.__proto__ || Object.getPrototypeOf(Tooltip)).call(this));
-    }
-
-    _createClass(Tooltip, [{
-        key: "render",
-        value: function render() {
-            if (this.props.show) {
-                return _react2.default.createElement(
-                    "div",
-                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px" } },
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        this.props.name
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        _react2.default.createElement(
-                            "div",
-                            { className: "yeloTitle" },
-                            this.props.yeloT
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "blueTitle" },
-                            this.props.blueT
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "redTitle" },
-                            this.props.redT
-                        )
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        this.props.message
-                    )
-                );
-            } else {
-                return _react2.default.createElement("div", null);
-            }
-        }
-    }]);
-
-    return Tooltip;
-}(_react2.default.Component);
-
-module.exports = Tooltip;
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(50);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-100%, -100%); }\n  .Tooltip .yeloTitle {\n    color: yellow;\n    display: inline-block; }\n  .Tooltip .blueTitle {\n    color: blue;\n    display: inline-block;\n    margin: 0px 5px; }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _PlayPage = __webpack_require__(52);
-
-var _PlayPage2 = _interopRequireDefault(_PlayPage);
-
-var _HeroSelect = __webpack_require__(81);
-
-var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
-
-var _HeroPlaceMy = __webpack_require__(18);
-
-var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
-
-var _HeroPlaceThat = __webpack_require__(22);
-
-var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var common = {
-    PlayPage: _PlayPage2.default,
-    HeroSelect: _HeroSelect2.default,
-    HeroPlaceMy: _HeroPlaceMy2.default,
-    HeroPlaceThat: _HeroPlaceThat2.default
-};
-module.exports = common;
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(53);
-
-var _action = __webpack_require__(4);
-
-var _skill = __webpack_require__(17);
-
-var _HeroPlaceMy = __webpack_require__(18);
-
-var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
-
-var _HeroPlaceThat = __webpack_require__(22);
-
-var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
-
-var _FightPlace = __webpack_require__(70);
-
-var _FightPlace2 = _interopRequireDefault(_FightPlace);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-//洗牌
-
-
-var PlayPage = function (_React$Component) {
-    _inherits(PlayPage, _React$Component);
-
-    function PlayPage() {
-        _classCallCheck(this, PlayPage);
-
-        return _possibleConstructorReturn(this, (PlayPage.__proto__ || Object.getPrototypeOf(PlayPage)).call(this));
-    }
-
-    _createClass(PlayPage, [{
-        key: 'componentWillMount',
-        value: function componentWillMount() {
-            if (this.props.thatstate.herotype != undefined) {
-                //对手比你先进来
-                this.prepare_card(this.props.round, this.props.thatstate);
-            }
-        }
-    }, {
-        key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps(newProps) {
-            if ((this.props.round + "").indexOf(".") > 0 && (newProps.round + "").indexOf(".") > 0) {
-                //对手比你后进来
-                this.prepare_card(newProps.round, newProps.thatstate);
-            }
-            if (this.props.round == 0 && newProps.round == 1) {
-                //你的回合开始
-                var mystate = this.props.mystate;
-                mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecove; //生命值恢复
-                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Hprecove; //魔法值恢复
-                mystate.attackAccount += mystate.attackRecove; //普攻恢复
-                mystate.money += mystate.moneyrecove; //金钱
-                var messagelist = this.props.messagelist;
-                var small_speed = this.props.small_speed;
-                if (mystate.cardid.length >= 8) {
-                    //手牌处理
-                    messagelist.push("小伙，你手牌满了！");
-                    mystate.messagelist = messagelist;
-                } else {
-                    mystate.cardid.push(this.props.small_cardheap[small_speed]);
-                    small_speed++;
-                }
-                for (var i = 0; i < mystate.buff.length;) {
-                    //状态处理
-                    if (mystate.buffTime[i] == 1) {
-                        mystate.buffTime.splice(i, 1);
-                        mystate.buffObj[mystate.buff[i]] && delete mystate.buffObj[mystate.buff[i]];
-                        mystate.buff.splice(i, 1);
-                    } else {
-                        mystate.buffTime[i] -= 1;
-                        i++;
-                    }
-                }
-                this.props.setState({ mystate: mystate, small_speed: small_speed, messagelist: messagelist });
-                this.props.socket.emit('totalk', {
-                    id: this.props.thatid,
-                    obj: {
-                        funname: "getnewstate",
-                        newstate: { thatstate: mystate, small_speed: small_speed },
-                        message: "现在是对方回合"
-                    }
-                });
-            }
-        }
-    }, {
-        key: 'prepare_card',
-        value: function prepare_card(round, thatstate) {
-            if (round > 0) {
-                //准备完毕,并且先手
-                var small_cardheap = (0, _action.shufflecards)(_skill.small_skill); //洗牌
-                var big_cardheap = (0, _action.shufflecards)(_skill.big_skill); //洗牌
-                //抓牌↓
-                var mystate = this.props.mystate;
-                mystate.money = 100;
-                mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
-
-                // mystate.cardid[0] = {id:1024,name:"混乱之箭",state: 1 ,message:"随机对敌方造成1-200的伤害，并晕眩1-2回合"}
-                // mystate.cardid[0].do = {mMp:-100,tHp:"Math.random()*200",tBuff:[0],tBuffT:["Math.random()*2"]};
-
-
-                thatstate.cardid = small_cardheap.slice(6, 11);
-                this.props.setState({
-                    small_cardheap: small_cardheap,
-                    big_cardheap: big_cardheap,
-                    round: 1,
-                    messagelist: ["你是先手"],
-                    small_speed: 11,
-                    mystate: mystate,
-                    thatstate: thatstate
-                });
-                this.props.socket.emit('totalk', {
-                    id: this.props.thatid,
-                    obj: {
-                        funname: "cardheap",
-                        small_cardheap: small_cardheap,
-                        big_cardheap: big_cardheap,
-                        mystate: this.props.mystate
-                    }
-                });
-            } else {
-                //准备完毕,并且后手
-                this.props.setState({
-                    round: 0,
-                    messagelist: ["对方先手"]
-                });
-            }
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var myBasic = (0, _action.state_base)(this.props.mystate, this.props.thatstate); //计算状态影响下的属性
-            var thatBasic = (0, _action.state_base)(this.props.thatstate, this.props.mystate); //计算状态影响下的属性
-            var basic = { mystate: myBasic, thatstate: thatBasic };
-            return _react2.default.createElement(
-                'div',
-                { className: 'main_box' },
-                _react2.default.createElement(_HeroPlaceThat2.default, _extends({}, this.props, basic)),
-                _react2.default.createElement(_FightPlace2.default, this.props),
-                _react2.default.createElement(_HeroPlaceMy2.default, _extends({}, this.props, basic))
-            );
-        }
-    }]);
-
-    return PlayPage;
-}(_react2.default.Component);
-
-module.exports = PlayPage;
-
-/***/ }),
-/* 53 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(54);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(56);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Card.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Card.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(10);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(57)) + ") no-repeat center;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  background: url(" + escape(__webpack_require__(58)) + ") no-repeat center;\n  float: left; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "c02156dc8e2f723f107e92d09f12c96e.jpg";
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "ff72ff859aa2438bfcf81643da7cfb07.jpg";
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(60);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./BuffIon.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./BuffIon.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n  width: 20px;\n  float: left;\n  background-size: 20px !important;\n  position: relative;\n  font-size: 12px;\n  margin: 5px; }\n  .BuffIon_box .tooltip {\n    visibility: hidden;\n    width: 120px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 0;\n    position: absolute;\n    z-index: 1;\n    transform: translate(-50px, -100%);\n    top: -7px; }\n    .BuffIon_box .tooltip .Buff_time {\n      color: blue;\n      display: inline-block;\n      margin: 0px 5px; }\n    .BuffIon_box .tooltip .Buff_obj {\n      color: red;\n      display: inline-block;\n      margin: 0px 5px; }\n  .BuffIon_box .tooltip:after {\n    content: \"\";\n    width: 20px;\n    height: 20px;\n    background-color: black;\n    transform: rotate(45deg);\n    -ms-transform: rotate(45deg);\n    /* IE 9 */\n    -moz-transform: rotate(45deg);\n    /* Firefox */\n    -webkit-transform: rotate(45deg);\n    /* Safari 和 Chrome */\n    -o-transform: rotate(45deg);\n    /* Opera */\n    position: absolute;\n    left: calc(50% - 9px);\n    top: calc(100% - 17px);\n    z-index: -1; }\n\n.BuffIon_box:hover .tooltip {\n  visibility: visible; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(62);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  background-size: contain !important; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(64);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceMy.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceMy.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(10);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 99px; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(65)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(66)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(67)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .equipment_list .posi_tion {\n      float: left;\n      width: 45px;\n      height: 45px;\n      margin: 1px 3px 1px 2px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "39b2cd7f0573ca557a783a1e18790d00.png";
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "4dfb8588d816512e0e5bcbc130c9bae6.png";
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "68581be6cf33b6e63d62332dcc4cbe59.png";
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(69);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceThat.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceThat.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Card = __webpack_require__(9);
-
-var _Card2 = _interopRequireDefault(_Card);
-
-var _CardShowList = __webpack_require__(71);
-
-var _CardShowList2 = _interopRequireDefault(_CardShowList);
-
-var _Shoping = __webpack_require__(74);
-
-var _Shoping2 = _interopRequireDefault(_Shoping);
-
-__webpack_require__(78);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FightPlace = function (_React$Component) {
-    _inherits(FightPlace, _React$Component);
-
-    function FightPlace() {
-        _classCallCheck(this, FightPlace);
-
-        var _this = _possibleConstructorReturn(this, (FightPlace.__proto__ || Object.getPrototypeOf(FightPlace)).call(this));
-
-        _this.state = {
-            shoping: false
-        };
-        return _this;
-    }
-
-    _createClass(FightPlace, [{
-        key: 'messagelist',
-        value: function messagelist() {
-            return this.props.messagelist.map(function (message, i) {
-                if (i == 0) return;
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'message_item', key: i },
-                    message
-                );
-            });
-        }
-    }, {
-        key: 'goshoping',
-        value: function goshoping() {
-            this.setState({ shoping: !this.state.shoping });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'fight_place' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'fight_message' },
-                    this.messagelist()
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'cardShowList' },
-                    _react2.default.createElement(_CardShowList2.default, { cardShowList: this.props.cardShowList.slice(0, this.props.cardShowList.length - 1) })
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'cardShow' },
-                    this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], cardfor: "show" }) : ""
-                ),
-                _react2.default.createElement('div', { className: 'shop', onClick: this.goshoping.bind(this) }),
-                _react2.default.createElement(_Shoping2.default, _extends({}, this.props, {
-                    show: this.state.shoping,
-                    goshoping: this.goshoping.bind(this) }))
-            );
-        }
-    }]);
-
-    return FightPlace;
-}(_react2.default.Component);
-
-module.exports = FightPlace;
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Card = __webpack_require__(9);
-
-var _Card2 = _interopRequireDefault(_Card);
-
-__webpack_require__(72);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CardShowList = function (_React$Component) {
-    _inherits(CardShowList, _React$Component);
-
-    function CardShowList() {
-        _classCallCheck(this, CardShowList);
-
-        var _this = _possibleConstructorReturn(this, (CardShowList.__proto__ || Object.getPrototypeOf(CardShowList)).call(this));
-
-        _this.state = {
-            index: 0, //当前显示的卡牌
-            tempindex: 0, //当前显示的卡牌(参与计算用)
-            top: 92, //定位用
-            temptop: 92 //定位用(参与计算)
-        };
-        _this.mousemove = _this.mousemove.bind(_this);
-        _this.mouseup = _this.mouseup.bind(_this);
-        return _this;
-    }
-
-    _createClass(CardShowList, [{
-        key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps(newProps) {
-            if (this.props.cardShowList.length < newProps.cardShowList.length) {
-                var index = newProps.cardShowList.length - 1;
-                this.setState({ index: index, tempindex: index, top: 70 + 22 * index, temptop: 70 + 22 * index });
-            }
-        }
-    }, {
-        key: 'slide',
-        value: function slide(e) {
-            //添加监听
-            document.addEventListener("mousemove", this.mousemove, false);
-            document.addEventListener("mouseup", this.mouseup, false);
-            this.start = e.clientY;
-        }
-    }, {
-        key: 'mousemove',
-        value: function mousemove(e) {
-            var tempindex = this.state.tempindex;
-            var maxindex = this.props.cardShowList.length - 1;
-            tempindex += parseInt((this.start - e.clientY) / 22);
-            console.info(tempindex);
-            if (tempindex < 0) tempindex = 0;
-            if (tempindex > maxindex) tempindex = maxindex;
-            var temptop = this.state.temptop;
-            temptop += this.start - e.clientY;
-            this.setState({ index: tempindex, top: temptop });
-        }
-    }, {
-        key: 'mouseup',
-        value: function mouseup(e) {
-            console.info("移除监听");
-            var top = 70 + 22 * this.state.index;
-            this.setState({ tempindex: this.state.index, top: top, temptop: top });
-            document.removeEventListener("mousemove", this.mousemove, false);
-            document.removeEventListener("mouseup", this.mouseup, false);
-        }
-    }, {
-        key: 'cardShowList',
-        value: function cardShowList() {
-            var _this2 = this;
-
-            var index = this.state.index;
-            return this.props.cardShowList.map(function (card, i) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) }, onMouseDown: _this2.slide.bind(_this2), key: i },
-                    _react2.default.createElement(_Card2.default, { card: card, state: "show" })
-                );
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'CardShow_box', style: { top: "calc(50% - " + this.state.top + "px)" } },
-                this.cardShowList()
-            );
-        }
-    }]);
-
-    return CardShowList;
-}(_react2.default.Component);
-
-module.exports = CardShowList;
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(73);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".Slide_box {\n  margin-bottom: -140px;\n  border: 1px solid;\n  position: relative; }\n\n.CardShow_box {\n  position: relative;\n  z-index: 0; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 74 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _equipment = __webpack_require__(75);
-
-var _equipment2 = _interopRequireDefault(_equipment);
-
-var _Equipment = __webpack_require__(21);
-
-var _Equipment2 = _interopRequireDefault(_Equipment);
-
-__webpack_require__(76);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Shoping = function (_React$Component) {
-    _inherits(Shoping, _React$Component);
-
-    function Shoping() {
-        _classCallCheck(this, Shoping);
-
-        return _possibleConstructorReturn(this, (Shoping.__proto__ || Object.getPrototypeOf(Shoping)).call(this));
-    }
-
-    _createClass(Shoping, [{
-        key: 'showtip',
-        value: function showtip(i, e) {
-            this.props.setState({ Tooltip: {
-                    show: true,
-                    place: [e.clientX, e.clientY],
-                    name: _equipment2.default[i].name,
-                    yeloT: _equipment2.default[i].price,
-                    blueT: _equipment2.default[i].mp,
-                    redT: _equipment2.default[i].CD,
-                    message: _equipment2.default[i].message
-                } });
-        }
-    }, {
-        key: 'closetip',
-        value: function closetip() {
-            this.props.setState({ Tooltip: { show: false } });
-        }
-    }, {
-        key: 'buyone',
-        value: function buyone(i) {
-            var equipment = _equipment2.default[i];
-            var price = equipment.price.slice(1) * 1;
-            var newstate = this.props;
-            var mystate = this.props.mystate;
-
-            if (mystate.equipment.length >= 6) {
-                newstate.messagelist.push("物品栏不够");
-                this.props.setState(mystate);
-                return;
-            }
-            if (price > mystate.money) {
-                newstate.messagelist.push("还差" + (price - mystate.money) + "金购买\"" + equipment.name + "\"");
-                this.props.setState(mystate);
-                return;
-            }
-            mystate.money -= price; //金钱
-            mystate.equipment.push(equipment);
-            newstate.messagelist.push("你购买了\"" + equipment.name + "\"");
-            this.props.setState(newstate);
-
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    funname: "getnewstate",
-                    newstate: { thatstate: mystate },
-                    message: "对方购买了\"" + equipment.name + "\""
-                }
-            });
-        }
-    }, {
-        key: 'showEquipment',
-        value: function showEquipment() {
-            var _this2 = this;
-
-            return _equipment2.default.map(function (item, i) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'posi_tion', key: i,
-                        onMouseOver: _this2.showtip.bind(_this2, i),
-                        onMouseOut: _this2.closetip.bind(_this2),
-                        onClick: _this2.buyone.bind(_this2, i) },
-                    _react2.default.createElement(_Equipment2.default, { equipment: item })
-                );
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: "shop_room " + (this.props.show ? "room_show" : "room_hide") },
-                _react2.default.createElement(
-                    'div',
-                    { className: "shop_room" },
-                    this.showEquipment()
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'back', onClick: this.props.goshoping },
-                    '>>>'
-                )
-            );
-        }
-    }]);
-
-    return Shoping;
-}(_react2.default.Component);
-
-module.exports = Shoping;
-
-/***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var equipment = [];
-
-equipment[0] = { id: 0, name: "达贡之神力", price: "￥35", mp: "MP:100", state: 1, message: "【主动使用】对敌方造成250点伤害", CD: "CD:4" };
-equipment[0].do = { mMp: -100, tHp: "250", cd: 8 };
-equipment[1] = { id: 1, name: "深渊战刃", price: "￥30", mp: "MP:100", state: 2, message: "攻击+30 【主动使用】使敌方晕眩一回合,无视魔免", CD: "CD:4" };
-equipment[1].do = { tBuff: [0], tBuffT: [2], cd: 8 };
-equipment[2] = { id: 2, name: "秘法鞋", price: "￥20", state: 2, message: "回复200蓝量", CD: "CD:3" };
-equipment[2].do = { mMp: 200, cd: 6 };
-equipment[3] = { id: 3, name: "虚灵之刃", price: "￥20", mp: "MP:100", state: 1, message: "使双方同时进入虚无状态一回合 虚无状态下受到法术伤害加50%,物理伤害免疫", CD: "CD:4" };
-equipment[3].do = { mMp: -100, mBuff: [2], mBuffT: [2], tBuff: [2], tBuffT: [2], cd: 8 };
-equipment[4] = { id: 4, name: "天堂之戟", price: "￥25", mp: "MP:50", state: 1, message: "攻击力+30【主动使用】敌方下一回合无法普通攻击", CD: "CD:3" };
-equipment[4].do = { mMp: -50, tBuff: [3], tBuffT: [2], cd: 6 };
-equipment[5] = { id: 5, name: "撒旦之邪力", price: "￥50", mp: "MP:100", state: 2, message: "【主动使用】一回合内将伤害转化为生命值", CD: "CD:5" };
-equipment[5].do = { mMp: -100, mBuff: [82], mBuffT: [2], cd: 10 };
-equipment[6] = { id: 6, name: "刃甲", price: "￥30", mp: "MP:50", state: 2, message: "护甲+10【开启状态】一回合内反弹任何伤害", CD: "CD:3" };
-equipment[6].do = { mMp: -50, mBuff: [83], mBuffT: [2], cd: 6 };
-equipment[7] = { id: 7, name: "邪恶镰刀", price: "￥45", mp: "MP:100", state: 1, message: "增加100点魔法上限,魔法恢复加10 【主动使用】将敌方变羊一回合", CD: "CD:5" };
-equipment[7].do = { mMp: -100, tBuff: [87], tBuffT: [2], cd: 10 };
-// equipment[8] = {id:8,name:"散失之刃",price:"￥35",mp:"MP:100",state: 2 ,message:"普通攻击减少对方50点魔法值 【主动使用】净化敌方的所有buff",CD:"CD:4"}
-// equipment[8].do = {special:true}
-equipment[9] = { id: 9, name: "勇气勋章", price: "￥20", mp: "MP:50", state: 1, message: "护甲+10 【主动使用】敌方护甲-10,己方护甲-10,持续一回合", CD: "CD:2" };
-equipment[9].do = { mMp: -50, mBuff: [83], mBuffT: [2], tBuff: [83], tBuffT: [2], cd: 4 };
-equipment[10] = { id: 10, name: "BKB", price: "￥50", mp: "MP:100", state: 2, message: "攻击力+15 【主动使用】魔法免疫一回合", CD: "CD:4" };
-equipment[10].do = { mMp: -100, mBuff: [60], mBuffT: [2], cd: 8 };
-equipment[11] = { id: 11, name: "灵魂之戒", price: "￥20", state: 2, message: "生命恢复+10 【主动使用】生命值减少150,魔法值增加150", CD: "CD:2" };
-equipment[11].do = { mMp: 150, mHp: -150, cd: 4 };
-equipment[12] = { id: 12, name: "梅肯斯姆", price: "￥40", mp: "MP:100", state: 2, message: "生命恢复+10 【主动使用】HP+100", CD: "CD:4" };
-equipment[12].do = { mMp: -100, mHp: 100, cd: 8 };
-equipment[13] = { id: 13, name: "Eull的神圣法杖", price: "￥30", mp: "MP:100", state: 1, message: "魔法回复+10 【主动使用】使对方无敌,但不可操作,持续一回合", CD: "CD:4" };
-equipment[13].do = { mMp: -100, tBuff: [88], tBuffT: [2], cd: 8 };
-equipment[14] = { id: 14, name: "紫怨", price: "￥30", mp: "MP:100", state: 1, message: "魔法上限+100,魔法恢复+10,攻击+20 【主动使用】沉默敌方一回合", CD: "CD:4" };
-equipment[14].do = { mMp: -100, tBuff: [1], tBuffT: [2], cd: 8 };
-// equipment[15] = {id:15,name:"食尸鬼王的臂章",price:"￥35",state: 2 ,message:"攻击+10 【开启状态】HP+300,攻击+30,每回合结束HP-100 【关闭】HP-300,不会致死,攻击-30"}
-// equipment[15].do = {special:true};
-// equipment[16] = {id:16,name:"林肯法球",price:"￥45",state: 2 ,message:"魔法上限+100,魔法回复+10 每3回合可以抵挡一次指向性法术(对装备的法术无效)"}
-// equipment[17] = {id:17,name:"辉耀",price:"￥60",state: 2 ,message:"攻击+45,敌方每回合HP-40"}
-equipment[18] = { id: 18, name: "狂战斧", price: "￥35", state: 2, message: "攻击+(25+敌方手牌数*5)" };
-equipment[19] = { id: 19, name: "蝴蝶", price: "￥35", state: 2, message: "攻击+30 敌方的普通攻击有30%的概率丢失" };
-equipment[20] = { id: 20, name: "圣剑", price: "￥80", state: 2, message: "攻击+150"
-  // equipment[21] = {id:21,name:"黯灭",price:"￥35",state: 1 ,message:"攻击时降低敌方40点护甲"}
-
-};module.exports = equipment;
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(77);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Shoping.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Shoping.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".shop_room {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  background: blue;\n  transition: all 0.1s; }\n  .shop_room .back {\n    background: red;\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px; }\n  .shop_room .posi_tion {\n    float: left;\n    width: 70px;\n    height: 70px;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(79);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./FightPlace.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./FightPlace.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(10);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 200px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 200px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(80)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports) {
-
-module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA0xpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzQ0QTIwNzA5QUVEMTFFOEFGMTM5MjM4RkVDRDBCQzgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzQ0QTIwNkY5QUVEMTFFOEFGMTM5MjM4RkVDRDBCQzgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIxMzdjYjNiLWUzNTctMTE3Yi1iNzBjLWI2YWY5ZmU5Y2YyOSIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIxMzdjYjNiLWUzNTctMTE3Yi1iNzBjLWI2YWY5ZmU5Y2YyOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pg6WvWkAAAMAUExURZwfHDRiLXFjTryugZCCc3JUO5+TgjwrHHoyH72SXXx0YmJCKNWXWWJVTlBEP1RNQJdjOc/PymZeUs5sY66kg4BmUqGSj9fNnE+ATK2gks/AoISBcYJvVWNiYZxuQaGScevq6HFnW3RgRIJiRJaOgGdKLqOelEwtFiodEruxnh0YFK6GWaSNYjErKoN3cHBNLr6zjz4xJpR+ZYePokI5LvPr24CBhFZNTerYuoyHgEM+P3ZwYLCupIR+Y9IoJp+jsmY7HHNDInFtU//554KHk2Blbv39/JFzT5OMbzIlGt/f3EBwOoaRb1qWXa6Qb56EcVcYBVdzR56DYlM4HPb29Xh0ci1SHywWBsTDu45zYbl/Qwg5BK6WkiouPZJ3ccu9rk1NMZSQj8q6hufRodKic+zgy7a2r767tZyBgk5aQM7KwqakoR0RB6SJhD4VBbGpcz5DU7ynn7ylkZGVnXJ0gM7CkaWvmXtuRmMxFupIRYAZEWVgSG5XSVFnP7GtkNrYz599U8C8oWRFOksxJeDPyXGYZWpud82xruDNrxIFAbCnnDwhETo7GExHUaOchrqjhHxPLcSvqaqThHtoZNzBnVBTXL/ItpB/TlIoCpBpTSMoNGUnChZNFIFLHMmxide6lgMBAK19bk04JrqedGtMOVxMOXOsdlhGMyU/GaB1S4ujgNrOw2pobHxVPDE4Q8i2oVtVR5hZIrNIP+y0fMiRcmZTQkw7MYlhNGpVOVo9I1dBKEYlCyciIjozNllgTEpCNCYsDYZ5VlhWOv/y4FpJRLqZg93YvrmZklozJtjGrNjAu1lcZa1sMmyGYXd/dKmeclM/MSgIAkRjMlpJJndeM19XWHZ8iG9+TjZGJxwcIGRXMdDHp+CjYr+9jAsYAq/Bop2bo7OamYF6gEdFJRILCntbTJqaj5GcrpadeQUDDVICAuTl4WhOQlcyDvn6+RQUFCdcIvHx74htbEsjHnBeWfi9jP/LgYt8etPUzu3msUg2M1w3EsCcnJfAikQ3Fv////NhZv4AAAEAdFJOU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wBT9wclAAAX00lEQVR42tyaCVRTd77HISxXiEmUEkQJIJCYazBg0kxTAmlJisIVJWiEKy4Yasf1EpdqoSZuSYvGSxBlGFlcYkwa7QCiU5CQhACDlg4uQUCNbX0uwRYFg5L39IFD38Vq22mtS890zpx3OSfnHgj3c3/L//v//f7/v9t3/4bL7T8N8jDu3wChyub+7pCJ4hzv3x0S15Gyd/zvDfHV+aSc3PKvgkyf/qxv3sunbR1TemXuvwhyb+WzvrmMPhRy9GRH7L/KkvEznvHbKFP5/vciQ2jUOz//y93fFJOCyT+160lu1ZfsH/Oez9HEumHcqoc/OHT62J1hpIe/BeIt+vF+Uke4LzUuzlNPzz1zPORwZGKlGJai1phlE7/77k5cUC2g17Nu/SZLMn5Moo6crUNirbJvKF5w9Mz+w5GFfSVSFJUOoMpYHAhre8X1euAxZO4rQpIiPJ/ezu3o/GqMVIqaKkMEkSHxJ49ujYwuGRgYUA5I2014L3KEjq5Fs+7Ny+riLHs1iCcNePpeE4c7v/oqRNouzR3qGypJDflstM/hQ4rWyniTqTsxMeRkpxdeCbIsIMRk2ie+EmRyDfpUC2fcDBk9en6ESUqXSgf6znz1lY+PT2lubrwgYs6cwpOJnZ0ROgBGwGGblWmPeSXIHT1AenK7RXx09Jkz8wtLjIrW1uivRs+fP6YktTw3/r0DAsHRyJOCSkoHCmsN2nob+IqQ73yVyJPQzxvunH98/ugzgr6SPrrgzOjRIabUEp0it7LwpI/PmMST0RH1ynYDrs4IMBjLXg0SZ4ODntwN7x9z/K+jj+8f6uvrGzp+fHSpdCC3UlAi9VniczTk6NFOmhFSySl0OsCwz3g1yMR6AP1+EE6CT56Z/9/HywXxgvj48vj4kMLUUbmpUpNJtzUyJDJkayKejqrAepMJtFdNf0UVDqPDI6GfuKq5fcxXIzmcisVaEJ9a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"
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(82);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var HeroSelect = function (_React$Component) {
-    _inherits(HeroSelect, _React$Component);
-
-    function HeroSelect() {
-        _classCallCheck(this, HeroSelect);
-
-        var _this = _possibleConstructorReturn(this, (HeroSelect.__proto__ || Object.getPrototypeOf(HeroSelect)).call(this));
-
-        _this.state = {};
-        return _this;
-    }
-
-    _createClass(HeroSelect, [{
-        key: 'coeckhero',
-        value: function coeckhero(type) {
-            var mystate = this.props.mystate;
-            switch (type) {
-                case 0:
-                    mystate.herotype = 0;
-                    mystate.maxHp = 4000;
-                    mystate.Hp = 4000;
-                    mystate.Hprecove = 15;
-                    break;
-                case 1:
-                    mystate.herotype = 1;
-                    mystate.attack = 70;
-                    mystate.armor = 15;
-                    break;
-                case 2:
-                    mystate.herotype = 2;
-                    mystate.maxHp = 3000;
-                    mystate.Hp = 3000;
-                    mystate.maxMp = 600;
-                    mystate.Mp = 600;
-                    mystate.Mprecove = 60;
-                    break;
-            }
-            var round = Math.random(); //随机回合用
-            this.props.setState({ mystate: mystate, mystateBase: mystate, playingSpeed: 1, round: this.props.round + round });
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    state: this.props.mystate,
-                    funname: "prepareOk",
-                    round: round
-                }
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'heroSelect' },
-                _react2.default.createElement('div', { className: 'hero0 heropicture', onClick: this.coeckhero.bind(this, 0) }),
-                _react2.default.createElement('div', { className: 'hero1 heropicture', onClick: this.coeckhero.bind(this, 1) }),
-                _react2.default.createElement('div', { className: 'hero2 heropicture', onClick: this.coeckhero.bind(this, 2) })
-            );
-        }
-    }]);
-
-    return HeroSelect;
-}(_react2.default.Component);
-
-module.exports = HeroSelect;
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(83);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(10);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center; }\n  .heroSelect .heropicture {\n    width: 200px;\n    height: 300px;\n    margin: 0px 10px 30px 10px;\n    display: inline-block; }\n  .heroSelect .hero0 {\n    background: url(" + escape(__webpack_require__(84)) + ") no-repeat center; }\n  .heroSelect .hero1 {\n    background: url(" + escape(__webpack_require__(85)) + ") no-repeat center; }\n  .heroSelect .hero2 {\n    background: url(" + escape(__webpack_require__(86)) + ") no-repeat center; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "aa958e8558b0308a86b38c3f7f51093f.jpg";
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "67589ccb55f496d32d5cfacc4148d6d4.jpg";
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "669049914c0d2ae64e40fe0f79f7a92e.jpg";
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(88);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
-		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 88 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24428,6 +22858,1601 @@ module.exports = {
     }
 
 };
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(50);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Tooltip = function (_React$Component) {
+    _inherits(Tooltip, _React$Component);
+
+    function Tooltip() {
+        _classCallCheck(this, Tooltip);
+
+        return _possibleConstructorReturn(this, (Tooltip.__proto__ || Object.getPrototypeOf(Tooltip)).call(this));
+    }
+
+    _createClass(Tooltip, [{
+        key: "render",
+        value: function render() {
+            if (this.props.show) {
+                return _react2.default.createElement(
+                    "div",
+                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px" } },
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.name
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        _react2.default.createElement(
+                            "div",
+                            { className: "yeloTitle" },
+                            this.props.yeloT
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "blueTitle" },
+                            this.props.blueT
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "redTitle" },
+                            this.props.redT
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.message
+                    )
+                );
+            } else {
+                return _react2.default.createElement("div", null);
+            }
+        }
+    }]);
+
+    return Tooltip;
+}(_react2.default.Component);
+
+module.exports = Tooltip;
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(51);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Tooltip.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-100%, -100%); }\n  .Tooltip .yeloTitle {\n    color: yellow;\n    display: inline-block; }\n  .Tooltip .blueTitle {\n    color: blue;\n    display: inline-block;\n    margin: 0px 5px; }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _PlayPage = __webpack_require__(53);
+
+var _PlayPage2 = _interopRequireDefault(_PlayPage);
+
+var _HeroSelect = __webpack_require__(82);
+
+var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
+
+var _HeroPlaceMy = __webpack_require__(18);
+
+var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
+
+var _HeroPlaceThat = __webpack_require__(22);
+
+var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var common = {
+    PlayPage: _PlayPage2.default,
+    HeroSelect: _HeroSelect2.default,
+    HeroPlaceMy: _HeroPlaceMy2.default,
+    HeroPlaceThat: _HeroPlaceThat2.default
+};
+module.exports = common;
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(54);
+
+var _action = __webpack_require__(4);
+
+var _skill = __webpack_require__(17);
+
+var _HeroPlaceMy = __webpack_require__(18);
+
+var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
+
+var _HeroPlaceThat = __webpack_require__(22);
+
+var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
+
+var _FightPlace = __webpack_require__(71);
+
+var _FightPlace2 = _interopRequireDefault(_FightPlace);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+//洗牌
+
+
+var PlayPage = function (_React$Component) {
+    _inherits(PlayPage, _React$Component);
+
+    function PlayPage() {
+        _classCallCheck(this, PlayPage);
+
+        return _possibleConstructorReturn(this, (PlayPage.__proto__ || Object.getPrototypeOf(PlayPage)).call(this));
+    }
+
+    _createClass(PlayPage, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            if (this.props.thatstate.herotype != undefined) {
+                //对手比你先进来
+                this.prepare_card(this.props.round, this.props.thatstate);
+            }
+        }
+    }, {
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(newProps) {
+            if ((this.props.round + "").indexOf(".") > 0 && (newProps.round + "").indexOf(".") > 0) {
+                //对手比你后进来
+                this.prepare_card(newProps.round, newProps.thatstate);
+            }
+            if (this.props.round == 0 && newProps.round == 1) {
+                //你的回合开始
+                var mystate = this.props.mystate;
+                mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecove; //生命值恢复
+                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Hprecove; //魔法值恢复
+                mystate.attackAccount += mystate.attackRecove; //普攻恢复
+                mystate.money += mystate.moneyrecove; //金钱
+                var messagelist = this.props.messagelist;
+                var small_speed = this.props.small_speed;
+                if (mystate.cardid.length >= 8) {
+                    //手牌处理
+                    messagelist.push("小伙，你手牌满了！");
+                    mystate.messagelist = messagelist;
+                } else {
+                    mystate.cardid.push(this.props.small_cardheap[small_speed]);
+                    small_speed++;
+                }
+                for (var i = 0; i < mystate.buff.length;) {
+                    //状态处理
+                    if (mystate.buffTime[i] == 1) {
+                        mystate.buffTime.splice(i, 1);
+                        mystate.buffObj[mystate.buff[i]] && delete mystate.buffObj[mystate.buff[i]];
+                        mystate.buff.splice(i, 1);
+                    } else {
+                        mystate.buffTime[i] -= 1;
+                        i++;
+                    }
+                }
+                this.props.setState({ mystate: mystate, small_speed: small_speed, messagelist: messagelist });
+                this.props.socket.emit('totalk', {
+                    id: this.props.thatid,
+                    obj: {
+                        funname: "getnewstate",
+                        newstate: { thatstate: mystate, small_speed: small_speed },
+                        message: "现在是对方回合"
+                    }
+                });
+            }
+        }
+    }, {
+        key: 'prepare_card',
+        value: function prepare_card(round, thatstate) {
+            if (round > 0) {
+                //准备完毕,并且先手
+                var small_cardheap = (0, _action.shufflecards)(_skill.small_skill); //洗牌
+                var big_cardheap = (0, _action.shufflecards)(_skill.big_skill); //洗牌
+                //抓牌↓
+                var mystate = this.props.mystate;
+                mystate.money = 100;
+                mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
+
+                // mystate.cardid[0] = {id:1024,name:"混乱之箭",state: 1 ,message:"随机对敌方造成1-200的伤害，并晕眩1-2回合"}
+                // mystate.cardid[0].do = {mMp:-100,tHp:"Math.random()*200",tBuff:[0],tBuffT:["Math.random()*2"]};
+
+
+                thatstate.cardid = small_cardheap.slice(6, 11);
+                this.props.setState({
+                    small_cardheap: small_cardheap,
+                    big_cardheap: big_cardheap,
+                    round: 1,
+                    messagelist: ["你是先手"],
+                    small_speed: 11,
+                    mystate: mystate,
+                    thatstate: thatstate
+                });
+                this.props.socket.emit('totalk', {
+                    id: this.props.thatid,
+                    obj: {
+                        funname: "cardheap",
+                        small_cardheap: small_cardheap,
+                        big_cardheap: big_cardheap,
+                        mystate: this.props.mystate
+                    }
+                });
+            } else {
+                //准备完毕,并且后手
+                this.props.setState({
+                    round: 0,
+                    messagelist: ["对方先手"]
+                });
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var myBasic = (0, _action.state_base)(this.props.mystate, this.props.thatstate); //计算状态影响下的属性
+            var thatBasic = (0, _action.state_base)(this.props.thatstate, this.props.mystate); //计算状态影响下的属性
+            var basic = { mystate: myBasic, thatstate: thatBasic };
+            return _react2.default.createElement(
+                'div',
+                { className: 'main_box' },
+                _react2.default.createElement(_HeroPlaceThat2.default, _extends({}, this.props, basic)),
+                _react2.default.createElement(_FightPlace2.default, this.props),
+                _react2.default.createElement(_HeroPlaceMy2.default, _extends({}, this.props, basic))
+            );
+        }
+    }]);
+
+    return PlayPage;
+}(_react2.default.Component);
+
+module.exports = PlayPage;
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(55);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(57);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Card.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Card.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(10);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(58)) + ") no-repeat center;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  background: url(" + escape(__webpack_require__(59)) + ") no-repeat center;\n  float: left; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "c02156dc8e2f723f107e92d09f12c96e.jpg";
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "ff72ff859aa2438bfcf81643da7cfb07.jpg";
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(61);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./BuffIon.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./BuffIon.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n  width: 20px;\n  float: left;\n  background-size: 20px !important;\n  position: relative;\n  font-size: 12px;\n  margin: 5px; }\n  .BuffIon_box .tooltip {\n    visibility: hidden;\n    width: 120px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 0;\n    position: absolute;\n    z-index: 1;\n    transform: translate(-50px, -100%);\n    top: -7px; }\n    .BuffIon_box .tooltip .Buff_time {\n      color: blue;\n      display: inline-block;\n      margin: 0px 5px; }\n    .BuffIon_box .tooltip .Buff_obj {\n      color: red;\n      display: inline-block;\n      margin: 0px 5px; }\n  .BuffIon_box .tooltip:after {\n    content: \"\";\n    width: 20px;\n    height: 20px;\n    background-color: black;\n    transform: rotate(45deg);\n    -ms-transform: rotate(45deg);\n    /* IE 9 */\n    -moz-transform: rotate(45deg);\n    /* Firefox */\n    -webkit-transform: rotate(45deg);\n    /* Safari 和 Chrome */\n    -o-transform: rotate(45deg);\n    /* Opera */\n    position: absolute;\n    left: calc(50% - 9px);\n    top: calc(100% - 17px);\n    z-index: -1; }\n\n.BuffIon_box:hover .tooltip {\n  visibility: visible; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(63);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Equipment.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  background-size: contain !important; }\n  .equipment .shadow_box {\n    width: 100%;\n    height: 100%; }\n    .equipment .shadow_box .box {\n      width: 50%;\n      height: 100%;\n      float: left;\n      overflow: hidden; }\n      .equipment .shadow_box .box .shadow_left {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: right; }\n      .equipment .shadow_box .box .shadow_right {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: left; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(65);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceMy.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceMy.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(10);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 99px; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(66)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(67)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(68)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .equipment_list .posi_tion {\n      float: left;\n      width: 45px;\n      height: 45px;\n      margin: 1px 3px 1px 2px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "39b2cd7f0573ca557a783a1e18790d00.png";
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "4dfb8588d816512e0e5bcbc130c9bae6.png";
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "68581be6cf33b6e63d62332dcc4cbe59.png";
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(70);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceThat.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroPlaceThat.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(9);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+var _CardShowList = __webpack_require__(72);
+
+var _CardShowList2 = _interopRequireDefault(_CardShowList);
+
+var _Shoping = __webpack_require__(75);
+
+var _Shoping2 = _interopRequireDefault(_Shoping);
+
+__webpack_require__(79);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FightPlace = function (_React$Component) {
+    _inherits(FightPlace, _React$Component);
+
+    function FightPlace() {
+        _classCallCheck(this, FightPlace);
+
+        var _this = _possibleConstructorReturn(this, (FightPlace.__proto__ || Object.getPrototypeOf(FightPlace)).call(this));
+
+        _this.state = {
+            shoping: false
+        };
+        return _this;
+    }
+
+    _createClass(FightPlace, [{
+        key: 'messagelist',
+        value: function messagelist() {
+            return this.props.messagelist.map(function (message, i) {
+                if (i == 0) return;
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'message_item', key: i },
+                    message
+                );
+            });
+        }
+    }, {
+        key: 'goshoping',
+        value: function goshoping() {
+            this.setState({ shoping: !this.state.shoping });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'fight_place' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'fight_message' },
+                    this.messagelist()
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'cardShowList' },
+                    _react2.default.createElement(_CardShowList2.default, { cardShowList: this.props.cardShowList.slice(0, this.props.cardShowList.length - 1) })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'cardShow' },
+                    this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], cardfor: "show" }) : ""
+                ),
+                _react2.default.createElement('div', { className: 'shop', onClick: this.goshoping.bind(this) }),
+                _react2.default.createElement(_Shoping2.default, _extends({}, this.props, {
+                    show: this.state.shoping,
+                    goshoping: this.goshoping.bind(this) }))
+            );
+        }
+    }]);
+
+    return FightPlace;
+}(_react2.default.Component);
+
+module.exports = FightPlace;
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(9);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+__webpack_require__(73);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CardShowList = function (_React$Component) {
+    _inherits(CardShowList, _React$Component);
+
+    function CardShowList() {
+        _classCallCheck(this, CardShowList);
+
+        var _this = _possibleConstructorReturn(this, (CardShowList.__proto__ || Object.getPrototypeOf(CardShowList)).call(this));
+
+        _this.state = {
+            index: 0, //当前显示的卡牌
+            tempindex: 0, //当前显示的卡牌(参与计算用)
+            top: 92, //定位用
+            temptop: 92 //定位用(参与计算)
+        };
+        _this.mousemove = _this.mousemove.bind(_this);
+        _this.mouseup = _this.mouseup.bind(_this);
+        return _this;
+    }
+
+    _createClass(CardShowList, [{
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(newProps) {
+            if (this.props.cardShowList.length < newProps.cardShowList.length) {
+                var index = newProps.cardShowList.length - 1;
+                this.setState({ index: index, tempindex: index, top: 70 + 22 * index, temptop: 70 + 22 * index });
+            }
+        }
+    }, {
+        key: 'slide',
+        value: function slide(e) {
+            //添加监听
+            document.addEventListener("mousemove", this.mousemove, false);
+            document.addEventListener("mouseup", this.mouseup, false);
+            this.start = e.clientY;
+        }
+    }, {
+        key: 'mousemove',
+        value: function mousemove(e) {
+            var tempindex = this.state.tempindex;
+            var maxindex = this.props.cardShowList.length - 1;
+            tempindex += parseInt((this.start - e.clientY) / 22);
+            console.info(tempindex);
+            if (tempindex < 0) tempindex = 0;
+            if (tempindex > maxindex) tempindex = maxindex;
+            var temptop = this.state.temptop;
+            temptop += this.start - e.clientY;
+            this.setState({ index: tempindex, top: temptop });
+        }
+    }, {
+        key: 'mouseup',
+        value: function mouseup(e) {
+            console.info("移除监听");
+            var top = 70 + 22 * this.state.index;
+            this.setState({ tempindex: this.state.index, top: top, temptop: top });
+            document.removeEventListener("mousemove", this.mousemove, false);
+            document.removeEventListener("mouseup", this.mouseup, false);
+        }
+    }, {
+        key: 'cardShowList',
+        value: function cardShowList() {
+            var _this2 = this;
+
+            var index = this.state.index;
+            return this.props.cardShowList.map(function (card, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'Slide_box', style: { zIndex: index - Math.abs(i - index) }, onMouseDown: _this2.slide.bind(_this2), key: i },
+                    _react2.default.createElement(_Card2.default, { card: card, state: "show" })
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'CardShow_box', style: { top: "calc(50% - " + this.state.top + "px)" } },
+                this.cardShowList()
+            );
+        }
+    }]);
+
+    return CardShowList;
+}(_react2.default.Component);
+
+module.exports = CardShowList;
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(74);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./CardShowList.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".Slide_box {\n  margin-bottom: -140px;\n  border: 1px solid;\n  position: relative; }\n\n.CardShow_box {\n  position: relative;\n  z-index: 0; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _equipment = __webpack_require__(76);
+
+var _equipment2 = _interopRequireDefault(_equipment);
+
+var _Equipment = __webpack_require__(21);
+
+var _Equipment2 = _interopRequireDefault(_Equipment);
+
+__webpack_require__(77);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shoping = function (_React$Component) {
+    _inherits(Shoping, _React$Component);
+
+    function Shoping() {
+        _classCallCheck(this, Shoping);
+
+        return _possibleConstructorReturn(this, (Shoping.__proto__ || Object.getPrototypeOf(Shoping)).call(this));
+    }
+
+    _createClass(Shoping, [{
+        key: 'showtip',
+        value: function showtip(i, e) {
+            this.props.setState({ Tooltip: {
+                    show: true,
+                    place: [e.clientX, e.clientY],
+                    name: _equipment2.default[i].name,
+                    yeloT: _equipment2.default[i].price,
+                    blueT: _equipment2.default[i].mp,
+                    redT: _equipment2.default[i].CD ? "CD:" + _equipment2.default[i].CD / 2 : "",
+                    message: _equipment2.default[i].message
+                } });
+        }
+    }, {
+        key: 'closetip',
+        value: function closetip() {
+            this.props.setState({ Tooltip: { show: false } });
+        }
+    }, {
+        key: 'buyone',
+        value: function buyone(i) {
+            var equipment = _equipment2.default[i];
+            var price = equipment.price.slice(1) * 1;
+            var newstate = this.props;
+            var mystate = this.props.mystate;
+
+            if (mystate.equipment.length >= 6) {
+                newstate.messagelist.push("物品栏不够");
+                this.props.setState(mystate);
+                return;
+            }
+            if (price > mystate.money) {
+                newstate.messagelist.push("还差" + (price - mystate.money) + "金购买\"" + equipment.name + "\"");
+                this.props.setState(mystate);
+                return;
+            }
+            mystate.money -= price; //金钱
+            mystate.equipment.push(equipment);
+            newstate.messagelist.push("你购买了\"" + equipment.name + "\"");
+            this.props.setState(newstate);
+
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { thatstate: mystate },
+                    message: "对方购买了\"" + equipment.name + "\""
+                }
+            });
+        }
+    }, {
+        key: 'showEquipment',
+        value: function showEquipment() {
+            var _this2 = this;
+
+            return _equipment2.default.map(function (item, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'posi_tion', key: i,
+                        onMouseOver: _this2.showtip.bind(_this2, i),
+                        onMouseOut: _this2.closetip.bind(_this2),
+                        onClick: _this2.buyone.bind(_this2, i) },
+                    _react2.default.createElement(_Equipment2.default, { equipment: item })
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: "shop_room " + (this.props.show ? "room_show" : "room_hide") },
+                _react2.default.createElement(
+                    'div',
+                    { className: "shop_room" },
+                    this.showEquipment()
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'back', onClick: this.props.goshoping },
+                    '>>>'
+                )
+            );
+        }
+    }]);
+
+    return Shoping;
+}(_react2.default.Component);
+
+module.exports = Shoping;
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var equipment = [];
+
+equipment[0] = { id: 0, name: "达贡之神力", price: "￥35", mp: "MP:100", state: 1, message: "【主动使用】对敌方造成250点伤害", CD: 8 };
+equipment[0].do = { mMp: -100, tHp: "250", cd: 8 };
+equipment[1] = { id: 1, name: "深渊战刃", price: "￥30", mp: "MP:100", state: 2, message: "攻击+30 【主动使用】使敌方晕眩一回合,无视魔免", CD: 8 };
+equipment[1].do = { tBuff: [0], tBuffT: [2], cd: 8 };
+equipment[2] = { id: 2, name: "秘法鞋", price: "￥20", state: 2, message: "回复200蓝量", CD: 6 };
+equipment[2].do = { mMp: 200, cd: 6 };
+equipment[3] = { id: 3, name: "虚灵之刃", price: "￥20", mp: "MP:100", state: 1, message: "使双方同时进入虚无状态一回合 虚无状态下受到法术伤害加50%,物理伤害免疫", CD: 4 };
+equipment[3].do = { mMp: -100, mBuff: [2], mBuffT: [2], tBuff: [2], tBuffT: [2], cd: 8 };
+equipment[4] = { id: 4, name: "天堂之戟", price: "￥25", mp: "MP:50", state: 1, message: "攻击力+30【主动使用】敌方下一回合无法普通攻击", CD: 6 };
+equipment[4].do = { mMp: -50, tBuff: [3], tBuffT: [2], cd: 6 };
+equipment[5] = { id: 5, name: "撒旦之邪力", price: "￥50", mp: "MP:100", state: 2, message: "【主动使用】一回合内将伤害转化为生命值", CD: 10 };
+equipment[5].do = { mMp: -100, mBuff: [82], mBuffT: [2], cd: 10 };
+equipment[6] = { id: 6, name: "刃甲", price: "￥30", mp: "MP:50", state: 2, message: "护甲+10【开启状态】一回合内反弹任何伤害", CD: 6 };
+equipment[6].do = { mMp: -50, mBuff: [83], mBuffT: [2], cd: 6 };
+equipment[7] = { id: 7, name: "邪恶镰刀", price: "￥45", mp: "MP:100", state: 1, message: "增加100点魔法上限,魔法恢复加10 【主动使用】将敌方变羊一回合", CD: 10 };
+equipment[7].do = { mMp: -100, tBuff: [87], tBuffT: [2], cd: 10 };
+// equipment[8] = {id:8,name:"散失之刃",price:"￥35",mp:"MP:100",state: 2 ,message:"普通攻击减少对方50点魔法值 【主动使用】净化敌方的所有buff",CD:8}
+// equipment[8].do = {special:true}
+equipment[9] = { id: 9, name: "勇气勋章", price: "￥20", mp: "MP:50", state: 1, message: "护甲+10 【主动使用】敌方护甲-10,己方护甲-10,持续一回合", CD: 4 };
+equipment[9].do = { mMp: -50, mBuff: [83], mBuffT: [2], tBuff: [83], tBuffT: [2], cd: 4 };
+equipment[10] = { id: 10, name: "BKB", price: "￥50", mp: "MP:100", state: 2, message: "攻击力+15 【主动使用】魔法免疫一回合", CD: 8 };
+equipment[10].do = { mMp: -100, mBuff: [60], mBuffT: [2], cd: 8 };
+equipment[11] = { id: 11, name: "灵魂之戒", price: "￥20", state: 2, message: "生命恢复+10 【主动使用】生命值减少150,魔法值增加150", CD: 4 };
+equipment[11].do = { mMp: 150, mHp: -150, cd: 4 };
+equipment[12] = { id: 12, name: "梅肯斯姆", price: "￥40", mp: "MP:100", state: 2, message: "生命恢复+10 【主动使用】HP+100", CD: 8 };
+equipment[12].do = { mMp: -100, mHp: 100, cd: 8 };
+equipment[13] = { id: 13, name: "Eull的神圣法杖", price: "￥30", mp: "MP:100", state: 1, message: "魔法回复+10 【主动使用】使对方无敌,但不可操作,持续一回合", CD: 8 };
+equipment[13].do = { mMp: -100, tBuff: [88], tBuffT: [2], cd: 8 };
+equipment[14] = { id: 14, name: "紫怨", price: "￥30", mp: "MP:100", state: 1, message: "魔法上限+100,魔法恢复+10,攻击+20 【主动使用】沉默敌方一回合", CD: 8 };
+equipment[14].do = { mMp: -100, tBuff: [1], tBuffT: [2], cd: 8 };
+// equipment[15] = {id:15,name:"食尸鬼王的臂章",price:"￥35",state: 2 ,message:"攻击+10 【开启状态】HP+300,攻击+30,每回合结束HP-100 【关闭】HP-300,不会致死,攻击-30"}
+// equipment[15].do = {special:true};
+// equipment[16] = {id:16,name:"林肯法球",price:"￥45",state: 2 ,message:"魔法上限+100,魔法回复+10 每3回合可以抵挡一次指向性法术(对装备的法术无效)"}
+// equipment[17] = {id:17,name:"辉耀",price:"￥60",state: 2 ,message:"攻击+45,敌方每回合HP-40"}
+equipment[18] = { id: 18, name: "狂战斧", price: "￥35", state: 2, message: "攻击+(25+敌方手牌数*5)" };
+equipment[19] = { id: 19, name: "蝴蝶", price: "￥35", state: 2, message: "攻击+30 敌方的普通攻击有30%的概率丢失" };
+equipment[20] = { id: 20, name: "圣剑", price: "￥80", state: 2, message: "攻击+150"
+  // equipment[21] = {id:21,name:"黯灭",price:"￥35",state: 1 ,message:"攻击时降低敌方40点护甲"}
+
+};module.exports = equipment;
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(78);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Shoping.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./Shoping.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".shop_room {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  background: blue;\n  transition: all 0.1s; }\n  .shop_room .back {\n    background: red;\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px; }\n  .shop_room .posi_tion {\n    float: left;\n    width: 70px;\n    height: 70px;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(80);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./FightPlace.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./FightPlace.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(10);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 200px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 200px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(81)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 81 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA0xpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzQ0QTIwNzA5QUVEMTFFOEFGMTM5MjM4RkVDRDBCQzgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzQ0QTIwNkY5QUVEMTFFOEFGMTM5MjM4RkVDRDBCQzgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIxMzdjYjNiLWUzNTctMTE3Yi1iNzBjLWI2YWY5ZmU5Y2YyOSIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIxMzdjYjNiLWUzNTctMTE3Yi1iNzBjLWI2YWY5ZmU5Y2YyOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pg6WvWkAAAMAUExURZwfHDRiLXFjTryugZCCc3JUO5+TgjwrHHoyH72SXXx0YmJCKNWXWWJVTlBEP1RNQJdjOc/PymZeUs5sY66kg4BmUqGSj9fNnE+ATK2gks/AoISBcYJvVWNiYZxuQaGScevq6HFnW3RgRIJiRJaOgGdKLqOelEwtFiodEruxnh0YFK6GWaSNYjErKoN3cHBNLr6zjz4xJpR+ZYePokI5LvPr24CBhFZNTerYuoyHgEM+P3ZwYLCupIR+Y9IoJp+jsmY7HHNDInFtU//554KHk2Blbv39/JFzT5OMbzIlGt/f3EBwOoaRb1qWXa6Qb56EcVcYBVdzR56DYlM4HPb29Xh0ci1SHywWBsTDu45zYbl/Qwg5BK6WkiouPZJ3ccu9rk1NMZSQj8q6hufRodKic+zgy7a2r767tZyBgk5aQM7KwqakoR0RB6SJhD4VBbGpcz5DU7ynn7ylkZGVnXJ0gM7CkaWvmXtuRmMxFupIRYAZEWVgSG5XSVFnP7GtkNrYz599U8C8oWRFOksxJeDPyXGYZWpud82xruDNrxIFAbCnnDwhETo7GExHUaOchrqjhHxPLcSvqaqThHtoZNzBnVBTXL/ItpB/TlIoCpBpTSMoNGUnChZNFIFLHMmxide6lgMBAK19bk04JrqedGtMOVxMOXOsdlhGMyU/GaB1S4ujgNrOw2pobHxVPDE4Q8i2oVtVR5hZIrNIP+y0fMiRcmZTQkw7MYlhNGpVOVo9I1dBKEYlCyciIjozNllgTEpCNCYsDYZ5VlhWOv/y4FpJRLqZg93YvrmZklozJtjGrNjAu1lcZa1sMmyGYXd/dKmeclM/MSgIAkRjMlpJJndeM19XWHZ8iG9+TjZGJxwcIGRXMdDHp+CjYr+9jAsYAq/Bop2bo7OamYF6gEdFJRILCntbTJqaj5GcrpadeQUDDVICAuTl4WhOQlcyDvn6+RQUFCdcIvHx74htbEsjHnBeWfi9jP/LgYt8etPUzu3msUg2M1w3EsCcnJfAikQ3Fv////NhZv4AAAEAdFJOU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wBT9wclAAAX00lEQVR42tyaCVRTd77HISxXiEmUEkQJIJCYazBg0kxTAmlJisIVJWiEKy4Yasf1EpdqoSZuSYvGSxBlGFlcYkwa7QCiU5CQhACDlg4uQUCNbX0uwRYFg5L39IFD38Vq22mtS890zpx3OSfnHgj3c3/L//v//f7/v9t3/4bL7T8N8jDu3wChyub+7pCJ4hzv3x0S15Gyd/zvDfHV+aSc3PKvgkyf/qxv3sunbR1TemXuvwhyb+WzvrmMPhRy9GRH7L/KkvEznvHbKFP5/vciQ2jUOz//y93fFJOCyT+160lu1ZfsH/Oez9HEumHcqoc/OHT62J1hpIe/BeIt+vF+Uke4LzUuzlNPzz1zPORwZGKlGJai1phlE7/77k5cUC2g17Nu/SZLMn5Moo6crUNirbJvKF5w9Mz+w5GFfSVSFJUOoMpYHAhre8X1euAxZO4rQpIiPJ/ezu3o/GqMVIqaKkMEkSHxJ49ujYwuGRgYUA5I2014L3KEjq5Fs+7Ny+riLHs1iCcNePpeE4c7v/oqRNouzR3qGypJDflstM/hQ4rWyniTqTsxMeRkpxdeCbIsIMRk2ie+EmRyDfpUC2fcDBk9en6ESUqXSgf6znz1lY+PT2lubrwgYs6cwpOJnZ0ROgBGwGGblWmPeSXIHT1AenK7RXx09Jkz8wtLjIrW1uivRs+fP6YktTw3/r0DAsHRyJOCSkoHCmsN2nob+IqQ73yVyJPQzxvunH98/ugzgr6SPrrgzOjRIabUEp0it7LwpI/PmMST0RH1ynYDrs4IMBjLXg0SZ4ODntwN7x9z/K+jj+8f6uvrGzp+fHSpdCC3UlAi9VniczTk6NFOmhFSySl0OsCwz3g1yMR6AP1+EE6CT56Z/9/HywXxgvj48vj4kMLUUbmpUpNJtzUyJDJkayKejqrAepMJtFdNf0UVDqPDI6GfuKq5fcxXIzmcisVaEJ9a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"
+
+/***/ }),
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(83);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var HeroSelect = function (_React$Component) {
+    _inherits(HeroSelect, _React$Component);
+
+    function HeroSelect() {
+        _classCallCheck(this, HeroSelect);
+
+        var _this = _possibleConstructorReturn(this, (HeroSelect.__proto__ || Object.getPrototypeOf(HeroSelect)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(HeroSelect, [{
+        key: 'coeckhero',
+        value: function coeckhero(type) {
+            var mystate = this.props.mystate;
+            switch (type) {
+                case 0:
+                    mystate.herotype = 0;
+                    mystate.maxHp = 4000;
+                    mystate.Hp = 4000;
+                    mystate.Hprecove = 15;
+                    break;
+                case 1:
+                    mystate.herotype = 1;
+                    mystate.attack = 70;
+                    mystate.armor = 15;
+                    break;
+                case 2:
+                    mystate.herotype = 2;
+                    mystate.maxHp = 3000;
+                    mystate.Hp = 3000;
+                    mystate.maxMp = 600;
+                    mystate.Mp = 600;
+                    mystate.Mprecove = 60;
+                    break;
+            }
+            var round = Math.random(); //随机回合用
+            this.props.setState({ mystate: mystate, mystateBase: mystate, playingSpeed: 1, round: this.props.round + round });
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    state: this.props.mystate,
+                    funname: "prepareOk",
+                    round: round
+                }
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'heroSelect' },
+                _react2.default.createElement('div', { className: 'hero0 heropicture', onClick: this.coeckhero.bind(this, 0) }),
+                _react2.default.createElement('div', { className: 'hero1 heropicture', onClick: this.coeckhero.bind(this, 1) }),
+                _react2.default.createElement('div', { className: 'hero2 heropicture', onClick: this.coeckhero.bind(this, 2) })
+            );
+        }
+    }]);
+
+    return HeroSelect;
+}(_react2.default.Component);
+
+module.exports = HeroSelect;
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(84);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(10);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center; }\n  .heroSelect .heropicture {\n    width: 200px;\n    height: 300px;\n    margin: 0px 10px 30px 10px;\n    display: inline-block; }\n  .heroSelect .hero0 {\n    background: url(" + escape(__webpack_require__(85)) + ") no-repeat center; }\n  .heroSelect .hero1 {\n    background: url(" + escape(__webpack_require__(86)) + ") no-repeat center; }\n  .heroSelect .hero2 {\n    background: url(" + escape(__webpack_require__(87)) + ") no-repeat center; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "aa958e8558b0308a86b38c3f7f51093f.jpg";
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "67589ccb55f496d32d5cfacc4148d6d4.jpg";
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "669049914c0d2ae64e40fe0f79f7a92e.jpg";
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(89);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none; }\n", ""]);
+
+// exports
+
 
 /***/ })
 /******/ ]);

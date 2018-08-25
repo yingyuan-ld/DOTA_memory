@@ -89,7 +89,7 @@ class HeroPlaceMy extends React.Component{
             place:[e.clientX,e.clientY],
             name:item.name,
             blueT:item.mp,
-            redT:item.CD,
+            redT:item.CD?"CD:"+item.CD/2:"",
             message:item.message,
         }})
     }
