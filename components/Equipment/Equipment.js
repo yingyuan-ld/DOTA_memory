@@ -30,6 +30,7 @@ class Equipment extends React.Component{
                 <div className="box">
                     <div className="shadow_left" />
                 </div>
+                <div className="timeout">{this.props.equipment.CDnow}</div>
                 <div className="box">
                     <div className="shadow_right" />
                 </div>

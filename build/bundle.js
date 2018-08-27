@@ -867,7 +867,7 @@ function addBuff(props, MorT, buff, buffT, buffObj) {
 function check_checkMp(props, card) {
     //判断剩余蓝量
     var mystate = props.mystate;
-    if (mystate.Mp < card.do.mMp) {
+    if (mystate.Mp + card.do.mMp < 0) {
         props.messagelist.push("剩余蓝量不够！");
         return [false, props];
     } else {
@@ -1058,13 +1058,20 @@ function doAttack(props, Attack, type) {
     }
     if (type == "equipt") {
         //检查剩余蓝量
-        //装备
         var _check_checkMp3 = check_checkMp(props, Attack);
 
         var _check_checkMp4 = _slicedToArray(_check_checkMp3, 2);
 
         checked = _check_checkMp4[0];
         props = _check_checkMp4[1];
+        if (!checked) return [false, props];
+        props.mystate.equipment.forEach(function (equip) {
+            if (equip.id == Attack.id) {
+                //判断物品栏装备
+                equip.CDnow = Attack.CD;
+            }
+        });
+        //装备
     }
     var DO = Attack.do;
     for (var key in DO) {
@@ -2930,6 +2937,11 @@ var Equipment = function (_React$Component) {
                         'div',
                         { className: 'box' },
                         _react2.default.createElement('div', { className: 'shadow_left' })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'timeout' },
+                        this.props.equipment.CDnow
                     ),
                     _react2.default.createElement(
                         'div',
@@ -23470,7 +23482,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  background-size: contain !important; }\n  .equipment .shadow_box {\n    width: 100%;\n    height: 100%; }\n    .equipment .shadow_box .box {\n      width: 50%;\n      height: 100%;\n      float: left;\n      overflow: hidden; }\n      .equipment .shadow_box .box .shadow_left {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: right; }\n      .equipment .shadow_box .box .shadow_right {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: left; }\n", ""]);
+exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  background-size: contain !important; }\n  .equipment .shadow_box {\n    width: 100%;\n    height: 100%;\n    position: relative; }\n    .equipment .shadow_box .timeout {\n      color: #fff;\n      position: absolute;\n      height: 100%;\n      width: 100%;\n      text-align: center;\n      z-index: 1; }\n    .equipment .shadow_box .box {\n      width: 50%;\n      height: 100%;\n      float: left;\n      overflow: hidden; }\n      .equipment .shadow_box .box .shadow_left {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: right; }\n      .equipment .shadow_box .box .shadow_right {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: left; }\n", ""]);
 
 // exports
 

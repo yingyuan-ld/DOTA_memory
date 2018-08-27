@@ -6,6 +6,15 @@
     .shadow_box{
     	width: 100%;
     	height: 100%;
+        position: relative;
+        .timeout{
+            color: #fff;
+             position: absolute;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            z-index: 1;
+        }
     	.box{
     		width: 50%;
     		height: 100%;

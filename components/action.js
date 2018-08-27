@@ -92,7 +92,7 @@ function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
 }
 function check_checkMp (props,card){//判断剩余蓝量
     let mystate = props.mystate;
-    if(mystate.Mp<card.do.mMp){
+    if(mystate.Mp+card.do.mMp<0){
         props.messagelist.push("剩余蓝量不够！");
         return [false,props];
     }else{
@@ -195,7 +195,6 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
         props.cardShowList.push(Attack);//放入弃牌堆
         //卡牌作用时的判断
         [props,Attack] = check_buffToCard(props,Attack,type);
-
     }
     if(type=="attack"){
         [checked,props] = check_attackAccount(props)//判断剩余攻击次数
@@ -211,6 +210,12 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
     }
     if(type=="equipt"){
         [checked,props] = check_checkMp(props,Attack);//检查剩余蓝量
+        if(!checked)return [false,props];
+        props.mystate.equipment.forEach((equip)=>{
+            if(equip.id == Attack.id){//判断物品栏装备
+                equip.CDnow = Attack.CD;
+            }
+        })
         //装备
     }
     let DO = Attack.do;
