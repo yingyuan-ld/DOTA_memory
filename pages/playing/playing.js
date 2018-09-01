@@ -35,6 +35,7 @@ class Component extends React.Component{
                 buffTime:[],//状态持续时间
                 buffObj:{},//有些状态需要对象来存储
                 equipment:[],//装备列表
+                equipmentcd:{},//装备cd
                 cardid:[],//卡牌数组
                 money:0,//金钱
                 moneyrecove:100,//金钱获得速度

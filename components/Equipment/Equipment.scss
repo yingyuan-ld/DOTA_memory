@@ -9,11 +9,16 @@
         position: relative;
         .timeout{
             color: #fff;
-             position: absolute;
-            height: 100%;
-            width: 100%;
+            position: absolute;
             text-align: center;
             z-index: 1;
+            margin: auto;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            display: block;
+            height: 24px;
         }
     	.box{
     		width: 50%;
@@ -21,15 +26,18 @@
     		float: left;
      		overflow: hidden;
     		.shadow_left{
-    			height: 100%;
-    			width: 200%;
+                height: 200%;
+                width: 200%;
+                margin-top: -100%;
+                margin-left: -100%;
 			    background-color: #03101A;
 			    opacity: 0.5;
     			transform-origin: right;
     		}
     		.shadow_right{
-    			height: 100%;
-    			width: 200%;
+                height: 200%;
+                width: 200%;
+                margin-top: -100%;
 			    background-color: #03101A;
 			    opacity: 0.5;
     			transform-origin: left;

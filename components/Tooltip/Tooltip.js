@@ -8,15 +8,16 @@ class Tooltip extends React.Component{
     }
   	render() {
   		if(this.props.show){
-	        return <div className="Tooltip" style={{left:this.props.place[0]+"px",top:this.props.place[1]+"px"}}>
+            let top = this.props.place[1]/document.body.offsetHeight>0.5?"translate(-100%, -100%)":"translate(-100%, 0)";
+	        return <div className="Tooltip" style={{left:this.props.place[0]+"px",top:this.props.place[1]+"px",transform:top}}>
 	                <div>
 	                    {this.props.name}
 	                </div>
-                  <div>
-                      <div className="yeloTitle">{this.props.yeloT}</div>
-                      <div className="blueTitle">{this.props.blueT}</div>
-                      <div className="redTitle">{this.props.redT}</div>
-                  </div>
+                <div>
+                    <div className="yeloTitle">{this.props.yeloT}</div>
+                    <div className="blueTitle">{this.props.blueT}</div>
+                    <div className="redTitle">{this.props.redT}</div>
+                </div>
 	                <div>{this.props.message}</div>
 	            </div>
         }else{

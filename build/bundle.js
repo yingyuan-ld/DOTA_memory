@@ -1065,29 +1065,23 @@ function doAttack(props, Attack, type) {
         checked = _check_checkMp4[0];
         props = _check_checkMp4[1];
         if (!checked) return [false, props];
-        props.mystate.equipment.forEach(function (equip) {
-            if (equip.id == Attack.id) {
-                //判断物品栏装备
-                equip.CDnow = Attack.CD;
-            }
-        });
-        //装备
+        props.mystate.equipmentcd[Attack.id] = Attack.CD; //装备进入cd
     }
     var DO = Attack.do;
     for (var key in DO) {
         var value = DO[key];
         switch (key) {
             case "mMp":
-                props.mystate.Mp += value;
+                props.mystate.Mp = props.mystate.Mp + value > props.mystate.maxMp ? props.mystate.maxMp : props.mystate.Mp + value;
                 break;
             case "mHp":
                 props.mystate.Hp = props.mystate.Hp + value > props.mystate.maxHp ? props.mystate.maxHp : props.mystate.Hp + value;
                 break;
             case "tMp":
-                props.thatstate.Mp += value;
+                props.thatstate.Mp = props.thatstate.Mp + value > props.thatstate.maxMp ? props.thatstate.maxMp : props.thatstate.Mp + value;
                 break;
             case "tHp":
-                props.thatstate.Hp -= value;
+                props.thatstate.Hp = props.thatstate.Hp + value > props.thatstate.maxHp ? props.thatstate.maxHp : props.thatstate.Hp + value;
                 break;
             case "mBuff":
                 props = addBuff(props, "mystate", DO.mBuff, DO.mBuffT, DO.mBuffObj); //添加buff方法
@@ -2649,6 +2643,13 @@ var HeroPlaceMy = function (_React$Component) {
                     i++;
                 }
             }
+            for (var _i in mystate.equipmentcd) {
+                //装备处理
+                if (mystate.equipmentcd[_i] > 0) {
+                    mystate.equipmentcd[_i] -= 1;
+                }
+                _i++;
+            }
             var newstate = { round: 0, messagelist: messagelist, mystate: mystate };
             this.props.setState(newstate);
             this.props.socket.emit('totalk', {
@@ -2702,7 +2703,7 @@ var HeroPlaceMy = function (_React$Component) {
                     { className: 'posi_tion', key: i,
                         onMouseOver: _this3.showtip.bind(_this3, item),
                         onMouseOut: _this3.closetip.bind(_this3) },
-                    _react2.default.createElement(_Equipment2.default, _extends({}, _this3.props, { equipment: item, equipfor: "my" }))
+                    _react2.default.createElement(_Equipment2.default, _extends({}, _this3.props, { equipment: item, equipmentcd: _this3.props.mystate.equipmentcd[item.id], equipfor: "my" }))
                 );
             });
         }
@@ -2924,29 +2925,36 @@ var Equipment = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var equipmentready = this.props.equipfor == "my" && this.props.equipment.CD && !this.props.equipment.CDnow ? this.useEquip.bind(this, this.props.equipment) : function () {};
+            var CDnow = this.props.equipmentcd || 0;
+            var cdRound = this.props.equipmentcd / this.props.equipment.CD;
+            if (CDnow / 2 == 0.5) {
+                CDnow = "1/2";
+            } else {
+                CDnow = (CDnow / 2 + "").slice(0, 1);
+            }
+            var equipmentready = this.props.equipfor == "my" && this.props.equipment.CD && CDnow == 0 ? this.useEquip.bind(this, this.props.equipment) : function () {};
             return _react2.default.createElement(
                 'div',
                 { className: 'equipment',
                     style: { background: "url(./server/equipmentImg/" + this.props.equipment.id + ".png) no-repeat center" },
                     onClick: equipmentready },
-                this.props.equipment.CDnow ? _react2.default.createElement(
+                CDnow != 0 ? _react2.default.createElement(
                     'div',
                     { className: 'shadow_box' },
                     _react2.default.createElement(
                         'div',
                         { className: 'box' },
-                        _react2.default.createElement('div', { className: 'shadow_left' })
+                        _react2.default.createElement('div', { className: 'shadow_left', style: { transform: "rotate(" + (1 - cdRound <= 0.5 ? 0 : 1 - cdRound - 0.5) * 360 + "deg)" } })
                     ),
                     _react2.default.createElement(
                         'div',
                         { className: 'timeout' },
-                        this.props.equipment.CDnow
+                        CDnow
                     ),
                     _react2.default.createElement(
                         'div',
                         { className: 'box' },
-                        _react2.default.createElement('div', { className: 'shadow_right' })
+                        _react2.default.createElement('div', { className: 'shadow_right', style: { transform: "rotate(" + (1 - cdRound > 0.5 ? 0.5 : 1 - cdRound) * 360 + "deg)" } })
                     )
                 ) : ""
             );
@@ -2984,6 +2992,10 @@ var _stateflie2 = _interopRequireDefault(_stateflie);
 var _BuffIon = __webpack_require__(20);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
+
+var _Equipment = __webpack_require__(21);
+
+var _Equipment2 = _interopRequireDefault(_Equipment);
 
 var _action = __webpack_require__(4);
 
@@ -3038,6 +3050,38 @@ var HeroPlaceThat = function (_React$Component) {
                     name: this.props.myname
                 });
             }
+        }
+    }, {
+        key: 'showtip',
+        value: function showtip(item, e) {
+            this.props.setState({ Tooltip: {
+                    show: true,
+                    place: [e.clientX, e.clientY],
+                    name: item.name,
+                    blueT: item.mp,
+                    redT: item.CD ? "CD:" + item.CD / 2 : "",
+                    message: item.message
+                } });
+        }
+    }, {
+        key: 'closetip',
+        value: function closetip() {
+            this.props.setState({ Tooltip: { show: false } });
+        }
+    }, {
+        key: 'showEquipment',
+        value: function showEquipment(equipments) {
+            var _this2 = this;
+
+            return equipments.map(function (item, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'posi_tion', key: i,
+                        onMouseOver: _this2.showtip.bind(_this2, item),
+                        onMouseOut: _this2.closetip.bind(_this2) },
+                    _react2.default.createElement(_Equipment2.default, _extends({}, _this2.props, { equipment: item, equipfor: "that" }))
+                );
+            });
         }
     }, {
         key: 'render',
@@ -3096,9 +3140,7 @@ var HeroPlaceThat = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'equipment_list' },
-                    basic.equipment.map(function (equipment, i) {
-                        _react2.default.createElement('div', null);
-                    })
+                    this.showEquipment(basic.equipment)
                 )
             );
         }
@@ -21935,7 +21977,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "body {\n  margin: 0px;\n  padding: 0px; }\n\n/*::-webkit-scrollbar{\n    display: none;\n}*/\n.system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "html {\n  height: 100%;\n  width: 100%; }\n  html body {\n    margin: 0px;\n    padding: 0px; }\n\n/*::-webkit-scrollbar{\n    display: none;\n}*/\n.system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -22455,6 +22497,7 @@ var Component = function (_React$Component) {
                 buffTime: [], //状态持续时间
                 buffObj: {}, //有些状态需要对象来存储
                 equipment: [], //装备列表
+                equipmentcd: {}, //装备cd
                 cardid: [], //卡牌数组
                 money: 0, //金钱
                 moneyrecove: 100 //金钱获得速度
@@ -22907,9 +22950,10 @@ var Tooltip = function (_React$Component) {
         key: "render",
         value: function render() {
             if (this.props.show) {
+                var top = this.props.place[1] / document.body.offsetHeight > 0.5 ? "translate(-100%, -100%)" : "translate(-100%, 0)";
                 return _react2.default.createElement(
                     "div",
-                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px" } },
+                    { className: "Tooltip", style: { left: this.props.place[0] + "px", top: this.props.place[1] + "px", transform: top } },
                     _react2.default.createElement(
                         "div",
                         null,
@@ -23010,7 +23054,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1;\n  transform: translate(-100%, -100%); }\n  .Tooltip .yeloTitle {\n    color: yellow;\n    display: inline-block; }\n  .Tooltip .blueTitle {\n    color: blue;\n    display: inline-block;\n    margin: 0px 5px; }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block; }\n", ""]);
+exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1; }\n  .Tooltip .yeloTitle {\n    color: yellow;\n    display: inline-block; }\n  .Tooltip .blueTitle {\n    color: blue;\n    display: inline-block;\n    margin: 0px 5px; }\n  .Tooltip .redTitle {\n    color: red;\n    display: inline-block; }\n", ""]);
 
 // exports
 
@@ -23132,7 +23176,7 @@ var PlayPage = function (_React$Component) {
                     mystate.cardid.push(this.props.small_cardheap[small_speed]);
                     small_speed++;
                 }
-                for (var i = 0; i < mystate.buff.length;) {
+                for (var i = 0, l = mystate.buff.length; i < l;) {
                     //状态处理
                     if (mystate.buffTime[i] == 1) {
                         mystate.buffTime.splice(i, 1);
@@ -23142,6 +23186,13 @@ var PlayPage = function (_React$Component) {
                         mystate.buffTime[i] -= 1;
                         i++;
                     }
+                }
+                for (var _i in mystate.equipmentcd) {
+                    //装备处理
+                    if (mystate.equipmentcd[_i] > 0) {
+                        mystate.equipmentcd[_i] -= 1;
+                    }
+                    _i++;
                 }
                 this.props.setState({ mystate: mystate, small_speed: small_speed, messagelist: messagelist });
                 this.props.socket.emit('totalk', {
@@ -23482,7 +23533,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  background-size: contain !important; }\n  .equipment .shadow_box {\n    width: 100%;\n    height: 100%;\n    position: relative; }\n    .equipment .shadow_box .timeout {\n      color: #fff;\n      position: absolute;\n      height: 100%;\n      width: 100%;\n      text-align: center;\n      z-index: 1; }\n    .equipment .shadow_box .box {\n      width: 50%;\n      height: 100%;\n      float: left;\n      overflow: hidden; }\n      .equipment .shadow_box .box .shadow_left {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: right; }\n      .equipment .shadow_box .box .shadow_right {\n        height: 100%;\n        width: 200%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: left; }\n", ""]);
+exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  background-size: contain !important; }\n  .equipment .shadow_box {\n    width: 100%;\n    height: 100%;\n    position: relative; }\n    .equipment .shadow_box .timeout {\n      color: #fff;\n      position: absolute;\n      text-align: center;\n      z-index: 1;\n      margin: auto;\n      top: 0px;\n      bottom: 0px;\n      left: 0px;\n      right: 0px;\n      display: block;\n      height: 24px; }\n    .equipment .shadow_box .box {\n      width: 50%;\n      height: 100%;\n      float: left;\n      overflow: hidden; }\n      .equipment .shadow_box .box .shadow_left {\n        height: 200%;\n        width: 200%;\n        margin-top: -100%;\n        margin-left: -100%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: right; }\n      .equipment .shadow_box .box .shadow_right {\n        height: 200%;\n        width: 200%;\n        margin-top: -100%;\n        background-color: #03101A;\n        opacity: 0.5;\n        transform-origin: left; }\n", ""]);
 
 // exports
 
@@ -23951,7 +24002,10 @@ var Shoping = function (_React$Component) {
     function Shoping() {
         _classCallCheck(this, Shoping);
 
-        return _possibleConstructorReturn(this, (Shoping.__proto__ || Object.getPrototypeOf(Shoping)).call(this));
+        var _this = _possibleConstructorReturn(this, (Shoping.__proto__ || Object.getPrototypeOf(Shoping)).call(this));
+
+        _this.closeshop = _this.closeshop.bind(_this);
+        return _this;
     }
 
     _createClass(Shoping, [{
@@ -23968,6 +24022,25 @@ var Shoping = function (_React$Component) {
                 } });
         }
     }, {
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(newProps) {
+            if (!this.props.show && newProps.show) {
+                document.addEventListener("click", this.closeshop, false);
+            }
+            if (this.props.show && !newProps.show) {
+                document.removeEventListener("click", this.closeshop, false);
+            }
+        }
+    }, {
+        key: 'closeshop',
+        value: function closeshop(e) {
+            var shopbox = this.refs.shop;
+            if (!shopbox.contains(e.target)) {
+                document.removeEventListener("click", this.closeshop, false);
+                this.props.goshoping();
+            }
+        }
+    }, {
         key: 'closetip',
         value: function closetip() {
             this.props.setState({ Tooltip: { show: false } });
@@ -23975,7 +24048,7 @@ var Shoping = function (_React$Component) {
     }, {
         key: 'buyone',
         value: function buyone(i) {
-            var equipment = _equipment2.default[i];
+            var equipment = JSON.parse(JSON.stringify(_equipment2.default[i]));
             var price = equipment.price.slice(1) * 1;
             var newstate = this.props;
             var mystate = this.props.mystate;
@@ -24025,7 +24098,7 @@ var Shoping = function (_React$Component) {
         value: function render() {
             return _react2.default.createElement(
                 'div',
-                { className: "shop_room " + (this.props.show ? "room_show" : "room_hide") },
+                { className: "shop_room " + (this.props.show ? "room_show" : "room_hide"), ref: 'shop' },
                 _react2.default.createElement(
                     'div',
                     { className: "shop_room" },
@@ -24073,7 +24146,7 @@ equipment[7].do = { mMp: -100, tBuff: [87], tBuffT: [2], cd: 10 };
 // equipment[8] = {id:8,name:"散失之刃",price:"￥35",mp:"MP:100",state: 2 ,message:"普通攻击减少对方50点魔法值 【主动使用】净化敌方的所有buff",CD:8}
 // equipment[8].do = {special:true}
 equipment[9] = { id: 9, name: "勇气勋章", price: "￥20", mp: "MP:50", state: 1, message: "护甲+10 【主动使用】敌方护甲-10,己方护甲-10,持续一回合", CD: 4 };
-equipment[9].do = { mMp: -50, mBuff: [83], mBuffT: [2], tBuff: [83], tBuffT: [2], cd: 4 };
+equipment[9].do = { mMp: -50, mBuff: [84], mBuffT: [2], tBuff: [84], tBuffT: [2], cd: 4 };
 equipment[10] = { id: 10, name: "BKB", price: "￥50", mp: "MP:100", state: 2, message: "攻击力+15 【主动使用】魔法免疫一回合", CD: 8 };
 equipment[10].do = { mMp: -100, mBuff: [60], mBuffT: [2], cd: 8 };
 equipment[11] = { id: 11, name: "灵魂之戒", price: "￥20", state: 2, message: "生命恢复+10 【主动使用】生命值减少150,魔法值增加150", CD: 4 };

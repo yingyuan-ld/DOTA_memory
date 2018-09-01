@@ -22,7 +22,7 @@ class FightPlace extends React.Component{
         this.setState({shoping:!this.state.shoping});
     }
   	render() {
-        return <div className="fight_place">
+        return <div className="fight_place" >
             <div className="fight_message">
                 {this.messagelist()}
             </div>

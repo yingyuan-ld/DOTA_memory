@@ -211,28 +211,23 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
     if(type=="equipt"){
         [checked,props] = check_checkMp(props,Attack);//检查剩余蓝量
         if(!checked)return [false,props];
-        props.mystate.equipment.forEach((equip)=>{
-            if(equip.id == Attack.id){//判断物品栏装备
-                equip.CDnow = Attack.CD;
-            }
-        })
-        //装备
+        props.mystate.equipmentcd[Attack.id] = Attack.CD;//装备进入cd
     }
     let DO = Attack.do;
     for(let key in DO){
         let value = DO[key]
         switch(key){
             case "mMp":
-                props.mystate.Mp +=value;
+                props.mystate.Mp =(props.mystate.Mp+value)>props.mystate.maxMp?props.mystate.maxMp:props.mystate.Mp+value;
                 break;
             case "mHp":
                 props.mystate.Hp =(props.mystate.Hp+value)>props.mystate.maxHp?props.mystate.maxHp:props.mystate.Hp+value;
                 break;
             case "tMp":
-                props.thatstate.Mp +=value;
+                props.thatstate.Mp =(props.thatstate.Mp+value)>props.thatstate.maxMp?props.thatstate.maxMp:props.thatstate.Mp+value;
                 break;
             case "tHp":
-                props.thatstate.Hp -=value;
+                props.thatstate.Hp =(props.thatstate.Hp+value)>props.thatstate.maxHp?props.thatstate.maxHp:props.thatstate.Hp+value;
                 break;
             case "mBuff":
                 props = addBuff(props,"mystate",DO.mBuff,DO.mBuffT,DO.mBuffObj)//添加buff方法

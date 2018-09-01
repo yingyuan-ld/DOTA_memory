@@ -35,7 +35,7 @@ class PlayPage extends React.Component{
                 mystate.cardid.push(this.props.small_cardheap[small_speed]);
                 small_speed++;
             }
-            for(let i=0;i<mystate.buff.length;){//状态处理
+            for(let i=0,l = mystate.buff.length;i<l;){//状态处理
                 if(mystate.buffTime[i]==1){
                     mystate.buffTime.splice(i,1);
                     mystate.buffObj[mystate.buff[i]]&&delete mystate.buffObj[mystate.buff[i]];
@@ -44,6 +44,12 @@ class PlayPage extends React.Component{
                     mystate.buffTime[i]-=1;
                     i++;
                 }
+            }
+            for(let i in mystate.equipmentcd){//装备处理
+                if(mystate.equipmentcd[i]>0){
+                    mystate.equipmentcd[i]-=1;
+                }
+                i++;
             }
             this.props.setState({mystate:mystate,small_speed:small_speed,messagelist:messagelist});
             this.props.socket.emit('totalk', {

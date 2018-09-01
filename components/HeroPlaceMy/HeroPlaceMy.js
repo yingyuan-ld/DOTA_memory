@@ -59,6 +59,12 @@ class HeroPlaceMy extends React.Component{
                 i++;
             }
         }
+        for(let i in mystate.equipmentcd){//装备处理
+            if(mystate.equipmentcd[i]>0){
+                mystate.equipmentcd[i]-=1;
+            }
+            i++;
+        }
         let newstate= {round:0,messagelist:messagelist,mystate:mystate};
         this.props.setState(newstate);
         this.props.socket.emit('totalk', {
@@ -101,7 +107,7 @@ class HeroPlaceMy extends React.Component{
             return <div className="posi_tion" key={i}
                         onMouseOver={this.showtip.bind(this,item)}
                         onMouseOut={this.closetip.bind(this)}>
-                    <Equipment {...this.props} equipment={item} equipfor={"my"}/>
+                    <Equipment {...this.props} equipment={item} equipmentcd={this.props.mystate.equipmentcd[item.id]} equipfor={"my"}/>
                 </div>
             })
     }

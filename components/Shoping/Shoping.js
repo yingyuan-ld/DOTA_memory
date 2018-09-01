@@ -7,6 +7,7 @@ import "./Shoping.scss";
 class Shoping extends React.Component{
     constructor(){
         super();
+        this.closeshop = this.closeshop.bind(this);
     }
     showtip(i,e){
         this.props.setState({Tooltip:{
@@ -19,11 +20,26 @@ class Shoping extends React.Component{
             message:equipmentFile[i].message,
         }})
     }
+    componentWillReceiveProps(newProps){
+        if(!this.props.show&&newProps.show){
+            document.addEventListener("click",this.closeshop,false);
+        }
+        if(this.props.show&&!newProps.show){
+            document.removeEventListener("click",this.closeshop,false);
+        }
+    }
+    closeshop(e){
+        let shopbox = this.refs.shop;
+        if(!shopbox.contains(e.target)){
+            document.removeEventListener("click",this.closeshop,false);
+            this.props.goshoping();
+        }
+    }
     closetip(){
         this.props.setState({Tooltip:{show:false}});
     }
     buyone(i){
-        let equipment = equipmentFile[i];
+        let equipment = JSON.parse(JSON.stringify(equipmentFile[i]));
         let price = equipment.price.slice(1)*1
         let newstate = this.props;
         let mystate = this.props.mystate;
@@ -63,7 +79,7 @@ class Shoping extends React.Component{
             })
     }
   	render() {
-        return <div className={"shop_room "+(this.props.show?"room_show":"room_hide")}>
+        return <div className={"shop_room "+(this.props.show?"room_show":"room_hide")} ref='shop'>
             <div className={"shop_room"}>
                 {this.showEquipment()}
             </div>

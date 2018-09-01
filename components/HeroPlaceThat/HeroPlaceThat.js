@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
+import Equipment from '../Equipment/Equipment';
 import {state_base} from '../action';//计算状态影响下的属性
 import "./HeroPlaceThat.scss";
 var socket = io();
@@ -34,6 +35,28 @@ class HeroPlaceThat extends React.Component{
             }); 
         }
     }
+    showtip(item,e){
+        this.props.setState({Tooltip:{
+            show:true,
+            place:[e.clientX,e.clientY],
+            name:item.name,
+            blueT:item.mp,
+            redT:item.CD?"CD:"+item.CD/2:"",
+            message:item.message,
+        }})
+    }
+    closetip(){
+        this.props.setState({Tooltip:{show:false}});
+    }
+    showEquipment(equipments){
+        return equipments.map((item,i)=>{
+            return <div className="posi_tion" key={i}
+                        onMouseOver={this.showtip.bind(this,item)}
+                        onMouseOut={this.closetip.bind(this)}>
+                    <Equipment {...this.props} equipment={item} equipfor={"that"}/>
+                </div>
+            })
+    }
   	render() {
         let basic = this.props.thatstate;
         if(basic.herotype===""||basic.herotype===undefined){
@@ -56,9 +79,7 @@ class HeroPlaceThat extends React.Component{
                 {this.cardlist()}
             </div>
             <div className="equipment_list">
-                {basic.equipment.map((equipment,i)=>{
-                    <div></div>
-                })}
+                {this.showEquipment(basic.equipment)}
             </div>
         </div>
   	}
