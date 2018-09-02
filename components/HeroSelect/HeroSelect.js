@@ -29,6 +29,15 @@ class HeroSelect extends React.Component{
                 mystate.Mp=600;
                 mystate.Mprecove=60;
                 break;
+            case 3:
+                mystate.herotype=3;
+                mystate.maxHp=3500;
+                mystate.Hp=3500;
+                mystate.maxMp=500;
+                mystate.Mp=500;
+                mystate.attack=50;
+                mystate.Mprecove=40;
+                break;
         }
         let round = Math.random();//随机回合用
         this.props.setState({mystate:mystate,mystateBase:mystate,playingSpeed:1,round:(this.props.round+round)});
@@ -43,9 +52,15 @@ class HeroSelect extends React.Component{
     }
   	render() {
         return<div className="heroSelect">
-                <div className="hero0 heropicture" onClick={this.coeckhero.bind(this,0)} />
-                <div className="hero1 heropicture" onClick={this.coeckhero.bind(this,1)} />
-                <div className="hero2 heropicture" onClick={this.coeckhero.bind(this,2)} />
+                <div className="select_title">
+                    <span>请选择你要使用的英雄</span>
+                </div>
+                <div className="picture_box">
+                    <div className="hero0 heropicture" onClick={this.coeckhero.bind(this,0)} />
+                    <div className="hero1 heropicture" onClick={this.coeckhero.bind(this,1)} />
+                    <div className="hero2 heropicture" onClick={this.coeckhero.bind(this,2)} />
+                    <div className="hero3 heropicture" onClick={this.coeckhero.bind(this,3)} />
+                </div>
             </div>
   	}
 }

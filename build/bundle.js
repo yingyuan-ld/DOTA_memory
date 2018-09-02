@@ -757,7 +757,7 @@ exports.state_base = state_base;
 exports.doAttack = doAttack;
 exports.specialcard = specialcard;
 
-var _skill = __webpack_require__(17);
+var _skill = __webpack_require__(18);
 
 var _setUpData = __webpack_require__(48);
 
@@ -1696,6 +1696,107 @@ module.exports = warning;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _action = __webpack_require__(4);
+
+__webpack_require__(62);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //使用技能
+
+
+var Equipment = function (_React$Component) {
+    _inherits(Equipment, _React$Component);
+
+    function Equipment(props) {
+        _classCallCheck(this, Equipment);
+
+        return _possibleConstructorReturn(this, (Equipment.__proto__ || Object.getPrototypeOf(Equipment)).call(this));
+    }
+
+    _createClass(Equipment, [{
+        key: 'useEquip',
+        value: function useEquip(equipment) {
+            var _doAttack = (0, _action.doAttack)(this.props, equipment, "equipt"),
+                _doAttack2 = _slicedToArray(_doAttack, 2),
+                check = _doAttack2[0],
+                newstate = _doAttack2[1];
+
+            this.props.setState(newstate);
+            if (check == false) return;
+
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
+                    message: "对方使用了\"" + equipment.name + "\""
+                }
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var CDnow = this.props.equipmentcd || 0;
+            var cdRound = this.props.equipmentcd / this.props.equipment.CD;
+            if (CDnow / 2 == 0.5) {
+                CDnow = "1/2";
+            } else {
+                CDnow = (CDnow / 2 + "").slice(0, 1);
+            }
+            var equipmentready = this.props.equipfor == "my" && this.props.equipment.CD && CDnow == 0 ? this.useEquip.bind(this, this.props.equipment) : function () {};
+            return _react2.default.createElement(
+                'div',
+                { className: 'equipment',
+                    style: { background: "url(./server/equipmentImg/" + this.props.equipment.id + ".png) no-repeat center" },
+                    onClick: equipmentready },
+                CDnow != 0 ? _react2.default.createElement(
+                    'div',
+                    { className: 'shadow_box' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'box' },
+                        _react2.default.createElement('div', { className: 'shadow_left', style: { transform: "rotate(" + (1 - cdRound <= 0.5 ? 0 : 1 - cdRound - 0.5) * 360 + "deg)" } })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'timeout' },
+                        CDnow
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'box' },
+                        _react2.default.createElement('div', { className: 'shadow_right', style: { transform: "rotate(" + (1 - cdRound > 0.5 ? 0.5 : 1 - cdRound) * 360 + "deg)" } })
+                    )
+                ) : ""
+            );
+        }
+    }]);
+
+    return Equipment;
+}(_react2.default.Component);
+
+module.exports = Equipment;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -1759,7 +1860,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1798,7 +1899,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1840,7 +1941,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1911,7 +2012,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1954,7 +2055,7 @@ function containsNode(outerNode, innerNode) {
 module.exports = containsNode;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2522,7 +2623,7 @@ small_skill[50].do = { special: true
 };module.exports = { big_skill: big_skill, small_skill: small_skill };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2542,15 +2643,15 @@ var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(19);
+var _stateflie = __webpack_require__(20);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _BuffIon = __webpack_require__(20);
+var _BuffIon = __webpack_require__(21);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _Equipment = __webpack_require__(21);
+var _Equipment = __webpack_require__(12);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
@@ -2784,7 +2885,7 @@ var HeroPlaceMy = function (_React$Component) {
 module.exports = HeroPlaceMy;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2794,7 +2895,7 @@ var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,�
 module.exports = state_list;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2866,107 +2967,6 @@ var BuffIon = function (_React$Component) {
 module.exports = BuffIon;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _action = __webpack_require__(4);
-
-__webpack_require__(62);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //使用技能
-
-
-var Equipment = function (_React$Component) {
-    _inherits(Equipment, _React$Component);
-
-    function Equipment(props) {
-        _classCallCheck(this, Equipment);
-
-        return _possibleConstructorReturn(this, (Equipment.__proto__ || Object.getPrototypeOf(Equipment)).call(this));
-    }
-
-    _createClass(Equipment, [{
-        key: 'useEquip',
-        value: function useEquip(equipment) {
-            var _doAttack = (0, _action.doAttack)(this.props, equipment, "equipt"),
-                _doAttack2 = _slicedToArray(_doAttack, 2),
-                check = _doAttack2[0],
-                newstate = _doAttack2[1];
-
-            this.props.setState(newstate);
-            if (check == false) return;
-
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    funname: "getnewstate",
-                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
-                    message: "对方使用了\"" + equipment.name + "\""
-                }
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var CDnow = this.props.equipmentcd || 0;
-            var cdRound = this.props.equipmentcd / this.props.equipment.CD;
-            if (CDnow / 2 == 0.5) {
-                CDnow = "1/2";
-            } else {
-                CDnow = (CDnow / 2 + "").slice(0, 1);
-            }
-            var equipmentready = this.props.equipfor == "my" && this.props.equipment.CD && CDnow == 0 ? this.useEquip.bind(this, this.props.equipment) : function () {};
-            return _react2.default.createElement(
-                'div',
-                { className: 'equipment',
-                    style: { background: "url(./server/equipmentImg/" + this.props.equipment.id + ".png) no-repeat center" },
-                    onClick: equipmentready },
-                CDnow != 0 ? _react2.default.createElement(
-                    'div',
-                    { className: 'shadow_box' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'box' },
-                        _react2.default.createElement('div', { className: 'shadow_left', style: { transform: "rotate(" + (1 - cdRound <= 0.5 ? 0 : 1 - cdRound - 0.5) * 360 + "deg)" } })
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'timeout' },
-                        CDnow
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'box' },
-                        _react2.default.createElement('div', { className: 'shadow_right', style: { transform: "rotate(" + (1 - cdRound > 0.5 ? 0.5 : 1 - cdRound) * 360 + "deg)" } })
-                    )
-                ) : ""
-            );
-        }
-    }]);
-
-    return Equipment;
-}(_react2.default.Component);
-
-module.exports = Equipment;
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2985,15 +2985,15 @@ var _Card = __webpack_require__(9);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(19);
+var _stateflie = __webpack_require__(20);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _BuffIon = __webpack_require__(20);
+var _BuffIon = __webpack_require__(21);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _Equipment = __webpack_require__(21);
+var _Equipment = __webpack_require__(12);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
@@ -3247,7 +3247,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(5),ea=__webpack_require__(0),m=__webpack_require__(13),A=__webpack_require__(7),C=__webpack_require__(6),fa=__webpack_require__(14),ha=__webpack_require__(15),ja=__webpack_require__(16),ka=__webpack_require__(8);
+var ba=__webpack_require__(5),ea=__webpack_require__(0),m=__webpack_require__(14),A=__webpack_require__(7),C=__webpack_require__(6),fa=__webpack_require__(15),ha=__webpack_require__(16),ja=__webpack_require__(17),ka=__webpack_require__(8);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -3539,7 +3539,7 @@ var invariant = __webpack_require__(5);
 var emptyObject = __webpack_require__(8);
 var warning = __webpack_require__(11);
 var emptyFunction = __webpack_require__(6);
-var checkPropTypes = __webpack_require__(12);
+var checkPropTypes = __webpack_require__(13);
 
 // TODO: this is special because it gets imported during build.
 
@@ -5034,13 +5034,13 @@ if (process.env.NODE_ENV !== "production") {
 var invariant = __webpack_require__(5);
 var React = __webpack_require__(0);
 var warning = __webpack_require__(11);
-var ExecutionEnvironment = __webpack_require__(13);
+var ExecutionEnvironment = __webpack_require__(14);
 var _assign = __webpack_require__(7);
 var emptyFunction = __webpack_require__(6);
-var checkPropTypes = __webpack_require__(12);
-var getActiveElement = __webpack_require__(14);
-var shallowEqual = __webpack_require__(15);
-var containsNode = __webpack_require__(16);
+var checkPropTypes = __webpack_require__(13);
+var getActiveElement = __webpack_require__(15);
+var shallowEqual = __webpack_require__(16);
+var containsNode = __webpack_require__(17);
 var emptyObject = __webpack_require__(8);
 var hyphenateStyleName = __webpack_require__(33);
 var camelizeStyleName = __webpack_require__(35);
@@ -22090,6 +22090,8 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+__webpack_require__(90);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22151,17 +22153,21 @@ var login = function (_React$Component) {
 		value: function render() {
 			return _react2.default.createElement(
 				"div",
-				null,
-				_react2.default.createElement(
-					"h1",
-					null,
-					"\u8F93\u5165\u540D\u5B57"
-				),
-				_react2.default.createElement("input", { type: "text", className: "name_input", onChange: this.edit.bind(this), value: this.state.myname }),
+				{ className: "login_box" },
 				_react2.default.createElement(
 					"div",
-					{ onClick: this.send.bind(this) },
-					"\u786E\u5B9A"
+					{ className: "login" },
+					_react2.default.createElement(
+						"div",
+						{ className: "login_title" },
+						"\u8F93\u5165\u540D\u5B57"
+					),
+					_react2.default.createElement("input", { type: "text", className: "name_input", onChange: this.edit.bind(this), value: this.state.myname }),
+					_react2.default.createElement(
+						"div",
+						{ className: "login_btn", onClick: this.send.bind(this) },
+						"\u767B\u5F55"
+					)
 				)
 			);
 		}
@@ -22326,7 +22332,7 @@ var Component = function (_React$Component) {
                 "div",
                 { className: "prepare_body" },
                 _react2.default.createElement(
-                    "h1",
+                    "div",
                     null,
                     "\u8BF7\u9009\u62E9\u4E00\u4E2A\u73A9\u5BB6"
                 ),
@@ -22341,10 +22347,26 @@ var Component = function (_React$Component) {
                     { className: "online_list" },
                     _react2.default.createElement(
                         "div",
-                        null,
-                        "\u5728\u7EBF\u4EBA\u5458\u5217\u8868"
-                    ),
-                    this.render_presen()
+                        { className: "metal_box" },
+                        _react2.default.createElement("div", { className: "border_corner1" }),
+                        _react2.default.createElement("div", { className: "border_line1" }),
+                        _react2.default.createElement("div", { className: "border_corner2" }),
+                        _react2.default.createElement("div", { className: "border_line2" }),
+                        _react2.default.createElement("div", { className: "border_corner3" }),
+                        _react2.default.createElement("div", { className: "border_line3" }),
+                        _react2.default.createElement("div", { className: "border_corner4" }),
+                        _react2.default.createElement("div", { className: "border_line4" }),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "inner_box" },
+                            _react2.default.createElement(
+                                "div",
+                                null,
+                                "\u5728\u7EBF\u4EBA\u5458\u5217\u8868"
+                            ),
+                            this.render_presen()
+                        )
+                    )
                 ),
                 _react2.default.createElement(
                     "div",
@@ -22414,12 +22436,13 @@ if(false) {
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var escape = __webpack_require__(10);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%; }\n  .prepare_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    border: 1px solid #666;\n    background: #fff; }\n    .prepare_body .Chat_record .organ_message {\n      text-align: left; }\n    .prepare_body .Chat_record .system_message {\n      text-align: center; }\n  .prepare_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .prepare_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    border: 1px solid #666;\n    top: 100px;\n    right: 0px; }\n  .prepare_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%;\n  background-color: #363549; }\n  .prepare_body .Chat_record {\n    width: calc(70% - 20px);\n    height: calc(75% - 30px);\n    border: 1px solid #666;\n    background: #fff;\n    overflow: auto; }\n    .prepare_body .Chat_record .organ_message {\n      text-align: left; }\n    .prepare_body .Chat_record .system_message {\n      text-align: center; }\n  .prepare_body .text_input {\n    height: calc(20% - 20px);\n    margin-top: 10px;\n    width: calc(70% - 20px); }\n  .prepare_body .online_list {\n    width: calc(30% - 20px);\n    position: fixed;\n    top: 10px;\n    bottom: 10px;\n    right: 10px; }\n  .prepare_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n\n.metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n", ""]);
 
 // exports
 
@@ -23074,7 +23097,7 @@ var _HeroSelect = __webpack_require__(82);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
-var _HeroPlaceMy = __webpack_require__(18);
+var _HeroPlaceMy = __webpack_require__(19);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
@@ -23111,9 +23134,9 @@ __webpack_require__(54);
 
 var _action = __webpack_require__(4);
 
-var _skill = __webpack_require__(17);
+var _skill = __webpack_require__(18);
 
-var _HeroPlaceMy = __webpack_require__(18);
+var _HeroPlaceMy = __webpack_require__(19);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
@@ -23982,7 +24005,7 @@ var _equipment = __webpack_require__(76);
 
 var _equipment2 = _interopRequireDefault(_equipment);
 
-var _Equipment = __webpack_require__(21);
+var _Equipment = __webpack_require__(12);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
@@ -24362,6 +24385,15 @@ var HeroSelect = function (_React$Component) {
                     mystate.Mp = 600;
                     mystate.Mprecove = 60;
                     break;
+                case 3:
+                    mystate.herotype = 3;
+                    mystate.maxHp = 3500;
+                    mystate.Hp = 3500;
+                    mystate.maxMp = 500;
+                    mystate.Mp = 500;
+                    mystate.attack = 50;
+                    mystate.Mprecove = 40;
+                    break;
             }
             var round = Math.random(); //随机回合用
             this.props.setState({ mystate: mystate, mystateBase: mystate, playingSpeed: 1, round: this.props.round + round });
@@ -24380,9 +24412,23 @@ var HeroSelect = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 { className: 'heroSelect' },
-                _react2.default.createElement('div', { className: 'hero0 heropicture', onClick: this.coeckhero.bind(this, 0) }),
-                _react2.default.createElement('div', { className: 'hero1 heropicture', onClick: this.coeckhero.bind(this, 1) }),
-                _react2.default.createElement('div', { className: 'hero2 heropicture', onClick: this.coeckhero.bind(this, 2) })
+                _react2.default.createElement(
+                    'div',
+                    { className: 'select_title' },
+                    _react2.default.createElement(
+                        'span',
+                        null,
+                        '\u8BF7\u9009\u62E9\u4F60\u8981\u4F7F\u7528\u7684\u82F1\u96C4'
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'picture_box' },
+                    _react2.default.createElement('div', { className: 'hero0 heropicture', onClick: this.coeckhero.bind(this, 0) }),
+                    _react2.default.createElement('div', { className: 'hero1 heropicture', onClick: this.coeckhero.bind(this, 1) }),
+                    _react2.default.createElement('div', { className: 'hero2 heropicture', onClick: this.coeckhero.bind(this, 2) }),
+                    _react2.default.createElement('div', { className: 'hero3 heropicture', onClick: this.coeckhero.bind(this, 3) })
+                )
             );
         }
     }]);
@@ -24452,7 +24498,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center; }\n  .heroSelect .heropicture {\n    width: 200px;\n    height: 300px;\n    margin: 0px 10px 30px 10px;\n    display: inline-block; }\n  .heroSelect .hero0 {\n    background: url(" + escape(__webpack_require__(85)) + ") no-repeat center; }\n  .heroSelect .hero1 {\n    background: url(" + escape(__webpack_require__(86)) + ") no-repeat center; }\n  .heroSelect .hero2 {\n    background: url(" + escape(__webpack_require__(87)) + ") no-repeat center; }\n", ""]);
+exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important; }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(85)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(86)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(87)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(93)) + ") no-repeat center; }\n", ""]);
 
 // exports
 
@@ -24461,19 +24507,19 @@ exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center; }\
 /* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "aa958e8558b0308a86b38c3f7f51093f.jpg";
+module.exports = __webpack_require__.p + "52161e9892467fa48f01d90390b46efe.jpg";
 
 /***/ }),
 /* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "67589ccb55f496d32d5cfacc4148d6d4.jpg";
+module.exports = __webpack_require__.p + "be5072aea25eb22a9bbbbd7f4ded5518.jpg";
 
 /***/ }),
 /* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "669049914c0d2ae64e40fe0f79f7a92e.jpg";
+module.exports = __webpack_require__.p + "31b809f3672807f11398cd3516b78823.jpg";
 
 /***/ }),
 /* 88 */
@@ -24538,6 +24584,95 @@ exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 
 
 // exports
 
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(91);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./login.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./login.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(10);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".login_box {\n  width: 100%;\n  height: 100%;\n  background: url(" + escape(__webpack_require__(92)) + ") no-repeat;\n  background-size: auto 100%;\n  background-color: #000;\n  background-position: left; }\n  .login_box .login {\n    width: 200px;\n    background: #3a4c4c;\n    color: #fff;\n    position: absolute;\n    left: 75%;\n    top: 50%;\n    margin-left: -100px;\n    margin-top: -30px;\n    padding: 10px;\n    border-radius: 3px; }\n    .login_box .login .login_title {\n      background: #3a4c4c;\n      margin-top: -30px;\n      line-height: 20px;\n      padding: 5px 10px;\n      position: inherit;\n      font-size: 13px;\n      border-radius: 3px; }\n    .login_box .login .name_input {\n      box-sizing: border-box;\n      text-align: center;\n      font-size: 1.4em;\n      border-radius: 4px;\n      border: 1px solid #c8cccf;\n      color: #6a6f77;\n      -web-kit-appearance: none;\n      -moz-appearance: none;\n      display: block;\n      width: 100%; }\n    .login_box .login .login_btn {\n      background: #285ea8;\n      text-align: center;\n      padding: 5px;\n      border-radius: 3px;\n      font-size: 14px;\n      margin-top: 10px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "5ff841ec66299ab986b56ca3b15dd927.jpg";
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/jpeg;base64,/9j/4QPARXhpZgAASUkqAAgAAAAMAAABAwABAAAAEAAAAAEBAwABAAAA9gAAAAIBAwADAAAAngAAAAYBAwABAAAAAgAAABIBAwABAAAAAQAAABUBAwABAAAAAwAAABoBBQABAAAApAAAABsBBQABAAAArAAAACgBAwABAAAAAgAAADEBAgAkAAAAtAAAADIBAgAUAAAA2AAAAGmHBAABAAAA7AAAACQBAAAIAAgACACA/AoAECcAAID8CgAQJwAAQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkAMjAxODowOTowMiAxNjozMzowMgAEAACQBwAEAAAAMDIyMQGgAwABAAAA//8AAAKgBAABAAAAEAAAAAOgBAABAAAAEAAAAAAAAAAAAAYAAwEDAAEAAAAGAAAAGgEFAAEAAAByAQAAGwEFAAEAAAB6AQAAKAEDAAEAAAACAAAAAQIEAAEAAACCAQAAAgIEAAEAAAA2AgAAAAAAAEgAAAABAAAASAAAAAEAAAD/2P/tAAxBZG9iZV9DTQAC/+4ADkFkb2JlAGSAAAAAAf/bAIQADAgICAkIDAkJDBELCgsRFQ8MDA8VGBMTFRMTGBEMDAwMDAwRDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAENCwsNDg0QDg4QFA4ODhQUDg4ODhQRDAwMDAwREQwMDAwMDBEMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM/8AAEQgAEAAQAwEiAAIRAQMRAf/dAAQAAf/EAT8AAAEFAQEBAQEBAAAAAAAAAAMAAQIEBQYHCAkKCwEAAQUBAQEBAQEAAAAAAAAAAQACAwQFBgcICQoLEAABBAEDAgQCBQcGCAUDDDMBAAIRAwQhEjEFQVFhEyJxgTIGFJGhsUIjJBVSwWIzNHKC0UMHJZJT8OHxY3M1FqKygyZEk1RkRcKjdDYX0lXiZfKzhMPTdePzRieUpIW0lcTU5PSltcXV5fVWZnaGlqa2xtbm9jdHV2d3h5ent8fX5/cRAAICAQIEBAMEBQYHBwYFNQEAAhEDITESBEFRYXEiEwUygZEUobFCI8FS0fAzJGLhcoKSQ1MVY3M08SUGFqKygwcmNcLSRJNUoxdkRVU2dGXi8rOEw9N14/NGlKSFtJXE1OT0pbXF1eX1VmZ2hpamtsbW5vYnN0dXZ3eHl6e3x//aAAwDAQACEQMRAD8A4nHdWK2epDQSZcRPihjL1INTDBgHxCYtDsNs6+7+9U7Xlh9qBU//2f/tC0xQaG90b3Nob3AgMy4wADhCSU0EBAAAAAAADxwBWgADGyVHHAIAAAIAAAA4QklNBCUAAAAAABDNz/p9qMe+CQVwdq6vBcNOOEJJTQQ6AAAAAADXAAAAEAAAAAEAAAAAAAtwcmludE91dHB1dAAAAAUAAAAAUHN0U2Jvb2wBAAAAAEludGVlbnVtAAAAAEludGUAAAAASW1nIAAAAA9wcmludFNpeHRlZW5CaXRib29sAAAAAAtwcmludGVyTmFtZVRFWFQAAAABAAAAAAAPcHJpbnRQcm9vZlNldHVwT2JqYwAAAAVoIWg3i75/bgAAAAAACnByb29mU2V0dXAAAAABAAAAAEJsdG5lbnVtAAAADGJ1aWx0aW5Qcm9vZgAAAAlwcm9vZkNNWUsAOEJJTQQ7AAAAAAItAAAAEAAAAAEAAAAAABJwcmludE91dHB1dE9wdGlvbnMAAAAXAAAAAENwdG5ib29sAAAAAABDbGJyYm9vbAAAAAAAUmdzTWJvb2wAAAAAAENybkNib29sAAAAAABDbnRDYm9vbAAAAAAATGJsc2Jvb2wAAAAAAE5ndHZib29sAAAAAABFbWxEYm9vbAAAAAAASW50cmJvb2wAAAAAAEJja2dPYmpjAAAAAQAAAAAAAFJHQkMAAAADAAAAAFJkICBkb3ViQG/gAAAAAAAAAAAAR3JuIGRvdWJAb+AAAAAAAAAAAABCbCAgZG91YkBv4AAAAAAAAAAAAEJyZFRVbnRGI1JsdAAAAAAAAAAAAAAAAEJsZCBVbnRGI1JsdAAAAAAAAAAAAAAAAFJzbHRVbnRGI1B4bEBSAAAAAAAAAAAACnZlY3RvckRhdGFib29sAQAAAABQZ1BzZW51bQAAAABQZ1BzAAAAAFBnUEMAAAAATGVmdFVudEYjUmx0AAAAAAAAAAAAAAAAVG9wIFVudEYjUmx0AAAAAAAAAAAAAAAAU2NsIFVudEYjUHJjQFkAAAAAAAAAAAAQY3JvcFdoZW5QcmludGluZ2Jvb2wAAAAADmNyb3BSZWN0Qm90dG9tbG9uZwAAAAAAAAAMY3JvcFJlY3RMZWZ0bG9uZwAAAAAAAAANY3JvcFJlY3RSaWdodGxvbmcAAAAAAAAAC2Nyb3BSZWN0VG9wbG9uZwAAAAAAOEJJTQPtAAAAAAAQAEgAAAABAAIASAAAAAEAAjhCSU0EJgAAAAAADgAAAAAAAAAAAAA/gAAAOEJJTQQNAAAAAAAEAAAAHjhCSU0EGQAAAAAABAAAAB44QklNA/MAAAAAAAkAAAAAAAAAAAEAOEJJTScQAAAAAAAKAAEAAAAAAAAAAjhCSU0D9QAAAAAASAAvZmYAAQBsZmYABgAAAAAAAQAvZmYAAQChmZoABgAAAAAAAQAyAAAAAQBaAAAABgAAAAAAAQA1AAAAAQAtAAAABgAAAAAAAThCSU0D+AAAAAAAcAAA/////////////////////////////wPoAAAAAP////////////////////////////8D6AAAAAD/////////////////////////////A+gAAAAA/////////////////////////////wPoAAA4QklNBAgAAAAAABAAAAABAAACQAAAAkAAAAAAOEJJTQQeAAAAAAAEAAAAADhCSU0EGgAAAAADSQAAAAYAAAAAAAAAAAAAABAAAAAQAAAACgBiAG8AeABfAGMAbwByAG4AZQByAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAbnVsbAAAAAIAAAAGYm91bmRzT2JqYwAAAAEAAAAAAABSY3QxAAAABAAAAABUb3AgbG9uZwAAAAAAAAAATGVmdGxvbmcAAAAAAAAAAEJ0b21sb25nAAAAEAAAAABSZ2h0bG9uZwAAABAAAAAGc2xpY2VzVmxMcwAAAAFPYmpjAAAAAQAAAAAABXNsaWNlAAAAEgAAAAdzbGljZUlEbG9uZwAAAAAAAAAHZ3JvdXBJRGxvbmcAAAAAAAAABm9yaWdpbmVudW0AAAAMRVNsaWNlT3JpZ2luAAAADWF1dG9HZW5lcmF0ZWQAAAAAVHlwZWVudW0AAAAKRVNsaWNlVHlwZQAAAABJbWcgAAAABmJvdW5kc09iamMAAAABAAAAAAAAUmN0MQAAAAQAAAAAVG9wIGxvbmcAAAAAAAAAAExlZnRsb25nAAAAAAAAAABCdG9tbG9uZwAAABAAAAAAUmdodGxvbmcAAAAQAAAAA3VybFRFWFQAAAABAAAAAAAAbnVsbFRFWFQAAAABAAAAAAAATXNnZVRFWFQAAAABAAAAAAAGYWx0VGFnVEVYVAAAAAEAAAAAAA5jZWxsVGV4dElzSFRNTGJvb2wBAAAACGNlbGxUZXh0VEVYVAAAAAEAAAAAAAlob3J6QWxpZ25lbnVtAAAAD0VTbGljZUhvcnpBbGlnbgAAAAdkZWZhdWx0AAAACXZlcnRBbGlnbmVudW0AAAAPRVNsaWNlVmVydEFsaWduAAAAB2RlZmF1bHQAAAALYmdDb2xvclR5cGVlbnVtAAAAEUVTbGljZUJHQ29sb3JUeXBlAAAAAE5vbmUAAAAJdG9wT3V0c2V0bG9uZwAAAAAAAAAKbGVmdE91dHNldGxvbmcAAAAAAAAADGJvdHRvbU91dHNldGxvbmcAAAAAAAAAC3JpZ2h0T3V0c2V0bG9uZwAAAAAAOEJJTQQoAAAAAAAMAAAAAj/wAAAAAAAAOEJJTQQRAAAAAAABAQA4QklNBBQAAAAAAAQAAAADOEJJTQQMAAAAAAJSAAAAAQAAABAAAAAQAAAAMAAAAwAAAAI2ABgAAf/Y/+0ADEFkb2JlX0NNAAL/7gAOQWRvYmUAZIAAAAAB/9sAhAAMCAgICQgMCQkMEQsKCxEVDwwMDxUYExMVExMYEQwMDAwMDBEMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAQ0LCw0ODRAODhAUDg4OFBQODg4OFBEMDAwMDBERDAwMDAwMEQwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAQABADASIAAhEBAxEB/90ABAAB/8QBPwAAAQUBAQEBAQEAAAAAAAAAAwABAgQFBgcICQoLAQABBQEBAQEBAQAAAAAAAAABAAIDBAUGBwgJCgsQAAEEAQMCBAIFBwYIBQMMMwEAAhEDBCESMQVBUWETInGBMgYUkaGxQiMkFVLBYjM0coLRQwclklPw4fFjczUWorKDJkSTVGRFwqN0NhfSVeJl8rOEw9N14/NGJ5SkhbSVxNTk9KW1xdXl9VZmdoaWprbG1ub2N0dXZ3eHl6e3x9fn9xEAAgIBAgQEAwQFBgcHBgU1AQACEQMhMRIEQVFhcSITBTKBkRShsUIjwVLR8DMkYuFygpJDUxVjczTxJQYWorKDByY1wtJEk1SjF2RFVTZ0ZeLys4TD03Xj80aUpIW0lcTU5PSltcXV5fVWZnaGlqa2xtbm9ic3R1dnd4eXp7fH/9oADAMBAAIRAxEAPwDicd1YrZ6kNBJlxE+KGMvUg1MMGAfEJi0Ow2zr7v71TteWH2oFT//ZOEJJTQQhAAAAAABdAAAAAQEAAAAPAEEAZABvAGIAZQAgAFAAaABvAHQAbwBzAGgAbwBwAAAAFwBBAGQAbwBiAGUAIABQAGgAbwB0AG8AcwBoAG8AcAAgAEMAQwAgADIAMAAxADUAAAABADhCSU0EBgAAAAAABwAEAAAAAQEA/+ENwWh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMwNjcgNzkuMTU3NzQ3LCAyMDE1LzAzLzMwLTIzOjQwOjQyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjBENUFDNDNBNkE2MTFFODk3MTBCMkU2NDdFQTIwREYiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ZDZlYmMyYzktNjlhMS00MGMwLThjZjgtYTg4NjhmNjAzMmRmIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjBENUFDNDNBNkE2MTFFODk3MTBCMkU2NDdFQTIwREYiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgTWFjaW50b3NoIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxOC0wOS0wMlQxNTozMDoxNiswODowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTgtMDktMDJUMTY6MzM6MDIrMDg6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMTgtMDktMDJUMTY6MzM6MDIrMDg6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvanBlZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJCRENENzNBN0MyRTY5RDQ3RjU3NTg4QzE1RDdFRThBOSIgc3RSZWY6ZG9jdW1lbnRJRD0iQkRDRDczQTdDMkU2OUQ0N0Y1NzU4OEMxNUQ3RUU4QTkiLz4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6ZDZlYmMyYzktNjlhMS00MGMwLThjZjgtYTg4NjhmNjAzMmRmIiBzdEV2dDp3aGVuPSIyMDE4LTA5LTAyVDE2OjMzOjAyKzA4OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0idyI/Pv/uAA5BZG9iZQBkAAAAAAH/2wCEAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwBBwcHDQwNGBAQGBQODg4UFA4ODg4UEQwMDAwMEREMDAwMDAwRDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDP/AABEIABAAEAMBEQACEQEDEQH/3QAEAAL/xAGiAAAABwEBAQEBAAAAAAAAAAAEBQMCBgEABwgJCgsBAAICAwEBAQEBAAAAAAAAAAEAAgMEBQYHCAkKCxAAAgEDAwIEAgYHAwQCBgJzAQIDEQQABSESMUFRBhNhInGBFDKRoQcVsUIjwVLR4TMWYvAkcoLxJUM0U5KismNzwjVEJ5OjszYXVGR0w9LiCCaDCQoYGYSURUaktFbTVSga8uPzxNTk9GV1hZWltcXV5fVmdoaWprbG1ub2N0dXZ3eHl6e3x9fn9zhIWGh4iJiouMjY6PgpOUlZaXmJmam5ydnp+So6SlpqeoqaqrrK2ur6EQACAgECAwUFBAUGBAgDA20BAAIRAwQhEjFBBVETYSIGcYGRMqGx8BTB0eEjQhVSYnLxMyQ0Q4IWklMlomOywgdz0jXiRIMXVJMICQoYGSY2RRonZHRVN/Kjs8MoKdPj84SUpLTE1OT0ZXWFlaW1xdXl9UZWZnaGlqa2xtbm9kdXZ3eHl6e3x9fn9zhIWGh4iJiouMjY6Pg5SVlpeYmZqbnJ2en5KjpKWmp6ipqqusra6vr/2gAMAwEAAhEDEQA/AOJafLbrbwetxRHZucjAHuT3xNqoJq4LODbRMFagNBuPuyNlX//Q4S8aPoyBhX96f44ClJ7mdoWHDp4YAr//2Q=="
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAzAAD/4QMfaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzA2NyA3OS4xNTc3NDcsIDIwMTUvMDMvMzAtMjM6NDA6NDIgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYwRDVBQzQ3QTZBNjExRTg5NzEwQjJFNjQ3RUEyMERGIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYwRDVBQzQ2QTZBNjExRTg5NzEwQjJFNjQ3RUEyMERGIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJGQUVCRDYwODMzRUMxMTcxQzc4MDIzN0NFREE4OTQ1RiIgc3RSZWY6ZG9jdW1lbnRJRD0iRkFFQkQ2MDgzM0VDMTE3MUM3ODAyMzdDRURBODk0NUYiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAIBQUFBgUIBgYICwcGBwsNCggICg0PDAwNDAwPEQwNDQ0NDBEPERITEhEPFxcZGRcXIiEhISImJiYmJiYmJiYmAQgJCRAOEB0UFB0gGhUaICYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJib/wAARCAC1ABADAREAAhEBAxEB/8QAawABAQEAAAAAAAAAAAAAAAAABQQHAQEBAQAAAAAAAAAAAAAAAAABAAIQAAEDAgQCCAYDAAAAAAAAAAEAEQIxBCGxEgNBBVFxoSIyYnIVYYGRwSQlQlI0EQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8AyjD2yA85zKKRl6GkPiqJeT+DAeY5lFQ68PfAHBkxUkzWMTXvnD5lFQ27qPkmKltjZ3ri127fYgdzenI6YCtSqoTdOJMcJRLEGoIKoiYO5Gy29zalonGZaQ6yqobdRkC5qS560wEQfwYvTUcyilBel260wLj/AII+s5lFI67liAmAmxHLoyP9y31KKRt3jIGjMqCkyf1sBx1nMqpg298UW4sqKkJEmyj6jmUVDbwvMN8ExEtP6+J85zKKht3iR1piK7O3LettvZEow1SJ1SLRqeKEJui0iJViWwWoiRjCfLoPXWW+pQh13tiIwq6YCMC1hAnhI5lFKC+Lt1pgXxB9vj6zmUUjrwlwCmAmIgcsgRXWcyikZeVD1VATEv1sB5ie0opG3xcjpwTAviXsIY/zP3RSPvX1AlMRIB+WxPmOZVUNu+BVAVtTbC32RdmYtjI69GEqmhIKCJu2cgeF2i/QtQE4CJ5dAEP3jmUEfexERhhimBfEty+J6JEdpRSgvjRMC4N7fGvjL9qKh13UJif/2Q=="
 
 /***/ })
 /******/ ]);

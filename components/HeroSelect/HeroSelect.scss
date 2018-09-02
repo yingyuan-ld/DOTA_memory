@@ -1,19 +1,42 @@
 .heroSelect{
     width: 100%;
     text-align: center;
-    .heropicture{
-		width: 200px;
-		height: 300px;
-	    margin: 0px 10px 30px 10px;
-	    display: inline-block;
+    height: 100%;
+    background:#000;
+    .select_title{
+    	height: 20%;
+    	position: relative;
+    	span{
+    		color: #fff;
+			font-size: 26px;
+		    position: absolute;
+		    bottom: 0px;
+		    left: 50%;
+		    margin-left: -130px;
+		    height: 60px;
+    	}
     }
-	.hero0{
-		background: url(./0.jpg) no-repeat center;
-	}
-	.hero1{
-		background: url(./1.jpg) no-repeat center;
-	}
-	.hero2{
-		background: url(./2.jpg) no-repeat center;
+    .picture_box{
+    	height: 50%;
+	    .heropicture{
+			width: 25%;
+			height: 100%;
+		    display: inline-block;
+		    background-size: auto 100% !important;
+		    background-color: #000 !important;
+		    background-position: right !important;
+	    }
+		.hero0{
+			background: url(./0.jpg) no-repeat center;
+		}
+		.hero1{
+			background: url(./1.jpg) no-repeat center;
+		}
+		.hero2{
+			background: url(./2.jpg) no-repeat center;
+		}
+		.hero3{
+			background: url(./3.jpg) no-repeat center;
+		}
 	}
 }

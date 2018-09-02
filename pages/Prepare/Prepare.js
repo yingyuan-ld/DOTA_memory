@@ -83,14 +83,26 @@ class Component extends React.Component{
     }
   	render() {
         return <div className="prepare_body">
-            <h1>请选择一个玩家</h1>
+            <div>请选择一个玩家</div>
             <div className="Chat_record">
                 {this.render_message()}
             </div>
             <textarea className="text_input" onChange={this.edit.bind(this)} value={this.state.mymessage}></textarea>
             <div className="online_list">
-                <div>在线人员列表</div>
-                {this.render_presen()}
+                <div className="metal_box">
+                    <div className="border_corner1"/>
+                    <div className="border_line1"/>
+                    <div className="border_corner2"/>
+                    <div className="border_line2"/>
+                    <div className="border_corner3"/>
+                    <div className="border_line3"/>
+                    <div className="border_corner4"/>
+                    <div className="border_line4"/>
+                    <div className="inner_box">
+                        <div>在线人员列表</div>
+                        {this.render_presen()}
+                    </div>
+                </div>
             </div>
             <div className="send" onClick={this.sendmessage.bind(this)}>发送</div>
         </div>;

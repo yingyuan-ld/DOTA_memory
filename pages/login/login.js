@@ -1,4 +1,5 @@
 import React from 'react';
+import "./login.scss";
 class login extends React.Component{
     constructor(props) {
         super(props);
@@ -35,10 +36,12 @@ class login extends React.Component{
 		this.props.socket.emit('login', that.state.myname);
   	}
   	render() {
-    	return (<div>
-        	<h1>输入名字</h1>
-        	<input type="text" className="name_input" onChange={this.edit.bind(this)} value={this.state.myname}/>
-        	<div onClick={this.send.bind(this)}>确定</div>
+    	return (<div className="login_box">
+    		<div className="login">
+	        	<div className="login_title">输入名字</div>
+	        	<input type="text" className="name_input" onChange={this.edit.bind(this)} value={this.state.myname}/>
+	        	<div className="login_btn" onClick={this.send.bind(this)}>登录</div>
+        	</div>
     	</div>);
   	}
 }
