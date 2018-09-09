@@ -1,12 +1,17 @@
 .hero_place{
-    height: 183px;
+    height: 200px;
+    min-width: 1155px;
     .hero_box{
-        float: left;
-        background: #64fff5;
-        height: 100%;
         width: 99px;
+        position: absolute;
         .hero_ion{
             height: 100px;
+            border-top-left-radius: 50%;
+            border-top-right-radius: 50%;
+            border: 0px solid burlywood;
+            box-shadow: darkgrey 0px 0px 5px 5px;
+            margin: 10px 5px 10px 10px;
+            background-position: -14px !important;
         }
         .hero_ion_0{
             background: url(./0.jpg) no-repeat center;
@@ -22,19 +27,29 @@
         }
         .attack_btn{
             text-align: center;
-            background: red;
+            background: #c10000;
+            border: 0px solid burlywood;
+            box-shadow: darkgrey 0px 0px 5px 3px inset;
+            border-radius: 5px;
+            color: #fff;
+            margin: 5px 5px 5px 10px;
         }
         .over_btn{
             text-align: center;
-            background: blue
+            background: #0e379e;
+            border: 0px solid burlywood;
+            box-shadow: darkgrey 0px 0px 5px 3px inset;
+            border-radius: 5px;
+            color: #fff;
+            margin: 5px 5px 5px 10px;
         }
     }
     .attribute_list{//属性列表
-        background: #64fff5;
         height: 100%;
         width: 130px;
-        margin-left: 5px;
-        float: left;
+        position: absolute;
+        left: 105px;
+        color: #fff;
         .HP{
             width: 100%;
             background: #8bff04;
@@ -51,26 +66,28 @@
         }
         .statelist{
             width: 100%;
+            span{
+                float:left
+            }
         }
     }
     .card_list{//卡牌列表
-        float: left;
-        background: #64fff5;
         height: 100%;
         width: calc(100% - 350px);
         min-width: 400px;
-        margin-left: 5px;
+        position: absolute;
+        left: 240px;
         .card_box{
             float: left;
         }
     }
 
     .equipment_list{//装备列表
-        background: #64fff5;
         height: 100%;
         width: 105px;
-        margin-left: 5px;
-        float: left;
+        position: absolute;
+        right: 0px;
+        color: #fff;
         .posi_tion{
             float: left;
             width: 45px;

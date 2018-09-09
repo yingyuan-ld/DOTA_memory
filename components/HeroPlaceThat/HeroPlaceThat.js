@@ -5,6 +5,7 @@ import BuffIon from '../BuffIon/BuffIon';
 import Equipment from '../Equipment/Equipment';
 import {state_base} from '../action';//计算状态影响下的属性
 import "./HeroPlaceThat.scss";
+import MetailBox from '..//MetailBox/MetailBox';
 var socket = io();
 
 class HeroPlaceThat extends React.Component{
@@ -53,7 +54,7 @@ class HeroPlaceThat extends React.Component{
             return <div className="posi_tion" key={i}
                         onMouseOver={this.showtip.bind(this,item)}
                         onMouseOut={this.closetip.bind(this)}>
-                    <Equipment {...this.props} equipment={item} equipfor={"that"}/>
+                    <Equipment {...this.props} equipment={item} equipfor={"that"} equipmentcd={0}/>
                 </div>
             })
     }
@@ -65,6 +66,7 @@ class HeroPlaceThat extends React.Component{
             </div>;
         }
         return <div className="hero_place">
+        <MetailBox>
             <div className="hero_box">
                 <div className={"hero_ion hero_ion_"+basic.herotype} />
             </div>
@@ -73,7 +75,10 @@ class HeroPlaceThat extends React.Component{
                 <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove+"/s"}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
-                <div className="statelist">状态:{this.showstate(basic)}</div>
+                <div className="statelist">
+                    <span>状态:</span>
+                    {this.showstate(basic)}
+                </div>
             </div>
             <div className="card_list">
                 {this.cardlist()}
@@ -81,6 +86,7 @@ class HeroPlaceThat extends React.Component{
             <div className="equipment_list">
                 {this.showEquipment(basic.equipment)}
             </div>
+        </MetailBox>
         </div>
   	}
 }

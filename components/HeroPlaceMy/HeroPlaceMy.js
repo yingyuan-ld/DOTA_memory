@@ -5,6 +5,7 @@ import BuffIon from '../BuffIon/BuffIon';
 import Equipment from '../Equipment/Equipment';
 import {doAttack} from '../action';
 import "./HeroPlaceMy.scss";
+import MetailBox from '..//MetailBox/MetailBox';
 var socket = io();
 class HeroPlaceMy extends React.Component{
     constructor(){
@@ -114,10 +115,11 @@ class HeroPlaceMy extends React.Component{
   	render() {
         let basic = this.props.mystate;
         return <div className="hero_place">
+        <MetailBox>
             <div className="hero_box">
                 <div className={"hero_ion hero_ion_"+basic.herotype} />
                 {this.props.round==1?<div className="attack_btn" onClick={this.attackBtn.bind(this)}>
-                    {"普通攻击x"+basic.attackAccount+"↑"+basic.attackRecove}</div>:""}
+                    {"攻击x"+basic.attackAccount+"↑"+basic.attackRecove}</div>:""}
                 {this.props.round==1?<div className="over_btn" onClick={this.roundOver.bind(this)}>{"回合结束"}</div>:""}
             </div>
             <div className="attribute_list">
@@ -125,7 +127,10 @@ class HeroPlaceMy extends React.Component{
                 <div className="MP">{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
-                <div className="statelist">状态:{this.showstate(basic)}</div>
+                <div className="statelist">
+                    <span>状态:</span>
+                    {this.showstate(basic)}
+                </div>
             </div>
             <div className="card_list">
                 {this.cardlist()}
@@ -134,6 +139,7 @@ class HeroPlaceMy extends React.Component{
                 <div>{"金钱:"+this.props.mystate.money}</div>
                 {this.showEquipment(basic.equipment)}
             </div>
+        </MetailBox>
         </div>
   	}
 }

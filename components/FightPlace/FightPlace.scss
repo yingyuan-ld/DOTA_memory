@@ -1,10 +1,10 @@
 .fight_place{
-    height: calc(100% - 366px);
+    height: calc(100% - 400px);
     min-height: 300px;
     position: relative;
     overflow: hidden;
     .fight_message{
-        width: 200px;
+        width: 250px;
         height: 100%;
         overflow: auto;
         border: 1px solid #666;
@@ -22,7 +22,7 @@
         position: absolute;
         width: 102px;
         height: 100%;
-        left: 200px;
+        left: 250px;
         overflow: hidden;
     }
     .shop{

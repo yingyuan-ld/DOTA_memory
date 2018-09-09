@@ -2,15 +2,17 @@
     width: 100px;
     position: relative;
     font-size: 12px;
-    height: 160px;
+    height: 100%;
+    color: #fff;
     transition: all 0.1s;
     cursor:pointer;
     background: url(./cardready.jpg) no-repeat center;
+    background-size: 100% 100%;
     overflow: hidden;
     .card_ion{
         background: green;
         width: 60px;
-        height: 60px;
+        height: 50px;
         margin: 10px 0px 0px 20px;
     }
     .card_name{
@@ -19,17 +21,21 @@
     }
     .card_message{
         text-align: left;
-        margin: 5px;
+        margin: 0 7px;
     }
 }
+.card_my{
+    transform:scale(0.9);/*0.9倍*/
+}
 .card_my:hover{
-    transform: translateY(-10%);
+    transform:scale(1);/*1倍*/
 }
 .card_box_hide{
     width: 100px;
     position: relative;
     font-size: 12px;
     height: 160px;
+    transform:scale(0.9);/*0.9倍*/
     background: url(./cardhide.jpg) no-repeat center;
     float: left;
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import equipmentFile from '../../server/equipment';
 import Equipment from '../Equipment/Equipment';
+import MetailBox from '..//MetailBox/MetailBox';
 
 import "./Shoping.scss";
 
@@ -79,11 +80,13 @@ class Shoping extends React.Component{
             })
     }
   	render() {
-        return <div className={"shop_room "+(this.props.show?"room_show":"room_hide")} ref='shop'>
-            <div className={"shop_room"}>
-                {this.showEquipment()}
-            </div>
-            <div className="back" onClick={this.props.goshoping}>>>></div>
+        return <div className={"shop_room_box "+(this.props.show?"room_show":"room_hide")} ref='shop'>
+            <MetailBox>
+                <div className={"shop_room"}>
+                    {this.showEquipment()}
+                </div>
+                <div className="back" onClick={this.props.goshoping}/>
+            </MetailBox>
         </div>
   	}
 }
