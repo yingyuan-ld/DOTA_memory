@@ -1,5 +1,6 @@
 import React from 'react';
 import "./Prepare.scss";
+import MetailBox from '../../components/MetailBox/MetailBox';
 var socket = io();
 class Component extends React.Component{
     constructor(){
@@ -64,45 +65,43 @@ class Component extends React.Component{
     render_presen(){//渲染 当前在线用户
         return this.state.persenAry.map((item,i)=>{
             if(item.name!==this.props.myname)
-            return <div key={i} style={item.state=="fighting"?{background:"red"}:{}} onClick={this.select_persen.bind(this,item.name,item.id)}>{item.name}</div>
+            return <div className="perseni" key={i} style={item.state=="fighting"?{background:"red"}:{}} onClick={this.select_persen.bind(this,item.name,item.id)}>{item.name}</div>
         })
     }
     render_message(){//渲染消息
-        return this.state.message.map((item,i)=>{
-            return <div key={i} >
-                    {item.system?<div className="system_message">{"系统消息:"+item.value}</div>:
-                                <div className="organ_message">{item.name+":"+item.value}</div>}
-                </div>
-        })
+        return <div>
+            {this.state.message.map((item,i)=>{
+                return <div key={i} >
+                        {item.system?<div className="system_message">{"系统消息:"+item.value}</div>:
+                                    <div className="organ_message">{item.name+":"+item.value}</div>}
+                    </div>
+            })}
+        </div>
     }
     edit(val){
         this.setState({mymessage:val.target.value});
     }
     sendmessage(){
         this.props.socket.emit('sendmessage', this.state.mymessage);
+        this.setState({mymessage:""});
     }
   	render() {
         return <div className="prepare_body">
-            <div>请选择一个玩家</div>
             <div className="Chat_record">
-                {this.render_message()}
+                <MetailBox>
+                    {this.render_message()}
+                </MetailBox>
             </div>
-            <textarea className="text_input" onChange={this.edit.bind(this)} value={this.state.mymessage}></textarea>
+            <div className="text_input">
+                <MetailBox>
+                    <textarea spellcheck="false" onChange={this.edit.bind(this)} value={this.state.mymessage}></textarea>
+                </MetailBox>
+            </div>
             <div className="online_list">
-                <div className="metal_box">
-                    <div className="border_corner1"/>
-                    <div className="border_line1"/>
-                    <div className="border_corner2"/>
-                    <div className="border_line2"/>
-                    <div className="border_corner3"/>
-                    <div className="border_line3"/>
-                    <div className="border_corner4"/>
-                    <div className="border_line4"/>
-                    <div className="inner_box">
-                        <div>在线人员列表</div>
-                        {this.render_presen()}
-                    </div>
-                </div>
+                <MetailBox>
+                    <div>在线人员列表</div>
+                    {this.render_presen()}
+                </MetailBox>
             </div>
             <div className="send" onClick={this.sendmessage.bind(this)}>发送</div>
         </div>;

@@ -36,7 +36,6 @@ class HeroSelect extends React.Component{
                 mystate.maxMp=500;
                 mystate.Mp=500;
                 mystate.attack=50;
-                mystate.Mprecove=40;
                 break;
         }
         let round = Math.random();//随机回合用

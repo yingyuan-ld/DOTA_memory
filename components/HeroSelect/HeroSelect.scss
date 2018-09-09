@@ -3,6 +3,7 @@
     text-align: center;
     height: 100%;
     background:#000;
+    overflow: hidden;
     .select_title{
     	height: 20%;
     	position: relative;
@@ -25,6 +26,10 @@
 		    background-size: auto 100% !important;
 		    background-color: #000 !important;
 		    background-position: right !important;
+     		transition: all 0.1s;
+	    }
+	    .heropicture:hover{
+	    	transform: scale3d(1.2,1.2,0.8);
 	    }
 		.hero0{
 			background: url(./0.jpg) no-repeat center;

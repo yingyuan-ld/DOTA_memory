@@ -1,6 +1,5 @@
 .hero_place{
     height: 183px;
-    background: #5fa1bf;
     .hero_box{
         float: left;
         background: #64fff5;
@@ -10,13 +9,16 @@
             height: 100px;
         }
         .hero_ion_0{
-            background: url(./0.png) no-repeat center;
+            background: url(./0.jpg) no-repeat center;
         }
         .hero_ion_1{
-            background: url(./1.png) no-repeat center;
+            background: url(./1.jpg) no-repeat center;
         }
         .hero_ion_2{
-            background: url(./2.png) no-repeat center;
+            background: url(./2.jpg) no-repeat center;
+        }
+        .hero_ion_3{
+            background: url(./3.jpg) no-repeat center;
         }
         .attack_btn{
             text-align: center;

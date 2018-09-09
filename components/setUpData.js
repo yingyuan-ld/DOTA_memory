@@ -95,16 +95,26 @@ module.exports = {
 	        attackRecove:1,//攻击速度
             herotype:1
 		},
-		2:{
-	        maxHp:3000,//最大血量
-	        Hprecove:10,//生命值恢复速度
-	        maxMp:600,//最大蓝量
-	        Mprecove:60,//魔法值恢复速度
-	        attack:40,//攻击力
-	        armor:10,//护甲
-	        attackRecove:1,//攻击速度
+        2:{
+            maxHp:3000,//最大血量
+            Hprecove:10,//生命值恢复速度
+            maxMp:600,//最大蓝量
+            Mprecove:60,//魔法值恢复速度
+            attack:40,//攻击力
+            armor:10,//护甲
+            attackRecove:1,//攻击速度
             herotype:2
-		}
+        },
+        3:{
+            maxHp:3500,//最大血量
+            Hprecove:10,//生命值恢复速度
+            maxMp:500,//最大蓝量
+            Mprecove:50,//魔法值恢复速度
+            attack:50,//攻击力
+            armor:10,//护甲
+            attackRecove:1,//攻击速度
+            herotype:3
+        }
 	},
 	equiptTo_base:{
         0:(base)=>{//达贡之神力

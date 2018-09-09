@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/build/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(27);
+  module.exports = __webpack_require__(30);
 } else {
-  module.exports = __webpack_require__(28);
+  module.exports = __webpack_require__(31);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -227,7 +227,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(40);
+var	fixUrls = __webpack_require__(43);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -738,6 +738,28 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+module.exports = function escape(url) {
+    if (typeof url !== 'string') {
+        return url
+    }
+    // If url is already wrapped in quotes, remove them
+    if (/^['"].*['"]$/.test(url)) {
+        url = url.slice(1, -1);
+    }
+    // Should url be wrapped?
+    // See https://drafts.csswg.org/css-values-3/#urls
+    if (/["'() \t\n]/.test(url)) {
+        return '"' + url.replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"'
+    }
+
+    return url
+}
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -757,9 +779,9 @@ exports.state_base = state_base;
 exports.doAttack = doAttack;
 exports.specialcard = specialcard;
 
-var _skill = __webpack_require__(18);
+var _skill = __webpack_require__(21);
 
-var _setUpData = __webpack_require__(48);
+var _setUpData = __webpack_require__(57);
 
 var _setUpData2 = _interopRequireDefault(_setUpData);
 
@@ -1286,7 +1308,7 @@ function specialcard(props, card) {
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1346,7 +1368,7 @@ module.exports = invariant;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1388,7 +1410,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 module.exports = emptyFunction;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1485,7 +1507,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1509,7 +1531,13 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 9 */
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAABkAAD/4QODaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzA2NyA3OS4xNTc3NDcsIDIwMTUvMDMvMzAtMjM6NDA6NDIgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9IkZBRUJENjA4MzNFQzExNzFDNzgwMjM3Q0VEQTg5NDVGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZGMjhGQzY2QUI1RjExRThCODQwQjM2QzRCQTIwMjZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZGMjhGQzY1QUI1RjExRThCODQwQjM2QzRCQTIwMjZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MzU1NjYzMTMtNTIxNC00NTYzLWI2OGMtN2Q4OTQzZTNjNzliIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6NTgyNTlkMjEtZjNjOC0xMTdiLThjZjAtOTY0ZGNlZDVlYjJmIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAgICAgICAgICAwMDAwMDAwMDAwEBAQEBAQECAQECAgIBAgIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD/8AAEQgADgAOAwERAAIRAQMRAf/EAHQAAAMBAAAAAAAAAAAAAAAAAAQHCAoBAQEBAQAAAAAAAAAAAAAAAAQAAgMQAAEDAgMIAgMAAAAAAAAAAAECAwQRBQATBjFhEiJCFBUHQXEkFhcRAAECAwkBAAAAAAAAAAAAAAABIVESA/ARQWGh8QIiEwT/2gAMAwEAAhEDEQA/AMwWp/ZMPTkS7W+XcpcDUJsNuk6UZbjZkF10z5BkJeSFtpV+IyoAnqAwf6qazMvbYRmLD+4ewU2YPiRajLchHiPjGy4JCVAgVzaJJSKbK4HLVJgn26YAuOnC6lpT/wCrw6JcUkLC+9mHlJG0EqH0K/OF1U53suhwVIKTUXL35dISwvxvc1dOYnL6ilI5hycW4jfTG387RLE//9k="
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1523,9 +1551,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(5);
 
-__webpack_require__(56);
+__webpack_require__(65);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1601,29 +1629,7 @@ var Card = function (_React$Component) {
 module.exports = Card;
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = function escape(url) {
-    if (typeof url !== 'string') {
-        return url
-    }
-    // If url is already wrapped in quotes, remove them
-    if (/^['"].*['"]$/.test(url)) {
-        url = url.slice(1, -1);
-    }
-    // Should url be wrapped?
-    // See https://drafts.csswg.org/css-values-3/#urls
-    if (/["'() \t\n]/.test(url)) {
-        return '"' + url.replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"'
-    }
-
-    return url
-}
-
-
-/***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1637,7 +1643,7 @@ module.exports = function escape(url) {
 
 
 
-var emptyFunction = __webpack_require__(6);
+var emptyFunction = __webpack_require__(7);
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -1692,7 +1698,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1706,9 +1712,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(5);
 
-__webpack_require__(62);
+__webpack_require__(71);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1793,7 +1799,7 @@ var Equipment = function (_React$Component) {
 module.exports = Equipment;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1807,9 +1813,9 @@ module.exports = Equipment;
 
 
 if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(5);
-  var warning = __webpack_require__(11);
-  var ReactPropTypesSecret = __webpack_require__(29);
+  var invariant = __webpack_require__(6);
+  var warning = __webpack_require__(12);
+  var ReactPropTypesSecret = __webpack_require__(32);
   var loggedTypeFailures = {};
 }
 
@@ -1860,7 +1866,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1899,7 +1905,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1941,7 +1947,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2012,7 +2018,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2027,7 +2033,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(30);
+var isTextNode = __webpack_require__(33);
 
 /*eslint-disable no-bitwise */
 
@@ -2055,7 +2061,19 @@ function containsNode(outerNode, innerNode) {
 module.exports = containsNode;
 
 /***/ }),
-/* 18 */
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "d962593ad6bb2ed8b653f1b01c294ad9.jpg";
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "9c82f7b82dfc58e3554a03ef72787e85.jpg";
+
+/***/ }),
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2623,7 +2641,7 @@ small_skill[50].do = { special: true
 };module.exports = { big_skill: big_skill, small_skill: small_skill };
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2639,25 +2657,25 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(9);
+var _Card = __webpack_require__(11);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(20);
+var _stateflie = __webpack_require__(23);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _BuffIon = __webpack_require__(21);
+var _BuffIon = __webpack_require__(24);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _Equipment = __webpack_require__(12);
+var _Equipment = __webpack_require__(13);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(5);
 
-__webpack_require__(64);
+__webpack_require__(73);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2885,7 +2903,7 @@ var HeroPlaceMy = function (_React$Component) {
 module.exports = HeroPlaceMy;
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2895,7 +2913,7 @@ var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,�
 module.exports = state_list;
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2907,7 +2925,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(60);
+__webpack_require__(69);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2967,7 +2985,7 @@ var BuffIon = function (_React$Component) {
 module.exports = BuffIon;
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2981,25 +2999,25 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(9);
+var _Card = __webpack_require__(11);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _stateflie = __webpack_require__(20);
+var _stateflie = __webpack_require__(23);
 
 var _stateflie2 = _interopRequireDefault(_stateflie);
 
-var _BuffIon = __webpack_require__(21);
+var _BuffIon = __webpack_require__(24);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _Equipment = __webpack_require__(12);
+var _Equipment = __webpack_require__(13);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(5);
 
-__webpack_require__(69);
+__webpack_require__(79);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3152,20 +3170,20 @@ var HeroPlaceThat = function (_React$Component) {
 module.exports = HeroPlaceThat;
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(24);
+module.exports = __webpack_require__(27);
 
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _reactDom = __webpack_require__(25);
+var _reactDom = __webpack_require__(28);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -3173,11 +3191,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DotaSystem = __webpack_require__(37);
+var _DotaSystem = __webpack_require__(40);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(88);
+__webpack_require__(99);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3185,7 +3203,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(_DotaSystem2.default, null), document.getElementById("box")); //react-dom，仅在项目顶层使用
 
 /***/ }),
-/* 25 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3223,15 +3241,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(26);
+  module.exports = __webpack_require__(29);
 } else {
-  module.exports = __webpack_require__(32);
+  module.exports = __webpack_require__(35);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3247,7 +3265,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(5),ea=__webpack_require__(0),m=__webpack_require__(14),A=__webpack_require__(7),C=__webpack_require__(6),fa=__webpack_require__(15),ha=__webpack_require__(16),ja=__webpack_require__(17),ka=__webpack_require__(8);
+var ba=__webpack_require__(6),ea=__webpack_require__(0),m=__webpack_require__(15),A=__webpack_require__(8),C=__webpack_require__(7),fa=__webpack_require__(16),ha=__webpack_require__(17),ja=__webpack_require__(18),ka=__webpack_require__(9);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -3484,7 +3502,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
 
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3497,7 +3515,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(7),n=__webpack_require__(5),p=__webpack_require__(8),q=__webpack_require__(6),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(8),n=__webpack_require__(6),p=__webpack_require__(9),q=__webpack_require__(7),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -3513,7 +3531,7 @@ Y=X&&W||X;module.exports=Y["default"]?Y["default"]:Y;
 
 
 /***/ }),
-/* 28 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3534,12 +3552,12 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(7);
-var invariant = __webpack_require__(5);
-var emptyObject = __webpack_require__(8);
-var warning = __webpack_require__(11);
-var emptyFunction = __webpack_require__(6);
-var checkPropTypes = __webpack_require__(13);
+var _assign = __webpack_require__(8);
+var invariant = __webpack_require__(6);
+var emptyObject = __webpack_require__(9);
+var warning = __webpack_require__(12);
+var emptyFunction = __webpack_require__(7);
+var checkPropTypes = __webpack_require__(14);
 
 // TODO: this is special because it gets imported during build.
 
@@ -4935,7 +4953,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4954,7 +4972,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4969,7 +4987,7 @@ module.exports = ReactPropTypesSecret;
  * @typechecks
  */
 
-var isNode = __webpack_require__(31);
+var isNode = __webpack_require__(34);
 
 /**
  * @param {*} object The object to check.
@@ -4982,7 +5000,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5010,7 +5028,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 32 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5031,19 +5049,19 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var invariant = __webpack_require__(5);
+var invariant = __webpack_require__(6);
 var React = __webpack_require__(0);
-var warning = __webpack_require__(11);
-var ExecutionEnvironment = __webpack_require__(14);
-var _assign = __webpack_require__(7);
-var emptyFunction = __webpack_require__(6);
-var checkPropTypes = __webpack_require__(13);
-var getActiveElement = __webpack_require__(15);
-var shallowEqual = __webpack_require__(16);
-var containsNode = __webpack_require__(17);
-var emptyObject = __webpack_require__(8);
-var hyphenateStyleName = __webpack_require__(33);
-var camelizeStyleName = __webpack_require__(35);
+var warning = __webpack_require__(12);
+var ExecutionEnvironment = __webpack_require__(15);
+var _assign = __webpack_require__(8);
+var emptyFunction = __webpack_require__(7);
+var checkPropTypes = __webpack_require__(14);
+var getActiveElement = __webpack_require__(16);
+var shallowEqual = __webpack_require__(17);
+var containsNode = __webpack_require__(18);
+var emptyObject = __webpack_require__(9);
+var hyphenateStyleName = __webpack_require__(36);
+var camelizeStyleName = __webpack_require__(38);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -21672,7 +21690,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21687,7 +21705,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(34);
+var hyphenate = __webpack_require__(37);
 
 var msPattern = /^ms-/;
 
@@ -21714,7 +21732,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21750,7 +21768,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21765,7 +21783,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(36);
+var camelize = __webpack_require__(39);
 
 var msPattern = /^-ms-/;
 
@@ -21793,7 +21811,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21828,7 +21846,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21842,17 +21860,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(38);
+__webpack_require__(41);
 
-var _login = __webpack_require__(41);
+var _login = __webpack_require__(44);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(42);
+var _Prepare = __webpack_require__(48);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(45);
+var _playing = __webpack_require__(54);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -21919,11 +21937,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 38 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(39);
+var content = __webpack_require__(42);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -21969,7 +21987,7 @@ if(false) {
 }
 
 /***/ }),
-/* 39 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -21977,13 +21995,13 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "html {\n  height: 100%;\n  width: 100%; }\n  html body {\n    margin: 0px;\n    padding: 0px; }\n\n/*::-webkit-scrollbar{\n    display: none;\n}*/\n.system_body {\n  width: 100%;\n  height: 100%; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "html {\n  height: 100%;\n  width: 100%; }\n  html body {\n    margin: 0px;\n    padding: 0px; }\n\n/*::-webkit-scrollbar{\n    display: none;\n}*/\n.system_body {\n  width: 100%;\n  height: 100%;\n  min-width: 1152px; }\n  .system_body .Chat_record {\n    width: calc(100% - 200px);\n    height: calc(100% - 300px);\n    background: #fff; }\n  .system_body .text_input {\n    height: 150px;\n    width: calc(100% - 205px);\n    margin-top: 10px; }\n  .system_body .online_list {\n    height: calc(100% - 200px);\n    width: 150px;\n    position: fixed;\n    background: #fff;\n    top: 100px;\n    right: 0px; }\n  .system_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 40 */
+/* 43 */
 /***/ (function(module, exports) {
 
 
@@ -22078,7 +22096,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 41 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22090,7 +22108,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(90);
+__webpack_require__(45);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22179,7 +22197,78 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 42 */
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(46);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./login.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./login.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(4);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".login_box {\n  width: 100%;\n  height: 100%;\n  background: url(" + escape(__webpack_require__(47)) + ") no-repeat;\n  background-size: auto 100%;\n  background-color: #000;\n  background-position: left; }\n  .login_box .login {\n    width: 200px;\n    background: #3a4c4c;\n    color: #fff;\n    position: absolute;\n    left: 75%;\n    top: 50%;\n    margin-left: -100px;\n    margin-top: -30px;\n    padding: 10px;\n    border-radius: 3px; }\n    .login_box .login .login_title {\n      background: #3a4c4c;\n      margin-top: -30px;\n      line-height: 20px;\n      padding: 5px 10px;\n      position: inherit;\n      font-size: 13px;\n      border-radius: 3px; }\n    .login_box .login .name_input {\n      box-sizing: border-box;\n      text-align: center;\n      font-size: 1.4em;\n      border-radius: 4px;\n      border: 1px solid #c8cccf;\n      color: #6a6f77;\n      -web-kit-appearance: none;\n      -moz-appearance: none;\n      display: block;\n      width: 100%; }\n    .login_box .login .login_btn {\n      background: #285ea8;\n      text-align: center;\n      padding: 5px;\n      border-radius: 3px;\n      font-size: 14px;\n      margin-top: 10px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "5ff841ec66299ab986b56ca3b15dd927.jpg";
+
+/***/ }),
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22191,7 +22280,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(43);
+__webpack_require__(49);
+
+var _MetailBox = __webpack_require__(51);
+
+var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22220,7 +22313,7 @@ var Component = function (_React$Component) {
     }
 
     _createClass(Component, [{
-        key: "componentWillMount",
+        key: 'componentWillMount',
         value: function componentWillMount() {
             var _this2 = this;
 
@@ -22271,7 +22364,7 @@ var Component = function (_React$Component) {
             });
         }
     }, {
-        key: "select_persen",
+        key: 'select_persen',
         value: function select_persen(challengName, challengId) {
             //选择用户发出要求 defier挑战 challeng被挑战
             var r = confirm("是否向\"" + challengName + "\"发出邀请");
@@ -22282,96 +22375,96 @@ var Component = function (_React$Component) {
             }
         }
     }, {
-        key: "render_presen",
+        key: 'render_presen',
         value: function render_presen() {
             var _this3 = this;
 
             //渲染 当前在线用户
             return this.state.persenAry.map(function (item, i) {
                 if (item.name !== _this3.props.myname) return _react2.default.createElement(
-                    "div",
-                    { key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this3.select_persen.bind(_this3, item.name, item.id) },
+                    'div',
+                    { className: 'perseni', key: i, style: item.state == "fighting" ? { background: "red" } : {}, onClick: _this3.select_persen.bind(_this3, item.name, item.id) },
                     item.name
                 );
             });
         }
     }, {
-        key: "render_message",
+        key: 'render_message',
         value: function render_message() {
             //渲染消息
-            return this.state.message.map(function (item, i) {
-                return _react2.default.createElement(
-                    "div",
-                    { key: i },
-                    item.system ? _react2.default.createElement(
-                        "div",
-                        { className: "system_message" },
-                        "系统消息:" + item.value
-                    ) : _react2.default.createElement(
-                        "div",
-                        { className: "organ_message" },
-                        item.name + ":" + item.value
-                    )
-                );
-            });
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.state.message.map(function (item, i) {
+                    return _react2.default.createElement(
+                        'div',
+                        { key: i },
+                        item.system ? _react2.default.createElement(
+                            'div',
+                            { className: 'system_message' },
+                            "系统消息:" + item.value
+                        ) : _react2.default.createElement(
+                            'div',
+                            { className: 'organ_message' },
+                            item.name + ":" + item.value
+                        )
+                    );
+                })
+            );
         }
     }, {
-        key: "edit",
+        key: 'edit',
         value: function edit(val) {
             this.setState({ mymessage: val.target.value });
         }
     }, {
-        key: "sendmessage",
+        key: 'sendmessage',
         value: function sendmessage() {
             this.props.socket.emit('sendmessage', this.state.mymessage);
+            this.setState({ mymessage: "" });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             return _react2.default.createElement(
-                "div",
-                { className: "prepare_body" },
+                'div',
+                { className: 'prepare_body' },
                 _react2.default.createElement(
-                    "div",
-                    null,
-                    "\u8BF7\u9009\u62E9\u4E00\u4E2A\u73A9\u5BB6"
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "Chat_record" },
-                    this.render_message()
-                ),
-                _react2.default.createElement("textarea", { className: "text_input", onChange: this.edit.bind(this), value: this.state.mymessage }),
-                _react2.default.createElement(
-                    "div",
-                    { className: "online_list" },
+                    'div',
+                    { className: 'Chat_record' },
                     _react2.default.createElement(
-                        "div",
-                        { className: "metal_box" },
-                        _react2.default.createElement("div", { className: "border_corner1" }),
-                        _react2.default.createElement("div", { className: "border_line1" }),
-                        _react2.default.createElement("div", { className: "border_corner2" }),
-                        _react2.default.createElement("div", { className: "border_line2" }),
-                        _react2.default.createElement("div", { className: "border_corner3" }),
-                        _react2.default.createElement("div", { className: "border_line3" }),
-                        _react2.default.createElement("div", { className: "border_corner4" }),
-                        _react2.default.createElement("div", { className: "border_line4" }),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "inner_box" },
-                            _react2.default.createElement(
-                                "div",
-                                null,
-                                "\u5728\u7EBF\u4EBA\u5458\u5217\u8868"
-                            ),
-                            this.render_presen()
-                        )
+                        _MetailBox2.default,
+                        null,
+                        this.render_message()
                     )
                 ),
                 _react2.default.createElement(
-                    "div",
-                    { className: "send", onClick: this.sendmessage.bind(this) },
-                    "\u53D1\u9001"
+                    'div',
+                    { className: 'text_input' },
+                    _react2.default.createElement(
+                        _MetailBox2.default,
+                        null,
+                        _react2.default.createElement('textarea', { spellcheck: 'false', onChange: this.edit.bind(this), value: this.state.mymessage })
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'online_list' },
+                    _react2.default.createElement(
+                        _MetailBox2.default,
+                        null,
+                        _react2.default.createElement(
+                            'div',
+                            null,
+                            '\u5728\u7EBF\u4EBA\u5458\u5217\u8868'
+                        ),
+                        this.render_presen()
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'send', onClick: this.sendmessage.bind(this) },
+                    '\u53D1\u9001'
                 )
             );
         }
@@ -22383,11 +22476,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 43 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(44);
+var content = __webpack_require__(50);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22433,22 +22526,162 @@ if(false) {
 }
 
 /***/ }),
-/* 44 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(10);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%;\n  background-color: #363549; }\n  .prepare_body .Chat_record {\n    width: calc(70% - 20px);\n    height: calc(75% - 30px);\n    border: 1px solid #666;\n    background: #fff;\n    overflow: auto; }\n    .prepare_body .Chat_record .organ_message {\n      text-align: left; }\n    .prepare_body .Chat_record .system_message {\n      text-align: center; }\n  .prepare_body .text_input {\n    height: calc(20% - 20px);\n    margin-top: 10px;\n    width: calc(70% - 20px); }\n  .prepare_body .online_list {\n    width: calc(30% - 20px);\n    position: fixed;\n    top: 10px;\n    bottom: 10px;\n    right: 10px; }\n  .prepare_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer; }\n\n.metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(94)) + ") no-repeat center;\n    width: 16px;\n    height: 16px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(95)) + ") no-repeat center;\n    height: 100px;\n    width: 16px; }\n", ""]);
+exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%;\n  background-color: #363549; }\n  .prepare_body .Chat_record {\n    width: calc(70% - 20px);\n    height: calc(75% - 28px);\n    color: #fff;\n    top: 10px;\n    left: 10px;\n    position: fixed; }\n    .prepare_body .Chat_record .organ_message {\n      text-align: left; }\n    .prepare_body .Chat_record .system_message {\n      text-align: center; }\n  .prepare_body .text_input {\n    height: calc(20% - 20px);\n    width: calc(70% - 20px);\n    position: fixed;\n    bottom: 50px;\n    left: 10px; }\n    .prepare_body .text_input textarea {\n      background: none;\n      border: none;\n      outline: none;\n      resize: none;\n      color: #fff;\n      width: 100%;\n      height: 100%;\n      padding: 0px; }\n    .prepare_body .text_input textarea::-webkit-scrollbar {\n      width: 0px; }\n  .prepare_body .online_list {\n    width: calc(30% - 20px);\n    position: fixed;\n    top: 10px;\n    bottom: 10px;\n    right: 10px;\n    color: #fff; }\n    .prepare_body .online_list .perseni {\n      background-color: #363549;\n      padding: 5px; }\n    .prepare_body .online_list .perseni:hover {\n      background-color: #0809a2; }\n  .prepare_body .send {\n    background: #afafaf;\n    width: 50px;\n    height: 25px;\n    text-align: center;\n    color: #fff;\n    border-radius: 3px;\n    line-height: 25px;\n    cursor: pointer;\n    position: fixed;\n    bottom: 10px;\n    left: 20px; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 45 */
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(52);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var scrollRoll = true; //只有滚动条在底部,才自动滚动
+
+var MetailBox = function (_React$Component) {
+    _inherits(MetailBox, _React$Component);
+
+    function MetailBox() {
+        _classCallCheck(this, MetailBox);
+
+        return _possibleConstructorReturn(this, (MetailBox.__proto__ || Object.getPrototypeOf(MetailBox)).apply(this, arguments));
+    }
+
+    _createClass(MetailBox, [{
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps() {
+            var div = this.refs.scroll;
+            this.scrollRoll = div.scrollHeight == div.clientHeight + div.scrollTop;
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate() {
+            if (this.scrollRoll) {
+                var div = this.refs.scroll;
+                div.scrollTop = div.scrollHeight;
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "metal_box" },
+                _react2.default.createElement("div", { className: "border_corner1" }),
+                _react2.default.createElement("div", { className: "border_line1" }),
+                _react2.default.createElement("div", { className: "border_corner2" }),
+                _react2.default.createElement("div", { className: "border_line2" }),
+                _react2.default.createElement("div", { className: "border_corner3" }),
+                _react2.default.createElement("div", { className: "border_line3" }),
+                _react2.default.createElement("div", { className: "border_corner4" }),
+                _react2.default.createElement("div", { className: "border_line4" }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "inner_scroll", ref: "scroll" },
+                    this.props.children
+                )
+            );
+        }
+    }]);
+
+    return MetailBox;
+}(_react2.default.Component);
+
+module.exports = MetailBox;
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(53);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./MetailBox.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./MetailBox.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var escape = __webpack_require__(4);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  overflow: hidden;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(19)) + ");\n    height: calc(100% - 28px);\n    width: 14px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    top: 0px;\n    right: 0px;\n    transform: rotate(90deg); }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    top: 0px;\n    right: 14px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(19)) + ");\n    height: calc(100% - 28px);\n    width: 14px;\n    position: absolute;\n    bottom: 14px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    left: 0px;\n    transform: rotate(270deg); }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    bottom: 0px;\n    left: 14px;\n    transform: rotate(180deg); }\n  .metal_box .inner_scroll {\n    position: absolute;\n    top: 14px;\n    left: 14px;\n    width: calc(100% - 28px);\n    height: calc(100% - 28px);\n    overflow-y: auto;\n    overflow-x: hidden; }\n  .metal_box .inner_scroll::-webkit-scrollbar {\n    width: 0px;\n    background-color: #18181e;\n    border: 3px solid #2a2a2e;\n    border-radius: 5px; }\n  .metal_box .inner_scroll::-webkit-scrollbar-thumb {\n    background-color: #2b3351;\n    border-radius: 5px;\n    border: 3px solid #2a2a2e;\n    height: 10px !important;\n    width: 10px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22462,15 +22695,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(46);
+__webpack_require__(55);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(5);
 
-var _Tooltip = __webpack_require__(49);
+var _Tooltip = __webpack_require__(58);
 
 var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
-var _index = __webpack_require__(52);
+var _index = __webpack_require__(61);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -22574,11 +22807,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 46 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(47);
+var content = __webpack_require__(56);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22624,7 +22857,7 @@ if(false) {
 }
 
 /***/ }),
-/* 47 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22632,13 +22865,13 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".system_body {\n  background: #ccc; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n", ""]);
+exports.push([module.i, ".system_body {\n  background: #363549; }\n  .system_body .main_box {\n    width: 100%;\n    height: 100%; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 48 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22750,6 +22983,16 @@ module.exports = {
             armor: 10, //护甲
             attackRecove: 1, //攻击速度
             herotype: 2
+        },
+        3: {
+            maxHp: 3500, //最大血量
+            Hprecove: 10, //生命值恢复速度
+            maxMp: 500, //最大蓝量
+            Mprecove: 50, //魔法值恢复速度
+            attack: 50, //攻击力
+            armor: 10, //护甲
+            attackRecove: 1, //攻击速度
+            herotype: 3
         }
     },
     equiptTo_base: {
@@ -22938,7 +23181,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 49 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22950,7 +23193,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(50);
+__webpack_require__(59);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23019,11 +23262,11 @@ var Tooltip = function (_React$Component) {
 module.exports = Tooltip;
 
 /***/ }),
-/* 50 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(51);
+var content = __webpack_require__(60);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23069,7 +23312,7 @@ if(false) {
 }
 
 /***/ }),
-/* 51 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23083,25 +23326,25 @@ exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;
 
 
 /***/ }),
-/* 52 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _PlayPage = __webpack_require__(53);
+var _PlayPage = __webpack_require__(62);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(82);
+var _HeroSelect = __webpack_require__(92);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
-var _HeroPlaceMy = __webpack_require__(19);
+var _HeroPlaceMy = __webpack_require__(22);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(22);
+var _HeroPlaceThat = __webpack_require__(25);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -23116,7 +23359,7 @@ var common = {
 module.exports = common;
 
 /***/ }),
-/* 53 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23130,21 +23373,21 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(54);
+__webpack_require__(63);
 
-var _action = __webpack_require__(4);
+var _action = __webpack_require__(5);
 
-var _skill = __webpack_require__(18);
+var _skill = __webpack_require__(21);
 
-var _HeroPlaceMy = __webpack_require__(19);
+var _HeroPlaceMy = __webpack_require__(22);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(22);
+var _HeroPlaceThat = __webpack_require__(25);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
-var _FightPlace = __webpack_require__(71);
+var _FightPlace = __webpack_require__(81);
 
 var _FightPlace2 = _interopRequireDefault(_FightPlace);
 
@@ -23293,11 +23536,11 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 54 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(55);
+var content = __webpack_require__(64);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23343,7 +23586,7 @@ if(false) {
 }
 
 /***/ }),
-/* 55 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23357,11 +23600,11 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 56 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(57);
+var content = __webpack_require__(66);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23407,38 +23650,38 @@ if(false) {
 }
 
 /***/ }),
-/* 57 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(10);
+var escape = __webpack_require__(4);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(58)) + ") no-repeat center;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  background: url(" + escape(__webpack_require__(59)) + ") no-repeat center;\n  float: left; }\n", ""]);
+exports.push([module.i, ".card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(67)) + ") no-repeat center;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 60px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 5px; }\n\n.card_my:hover {\n  transform: translateY(-10%); }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  background: url(" + escape(__webpack_require__(68)) + ") no-repeat center;\n  float: left; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 58 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "c02156dc8e2f723f107e92d09f12c96e.jpg";
 
 /***/ }),
-/* 59 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "ff72ff859aa2438bfcf81643da7cfb07.jpg";
 
 /***/ }),
-/* 60 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(61);
+var content = __webpack_require__(70);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23484,7 +23727,7 @@ if(false) {
 }
 
 /***/ }),
-/* 61 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23498,11 +23741,11 @@ exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n 
 
 
 /***/ }),
-/* 62 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(63);
+var content = __webpack_require__(72);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23548,7 +23791,7 @@ if(false) {
 }
 
 /***/ }),
-/* 63 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23562,11 +23805,11 @@ exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor
 
 
 /***/ }),
-/* 64 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(65);
+var content = __webpack_require__(74);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23612,44 +23855,50 @@ if(false) {
 }
 
 /***/ }),
-/* 65 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(10);
+var escape = __webpack_require__(4);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".hero_place {\n  height: 183px;\n  background: #5fa1bf; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 99px; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(66)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(67)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(68)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .equipment_list .posi_tion {\n      float: left;\n      width: 45px;\n      height: 45px;\n      margin: 1px 3px 1px 2px; }\n", ""]);
+exports.push([module.i, ".hero_place {\n  height: 183px; }\n  .hero_place .hero_box {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: 99px; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(75)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(76)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(77)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_3 {\n      background: url(" + escape(__webpack_require__(78)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: red; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: blue; }\n  .hero_place .attribute_list {\n    background: #64fff5;\n    height: 100%;\n    width: 130px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n  .hero_place .card_list {\n    float: left;\n    background: #64fff5;\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    margin-left: 5px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    background: #64fff5;\n    height: 100%;\n    width: 105px;\n    margin-left: 5px;\n    float: left; }\n    .hero_place .equipment_list .posi_tion {\n      float: left;\n      width: 45px;\n      height: 45px;\n      margin: 1px 3px 1px 2px; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 66 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "39b2cd7f0573ca557a783a1e18790d00.png";
+module.exports = __webpack_require__.p + "851a5fe0c3ff4094869fc048ba0d39b9.jpg";
 
 /***/ }),
-/* 67 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "4dfb8588d816512e0e5bcbc130c9bae6.png";
+module.exports = __webpack_require__.p + "07a04e6f5080fe504b06f89816f20ea1.jpg";
 
 /***/ }),
-/* 68 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "68581be6cf33b6e63d62332dcc4cbe59.png";
+module.exports = __webpack_require__.p + "bcbac891ffef28917c8a6c2358aef23e.jpg";
 
 /***/ }),
-/* 69 */
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "7670498601a07e49efa30737e1f90b0c.jpg";
+
+/***/ }),
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(70);
+var content = __webpack_require__(80);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23695,7 +23944,7 @@ if(false) {
 }
 
 /***/ }),
-/* 70 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23709,7 +23958,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 71 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23723,19 +23972,23 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(9);
+var _Card = __webpack_require__(11);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _CardShowList = __webpack_require__(72);
+var _CardShowList = __webpack_require__(82);
 
 var _CardShowList2 = _interopRequireDefault(_CardShowList);
 
-var _Shoping = __webpack_require__(75);
+var _Shoping = __webpack_require__(85);
 
 var _Shoping2 = _interopRequireDefault(_Shoping);
 
-__webpack_require__(79);
+var _MetailBox = __webpack_require__(51);
+
+var _MetailBox2 = _interopRequireDefault(_MetailBox);
+
+__webpack_require__(89);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23785,7 +24038,11 @@ var FightPlace = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'fight_message' },
-                    this.messagelist()
+                    _react2.default.createElement(
+                        _MetailBox2.default,
+                        null,
+                        this.messagelist()
+                    )
                 ),
                 _react2.default.createElement(
                     'div',
@@ -23811,7 +24068,7 @@ var FightPlace = function (_React$Component) {
 module.exports = FightPlace;
 
 /***/ }),
-/* 72 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23823,11 +24080,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(9);
+var _Card = __webpack_require__(11);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-__webpack_require__(73);
+__webpack_require__(83);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23925,11 +24182,11 @@ var CardShowList = function (_React$Component) {
 module.exports = CardShowList;
 
 /***/ }),
-/* 73 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(74);
+var content = __webpack_require__(84);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23975,7 +24232,7 @@ if(false) {
 }
 
 /***/ }),
-/* 74 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23989,7 +24246,7 @@ exports.push([module.i, ".Slide_box {\n  margin-bottom: -140px;\n  border: 1px s
 
 
 /***/ }),
-/* 75 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24001,15 +24258,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _equipment = __webpack_require__(76);
+var _equipment = __webpack_require__(86);
 
 var _equipment2 = _interopRequireDefault(_equipment);
 
-var _Equipment = __webpack_require__(12);
+var _Equipment = __webpack_require__(13);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
-__webpack_require__(77);
+__webpack_require__(87);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24142,7 +24399,7 @@ var Shoping = function (_React$Component) {
 module.exports = Shoping;
 
 /***/ }),
-/* 76 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24192,11 +24449,11 @@ equipment[20] = { id: 20, name: "圣剑", price: "￥80", state: 2, message: "�
 };module.exports = equipment;
 
 /***/ }),
-/* 77 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(78);
+var content = __webpack_require__(88);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24242,7 +24499,7 @@ if(false) {
 }
 
 /***/ }),
-/* 78 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24256,11 +24513,11 @@ exports.push([module.i, ".shop_room {\n  height: 100%;\n  width: 300px;\n  posit
 
 
 /***/ }),
-/* 79 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(80);
+var content = __webpack_require__(90);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24306,28 +24563,28 @@ if(false) {
 }
 
 /***/ }),
-/* 80 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(10);
+var escape = __webpack_require__(4);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 200px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 200px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(81)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 366px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 200px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 200px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(91)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 81 */
+/* 91 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA0xpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzQ0QTIwNzA5QUVEMTFFOEFGMTM5MjM4RkVDRDBCQzgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzQ0QTIwNkY5QUVEMTFFOEFGMTM5MjM4RkVDRDBCQzgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIxMzdjYjNiLWUzNTctMTE3Yi1iNzBjLWI2YWY5ZmU5Y2YyOSIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjIxMzdjYjNiLWUzNTctMTE3Yi1iNzBjLWI2YWY5ZmU5Y2YyOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pg6WvWkAAAMAUExURZwfHDRiLXFjTryugZCCc3JUO5+TgjwrHHoyH72SXXx0YmJCKNWXWWJVTlBEP1RNQJdjOc/PymZeUs5sY66kg4BmUqGSj9fNnE+ATK2gks/AoISBcYJvVWNiYZxuQaGScevq6HFnW3RgRIJiRJaOgGdKLqOelEwtFiodEruxnh0YFK6GWaSNYjErKoN3cHBNLr6zjz4xJpR+ZYePokI5LvPr24CBhFZNTerYuoyHgEM+P3ZwYLCupIR+Y9IoJp+jsmY7HHNDInFtU//554KHk2Blbv39/JFzT5OMbzIlGt/f3EBwOoaRb1qWXa6Qb56EcVcYBVdzR56DYlM4HPb29Xh0ci1SHywWBsTDu45zYbl/Qwg5BK6WkiouPZJ3ccu9rk1NMZSQj8q6hufRodKic+zgy7a2r767tZyBgk5aQM7KwqakoR0RB6SJhD4VBbGpcz5DU7ynn7ylkZGVnXJ0gM7CkaWvmXtuRmMxFupIRYAZEWVgSG5XSVFnP7GtkNrYz599U8C8oWRFOksxJeDPyXGYZWpud82xruDNrxIFAbCnnDwhETo7GExHUaOchrqjhHxPLcSvqaqThHtoZNzBnVBTXL/ItpB/TlIoCpBpTSMoNGUnChZNFIFLHMmxide6lgMBAK19bk04JrqedGtMOVxMOXOsdlhGMyU/GaB1S4ujgNrOw2pobHxVPDE4Q8i2oVtVR5hZIrNIP+y0fMiRcmZTQkw7MYlhNGpVOVo9I1dBKEYlCyciIjozNllgTEpCNCYsDYZ5VlhWOv/y4FpJRLqZg93YvrmZklozJtjGrNjAu1lcZa1sMmyGYXd/dKmeclM/MSgIAkRjMlpJJndeM19XWHZ8iG9+TjZGJxwcIGRXMdDHp+CjYr+9jAsYAq/Bop2bo7OamYF6gEdFJRILCntbTJqaj5GcrpadeQUDDVICAuTl4WhOQlcyDvn6+RQUFCdcIvHx74htbEsjHnBeWfi9jP/LgYt8etPUzu3msUg2M1w3EsCcnJfAikQ3Fv////NhZv4AAAEAdFJOU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wBT9wclAAAX00lEQVR42tyaCVRTd77HISxXiEmUEkQJIJCYazBg0kxTAmlJisIVJWiEKy4Yasf1EpdqoSZuSYvGSxBlGFlcYkwa7QCiU5CQhACDlg4uQUCNbX0uwRYFg5L39IFD38Vq22mtS890zpx3OSfnHgj3c3/L//v//f7/v9t3/4bL7T8N8jDu3wChyub+7pCJ4hzv3x0S15Gyd/zvDfHV+aSc3PKvgkyf/qxv3sunbR1TemXuvwhyb+WzvrmMPhRy9GRH7L/KkvEznvHbKFP5/vciQ2jUOz//y93fFJOCyT+160lu1ZfsH/Oez9HEumHcqoc/OHT62J1hpIe/BeIt+vF+Uke4LzUuzlNPzz1zPORwZGKlGJai1phlE7/77k5cUC2g17Nu/SZLMn5Moo6crUNirbJvKF5w9Mz+w5GFfSVSFJUOoMpYHAhre8X1euAxZO4rQpIiPJ/ezu3o/GqMVIqaKkMEkSHxJ49ujYwuGRgYUA5I2014L3KEjq5Fs+7Ny+riLHs1iCcNePpeE4c7v/oqRNouzR3qGypJDflstM/hQ4rWyniTqTsxMeRkpxdeCbIsIMRk2ie+EmRyDfpUC2fcDBk9en6ESUqXSgf6znz1lY+PT2lubrwgYs6cwpOJnZ0ROgBGwGGblWmPeSXIHT1AenK7RXx09Jkz8wtLjIrW1uivRs+fP6YktTw3/r0DAsHRyJOCSkoHCmsN2nob+IqQ73yVyJPQzxvunH98/ugzgr6SPrrgzOjRIabUEp0it7LwpI/PmMST0RH1ynYDrs4IMBjLXg0SZ4ODntwN7x9z/K+jj+8f6uvrGzp+fHSpdCC3UlAi9VniczTk6NFOmhFSySl0OsCwz3g1yMR6AP1+EE6CT56Z/9/HywXxgvj48vj4kMLUUbmpUpNJtzUyJDJkayKejqrAepMJtFdNf0UVDqPDI6GfuKq5fcxXIzmcisVaEJ9a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"
 
 /***/ }),
-/* 82 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24339,7 +24596,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(83);
+__webpack_require__(93);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24392,7 +24649,6 @@ var HeroSelect = function (_React$Component) {
                     mystate.maxMp = 500;
                     mystate.Mp = 500;
                     mystate.attack = 50;
-                    mystate.Mprecove = 40;
                     break;
             }
             var round = Math.random(); //随机回合用
@@ -24439,11 +24695,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 83 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(84);
+var content = __webpack_require__(94);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24489,44 +24745,50 @@ if(false) {
 }
 
 /***/ }),
-/* 84 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(10);
+var escape = __webpack_require__(4);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important; }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(85)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(86)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(87)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(93)) + ") no-repeat center; }\n", ""]);
+exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(95)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(96)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(97)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(98)) + ") no-repeat center; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 85 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "52161e9892467fa48f01d90390b46efe.jpg";
 
 /***/ }),
-/* 86 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "be5072aea25eb22a9bbbbd7f4ded5518.jpg";
 
 /***/ }),
-/* 87 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "31b809f3672807f11398cd3516b78823.jpg";
 
 /***/ }),
-/* 88 */
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
+
+/***/ }),
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(89);
+var content = __webpack_require__(100);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24572,7 +24834,7 @@ if(false) {
 }
 
 /***/ }),
-/* 89 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24584,95 +24846,6 @@ exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 
 
 // exports
 
-
-/***/ }),
-/* 90 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(91);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./login.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./login.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 91 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(10);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".login_box {\n  width: 100%;\n  height: 100%;\n  background: url(" + escape(__webpack_require__(92)) + ") no-repeat;\n  background-size: auto 100%;\n  background-color: #000;\n  background-position: left; }\n  .login_box .login {\n    width: 200px;\n    background: #3a4c4c;\n    color: #fff;\n    position: absolute;\n    left: 75%;\n    top: 50%;\n    margin-left: -100px;\n    margin-top: -30px;\n    padding: 10px;\n    border-radius: 3px; }\n    .login_box .login .login_title {\n      background: #3a4c4c;\n      margin-top: -30px;\n      line-height: 20px;\n      padding: 5px 10px;\n      position: inherit;\n      font-size: 13px;\n      border-radius: 3px; }\n    .login_box .login .name_input {\n      box-sizing: border-box;\n      text-align: center;\n      font-size: 1.4em;\n      border-radius: 4px;\n      border: 1px solid #c8cccf;\n      color: #6a6f77;\n      -web-kit-appearance: none;\n      -moz-appearance: none;\n      display: block;\n      width: 100%; }\n    .login_box .login .login_btn {\n      background: #285ea8;\n      text-align: center;\n      padding: 5px;\n      border-radius: 3px;\n      font-size: 14px;\n      margin-top: 10px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "5ff841ec66299ab986b56ca3b15dd927.jpg";
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports) {
-
-module.exports = "data:image/jpeg;base64,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aWdodGxvbmcAAAAAAAAAC2Nyb3BSZWN0VG9wbG9uZwAAAAAAOEJJTQPtAAAAAAAQAEgAAAABAAIASAAAAAEAAjhCSU0EJgAAAAAADgAAAAAAAAAAAAA/gAAAOEJJTQQNAAAAAAAEAAAAHjhCSU0EGQAAAAAABAAAAB44QklNA/MAAAAAAAkAAAAAAAAAAAEAOEJJTScQAAAAAAAKAAEAAAAAAAAAAjhCSU0D9QAAAAAASAAvZmYAAQBsZmYABgAAAAAAAQAvZmYAAQChmZoABgAAAAAAAQAyAAAAAQBaAAAABgAAAAAAAQA1AAAAAQAtAAAABgAAAAAAAThCSU0D+AAAAAAAcAAA/////////////////////////////wPoAAAAAP////////////////////////////8D6AAAAAD/////////////////////////////A+gAAAAA/////////////////////////////wPoAAA4QklNBAgAAAAAABAAAAABAAACQAAAAkAAAAAAOEJJTQQeAAAAAAAEAAAAADhCSU0EGgAAAAADSQAAAAYAAAAAAAAAAAAAABAAAAAQAAAACgBiAG8AeABfAGMAbwByAG4AZQByAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAbnVsbAAAAAIAAAAGYm91bmRzT2JqYwAAAAEAAAAAAABSY3QxAAAABAAAAABUb3AgbG9uZwAAAAAAAAAATGVmdGxvbmcAAAAAAAAAAEJ0b21sb25nAAAAEAAAAABSZ2h0bG9uZwAAABAAAAAGc2xpY2VzVmxMcwAAAAFPYmpjAAAAAQAAAAAABXNsaWNlAAAAEgAAAAdzbGljZUlEbG9uZwAAAAAAAAAHZ3JvdXBJRGxvbmcAAAAAAAAABm9yaWdpbmVudW0AAAAMRVNsaWNlT3JpZ2luAAAADWF1dG9HZW5lcmF0ZWQAAAAAVHlwZWVudW0AAAAKRVNsaWNlVHlwZQAAAABJbWcgAAAABmJvdW5kc09iamMAAAABAAAAAAAAUmN0MQAAAAQAAAAAVG9wIGxvbmcAAAAAAAAAAExlZnRsb25nAAAAAAAAAABCdG9tbG9uZwAAABAAAAAAUmdodGxvbmcAAAAQAAAAA3VybFRFWFQAAAABAAAAAAAAbnVsbFRFWFQAAAABAAAAAAAATXNnZVRFWFQAAAABAAAAAAAGYWx0VGFnVEVYVAAAAAEAAAAAAA5jZWxsVGV4dElzSFRNTGJvb2wBAAAACGNlbGxUZXh0VEVYVAAAAAEAAAAAAAlob3J6QWxpZ25lbnVtAAAAD0VTbGljZUhvcnpBbGlnbgAAAAdkZWZhdWx0AAAACXZlcnRBbGlnbmVudW0AAAAPRVNsaWNlVmVydEFsaWduAAAAB2RlZmF1bHQAAAALYmdDb2xvclR5cGVlbnVtAAAAEUVTbGljZUJHQ29sb3JUeXBlAAAAAE5vbmUAAAAJdG9wT3V0c2V0bG9uZwAAAAAAAAAKbGVmdE91dHNldGxvbmcAAAAAAAAADGJvdHRvbU91dHNldGxvbmcAAAAAAAAAC3JpZ2h0T3V0c2V0bG9uZwAAAAAAOEJJTQQoAAAAAAAMAAAAAj/wAAAAAAAAOEJJTQQRAAAAAAABAQA4QklNBBQAAAAAAAQAAAADOEJJTQQMAAAAAAJSAAAAAQAAABAAAAAQAAAAMAAAAwAAAAI2ABgAAf/Y/+0ADEFkb2JlX0NNAAL/7gAOQWRvYmUAZIAAAAAB/9sAhAAMCAgICQgMCQkMEQsKCxEVDwwMDxUYExMVExMYEQwMDAwMDBEMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMAQ0LCw0ODRAODhAUDg4OFBQODg4OFBEMDAwMDBERDAwMDAwMEQwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAQABADASIAAhEBAxEB/90ABAAB/8QBPwAAAQUBAQEBAQEAAAAAAAAAAwABAgQFBgcICQoLAQABBQEBAQEBAQAAAAAAAAABAAIDBAUGBwgJCgsQAAEEAQMCBAIFBwYIBQMMMwEAAhEDBCESMQVBUWETInGBMgYUkaGxQiMkFVLBYjM0coLRQwclklPw4fFjczUWorKDJkSTVGRFwqN0NhfSVeJl8rOEw9N14/NGJ5SkhbSVxNTk9KW1xdXl9VZmdoaWprbG1ub2N0dXZ3eHl6e3x9fn9xEAAgIBAgQEAwQFBgcHBgU1AQACEQMhMRIEQVFhcSITBTKBkRShsUIjwVLR8DMkYuFygpJDUxVjczTxJQYWorKDByY1wtJEk1SjF2RFVTZ0ZeLys4TD03Xj80aUpIW0lcTU5PSltcXV5fVWZnaGlqa2xtbm9ic3R1dnd4eXp7fH/9oADAMBAAIRAxEAPwDicd1YrZ6kNBJlxE+KGMvUg1MMGAfEJi0Ow2zr7v71TteWH2oFT//ZOEJJTQQhAAAAAABdAAAAAQEAAAAPAEEAZABvAGIAZQAgAFAAaABvAHQAbwBzAGgAbwBwAAAAFwBBAGQAbwBiAGUAIABQAGgAbwB0AG8AcwBoAG8AcAAgAEMAQwAgADIAMAAxADUAAAABADhCSU0EBgAAAAAABwAEAAAAAQEA/+ENwWh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMwNjcgNzkuMTU3NzQ3LCAyMDE1LzAzLzMwLTIzOjQwOjQyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjBENUFDNDNBNkE2MTFFODk3MTBCMkU2NDdFQTIwREYiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ZDZlYmMyYzktNjlhMS00MGMwLThjZjgtYTg4NjhmNjAzMmRmIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjBENUFDNDNBNkE2MTFFODk3MTBCMkU2NDdFQTIwREYiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgTWFjaW50b3NoIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxOC0wOS0wMlQxNTozMDoxNiswODowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTgtMDktMDJUMTY6MzM6MDIrMDg6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMTgtMDktMDJUMTY6MzM6MDIrMDg6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvanBlZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJCRENENzNBN0MyRTY5RDQ3RjU3NTg4QzE1RDdFRThBOSIgc3RSZWY6ZG9jdW1lbnRJRD0iQkRDRDczQTdDMkU2OUQ0N0Y1NzU4OEMxNUQ3RUU4QTkiLz4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6ZDZlYmMyYzktNjlhMS00MGMwLThjZjgtYTg4NjhmNjAzMmRmIiBzdEV2dDp3aGVuPSIyMDE4LTA5LTAyVDE2OjMzOjAyKzA4OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0idyI/Pv/uAA5BZG9iZQBkAAAAAAH/2wCEAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwBBwcHDQwNGBAQGBQODg4UFA4ODg4UEQwMDAwMEREMDAwMDAwRDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDP/AABEIABAAEAMBEQACEQEDEQH/3QAEAAL/xAGiAAAABwEBAQEBAAAAAAAAAAAEBQMCBgEABwgJCgsBAAICAwEBAQEBAAAAAAAAAAEAAgMEBQYHCAkKCxAAAgEDAwIEAgYHAwQCBgJzAQIDEQQABSESMUFRBhNhInGBFDKRoQcVsUIjwVLR4TMWYvAkcoLxJUM0U5KismNzwjVEJ5OjszYXVGR0w9LiCCaDCQoYGYSURUaktFbTVSga8uPzxNTk9GV1hZWltcXV5fVmdoaWprbG1ub2N0dXZ3eHl6e3x9fn9zhIWGh4iJiouMjY6PgpOUlZaXmJmam5ydnp+So6SlpqeoqaqrrK2ur6EQACAgECAwUFBAUGBAgDA20BAAIRAwQhEjFBBVETYSIGcYGRMqGx8BTB0eEjQhVSYnLxMyQ0Q4IWklMlomOywgdz0jXiRIMXVJMICQoYGSY2RRonZHRVN/Kjs8MoKdPj84SUpLTE1OT0ZXWFlaW1xdXl9UZWZnaGlqa2xtbm9kdXZ3eHl6e3x9fn9zhIWGh4iJiouMjY6Pg5SVlpeYmZqbnJ2en5KjpKWmp6ipqqusra6vr/2gAMAwEAAhEDEQA/AOJafLbrbwetxRHZucjAHuT3xNqoJq4LODbRMFagNBuPuyNlX//Q4S8aPoyBhX96f44ClJ7mdoWHDp4YAr//2Q=="
-
-/***/ }),
-/* 95 */
-/***/ (function(module, exports) {
-
-module.exports = "data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAzAAD/4QMfaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzA2NyA3OS4xNTc3NDcsIDIwMTUvMDMvMzAtMjM6NDA6NDIgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYwRDVBQzQ3QTZBNjExRTg5NzEwQjJFNjQ3RUEyMERGIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYwRDVBQzQ2QTZBNjExRTg5NzEwQjJFNjQ3RUEyMERGIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJGQUVCRDYwODMzRUMxMTcxQzc4MDIzN0NFREE4OTQ1RiIgc3RSZWY6ZG9jdW1lbnRJRD0iRkFFQkQ2MDgzM0VDMTE3MUM3ODAyMzdDRURBODk0NUYiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAIBQUFBgUIBgYICwcGBwsNCggICg0PDAwNDAwPEQwNDQ0NDBEPERITEhEPFxcZGRcXIiEhISImJiYmJiYmJiYmAQgJCRAOEB0UFB0gGhUaICYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJib/wAARCAC1ABADAREAAhEBAxEB/8QAawABAQEAAAAAAAAAAAAAAAAABQQHAQEBAQAAAAAAAAAAAAAAAAABAAIQAAEDAgQCCAYDAAAAAAAAAAEAEQIxBCGxEgNBBVFxoSIyYnIVYYGRwSQlQlI0EQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8AyjD2yA85zKKRl6GkPiqJeT+DAeY5lFQ68PfAHBkxUkzWMTXvnD5lFQ27qPkmKltjZ3ri127fYgdzenI6YCtSqoTdOJMcJRLEGoIKoiYO5Gy29zalonGZaQ6yqobdRkC5qS560wEQfwYvTUcyilBel260wLj/AII+s5lFI67liAmAmxHLoyP9y31KKRt3jIGjMqCkyf1sBx1nMqpg298UW4sqKkJEmyj6jmUVDbwvMN8ExEtP6+J85zKKht3iR1piK7O3LettvZEow1SJ1SLRqeKEJui0iJViWwWoiRjCfLoPXWW+pQh13tiIwq6YCMC1hAnhI5lFKC+Lt1pgXxB9vj6zmUUjrwlwCmAmIgcsgRXWcyikZeVD1VATEv1sB5ie0opG3xcjpwTAviXsIY/zP3RSPvX1AlMRIB+WxPmOZVUNu+BVAVtTbC32RdmYtjI69GEqmhIKCJu2cgeF2i/QtQE4CJ5dAEP3jmUEfexERhhimBfEty+J6JEdpRSgvjRMC4N7fGvjL9qKh13UJif/2Q=="
 
 /***/ })
 /******/ ]);

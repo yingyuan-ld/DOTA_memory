@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../Card/Card';
 import CardShowList from '../CardShowList/CardShowList';
 import Shoping from '../Shoping/Shoping';
+import MetailBox from '..//MetailBox/MetailBox';
 
 import "./FightPlace.scss";
 
@@ -24,7 +25,9 @@ class FightPlace extends React.Component{
   	render() {
         return <div className="fight_place" >
             <div className="fight_message">
-                {this.messagelist()}
+                <MetailBox>
+                    {this.messagelist()}
+                </MetailBox>
             </div>
             <div className="cardShowList">
                 <CardShowList cardShowList={this.props.cardShowList.slice(0,this.props.cardShowList.length-1)}/>
