@@ -858,7 +858,7 @@ function check_round(props) {
         return [true, props];
     }
 }
-function addBuff(props, MorT, buff, buffT, buffObj) {
+function addBuff(props, MorT, buff, buffT) {
     //添加buff方法
     var bufflist = props[MorT].buff;
     var bufflistTime = props[MorT].buffTime;
@@ -880,7 +880,6 @@ function addBuff(props, MorT, buff, buffT, buffObj) {
             bufflist.push(buff[i]);
             bufflistTime.push(buffT[i]);
         }
-        Object.assign(props[MorT].buffObj, buffObj);
     });
     props[MorT].buff = bufflist;
     props[MorT].buffTime = bufflistTime;
@@ -973,10 +972,6 @@ function check_buffToCard(props, Attack) {
                 //反击
                 Attack.do.mHp = Attack.do.mHp - parseInt(Attack.do.tHp / 5);
                 break;
-            case 103:
-                //活性护甲
-                Object.assign(Attack.do.tBuffObj, { 103: thatstate.buffObj[103] + 1 });
-                break;
         }
     }
     return [props, Attack];
@@ -1041,13 +1036,7 @@ function doAttack(props, Attack, type) {
         Attack = _check_buffToCard2[1];
     }
     if (type == "attack") {
-        //判断剩余攻击次数
-        var _check_attackAccount = check_attackAccount(props);
-
-        var _check_attackAccount2 = _slicedToArray(_check_attackAccount, 2);
-
-        checked = _check_attackAccount2[0];
-        props = _check_attackAccount2[1];
+        // [checked,props] = check_attackAccount(props)//判断剩余攻击次数
         if (!checked) return [false, props];
         props.mystate.attackAccount -= 1; //攻击机会减1
 
@@ -1103,19 +1092,26 @@ function doAttack(props, Attack, type) {
                 props.thatstate.Mp = props.thatstate.Mp + value > props.thatstate.maxMp ? props.thatstate.maxMp : props.thatstate.Mp + value;
                 break;
             case "tHp":
-                props.thatstate.Hp = props.thatstate.Hp + value > props.thatstate.maxHp ? props.thatstate.maxHp : props.thatstate.Hp + value;
+                props.thatstate.Hp = props.thatstate.Hp - value > props.thatstate.maxHp ? props.thatstate.maxHp : props.thatstate.Hp - value;
                 break;
             case "mBuff":
-                props = addBuff(props, "mystate", DO.mBuff, DO.mBuffT, DO.mBuffObj); //添加buff方法
+                props = addBuff(props, "mystate", DO.mBuff, DO.mBuffT); //添加buff方法
                 break;
             case "tBuff":
-                props = addBuff(props, "thatstate", value, DO.tBuffT, DO.tBuffObj); //添加buff方法
+                props = addBuff(props, "thatstate", value, DO.tBuffT); //添加buff方法
+                break;
+            case "mBuffObj":
+                props.mystate.buffObj = Object.assign(props.mystate.buffObj, DO.mBuffObj);
+                break;
+            case "tBuffObj":
+                props.thatstate.buffObj = Object.assign(props.thatstate.buffObj, DO.tBuffObj);
                 break;
             case "special":
                 specialcard(props, DO);
                 break;
         }
     }
+
     var messagelist = props.messagelist; //消息
     if (type == "attack") {
         messagelist.push("物理攻击造成" + Attack.do.tHp + "点伤害");
@@ -1268,7 +1264,7 @@ function attackAfter(props, Attack) {
                 break;
             case 103:
                 //活性护甲
-                Object.assign(DO.tBuffObj || {}, { 103: thatstate.buffObj[103] + 1 });
+                DO.tBuffObj = Object.assign(DO.tBuffObj || {}, { 103: thatstate.buffObj[103] + 1 });
                 break;
         }
     }
@@ -1414,6 +1410,82 @@ module.exports = emptyFunction;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(52);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var scrollRoll = true; //只有滚动条在底部,才自动滚动
+
+var MetailBox = function (_React$Component) {
+    _inherits(MetailBox, _React$Component);
+
+    function MetailBox() {
+        _classCallCheck(this, MetailBox);
+
+        return _possibleConstructorReturn(this, (MetailBox.__proto__ || Object.getPrototypeOf(MetailBox)).apply(this, arguments));
+    }
+
+    _createClass(MetailBox, [{
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps() {
+            var div = this.refs.scroll;
+            this.scrollRoll = div.scrollHeight == div.clientHeight + div.scrollTop;
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate() {
+            if (this.scrollRoll) {
+                var div = this.refs.scroll;
+                div.scrollTop = div.scrollHeight;
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "metal_box" },
+                _react2.default.createElement("div", { className: "border_corner1" }),
+                _react2.default.createElement("div", { className: "border_line1" }),
+                _react2.default.createElement("div", { className: "border_corner2" }),
+                _react2.default.createElement("div", { className: "border_line2" }),
+                _react2.default.createElement("div", { className: "border_corner3" }),
+                _react2.default.createElement("div", { className: "border_line3" }),
+                _react2.default.createElement("div", { className: "border_corner4" }),
+                _react2.default.createElement("div", { className: "border_line4" }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "inner_scroll", ref: "scroll" },
+                    this.props.children
+                )
+            );
+        }
+    }]);
+
+    return MetailBox;
+}(_react2.default.Component);
+
+module.exports = MetailBox;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /*
 object-assign
 (c) Sindre Sorhus
@@ -1507,7 +1579,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1531,13 +1603,13 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAABkAAD/4QODaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzA2NyA3OS4xNTc3NDcsIDIwMTUvMDMvMzAtMjM6NDA6NDIgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9IkZBRUJENjA4MzNFQzExNzFDNzgwMjM3Q0VEQTg5NDVGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZGMjhGQzY2QUI1RjExRThCODQwQjM2QzRCQTIwMjZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZGMjhGQzY1QUI1RjExRThCODQwQjM2QzRCQTIwMjZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MzU1NjYzMTMtNTIxNC00NTYzLWI2OGMtN2Q4OTQzZTNjNzliIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6NTgyNTlkMjEtZjNjOC0xMTdiLThjZjAtOTY0ZGNlZDVlYjJmIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAgICAgICAgICAwMDAwMDAwMDAwEBAQEBAQECAQECAgIBAgIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD/8AAEQgADgAOAwERAAIRAQMRAf/EAHQAAAMBAAAAAAAAAAAAAAAAAAQHCAoBAQEBAQAAAAAAAAAAAAAAAAQAAgMQAAEDAgMIAgMAAAAAAAAAAAECAwQRBQATBjFhEiJCFBUHQXEkFhcRAAECAwkBAAAAAAAAAAAAAAABIVESA/ARQWGh8QIiEwT/2gAMAwEAAhEDEQA/AMwWp/ZMPTkS7W+XcpcDUJsNuk6UZbjZkF10z5BkJeSFtpV+IyoAnqAwf6qazMvbYRmLD+4ewU2YPiRajLchHiPjGy4JCVAgVzaJJSKbK4HLVJgn26YAuOnC6lpT/wCrw6JcUkLC+9mHlJG0EqH0K/OF1U53suhwVIKTUXL35dISwvxvc1dOYnL6ilI5hycW4jfTG387RLE//9k="
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1603,6 +1675,11 @@ var Card = function (_React$Component) {
                     'div',
                     { className: this.props.cardfor == "my" ? "card_box card_my" : "card_box",
                         onClick: this.props.cardfor == "my" ? this.usecard.bind(this, card.id, card.name) : function () {} },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_mp' },
+                        card.mp
+                    ),
                     _react2.default.createElement('div', { className: 'card_ion', style: { background: "url(./server/skillImg/" + card.id + ".jpg) no-repeat center" } }),
                     _react2.default.createElement(
                         'div',
@@ -1629,7 +1706,7 @@ var Card = function (_React$Component) {
 module.exports = Card;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1698,7 +1775,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1799,7 +1876,7 @@ var Equipment = function (_React$Component) {
 module.exports = Equipment;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1814,7 +1891,7 @@ module.exports = Equipment;
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(6);
-  var warning = __webpack_require__(12);
+  var warning = __webpack_require__(13);
   var ReactPropTypesSecret = __webpack_require__(33);
   var loggedTypeFailures = {};
 }
@@ -1866,7 +1943,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1905,7 +1982,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1947,7 +2024,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2018,7 +2095,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2059,82 +2136,6 @@ function containsNode(outerNode, innerNode) {
 }
 
 module.exports = containsNode;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(52);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var scrollRoll = true; //只有滚动条在底部,才自动滚动
-
-var MetailBox = function (_React$Component) {
-    _inherits(MetailBox, _React$Component);
-
-    function MetailBox() {
-        _classCallCheck(this, MetailBox);
-
-        return _possibleConstructorReturn(this, (MetailBox.__proto__ || Object.getPrototypeOf(MetailBox)).apply(this, arguments));
-    }
-
-    _createClass(MetailBox, [{
-        key: "componentWillReceiveProps",
-        value: function componentWillReceiveProps() {
-            var div = this.refs.scroll;
-            this.scrollRoll = div.scrollHeight == div.clientHeight + div.scrollTop;
-        }
-    }, {
-        key: "componentDidUpdate",
-        value: function componentDidUpdate() {
-            if (this.scrollRoll) {
-                var div = this.refs.scroll;
-                div.scrollTop = div.scrollHeight;
-            }
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "metal_box" },
-                _react2.default.createElement("div", { className: "border_corner1" }),
-                _react2.default.createElement("div", { className: "border_line1" }),
-                _react2.default.createElement("div", { className: "border_corner2" }),
-                _react2.default.createElement("div", { className: "border_line2" }),
-                _react2.default.createElement("div", { className: "border_corner3" }),
-                _react2.default.createElement("div", { className: "border_line3" }),
-                _react2.default.createElement("div", { className: "border_corner4" }),
-                _react2.default.createElement("div", { className: "border_line4" }),
-                _react2.default.createElement(
-                    "div",
-                    { className: "inner_scroll", ref: "scroll" },
-                    this.props.children
-                )
-            );
-        }
-    }]);
-
-    return MetailBox;
-}(_react2.default.Component);
-
-module.exports = MetailBox;
 
 /***/ }),
 /* 20 */
@@ -2733,7 +2734,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(11);
+var _Card = __webpack_require__(12);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -2745,7 +2746,7 @@ var _BuffIon = __webpack_require__(25);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _Equipment = __webpack_require__(13);
+var _Equipment = __webpack_require__(14);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
@@ -2753,7 +2754,7 @@ var _action = __webpack_require__(5);
 
 __webpack_require__(73);
 
-var _MetailBox = __webpack_require__(19);
+var _MetailBox = __webpack_require__(8);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
@@ -3087,7 +3088,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(11);
+var _Card = __webpack_require__(12);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -3099,7 +3100,7 @@ var _BuffIon = __webpack_require__(25);
 
 var _BuffIon2 = _interopRequireDefault(_BuffIon);
 
-var _Equipment = __webpack_require__(13);
+var _Equipment = __webpack_require__(14);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
@@ -3107,7 +3108,7 @@ var _action = __webpack_require__(5);
 
 __webpack_require__(79);
 
-var _MetailBox = __webpack_require__(19);
+var _MetailBox = __webpack_require__(8);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
@@ -3295,7 +3296,7 @@ var _DotaSystem = __webpack_require__(41);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(99);
+__webpack_require__(100);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3365,7 +3366,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(6),ea=__webpack_require__(0),m=__webpack_require__(15),A=__webpack_require__(8),C=__webpack_require__(7),fa=__webpack_require__(16),ha=__webpack_require__(17),ja=__webpack_require__(18),ka=__webpack_require__(9);
+var ba=__webpack_require__(6),ea=__webpack_require__(0),m=__webpack_require__(16),A=__webpack_require__(9),C=__webpack_require__(7),fa=__webpack_require__(17),ha=__webpack_require__(18),ja=__webpack_require__(19),ka=__webpack_require__(10);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -3615,7 +3616,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(8),n=__webpack_require__(6),p=__webpack_require__(9),q=__webpack_require__(7),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(9),n=__webpack_require__(6),p=__webpack_require__(10),q=__webpack_require__(7),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -3652,12 +3653,12 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(8);
+var _assign = __webpack_require__(9);
 var invariant = __webpack_require__(6);
-var emptyObject = __webpack_require__(9);
-var warning = __webpack_require__(12);
+var emptyObject = __webpack_require__(10);
+var warning = __webpack_require__(13);
 var emptyFunction = __webpack_require__(7);
-var checkPropTypes = __webpack_require__(14);
+var checkPropTypes = __webpack_require__(15);
 
 // TODO: this is special because it gets imported during build.
 
@@ -5151,15 +5152,15 @@ if (process.env.NODE_ENV !== "production") {
 
 var invariant = __webpack_require__(6);
 var React = __webpack_require__(0);
-var warning = __webpack_require__(12);
-var ExecutionEnvironment = __webpack_require__(15);
-var _assign = __webpack_require__(8);
+var warning = __webpack_require__(13);
+var ExecutionEnvironment = __webpack_require__(16);
+var _assign = __webpack_require__(9);
 var emptyFunction = __webpack_require__(7);
-var checkPropTypes = __webpack_require__(14);
-var getActiveElement = __webpack_require__(16);
-var shallowEqual = __webpack_require__(17);
-var containsNode = __webpack_require__(18);
-var emptyObject = __webpack_require__(9);
+var checkPropTypes = __webpack_require__(15);
+var getActiveElement = __webpack_require__(17);
+var shallowEqual = __webpack_require__(18);
+var containsNode = __webpack_require__(19);
+var emptyObject = __webpack_require__(10);
 var hyphenateStyleName = __webpack_require__(37);
 var camelizeStyleName = __webpack_require__(39);
 
@@ -22382,7 +22383,7 @@ var _react2 = _interopRequireDefault(_react);
 
 __webpack_require__(50);
 
-var _MetailBox = __webpack_require__(19);
+var _MetailBox = __webpack_require__(8);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
@@ -22699,7 +22700,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  overflow: hidden;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: calc(100% - 28px);\n    width: 14px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    top: 0px;\n    right: 0px;\n    transform: rotate(90deg); }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(21)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    top: 0px;\n    right: 14px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: calc(100% - 28px);\n    width: 14px;\n    position: absolute;\n    bottom: 14px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    left: 0px;\n    transform: rotate(270deg); }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(21)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    bottom: 0px;\n    left: 14px;\n    transform: rotate(180deg); }\n  .metal_box .inner_scroll {\n    position: absolute;\n    top: 14px;\n    left: 14px;\n    width: calc(100% - 28px);\n    height: calc(100% - 28px);\n    overflow-y: auto;\n    overflow-x: hidden; }\n  .metal_box .inner_scroll::-webkit-scrollbar {\n    width: 0px;\n    background-color: #18181e;\n    border: 3px solid #2a2a2e;\n    border-radius: 5px; }\n  .metal_box .inner_scroll::-webkit-scrollbar-thumb {\n    background-color: #2b3351;\n    border-radius: 5px;\n    border: 3px solid #2a2a2e;\n    height: 10px !important;\n    width: 10px; }\n", ""]);
+exports.push([module.i, ".metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  overflow: hidden;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: calc(100% - 28px);\n    width: 14px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    top: 0px;\n    right: 0px;\n    transform: rotate(90deg); }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(21)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    top: 0px;\n    right: 14px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: calc(100% - 28px);\n    width: 14px;\n    position: absolute;\n    bottom: 14px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    left: 0px;\n    transform: rotate(270deg); }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(21)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    bottom: 0px;\n    left: 14px;\n    transform: rotate(180deg); }\n  .metal_box .inner_scroll {\n    position: absolute;\n    top: 14px;\n    left: 14px;\n    width: calc(100% - 28px);\n    height: calc(100% - 28px);\n    overflow-y: auto;\n    overflow-x: hidden; }\n  .metal_box .inner_scroll::-webkit-scrollbar {\n    width: 0px;\n    background-color: #18181e;\n    border: 3px solid #2a2a2e;\n    border-radius: 5px; }\n  .metal_box .inner_scroll::-webkit-scrollbar-thumb {\n    background-color: #2b3351;\n    border-radius: 5px;\n    border: 3px solid #2a2a2e;\n    height: 10px !important;\n    width: 10px; }\n", ""]);
 
 // exports
 
@@ -23360,7 +23361,7 @@ var _PlayPage = __webpack_require__(62);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(92);
+var _HeroSelect = __webpack_require__(93);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
@@ -23453,7 +23454,7 @@ var PlayPage = function (_React$Component) {
                 //你的回合开始
                 var mystate = this.props.mystate;
                 mystate.Hp = mystate.Hp + mystate.Hprecove > mystate.maxHp ? mystate.maxHp : mystate.Hp + mystate.Hprecove; //生命值恢复
-                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Hprecove; //魔法值恢复
+                mystate.Mp = mystate.Mp + mystate.Mprecove > mystate.maxMp ? mystate.maxMp : mystate.Mp + mystate.Mprecove; //魔法值恢复
                 mystate.attackAccount += mystate.attackRecove; //普攻恢复
                 mystate.money += mystate.moneyrecove; //金钱
                 var messagelist = this.props.messagelist;
@@ -23507,9 +23508,8 @@ var PlayPage = function (_React$Component) {
                 mystate.money = 100;
                 mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
 
-                // mystate.cardid[0] = {id:1024,name:"混乱之箭",state: 1 ,message:"随机对敌方造成1-200的伤害，并晕眩1-2回合"}
-                // mystate.cardid[0].do = {mMp:-100,tHp:"Math.random()*200",tBuff:[0],tBuffT:["Math.random()*2"]};
-
+                // mystate.cardid[0] = {id:1003,name:"反击",state: 2 ,message:"被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)"}
+                // mystate.cardid[0].do = {mBuff:[100],mBuffT:[6]}
 
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
@@ -23683,7 +23683,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  color: #fff;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(67)) + ") no-repeat center;\n  background-size: 100% 100%;\n  overflow: hidden; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 50px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 0 7px; }\n\n.card_my {\n  transform: scale(0.9);\n  /*0.9倍*/ }\n\n.card_my:hover {\n  transform: scale(1);\n  /*1倍*/ }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transform: scale(0.9);\n  /*0.9倍*/\n  background: url(" + escape(__webpack_require__(68)) + ") no-repeat center;\n  float: left; }\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  color: #fff;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(67)) + ") no-repeat center;\n  background-size: 116% 113%;\n  overflow: hidden; }\n  .card_box .card_mp {\n    color: blue;\n    float: left;\n    margin: 4px;\n    line-height: 12px; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 50px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 0 7px; }\n\n.card_my {\n  transform: scale(0.9);\n  /*0.9倍*/ }\n\n.card_my:hover {\n  transform: scale(1);\n  /*1倍*/ }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transform: scale(0.9);\n  /*0.9倍*/\n  background: url(" + escape(__webpack_require__(68)) + ") no-repeat center;\n  background-size: 116% 113%;\n  float: left; }\n", ""]);
 
 // exports
 
@@ -23996,7 +23996,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(11);
+var _Card = __webpack_require__(12);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -24008,11 +24008,11 @@ var _Shoping = __webpack_require__(85);
 
 var _Shoping2 = _interopRequireDefault(_Shoping);
 
-var _MetailBox = __webpack_require__(19);
+var _MetailBox = __webpack_require__(8);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
-__webpack_require__(89);
+__webpack_require__(90);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24104,7 +24104,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(11);
+var _Card = __webpack_require__(12);
 
 var _Card2 = _interopRequireDefault(_Card);
 
@@ -24286,11 +24286,11 @@ var _equipment = __webpack_require__(86);
 
 var _equipment2 = _interopRequireDefault(_equipment);
 
-var _Equipment = __webpack_require__(13);
+var _Equipment = __webpack_require__(14);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
-var _MetailBox = __webpack_require__(19);
+var _MetailBox = __webpack_require__(8);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
@@ -24536,17 +24536,23 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".shop_room_box {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  transition: all 0.1s; }\n  .shop_room_box .shop_room {\n    width: 100%;\n    height: 100%; }\n  .shop_room_box .back {\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px;\n    background: url(" + escape(__webpack_require__(101)) + ") no-repeat center;\n    height: 50px;\n    width: 50px;\n    cursor: pointer; }\n  .shop_room_box .posi_tion {\n    float: left;\n    width: 60px;\n    height: 60px;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
+exports.push([module.i, ".shop_room_box {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  transition: all 0.1s; }\n  .shop_room_box .shop_room {\n    width: 100%;\n    height: 100%; }\n  .shop_room_box .back {\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px;\n    background: url(" + escape(__webpack_require__(89)) + ") no-repeat center;\n    height: 50px;\n    width: 50px;\n    cursor: pointer; }\n  .shop_room_box .posi_tion {\n    float: left;\n    width: 60px;\n    height: 60px;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
 
 // exports
 
 
 /***/ }),
 /* 89 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAyCAYAAADx/eOPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MEM3NTU5RjNBQzQ2MTFFODg0NjJBQkVFQ0JEMDMxQTkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MEM3NTU5RjJBQzQ2MTFFODg0NjJBQkVFQ0JEMDMxQTkiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowMzEzQ0E2OUFDMkIxMUU4ODQ2MkFCRUVDQkQwMzFBOSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowMzEzQ0E2QUFDMkIxMUU4ODQ2MkFCRUVDQkQwMzFBOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pp5G1SAAABTWSURBVHja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"
+
+/***/ }),
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(90);
+var content = __webpack_require__(91);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24592,7 +24598,7 @@ if(false) {
 }
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var escape = __webpack_require__(4);
@@ -24601,19 +24607,19 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(91)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(92)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "359fb7f3f8b83373f73aeb290533070f.png";
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24625,7 +24631,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(93);
+__webpack_require__(94);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24724,11 +24730,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(94);
+var content = __webpack_require__(95);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24774,7 +24780,7 @@ if(false) {
 }
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var escape = __webpack_require__(4);
@@ -24783,41 +24789,41 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(95)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(96)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(97)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(98)) + ") no-repeat center; }\n", ""]);
+exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(96)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(97)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(98)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(99)) + ") no-repeat center; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "52161e9892467fa48f01d90390b46efe.jpg";
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "be5072aea25eb22a9bbbbd7f4ded5518.jpg";
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "31b809f3672807f11398cd3516b78823.jpg";
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(100);
+var content = __webpack_require__(101);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24863,7 +24869,7 @@ if(false) {
 }
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24875,12 +24881,6 @@ exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 
 
 // exports
 
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports) {
-
-module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAyCAYAAADx/eOPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MEM3NTU5RjNBQzQ2MTFFODg0NjJBQkVFQ0JEMDMxQTkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MEM3NTU5RjJBQzQ2MTFFODg0NjJBQkVFQ0JEMDMxQTkiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowMzEzQ0E2OUFDMkIxMUU4ODQ2MkFCRUVDQkQwMzFBOSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowMzEzQ0E2QUFDMkIxMUU4ODQ2MkFCRUVDQkQwMzFBOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pp5G1SAAABTWSURBVHja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"
 
 /***/ })
 /******/ ]);

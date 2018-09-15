@@ -7,8 +7,14 @@
     transition: all 0.1s;
     cursor:pointer;
     background: url(./cardready.jpg) no-repeat center;
-    background-size: 100% 100%;
+    background-size: 116% 113%;
     overflow: hidden;
+    .card_mp{
+        color: blue;
+        float: left;
+        margin: 4px;
+        line-height: 12px;
+    }
     .card_ion{
         background: green;
         width: 60px;
@@ -37,5 +43,6 @@
     height: 160px;
     transform:scale(0.9);/*0.9倍*/
     background: url(./cardhide.jpg) no-repeat center;
+    background-size: 116% 113%;
     float: left;
 }

@@ -65,7 +65,7 @@ function check_round (props){//判断回合
         return [true,props];
     }
 }
-function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
+function addBuff(props,MorT,buff,buffT){//添加buff方法
     let bufflist = props[MorT].buff;
     let bufflistTime = props[MorT].buffTime;
     buff.map((buffkey,i)=>{//i
@@ -84,7 +84,6 @@ function addBuff(props,MorT,buff,buffT,buffObj){//添加buff方法
             bufflist.push(buff[i]);
             bufflistTime.push(buffT[i]);
         }
-        Object.assign(props[MorT].buffObj, buffObj);
     });
     props[MorT].buff = bufflist;
     props[MorT].buffTime = bufflistTime;
@@ -164,9 +163,6 @@ function check_buffToCard (props,Attack){
             case 100://反击
                 Attack.do.mHp = Attack.do.mHp - parseInt(Attack.do.tHp/5);
                 break;
-            case 103://活性护甲
-                Object.assign(Attack.do.tBuffObj, {103:thatstate.buffObj[103]+1});
-                break;
         }
     }
     return [props,Attack];
@@ -197,7 +193,7 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
         [props,Attack] = check_buffToCard(props,Attack,type);
     }
     if(type=="attack"){
-        [checked,props] = check_attackAccount(props)//判断剩余攻击次数
+        // [checked,props] = check_attackAccount(props)//判断剩余攻击次数
         if(!checked)return [false,props];
         props.mystate.attackAccount -=1;//攻击机会减1
         [checked,props] = check_miss(props);//此攻击miss
@@ -227,19 +223,26 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
                 props.thatstate.Mp =(props.thatstate.Mp+value)>props.thatstate.maxMp?props.thatstate.maxMp:props.thatstate.Mp+value;
                 break;
             case "tHp":
-                props.thatstate.Hp =(props.thatstate.Hp+value)>props.thatstate.maxHp?props.thatstate.maxHp:props.thatstate.Hp+value;
+                props.thatstate.Hp =(props.thatstate.Hp-value)>props.thatstate.maxHp?props.thatstate.maxHp:props.thatstate.Hp-value;
                 break;
             case "mBuff":
-                props = addBuff(props,"mystate",DO.mBuff,DO.mBuffT,DO.mBuffObj)//添加buff方法
+                props = addBuff(props,"mystate",DO.mBuff,DO.mBuffT)//添加buff方法
                 break;
             case "tBuff":
-                props = addBuff(props,"thatstate",value,DO.tBuffT,DO.tBuffObj)//添加buff方法
+                props = addBuff(props,"thatstate",value,DO.tBuffT)//添加buff方法
+                break;
+            case "mBuffObj":
+                props.mystate.buffObj = Object.assign(props.mystate.buffObj, DO.mBuffObj);
+                break;
+            case "tBuffObj":
+                props.thatstate.buffObj = Object.assign(props.thatstate.buffObj, DO.tBuffObj);
                 break;
             case "special":
                 specialcard(props,DO);
                 break;
         }
     }
+
     let messagelist = props.messagelist;//消息
     if(type=="attack"){
         messagelist.push("物理攻击造成"+ Attack.do.tHp +"点伤害");
@@ -375,7 +378,7 @@ function attackAfter(props,Attack){
                 DO.tHp -= 50;
                 break;
             case 103://活性护甲
-                Object.assign(DO.tBuffObj||{}, {103:thatstate.buffObj[103]+1});
+                DO.tBuffObj = Object.assign(DO.tBuffObj||{}, {103:thatstate.buffObj[103]+1});
                 break;
         }
     }

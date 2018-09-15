@@ -23,7 +23,7 @@ class PlayPage extends React.Component{
         if(this.props.round==0&&newProps.round==1){//你的回合开始
             let mystate = this.props.mystate;
             mystate.Hp = mystate.Hp+mystate.Hprecove>mystate.maxHp?mystate.maxHp:mystate.Hp+mystate.Hprecove;//生命值恢复
-            mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Hprecove;//魔法值恢复
+            mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Mprecove;//魔法值恢复
             mystate.attackAccount += mystate.attackRecove//普攻恢复
             mystate.money+=mystate.moneyrecove;//金钱
             let messagelist = this.props.messagelist;
@@ -72,10 +72,10 @@ class PlayPage extends React.Component{
             mystate.attackAccount = 1,
             mystate.cardid = small_cardheap.slice(0,6);
 
-// mystate.cardid[0] = {id:1024,name:"混乱之箭",state: 1 ,message:"随机对敌方造成1-200的伤害，并晕眩1-2回合"}
-// mystate.cardid[0].do = {mMp:-100,tHp:"Math.random()*200",tBuff:[0],tBuffT:["Math.random()*2"]};
 
-
+ // mystate.cardid[0] = {id:1003,name:"反击",state: 2 ,message:"被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)"}
+ // mystate.cardid[0].do = {mBuff:[100],mBuffT:[6]}
+ 
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({
                 small_cardheap:small_cardheap,
