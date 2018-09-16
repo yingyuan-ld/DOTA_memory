@@ -12,6 +12,7 @@ class Component extends React.Component{
         }
     }
     componentWillMount(){
+        this.Unmount = false;//组件移除
         window.onunload = (event)=> {
             socket.emit('logout', {
                 id:this.props.myid,
@@ -19,12 +20,14 @@ class Component extends React.Component{
             }); 
         }
         this.props.socket.on('getpersen', (persenAry)=>{//刷新人员列表
-            this.setState({persenAry:persenAry});
+            if(!this.Unmount){
+                this.setState({persenAry:persenAry});
+            }
         })
         this.props.socket.on('getmessage', (mewmessage)=>{//刷新消息
-            // let message = this.state.message;
-            // message.push(mewmessage);
-            this.setState({message:mewmessage});
+            if(!this.Unmount){
+                this.setState({message:mewmessage});
+            }
         })
         
         this.props.socket.on('getFight', (res)=>{//接收挑战
@@ -53,6 +56,9 @@ class Component extends React.Component{
                 alert(res.message);
             }
 		})
+    }
+    componentWillUnmount(){
+        this.Unmount = true;
     }
     select_persen(challengName,challengId){//选择用户发出要求 defier挑战 challeng被挑战
         let r=confirm("是否向\""+challengName+"\"发出邀请");
@@ -94,7 +100,7 @@ class Component extends React.Component{
             </div>
             <div className="text_input">
                 <MetailBox>
-                    <textarea spellcheck="false" onChange={this.edit.bind(this)} value={this.state.mymessage}></textarea>
+                    <textarea spellCheck="false" onChange={this.edit.bind(this)} value={this.state.mymessage}></textarea>
                 </MetailBox>
             </div>
             <div className="online_list">

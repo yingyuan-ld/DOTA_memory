@@ -64,7 +64,13 @@ class PlayPage extends React.Component{
     }
     prepare_card(round,thatstate){
         if(round>0){//准备完毕,并且先手
-            let small_cardheap = shufflecards(small_skill)//洗牌
+            let arr=[];
+            small_skill.map(function(val, index) {//去除空项
+                if (val !== "" && val != undefined) {
+                    arr.push(val);
+                }
+            });
+            let small_cardheap = shufflecards(arr)//洗牌
             let big_cardheap = shufflecards(big_skill)//洗牌
             //抓牌↓
             let mystate = this.props.mystate;
@@ -73,9 +79,9 @@ class PlayPage extends React.Component{
             mystate.cardid = small_cardheap.slice(0,6);
 
 
- // mystate.cardid[0] = {id:1003,name:"反击",state: 2 ,message:"被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)"}
- // mystate.cardid[0].do = {mBuff:[100],mBuffT:[6]}
- 
+// mystate.cardid[0] = {id:1050,name:"吞噬",state: 2 ,mp:100,message:"将对方的随机一张牌,转化为100金币"}
+// mystate.cardid[0].do = {special:true}
+
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({
                 small_cardheap:small_cardheap,

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/build/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,9 +71,9 @@
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(31);
+  module.exports = __webpack_require__(28);
 } else {
-  module.exports = __webpack_require__(32);
+  module.exports = __webpack_require__(29);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
@@ -227,7 +227,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(44);
+var	fixUrls = __webpack_require__(41);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -738,6 +738,108 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var validateFormat = function validateFormat(format) {};
+
+if (process.env.NODE_ENV !== 'production') {
+  validateFormat = function validateFormat(format) {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  };
+}
+
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+}
+
+module.exports = invariant;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+module.exports = emptyFunction;
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports) {
 
 module.exports = function escape(url) {
@@ -759,7 +861,7 @@ module.exports = function escape(url) {
 
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -779,9 +881,9 @@ exports.state_base = state_base;
 exports.doAttack = doAttack;
 exports.specialcard = specialcard;
 
-var _skill = __webpack_require__(22);
+var _skill = __webpack_require__(54);
 
-var _setUpData = __webpack_require__(57);
+var _setUpData = __webpack_require__(55);
 
 var _setUpData2 = _interopRequireDefault(_setUpData);
 
@@ -942,6 +1044,10 @@ function check_buffToCard(props, Attack) {
                 Attack.do.tBuff = Attack.do.tBuff ? Attack.do.tBuff.push(0) : [0];
                 Attack.do.tBuffT = Attack.do.tBuffT ? Attack.do.tBuffT.push(1) : [1];
                 break;
+            case 95:
+                //静电场 每次释放任何技能都会对敌方额外50点伤害
+                Attack.do.tHp += 50;
+                break;
         }
     });
     var tBuff = props.thatstate.buff;
@@ -950,6 +1056,13 @@ function check_buffToCard(props, Attack) {
             case 2:
                 //虚无
                 Attack.do.tHp = parseInt(Attack.do.tHp * 1.5);
+                break;
+            case 23:
+                //回音重踏
+                if (Attack.do.tHp > 0) {
+                    props.thatstate.buff.splice(i, 1);
+                    props.thatstate.buffTime.splice(i, 1);
+                }
                 break;
             case 8:
                 //无光之盾
@@ -982,6 +1095,17 @@ function doAttack(props, Attack, type) {
     var thatstate = props.thatstate;
     var checked = true; //用于判断检查状态
     Attack = JSON.parse(JSON.stringify(Attack));
+    Attack.do = Object.assign({ //格式化数据
+        "mMp": 0,
+        "mHp": 0,
+        "tMp": 0,
+        "tHp": 0,
+        "mBuff": [],
+        "tBuff": [],
+        "mBuffObj": {},
+        "tBuffObj": {}
+    }, Attack.do);
+    if (isNaN(Attack.do.tHp)) Attack.do.tHp = eval(Attack.do.tHp);
 
     //检查回合
     var _check_round = check_round(props);
@@ -1036,7 +1160,13 @@ function doAttack(props, Attack, type) {
         Attack = _check_buffToCard2[1];
     }
     if (type == "attack") {
-        // [checked,props] = check_attackAccount(props)//判断剩余攻击次数
+        //判断剩余攻击次数
+        var _check_attackAccount = check_attackAccount(props);
+
+        var _check_attackAccount2 = _slicedToArray(_check_attackAccount, 2);
+
+        checked = _check_attackAccount2[0];
+        props = _check_attackAccount2[1];
         if (!checked) return [false, props];
         props.mystate.attackAccount -= 1; //攻击机会减1
 
@@ -1107,7 +1237,7 @@ function doAttack(props, Attack, type) {
                 props.thatstate.buffObj = Object.assign(props.thatstate.buffObj, DO.tBuffObj);
                 break;
             case "special":
-                specialcard(props, DO);
+                specialcard(props, Attack);
                 break;
         }
     }
@@ -1126,7 +1256,7 @@ function doAttack(props, Attack, type) {
 function check_attackAccount(props) {
     //判断剩余攻击次数
     var mystate = props.mystate;
-    if (mystate.attackAccount == 0) {
+    if (mystate.attackAccount < 1) {
         props.messagelist.push("没有剩余的攻击次数！");
         return [false, props];
     } else {
@@ -1171,8 +1301,24 @@ function check_miss(props) {
                     return;
                 };
                 break;
+
         }
     });
+    thatstate.buff.map(function (buffid) {
+        switch (buffid) {
+            case 117:
+                //崎岖外表 普通攻击你时有30%的概率使敌方晕眩一回合
+                if (Math.random() < 0.3) {
+                    messagelist.push("对方触发\"崎岖外表\"状态");
+                    res[0] = "miss";
+                    props = addBuff(props, "mystate", [0], [2]); //添加buff方法
+                    return;
+                };
+                break;
+
+        }
+    });
+
     props.mystate.messagelist = messagelist;
     return res;
 }
@@ -1194,6 +1340,12 @@ function attackBefore(props, Attack) {
                 if (Math.random() < 0.6) {
                     DO.tHp = parseInt(DO.tHp * 1.5);
                 };
+                break;
+            case 120:
+                //盛宴 普通攻击时将对方现有生命值的2%转化为自身生命
+                var blud = parseInt(thatstate.Hp * 0.02);
+                thatstate.Hp -= blud;
+                mystate.Hp += blud;
                 break;
         }
     });
@@ -1240,6 +1392,11 @@ function attackAfter(props, Attack) {
                 if (Math.random() < 0.4) {
                     thatstate.Hp += 100;
                 };
+                break;
+            case 23:
+                //回音重踏
+                props.thatstate.buff.splice(i, 1);
+                props.thatstate.buffTime.splice(i, 1);
                 break;
             case 8:
                 //无光之盾
@@ -1304,185 +1461,7 @@ function specialcard(props, card) {
 }
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (process.env.NODE_ENV !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-module.exports = emptyFunction;
-
-/***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(52);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var scrollRoll = true; //只有滚动条在底部,才自动滚动
-
-var MetailBox = function (_React$Component) {
-    _inherits(MetailBox, _React$Component);
-
-    function MetailBox() {
-        _classCallCheck(this, MetailBox);
-
-        return _possibleConstructorReturn(this, (MetailBox.__proto__ || Object.getPrototypeOf(MetailBox)).apply(this, arguments));
-    }
-
-    _createClass(MetailBox, [{
-        key: "componentWillReceiveProps",
-        value: function componentWillReceiveProps() {
-            var div = this.refs.scroll;
-            this.scrollRoll = div.scrollHeight == div.clientHeight + div.scrollTop;
-        }
-    }, {
-        key: "componentDidUpdate",
-        value: function componentDidUpdate() {
-            if (this.scrollRoll) {
-                var div = this.refs.scroll;
-                div.scrollTop = div.scrollHeight;
-            }
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "metal_box" },
-                _react2.default.createElement("div", { className: "border_corner1" }),
-                _react2.default.createElement("div", { className: "border_line1" }),
-                _react2.default.createElement("div", { className: "border_corner2" }),
-                _react2.default.createElement("div", { className: "border_line2" }),
-                _react2.default.createElement("div", { className: "border_corner3" }),
-                _react2.default.createElement("div", { className: "border_line3" }),
-                _react2.default.createElement("div", { className: "border_corner4" }),
-                _react2.default.createElement("div", { className: "border_line4" }),
-                _react2.default.createElement(
-                    "div",
-                    { className: "inner_scroll", ref: "scroll" },
-                    this.props.children
-                )
-            );
-        }
-    }]);
-
-    return MetailBox;
-}(_react2.default.Component);
-
-module.exports = MetailBox;
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1579,7 +1558,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1603,13 +1582,432 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAABkAAD/4QODaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzA2NyA3OS4xNTc3NDcsIDIwMTUvMDMvMzAtMjM6NDA6NDIgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9IkZBRUJENjA4MzNFQzExNzFDNzgwMjM3Q0VEQTg5NDVGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZGMjhGQzY2QUI1RjExRThCODQwQjM2QzRCQTIwMjZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZGMjhGQzY1QUI1RjExRThCODQwQjM2QzRCQTIwMjZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MzU1NjYzMTMtNTIxNC00NTYzLWI2OGMtN2Q4OTQzZTNjNzliIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6NTgyNTlkMjEtZjNjOC0xMTdiLThjZjAtOTY0ZGNlZDVlYjJmIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAgICAgICAgICAwMDAwMDAwMDAwEBAQEBAQECAQECAgIBAgIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD/8AAEQgADgAOAwERAAIRAQMRAf/EAHQAAAMBAAAAAAAAAAAAAAAAAAQHCAoBAQEBAQAAAAAAAAAAAAAAAAQAAgMQAAEDAgMIAgMAAAAAAAAAAAECAwQRBQATBjFhEiJCFBUHQXEkFhcRAAECAwkBAAAAAAAAAAAAAAABIVESA/ARQWGh8QIiEwT/2gAMAwEAAhEDEQA/AMwWp/ZMPTkS7W+XcpcDUJsNuk6UZbjZkF10z5BkJeSFtpV+IyoAnqAwf6qazMvbYRmLD+4ewU2YPiRajLchHiPjGy4JCVAgVzaJJSKbK4HLVJgn26YAuOnC6lpT/wCrw6JcUkLC+9mHlJG0EqH0K/OF1U53suhwVIKTUXL35dISwvxvc1dOYnL6ilI5hycW4jfTG387RLE//9k="
 
 /***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var emptyFunction = __webpack_require__(5);
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = emptyFunction;
+
+if (process.env.NODE_ENV !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
 /* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(49);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var scrollRoll = true; //只有滚动条在底部,才自动滚动
+
+var MetailBox = function (_React$Component) {
+    _inherits(MetailBox, _React$Component);
+
+    function MetailBox() {
+        _classCallCheck(this, MetailBox);
+
+        return _possibleConstructorReturn(this, (MetailBox.__proto__ || Object.getPrototypeOf(MetailBox)).apply(this, arguments));
+    }
+
+    _createClass(MetailBox, [{
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps() {
+            var div = this.refs.scroll;
+            this.scrollRoll = div.scrollHeight == div.clientHeight + div.scrollTop;
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate() {
+            if (this.scrollRoll) {
+                var div = this.refs.scroll;
+                div.scrollTop = div.scrollHeight;
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "metal_box" },
+                _react2.default.createElement("div", { className: "border_corner1" }),
+                _react2.default.createElement("div", { className: "border_line1" }),
+                _react2.default.createElement("div", { className: "border_corner2" }),
+                _react2.default.createElement("div", { className: "border_line2" }),
+                _react2.default.createElement("div", { className: "border_corner3" }),
+                _react2.default.createElement("div", { className: "border_line3" }),
+                _react2.default.createElement("div", { className: "border_corner4" }),
+                _react2.default.createElement("div", { className: "border_line4" }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "inner_scroll", ref: "scroll" },
+                    this.props.children
+                )
+            );
+        }
+    }]);
+
+    return MetailBox;
+}(_react2.default.Component);
+
+module.exports = MetailBox;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+if (process.env.NODE_ENV !== 'production') {
+  var invariant = __webpack_require__(4);
+  var warning = __webpack_require__(11);
+  var ReactPropTypesSecret = __webpack_require__(30);
+  var loggedTypeFailures = {};
+}
+
+/**
+ * Assert that the values match with the type specs.
+ * Error messages are memorized and will only be shown once.
+ *
+ * @param {object} typeSpecs Map of name to a ReactPropType
+ * @param {object} values Runtime values that need to be type-checked
+ * @param {string} location e.g. "prop", "context", "child context"
+ * @param {string} componentName Name of the component for error messages.
+ * @param {?Function} getStack Returns the component stack.
+ * @private
+ */
+function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+  if (process.env.NODE_ENV !== 'production') {
+    for (var typeSpecName in typeSpecs) {
+      if (typeSpecs.hasOwnProperty(typeSpecName)) {
+        var error;
+        // Prop type validation may throw. In case they do, we don't want to
+        // fail the render phase where it didn't fail before. So we log it.
+        // After these have been cleaned up, we'll let them throw.
+        try {
+          // This is intentionally an invariant that gets caught. It's the same
+          // behavior as without this statement except with a better message.
+          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
+        } catch (ex) {
+          error = ex;
+        }
+        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
+        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
+          // Only monitor this failure once because there tends to be a lot of the
+          // same error.
+          loggedTypeFailures[error.message] = true;
+
+          var stack = getStack ? getStack() : '';
+
+          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
+        }
+      }
+    }
+  }
+}
+
+module.exports = checkPropTypes;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+
+var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+
+/**
+ * Simple, lightweight module assisting with the detection and context of
+ * Worker. Helps avoid circular dependencies and allows code to reason about
+ * whether or not they are in a Worker, even if they never include the main
+ * `ReactWorker` dependency.
+ */
+var ExecutionEnvironment = {
+
+  canUseDOM: canUseDOM,
+
+  canUseWorkers: typeof Worker !== 'undefined',
+
+  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
+
+  canUseViewport: canUseDOM && !!window.screen,
+
+  isInWorker: !canUseDOM // For now, this is true - might change in the future.
+
+};
+
+module.exports = ExecutionEnvironment;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ */
+
+/* eslint-disable fb-www/typeof-undefined */
+
+/**
+ * Same as document.activeElement but wraps in a try-catch block. In IE it is
+ * not safe to call document.activeElement if there is nothing focused.
+ *
+ * The activeElement will be null only if the document or document body is not
+ * yet defined.
+ *
+ * @param {?DOMDocument} doc Defaults to current document.
+ * @return {?DOMElement}
+ */
+function getActiveElement(doc) /*?DOMElement*/{
+  doc = doc || (typeof document !== 'undefined' ? document : undefined);
+  if (typeof doc === 'undefined') {
+    return null;
+  }
+  try {
+    return doc.activeElement || doc.body;
+  } catch (e) {
+    return doc.body;
+  }
+}
+
+module.exports = getActiveElement;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @typechecks
+ * 
+ */
+
+/*eslint-disable no-self-compare */
+
+
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * inlined Object.is polyfill to avoid requiring consumers ship their own
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+ */
+function is(x, y) {
+  // SameValue algorithm
+  if (x === y) {
+    // Steps 1-5, 7-10
+    // Steps 6.b-6.e: +0 != -0
+    // Added the nonzero y check to make Flow happy, but it is redundant
+    return x !== 0 || y !== 0 || 1 / x === 1 / y;
+  } else {
+    // Step 6.a: NaN == NaN
+    return x !== x && y !== y;
+  }
+}
+
+/**
+ * Performs equality by iterating through keys on an object and returning false
+ * when any key has values which are not strictly equal between the arguments.
+ * Returns true when the values of all keys are strictly equal.
+ */
+function shallowEqual(objA, objB) {
+  if (is(objA, objB)) {
+    return true;
+  }
+
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+
+  // Test for A's keys different from B.
+  for (var i = 0; i < keysA.length; i++) {
+    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+module.exports = shallowEqual;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+var isTextNode = __webpack_require__(31);
+
+/*eslint-disable no-bitwise */
+
+/**
+ * Checks if a given DOM node contains or is another DOM node.
+ */
+function containsNode(outerNode, innerNode) {
+  if (!outerNode || !innerNode) {
+    return false;
+  } else if (outerNode === innerNode) {
+    return true;
+  } else if (isTextNode(outerNode)) {
+    return false;
+  } else if (isTextNode(innerNode)) {
+    return containsNode(outerNode, innerNode.parentNode);
+  } else if ('contains' in outerNode) {
+    return outerNode.contains(innerNode);
+  } else if (outerNode.compareDocumentPosition) {
+    return !!(outerNode.compareDocumentPosition(innerNode) & 16);
+  } else {
+    return false;
+  }
+}
+
+module.exports = containsNode;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "d962593ad6bb2ed8b653f1b01c294ad9.jpg";
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "9c82f7b82dfc58e3554a03ef72787e85.jpg";
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1623,9 +2021,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _action = __webpack_require__(5);
+var _action = __webpack_require__(7);
 
-__webpack_require__(65);
+__webpack_require__(69);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1706,76 +2104,89 @@ var Card = function (_React$Component) {
 module.exports = Card;
 
 /***/ }),
-/* 13 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
 
 
-
-var emptyFunction = __webpack_require__(7);
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,出牌,使用装备" }, { id: 1, name: "沉默", message: "使该单位无法出牌" }, { id: 2, name: "虚无", message: "使该单位无法攻击,所受魔法伤害增加50%" }, { id: 3, name: "缴械", message: "使该单位无法攻击" }, { id: 4, name: "死亡契约", message: "该单位的攻击力暴涨了 (90)" }, { id: 5, name: "巨浪", message: "减少10点护甲" }, { id: 6, name: "锚击", message: "减少50%攻击力" }, { id: 7, name: "船游", message: "受到伤害减半" }, { id: 8, name: "无光之盾", message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" }, { id: 9, name: "回光返照", message: "将受到的伤害转化为自己的生命值" }, { id: 10, name: "超级新星", message: "承受6次攻击则死亡,否则重生" }, { id: 11, name: "战士怒吼", message: "增加40点护甲" }, { id: 12, name: "海象挥击", message: "攻击力变为现在攻击力的4倍" }, { id: 13, name: "强化图腾", message: "攻击力变为现在攻击力的2倍" }, { id: 14, name: "决斗", message: "强制攻击,无法使用装备，技能" }, { id: 15, name: "变身", message: "攻击加100" }, { id: 16, name: "嚎叫", message: "攻击加60" }, { id: 17, name: "化学狂暴", message: "攻击加40并且每回合回复100点生命值" }, { id: 18, name: "战吼", message: "增加30点护甲" }, { id: 19, name: "神之力量", message: "攻击翻倍" }, { id: 20, name: "真龙形态", message: "攻击力增加装备数目乘以15" }, { id: 21, name: "授予力量", message: "攻击加80" }, { id: 22, name: "末日", message: "每回合造成100点伤害,不能使用技能和物品" }, { id: 23, name: "回音重踏", message: "晕眩状态,受到任何伤害都会解除" }, { id: 24, name: "磁场", message: "物理免疫" }, { id: 25, name: "守护天使", message: "物理免疫" }, { id: 26, name: "血肉傀儡", message: "对方每少一张牌加80点生命" }, { id: 27, name: "狂暴", message: "魔法免疫" }, { id: 28, name: "疯狂生长", message: "无法攻击" }, { id: 29, name: "活体护甲", message: "受到物理伤害减少20每回合加40点血" }, { id: 30, name: "醉酒云雾", message: "普通攻击有75%的概率打不中" }, { id: 31, name: "伤害加深", message: "护甲减少100点" }, { id: 32, name: "战士怒吼2", message: "强迫攻击,无法使用技能物品" }, { id: 33, name: "火焰壁垒", message: "抵挡150点魔法伤害,对方每回合减少30点生命值" }, { id: 34, name: "剑刃风暴", message: "使自己魔免,不可以攻击和出牌" }, { id: 35, name: "战斗专注", message: "普通攻击时可以多攻击敌方一次" }, { id: 36, name: "海妖之歌", message: "处于无敌状态" }, { id: 37, name: "石化凝视", message: "晕眩且魔免,但受到的物理伤害加倍" }, { id: 38, name: "折光", message: "抵挡伤害" }, { id: 39, name: "割裂", message: "自己每减少一张牌会减少200点生命值" }, { id: 40, name: "烟幕", message: "攻击有75%的概率miss,并不可以使用技能" }, { id: 41, name: "魔王降临", message: "减少20点护甲" }, { id: 42, name: "麻痹撕咬", message: "该单位50%概率攻击miss" }, { id: 43, name: "极度饥渴", message: "该单位攻击+80,且将对敌方造成伤害转化为己方生命值" }, { id: 44, name: "灵魂猎手", message: "该单位承受伤害加深25%" }, { id: 45, name: "编织", message: "该单位护甲+50" }, { id: 46, name: "薄葬", message: "该单位不会死亡" }, { id: 47, name: "激光", message: "该单位物理攻击100%miss" }, { id: 48, name: "超负荷", message: "空" }, { id: 49, name: "法力流失", message: "该单位攻击所需能量值+1" }, { id: 50, name: "虚妄之诺", message: "该单位不能攻击" }, { id: 51, name: "命运赦令", message: "该单位不能攻击切所受物理伤害加倍" }, { id: 52, name: "恶魔赦令", message: "该单位每回合对敌方造成80点伤害" }, { id: 53, name: "致命链接", message: "该单位承受1.5倍技能伤害" }, { id: 54, name: "虚弱", message: "该单位攻击力-30" }, { id: 55, name: "噩梦", message: "该单位沉睡中,不能出牌,攻击和使用装备" }, { id: 56, name: "诅咒", message: "该单位能量值-1" }, { id: 57, name: "旋风飞斧", message: "该单位攻击有30%的概率miss" }, { id: 58, name: "血之狂暴", message: "该单位无法使用技能" }, { id: 59, name: "超级力量", message: "普通攻击成功后额外对敌方造成该单位双倍攻击的伤害" }, { id: 60, name: "魔免", message: "魔法免疫" }, { id: 61, name: "撕裂伤口", message: "将该单位受到的普通攻击伤害转化为生命值" }, { id: 62, name: "衰退光环", message: "该单位攻击力减半" }, { id: 63, name: "自然秩序", message: "该单位护甲归0" }, { id: 64, name: "编织", message: "该单位护甲-50" }, { id: 65, name: "高射火炮", message: "该单位攻击+70" }, { id: 66, name: "嗜血术", message: "该单位攻击+30" }, { id: 67, name: "灼热之箭", message: "该单位攻击+50" }, { id: 68, name: "极寒之拥", message: "该单位护甲+100,且不可攻击,出牌和实用装备" }, { id: 69, name: "毒性攻击", message: "该单位攻击+40" }, { id: 70, name: "狂战士之怒", message: "该单位血量<50%时,攻击次数+1且不消耗能量格" }, { id: 71, name: "扫射", message: "该单位攻击+40" }, { id: 72, name: "沸血之矛", message: "该单位攻击+100" }, { id: 73, name: "酸性喷雾", message: "该单位护甲-10" }, { id: 74, name: "严寒灼烧", message: "增加敌方当前生命值2%的攻击力" }, { id: 75, name: "火力聚焦", message: "该单位攻击-50,攻击次数+2" }, { id: 76, name: "智慧之刃", message: "增加该单位20倍能量值的攻击力" }, { id: 77, name: "霜冻护甲", message: "该单位护甲+20" }, { id: 78, name: "秘法天球", message: "增加该单位25倍能量值的攻击力" }, { id: 79, name: "暗影之舞", message: "令该单位处于无法受到攻击状态" }, { id: 80, name: "激怒", message: "增加该单位当前生命5%的攻击力" }, { id: 81, name: "暗杀", message: "" }, { id: 82, name: "撒旦", message: "将造成的物理伤害转化为生命值" }, { id: 83, name: "刃甲", message: "反弹任何伤害,对魔免状态无效" }, { id: 84, name: "勇气徽章", message: "敌方护甲-10,己方护甲-10" }, { id: 85, name: "林肯", message: "抵挡一次指向性法术(对装备的法术无效)" }, { id: 86, name: "鬼手", message: "回合结束时HP-100" }, { id: 87, name: "妖术", message: "使该单位无法攻击,出牌,使用装备" }, { id: 88, name: "风杖", message: "使该单位无法攻击,出牌,使用装备,并且无敌" }, { id: 89, name: "黑暗契约", message: "状态结束后清除所有状态,并造成伤害" }, { id: 90, name: "竭心光环", message: "每回合减少敌方0.1%生命值" }, { id: 91, name: "施虐之心", message: "每对敌方造成200点伤害回复1点能量格和100点生命" }, { id: 92, name: "不可侵犯", message: "使对方普通攻击时消耗双倍能量格" }, { id: 93, name: "魔王降临", message: "减少敌方20点护甲" }, { id: 94, name: "屠戮", message: "敌方每减少一张手牌自己回复30点生命" }, { id: 95, name: "静电场", message: "每次释放任何技能都会对敌方造成50点伤害" }, { id: 96, name: "霜之哀伤", message: "攻击成功后会弃置敌方一张手牌" }, { id: 97, name: "巨力重击", message: "攻击时有30%的概率晕眩敌方一回合并附加40点攻击" }, { id: 98, name: "月刃", message: "攻击力加敌方手牌数乘10的数值" }, { id: 99, name: "巨力挥舞", message: "普通攻击时增加加敌方手牌数乘10的攻击力" }, { id: 100, name: "反击", message: "在自己受到伤害时对敌方造成自身承受伤害的20%" }, { id: 101, name: "海妖外壳", message: "受到普通攻击时可以减少50点伤害" }, { id: 102, name: "潮汐使者", message: "使自己本回合增加20+对方手牌数*10点攻击力" }, { id: 103, name: "活性护甲", message: "每受到一次攻击增加10点护甲" }, { id: 104, name: "回光返照", message: "受到的伤害都会增加自己的生命值" }, { id: 105, name: "反击螺旋", message: "敌方普通攻击自己时会受到50点伤害(持续3回合)" }, { id: 106, name: "战意", message: "每释放一次技能可以增加20点攻击力" }, { id: 107, name: "余震", message: "半合内自己使用任何技能都会使敌方眩晕半回合" }, { id: 108, name: "致命一击", message: "攻击时有40%的概率双倍攻击(持续3回合)" }, { id: 109, name: "勇气之霎", message: "受到普通攻击时有40%的概率增加自己100点血" }, { id: 110, name: "重生", message: "死亡后可以重生，重生后拥有400点生命值" }, { id: 111, name: "吸血光环", message: "普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" }, { id: 112, name: "致死打击", message: "攻击时有60%的概率1.5倍攻击" }, { id: 113, name: "野性驱使", message: "攻击加30" }, { id: 114, name: "地精贪婪", message: "每回合得到金钱数+10" }, { id: 115, name: "龙族血统", message: "每回合回复40点生命值" }, { id: 116, name: "自然秩序", message: "令对方护甲归0" }, { id: 117, name: "崎岖外表", message: "敌方在普通攻击你时有30%的概率晕眩一回合" }, { id: 118, name: "衰退光环", message: "减少对方50%攻击力" }, { id: 119, name: "狂战士之血", message: "被动牌:增加已损失生命值百分比*2的攻速" }, { id: 120, name: "盛宴", message: "普通攻击时将对方现有生命值的2%转化为自身生命" }, { id: 121, name: "活体护甲", message: "免疫三次敌方的普通攻击" }, { id: 122, name: "腐肉堆积", message: "敌方每少一张手牌自己加40点血，并且加40点血量上限" }, { id: 123, name: "醉拳", message: "受到普通攻击时有40%的概率mis" }, { id: 124, name: "重击", message: "攻击时有40%的概率击晕敌方半回合并附加70点伤害" }, { id: 125, name: "法力损毁", message: "普通攻击成功后可以削减敌方一点能量值" }, { id: 126, name: "地之突袭", message: "攻击力加30" }, { id: 127, name: "带刺外壳", message: "每回合可以抵挡一次指向性法术" }, { id: 128, name: "命令光环", message: "增加25%的攻击力" }, { id: 129, name: "强击光环", message: "增加25%的攻击力" }, { id: 130, name: "射手天赋", message: "增加150点攻击力" }, { id: 131, name: "模糊", message: "敌方在普通攻击你时有70%的概率mis" }, { id: 132, name: "恩赐解脱", message: "攻击时有30%的概率4倍暴击" }, { id: 133, name: "爆头", message: "攻击时有40%的概率附加100点伤害" }, { id: 134, name: "剑舞", message: "攻击时有60%的概率1.5倍暴击" }, { id: 135, name: "热血战魂", message: "加30点攻击" }, { id: 136, name: "毒刺", message: "攻击时对敌方额外造成20点伤害" }, { id: 137, name: "幽冥剧毒", message: "敌方血量低于50%时,攻击附加50点伤害" }, { id: 138, name: "腐蚀外表", message: "受到敌方的任何攻击之后敌方会掉40点血" }, { id: 139, name: "等离子场", message: "敌方每次对你使用指向性技能时会减少100点生命值" }, { id: 140, name: "忍术", message: "攻击时有40%的概率双倍暴击" }, { id: 141, name: "分裂箭", message: "攻击力增加敌方手牌数乘以15的数值" }, { id: 142, name: "魔法护盾", message: "受到伤害时一点能量值可以抵挡100点伤害" }, { id: 143, name: "能量转换", message: "每次攻击永久减少敌方1点攻击力,并增加该单位2点攻击" }, { id: 144, name: "怒意狂击", message: "每次普通攻击成功后攻击力会增加20" }, { id: 145, name: "回到过去", message: "受到任何攻击时有25%的概率免疫" }, { id: 146, name: "时间锁定", message: "普通攻击时有25%的概率使敌方晕眩一回合" }, { id: 147, name: "嗜血渴望", message: "敌方血量低于50%时，该单位增加50点攻击" }, { id: 148, name: "支配死灵", message: "敌方每减少一张牌,该单位可以永久增加2点攻击" }, { id: 149, name: "荒芜", message: "增加30点攻击" }, { id: 150, name: "折射", message: "反弹自己受到一切伤害的25%" }, { id: 151, name: "麻痹撕咬", message: "普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" }, { id: 152, name: "月之祝福", message: "攻击力加60" }, { id: 153, name: "辉煌光环", message: "每回合可以额外回复1点能量值" }, { id: 154, name: "超负荷", message: "每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" }, { id: 155, name: "精气光环", message: "释放技能时有50%的概率加100点能量值" }, { id: 156, name: "连击", message: "每次攻击降低敌方10点护甲" }, { id: 157, name: "多重施法", message: "释放技能时有50%的概率2倍暴击" }, { id: 158, name: "嗜血术", message: "增加自己30点攻击力" }, { id: 159, name: "活血术", message: "生命值回复速度*5" }];
+module.exports = state_list;
 
 /***/ }),
-/* 14 */
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(73);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var BuffIon = function (_React$Component) {
+    _inherits(BuffIon, _React$Component);
+
+    function BuffIon() {
+        _classCallCheck(this, BuffIon);
+
+        return _possibleConstructorReturn(this, (BuffIon.__proto__ || Object.getPrototypeOf(BuffIon)).call(this));
+    }
+
+    _createClass(BuffIon, [{
+        key: "render",
+        value: function render() {
+            // {id:0,name:"晕眩",message:"使该单位无法攻击,出牌,使用装备"},
+            return _react2.default.createElement(
+                "div",
+                { className: "BuffIon_box", style: { background: "url(./server/stateImg/" + this.props.id + ".jpg) no-repeat center" } },
+                _react2.default.createElement(
+                    "div",
+                    { className: "tooltip" },
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.name,
+                        _react2.default.createElement(
+                            "div",
+                            { className: "Buff_time" },
+                            this.props.buffTime
+                        ),
+                        this.props.buffObj[this.props.id] ? _react2.default.createElement(
+                            "div",
+                            { className: "Buff_obj" },
+                            this.props.buffObj[this.props.id]
+                        ) : ""
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        this.props.message
+                    )
+                )
+            );
+        }
+    }]);
+
+    return BuffIon;
+}(_react2.default.Component);
+
+module.exports = BuffIon;
+
+/***/ }),
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1789,9 +2200,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _action = __webpack_require__(5);
+var _action = __webpack_require__(7);
 
-__webpack_require__(71);
+__webpack_require__(75);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1876,1130 +2287,11 @@ var Equipment = function (_React$Component) {
 module.exports = Equipment;
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(6);
-  var warning = __webpack_require__(13);
-  var ReactPropTypesSecret = __webpack_require__(33);
-  var loggedTypeFailures = {};
-}
-
-/**
- * Assert that the values match with the type specs.
- * Error messages are memorized and will only be shown once.
- *
- * @param {object} typeSpecs Map of name to a ReactPropType
- * @param {object} values Runtime values that need to be type-checked
- * @param {string} location e.g. "prop", "context", "child context"
- * @param {string} componentName Name of the component for error messages.
- * @param {?Function} getStack Returns the component stack.
- * @private
- */
-function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-  if (process.env.NODE_ENV !== 'production') {
-    for (var typeSpecName in typeSpecs) {
-      if (typeSpecs.hasOwnProperty(typeSpecName)) {
-        var error;
-        // Prop type validation may throw. In case they do, we don't want to
-        // fail the render phase where it didn't fail before. So we log it.
-        // After these have been cleaned up, we'll let them throw.
-        try {
-          // This is intentionally an invariant that gets caught. It's the same
-          // behavior as without this statement except with a better message.
-          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
-        } catch (ex) {
-          error = ex;
-        }
-        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
-        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-          // Only monitor this failure once because there tends to be a lot of the
-          // same error.
-          loggedTypeFailures[error.message] = true;
-
-          var stack = getStack ? getStack() : '';
-
-          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
-        }
-      }
-    }
-  }
-}
-
-module.exports = checkPropTypes;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-
-/**
- * Simple, lightweight module assisting with the detection and context of
- * Worker. Helps avoid circular dependencies and allows code to reason about
- * whether or not they are in a Worker, even if they never include the main
- * `ReactWorker` dependency.
- */
-var ExecutionEnvironment = {
-
-  canUseDOM: canUseDOM,
-
-  canUseWorkers: typeof Worker !== 'undefined',
-
-  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
-
-  canUseViewport: canUseDOM && !!window.screen,
-
-  isInWorker: !canUseDOM // For now, this is true - might change in the future.
-
-};
-
-module.exports = ExecutionEnvironment;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- */
-
-/* eslint-disable fb-www/typeof-undefined */
-
-/**
- * Same as document.activeElement but wraps in a try-catch block. In IE it is
- * not safe to call document.activeElement if there is nothing focused.
- *
- * The activeElement will be null only if the document or document body is not
- * yet defined.
- *
- * @param {?DOMDocument} doc Defaults to current document.
- * @return {?DOMElement}
- */
-function getActiveElement(doc) /*?DOMElement*/{
-  doc = doc || (typeof document !== 'undefined' ? document : undefined);
-  if (typeof doc === 'undefined') {
-    return null;
-  }
-  try {
-    return doc.activeElement || doc.body;
-  } catch (e) {
-    return doc.body;
-  }
-}
-
-module.exports = getActiveElement;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @typechecks
- * 
- */
-
-/*eslint-disable no-self-compare */
-
-
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-/**
- * inlined Object.is polyfill to avoid requiring consumers ship their own
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
- */
-function is(x, y) {
-  // SameValue algorithm
-  if (x === y) {
-    // Steps 1-5, 7-10
-    // Steps 6.b-6.e: +0 != -0
-    // Added the nonzero y check to make Flow happy, but it is redundant
-    return x !== 0 || y !== 0 || 1 / x === 1 / y;
-  } else {
-    // Step 6.a: NaN == NaN
-    return x !== x && y !== y;
-  }
-}
-
-/**
- * Performs equality by iterating through keys on an object and returning false
- * when any key has values which are not strictly equal between the arguments.
- * Returns true when the values of all keys are strictly equal.
- */
-function shallowEqual(objA, objB) {
-  if (is(objA, objB)) {
-    return true;
-  }
-
-  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-    return false;
-  }
-
-  var keysA = Object.keys(objA);
-  var keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  // Test for A's keys different from B.
-  for (var i = 0; i < keysA.length; i++) {
-    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-module.exports = shallowEqual;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-var isTextNode = __webpack_require__(34);
-
-/*eslint-disable no-bitwise */
-
-/**
- * Checks if a given DOM node contains or is another DOM node.
- */
-function containsNode(outerNode, innerNode) {
-  if (!outerNode || !innerNode) {
-    return false;
-  } else if (outerNode === innerNode) {
-    return true;
-  } else if (isTextNode(outerNode)) {
-    return false;
-  } else if (isTextNode(innerNode)) {
-    return containsNode(outerNode, innerNode.parentNode);
-  } else if ('contains' in outerNode) {
-    return outerNode.contains(innerNode);
-  } else if (outerNode.compareDocumentPosition) {
-    return !!(outerNode.compareDocumentPosition(innerNode) & 16);
-  } else {
-    return false;
-  }
-}
-
-module.exports = containsNode;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "d962593ad6bb2ed8b653f1b01c294ad9.jpg";
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "9c82f7b82dfc58e3554a03ef72787e85.jpg";
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var big_skill = [];
-var small_skill = [];
-big_skill[0] = { id: 0, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
-big_skill[1] = { id: 1, name: "毁灭", state: 0, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合(可闪避)" };
-big_skill[2] = { id: 2, name: "幽灵船", state: 0, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半(可闪避)" };
-big_skill[3] = { id: 3, name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
-big_skill[4] = { id: 4, name: "飞锯", state: 0, message: "使敌方受到敌方最大生命值的10%的伤害(可闪避)" };
-big_skill[5] = { id: 5, name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
-big_skill[6] = { id: 6, name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
-big_skill[7] = { id: 7, name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
-big_skill[8] = { id: 8, name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
-big_skill[9] = { id: 9, name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
-big_skill[10] = { id: 10, name: "回音击", state: 0, message: "造成敌方手牌数乘以60的伤害(可闪避)" };
-big_skill[11] = { id: 11, name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
-big_skill[12] = { id: 12, name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
-big_skill[13] = { id: 13, name: "变身", state: 2, message: "三回合内攻击加100" };
-big_skill[14] = { id: 14, name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
-big_skill[15] = { id: 15, name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
-big_skill[16] = { id: 16, name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
-big_skill[17] = { id: 17, name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
-big_skill[18] = { id: 18, name: "两级反转", state: 0, message: "造成100点伤害并晕眩对手3回合(可闪避)" };
-big_skill[19] = { id: 19, name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
-big_skill[20] = { id: 20, name: "裂地者", state: 0, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫(可闪避)" };
-big_skill[21] = { id: 21, name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
-big_skill[22] = { id: 22, name: "地震", state: 0, message: "对敌方造成300+敌方手牌数乘50的伤害(可闪避)" };
-big_skill[23] = { id: 23, name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
-big_skill[24] = { id: 24, name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
-big_skill[25] = { id: 25, name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
-big_skill[26] = { id: 26, name: "疯狂生长", state: 0, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免(可闪避)" };
-big_skill[27] = { id: 27, name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
-big_skill[29] = { id: 29, name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
-big_skill[28] = { id: 28, name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
-big_skill[30] = { id: 30, name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
-big_skill[31] = { id: 31, name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
-big_skill[32] = { id: 32, name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
-big_skill[33] = { id: 33, name: "无敌斩", state: 0, message: "快速普通攻击敌方6次(可闪避)" };
-big_skill[34] = { id: 34, name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
-big_skill[35] = { id: 35, name: "剧毒新星", state: 0, message: "对敌方造成300点伤害(可闪避)" };
-big_skill[36] = { id: 36, name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
-big_skill[37] = { id: 37, name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
-big_skill[38] = { id: 38, name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
-big_skill[39] = { id: 39, name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
-big_skill[40] = { id: 40, name: "海妖之歌", state: 0, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态(可闪避)" };
-big_skill[41] = { id: 41, name: "风暴之眼", state: 0, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害(可闪避)" };
-big_skill[42] = { id: 42, name: "石化凝视", state: 0, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍(可闪避)" };
-big_skill[43] = { id: 43, name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
-big_skill[44] = { id: 44, name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
-big_skill[45] = { id: 45, name: "时间结界", state: 0, message: "晕眩敌方2回合(可闪避)" };
-big_skill[46] = { id: 46, name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
-big_skill[47] = { id: 47, name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
-big_skill[48] = { id: 48, name: "月蚀", state: 0, message: "对敌方造成350点伤害(可闪避)" };
-big_skill[49] = { id: 49, name: "召唤飞弹", state: 0, message: "造成200加上,敌方手牌数乘30的伤害(可闪避)" };
-big_skill[50] = { id: 50, name: "编织", state: 0, message: "三回合内增加自己50点护甲,减少敌方50点护甲(可闪避)" };
-big_skill[51] = { id: 51, name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
-big_skill[52] = { id: 52, name: "极寒领域", state: 0, message: "对敌方造成350点伤害(可闪避)" };
-big_skill[53] = { id: 53, name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
-big_skill[54] = { id: 54, name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
-big_skill[55] = { id: 55, name: "死亡一指", state: 1, message: "造成600点伤害" };
-big_skill[56] = { id: 56, name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
-big_skill[57] = { id: 57, name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
-big_skill[58] = { id: 58, name: "神智之蚀", state: 0, message: "造成自己能量值减敌方能量值的数值乘以220的伤害(可闪避)" };
-big_skill[59] = { id: 59, name: "神灭斩", state: 1, message: "造成650点伤害" };
-big_skill[60] = { id: 60, name: "冰晶爆轰", state: 0, message: "对方血量低于15%时直接秒杀(可闪避)" };
-big_skill[61] = { id: 61, name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
-big_skill[62] = { id: 62, name: "黑洞", state: 0, message: "对敌方造成250点伤害并晕眩2回合无视魔免(可闪避)" };
-big_skill[63] = { id: 63, name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
-big_skill[64] = { id: 64, name: "上帝之手", state: 1, message: "回复己方500点生命值" };
-big_skill[65] = { id: 65, name: "脉冲新星", state: 0, message: "对敌方造成450点伤害(可闪避)" };
-big_skill[66] = { id: 66, name: "万火焚身", state: 0, message: "对敌方造成100点伤害，持续4回合(可闪避)" };
-big_skill[67] = { id: 67, name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
-big_skill[68] = { id: 68, name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
-big_skill[69] = { id: 69, name: "神秘之耀", state: 0, message: "对地方造成450点伤害(可闪避)" };
-big_skill[70] = { id: 70, name: "超声冲击波", state: 0, message: "对敌方造成400点伤害(可闪避)" };
-big_skill[71] = { id: 71, name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
-big_skill[72] = { id: 72, name: "连环霜冻", state: 0, message: "对敌方造成100*敌方手牌数的伤害(可闪避)" };
-big_skill[73] = { id: 73, name: "梦境缠绕", state: 0, message: "对敌方造成200点伤害并使敌方晕眩一回合(可闪避)" };
-big_skill[74] = { id: 74, name: "自然之怒", state: 0, message: "对敌方造成300点伤害(可闪避)" };
-big_skill[75] = { id: 75, name: "生命汲取", state: 0, message: "对敌方造成300点伤害，同时回复300点生命值(可闪避)" };
-big_skill[76] = { id: 76, name: "静态风暴", state: 0, message: "对敌方造成200点伤害并使敌方沉默一回合(可闪避)" };
-big_skill[77] = { id: 77, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
-
-small_skill[0] = { id: 1000, name: "雷霆之击", state: 1, mp: 100, message: "对敌方造成300点伤害" };
-small_skill[0].do = { mMp: -100, tHp: "300" };
-small_skill[1] = { id: 1001, name: "马蹄践踏", state: 0, mp: 50, message: "对敌方造成(50+敌方手牌数*10)点伤害并晕眩1回合(可闪避)" };
-small_skill[1].do = { mMp: -50, tHp: "50+thatstate.cardid.length*10", tBuff: [0], tBuffT: [2] };
-small_skill[2] = { id: 1002, name: "双刃剑", state: 1, mp: 0, message: "使自己和敌方同时受到150点伤害" };
-small_skill[2].do = { mMp: -0, mHp: -150, tHp: "150" };
-small_skill[3] = { id: 1003, name: "反击", state: 2, message: "被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)" };
-small_skill[3].do = { mBuff: [100], mBuffT: [6] };
-small_skill[4] = { id: 1004, name: "巨浪", state: 0, mp: 80, message: "减少敌方10点护甲(持续3回合)并对对方造成100点伤害(可闪避)" };
-small_skill[4].do = { mMp: -80, tHp: "100", tBuff: [5], tBuffT: [6] };
-small_skill[5] = { id: 1005, name: "海妖外壳", state: 2, message: "被动牌:受到普通攻击时可以减少50点伤害(持续3回合)" };
-small_skill[5].do = { mBuff: [101], mBuffT: [6] };
-small_skill[6] = { id: 1006, name: "锚击", state: 1, mp: 30, message: "造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)" };
-small_skill[6].do = { tHp: "50+thatstate.cardid.length*10", mp: 30, tBuff: [6], tBuffT: [6] };
-small_skill[7] = { id: 1007, name: "洪流", state: 0, mp: 80, message: "对敌方造成100点伤害并晕眩半回合(可闪避)" };
-small_skill[7].do = { mMp: -80, tHp: "100", tBuff: [0], tBuffT: [1] };
-small_skill[8] = { id: 1008, name: "潮汐使者", state: 2, message: "被动牌:使自己本回合增加20+对方手牌数*10点攻击力" };
-small_skill[8].do = { mBuff: [102], mBuffT: [2] };
-small_skill[9] = { id: 1009, name: "死亡旋风", state: 0, mp: 60, message: "对敌方造成200点伤害(可闪避)" };
-small_skill[9].do = { mMp: -60, tHp: "200" };
-small_skill[10] = { id: 1010, name: "伐木链锯", state: 0, mp: 30, message: "对敌方造成100点伤害(可闪避)" };
-small_skill[10].do = { mMp: -30, tHp: "100" };
-small_skill[11] = { id: 1011, name: "活性护甲", state: 2, message: "被动牌:每受到一次攻击增加10点护甲(持续3回合)" };
-small_skill[11].do = { mBuff: [103], mBuffT: [6], mBuffObj: { 103: 0 } };
-small_skill[12] = { id: 1012, name: "死亡缠绕", state: 1, mp: 50, message: "消耗自己100点生命,对敌方造成250点伤害" };
-small_skill[12].do = { mMp: -50, tHp: "250", mHp: -100 };
-small_skill[13] = { id: 1013, name: "无光之盾", state: 2, mp: 100, message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" };
-small_skill[13].do = { mMp: -100, mBuff: [8], mBuffT: [6], mBuffObj: { 8: 250 } };
-small_skill[14] = { id: 1014, name: "霜之哀伤", state: 2, message: "被动牌:本回合内攻击对手后可以去除对手一张手牌" };
-small_skill[14].do = { mBuff: [96], mBuffT: [2] };
-small_skill[15] = { id: 1015, name: "烈火精灵", state: 1, mp: 100, message: "对敌方造成90点伤害并且减少敌方100能量值" };
-small_skill[15].do = { mMp: -100, tHp: "90", tMp: -100 };
-small_skill[16] = { id: 1016, name: "烈日炎烤", state: 0, mp: 100, message: "对自己造成50点伤害并造成敌方现有生命值5%的伤害(可闪避)" };
-small_skill[16].do = { mMp: -100, mHp: -50, tHp: "thatstate.Hp*0.05" };
-small_skill[17] = { id: 1017, name: "战士怒吼", state: 0, mp: 100, message: "增加自己40点护甲,使敌方下一回合只可以攻击自己(可闪避)" };
-small_skill[17].do = { mMp: -100, mBuff: [11], mBuffT: [2], tBuff: [32], tBuffT: [2] };
-small_skill[18] = { id: 1018, name: "反击螺旋", state: 2, message: "被动牌:敌方普通攻击自己时会受到50点伤害(持续3回合)" };
-small_skill[18].do = { mBuff: [105], mBuffT: [6] };
-small_skill[19] = { id: 1019, name: "寒冰碎片", state: 0, mp: 50, message: "对敌方造成80点伤害(可闪避)" };
-small_skill[19].do = { mMp: -50, tHp: "80" };
-small_skill[20] = { id: 1020, name: "雪球", state: 0, mp: 80, message: "对敌方造成80点伤害并晕眩半回合(可闪避)" };
-small_skill[20].do = { mMp: -80, tHp: "80", tBuff: [0], tBuffT: [1] };
-small_skill[21] = { id: 1021, name: "沟壑", state: 0, mp: 100, message: "对敌方造成(90+敌方手牌数*10)点伤害并晕眩一回合(可闪避)" };
-small_skill[21].do = { mMp: -100, tHp: "90+thatstate.cardid.length*10", tBuff: [0], tBuffT: [2] };
-small_skill[22] = { id: 1022, name: "强化图腾", state: 2, mp: 50, message: "使自己攻击力变为现在攻击力的2倍(持续半回合)" };
-small_skill[22].do = { mMp: -50, mBuff: [13], mBuffT: [1] };
-small_skill[23] = { id: 1023, name: "余震", state: 2, message: "被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合" };
-small_skill[23].do = { mBuff: [107], mBuffT: [1] };
-small_skill[24] = { id: 1024, name: "混乱之箭", state: 1, message: "随机对敌方造成1-200的伤害，并晕眩1-2回合" };
-small_skill[24].do = { mMp: -100, tHp: "Math.random()*200", tBuff: [0], tBuffT: ["Math.random()*2"] };
-small_skill[25] = { id: 1025, name: "实相裂隙", state: 1, mp: 30, message: "造成50+物理攻击的伤害" };
-small_skill[25].do = { mMp: -30, tHp: "50+mystate.attack" };
-small_skill[26] = { id: 1026, name: "致命一击", state: 2, message: "被动牌:攻击时有40%的概率双倍攻击(持续3回合)" };
-small_skill[26].do = { mBuff: [108], mBuffT: [6] };
-small_skill[27] = { id: 1027, name: "幽光之魂", state: 0, mp: 50, message: "对敌方造成130点伤害(可闪避)" };
-small_skill[27].do = { mMp: -50, tHp: "130" };
-small_skill[28] = { id: 1028, name: "压倒性优势", state: 0, mp: 80, message: "对敌方造成敌方手牌乘以30的伤害(可闪避)" };
-small_skill[28].do = { mMp: 80, tHp: "thatstate.cardid.length*30" };
-small_skill[29] = { id: 1029, name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
-small_skill[29].do = { mBuff: [109], mBuffT: [6] };
-small_skill[30] = { id: 1030, name: "强攻", state: 1, mp: 80, message: "回复100点生命值并造成物理攻击的伤害" };
-small_skill[30].do = { mMp: 80, mHp: 100, tHp: "mystate.attack" };
-small_skill[31] = { id: 1031, name: "冥火暴击", state: 0, mp: 100, message: "对敌方造成150点伤害并晕眩1回合(可闪避)" };
-small_skill[31].do = { mMp: -100, tHp: "150", tBuff: [0], tBuffT: [2] };
-small_skill[32] = { id: 1032, name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" };
-small_skill[32].do = { mBuff: [111], mBuffT: [6] };
-small_skill[33] = { id: 1033, name: "致死打击", state: 2, message: "被动牌:攻击时有60%的概率1.5倍攻击(持续3回合)" };
-small_skill[33].do = { mBuff: [112], mBuffT: [6] };
-small_skill[34] = { id: 1034, name: "嚎叫", state: 2, mp: 50, message: "本回合攻击加60" };
-small_skill[34].do = { mMp: -50, mBuff: [16], mBuffT: [2] };
-small_skill[35] = { id: 1035, name: "野性驱使", state: 2, message: "被动牌:攻击加30(持续3回合)" };
-small_skill[35].do = { mBuff: [113], mBuffT: [6] };
-small_skill[36] = { id: 1036, name: "酸性喷雾", state: 0, mp: 80, message: "三回合内降低敌方10点防御并造成50点伤害(可闪避)" };
-small_skill[36].do = { mMp: -80, tBuff: [73], tBuffT: [6] };
-small_skill[37] = { id: 1037, name: "不稳定物", state: 0, mp: 50, message: "50%使对方晕眩两回合50%使自己晕眩一回合(可闪避)" };
-small_skill[37].do = { special: true };
-small_skill[38] = { id: 1038, name: "地精贪婪", state: 2, message: "被动牌:每回合得到金钱数+10(持续3回合)" };
-small_skill[38].do = { mBuff: [114], mBuffT: [6] };
-small_skill[39] = { id: 1039, name: "暗影冲刺", state: 0, mp: 50, message: "对敌方造成60点伤害并眩晕半回合(可闪避)" };
-small_skill[39].do = { mMp: -50, tHp: "60", tBuff: [0], tBuffT: [1] };
-small_skill[40] = { id: 1040, name: "巨力重击", state: 2, message: "被动牌:攻击时有30%的概率使敌方晕眩一回合并附加40点攻击(持续3回合)" };
-small_skill[40].do = { tHp: "40", mBuff: [97], mBuffT: [6] };
-small_skill[41] = { id: 1041, name: "风暴之锤", state: 0, mp: 100, message: "对敌方造成100点伤害并晕眩一回合(可闪避)" };
-small_skill[41].do = { mMp: -100, tHp: "100", tBuff: [0], tBuffT: [2] };
-small_skill[42] = { id: 1042, name: "巨力挥舞", state: 2, message: "被动牌:普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)" };
-small_skill[42].do = { mBuff: [99], mBuffT: [6] };
-small_skill[43] = { id: 1043, name: "战吼", state: 2, mp: 30, message: "三回合内增加自身30点护甲" };
-small_skill[43].do = { mMp: -30, mBuff: [18], mBuffT: [6] };
-small_skill[44] = { id: 1044, name: "火焰气息", state: 0, mp: 90, message: "对敌方造成200点伤害(可闪避)" };
-small_skill[44].do = { mMp: -90, tHp: "200" };
-small_skill[45] = { id: 1045, name: "神龙摆尾", state: 1, mp: 80, message: "对敌方造成50点伤害并晕眩一回合" };
-small_skill[45].do = { mMp: -80, tHp: "50", tBuff: [0], tBuffT: [2] };
-small_skill[46] = { id: 1046, name: "龙族血统", state: 2, message: "被动牌:每回合回复40点生命值(持续3回合)" };
-small_skill[46].do = { mBuff: [115], mBuffT: [6] };
-small_skill[47] = { id: 1047, name: "震荡波", state: 0, mp: 90, message: "对敌方造成200点伤害(可闪避)" };
-small_skill[47].do = { mMp: -90, tHp: "200" };
-small_skill[48] = { id: 1048, name: "授予力量", state: 2, mp: 50, message: "本回合内攻击加80" };
-small_skill[48].do = { mMp: -50, mBuff: [21], mBuffT: [2] };
-small_skill[49] = { id: 1049, name: "獠牙冲刺", state: 0, mp: 50, message: "对敌方造成100点伤害(可闪避)" };
-small_skill[49].do = { mMp: -50, tHp: "100" };
-small_skill[50] = { id: 1050, name: "吞噬", state: 2, mp: 100, message: "将对方的随机一张牌,转化为100金币" };
-small_skill[50].do = { special: true
-
-  // small_skill[51] = {id:1051,name:"焦土",state: 1 ,mp:80,message:"敌方掉80血，自己回复80血"}
-  // small_skill[51].do = {mMp:-80};
-  // small_skill[52] = {id:1052,name:"回音重踏",state: 0 ,mp:100,message:"使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态(可闪避)"}
-  // small_skill[52].do = {mMp:-100};
-  // small_skill[53] = {id:1053,name:"自然秩序",state: 2 ,message:"被动牌:使对方护甲归0"}
-  // small_skill[53].do = {mBuff:[,mB]uffT:}
-  // small_skill[54] = {id:1054,name:"洗礼",state: 0 ,mp:100,message:"回复自己100点生命值,并造成100伤害(可闪避)"}
-  // small_skill[54].do = {mMp:-100};
-  // small_skill[55] = {id:1055,name:"驱逐",state: 2 ,mp:50,message:"使自己魔免两回合，可以被散失"}
-  // small_skill[55].do = {mMp:-50,mBuff:[,mB]uffT:}
-  // small_skill[56] = {id:1056,name:"掘地穿刺",state: 0 ,mp:100,message:"对敌方造成100点伤害并晕眩一回合(可闪避)"}
-  // small_skill[56].do = {mMp:-100,tHp:"100"};
-  // small_skill[57] = {id:1057,name:"沙尘暴",state: 0 ,message:"对敌方造成40点伤害，敌方的下一回合不可以攻击自己(可闪避)"}
-  // small_skill[57].do = {tHp:"40"};
-  // small_skill[58] = {id:1058,name:"雷击",state: 1 ,message:"对敌方造成140点伤害"}
-  // small_skill[58].do = {tHp:"140"};
-  // small_skill[59] = {id:1059,name:"投掷",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
-  // small_skill[59].do = {tHp:"80"};
-  // small_skill[60] = {id:1060,name:"崎岖外表",state: 2 ,message:"被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合"}
-  // small_skill[60].do = {mBuff:[,mB]uffT:}
-  // small_skill[61] = {id:1061,name:"山崩",state: 0 ,message:"对敌方造成30点伤害并晕眩一回合(可闪避)"}
-  // small_skill[61].do = {tHp:"30"};
-  // small_skill[62] = {id:1062,name:"火焰风暴",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
-  // small_skill[62].do = {tHp:"90"};
-  // small_skill[63] = {id:1063,name:"怨念深渊",state: 0 ,message:"使对方晕眩半回合(可闪避)"}
-  // small_skill[63].do = {};
-  // small_skill[64] = {id:1064,name:"衰退光环",state: 2 ,message:"被动牌:减少对方50%攻击力"}
-  // small_skill[64].do = {mBuff:[,mB]uffT:}
-  // small_skill[65] = {id:1065,name:"活血术",state: 1 ,message:"增加自己当前攻击力的血量"}
-  // small_skill[65].do = {};
-  // small_skill[66] = {id:1066,name:"沸血之矛",state: 2 ,message:"消耗自身50点生命值使本回合内攻击加100"}
-  // small_skill[66].do = {mBuff:[,mB]uffT:}
-  // small_skill[67] = {id:1067,name:"狂战士之血",state: 2 ,message:"被动牌:血量低于50%时每次普通攻击可以不消耗能量格多攻击一次"}
-  // small_skill[67].do = {mBuff:[,mB]uffT:}
-  // small_skill[68] = {id:1068,name:"静电场",state: 2 ,message:"被动牌:每次释放任何技能都会对敌方造成40点伤害"}
-  // small_skill[68].do = {tHp:"40",mBuff:[,mB]uffT:}
-  // small_skill[69] = {id:1069,name:"腐朽",state: 0 ,message:"可以对敌方造成70点伤害(可闪避)"}
-  // small_skill[69].do = {tHp:"70"};
-  // small_skill[70] = {id:1070,name:"噬魂",state: 1 ,message:"造成己方和敌方手牌数的总和乘以15的伤害"}
-  // small_skill[70].do = {tHp:"己方和敌方手牌数的总和乘以15"};
-  // small_skill[71] = {id:1071,name:"狂暴",state: 2 ,message:"可以使自己魔免一回合"}
-  // small_skill[71].do = {mBuff:[,mB]uffT:}
-  // small_skill[72] = {id:1072,name:"盛宴",state: 2 ,message:"被动牌:普通攻击时将对方现有生命值的2%转化为自身生命"}
-  // small_skill[72].do = {mBuff:[,mB]uffT:}
-  // small_skill[73] = {id:1073,name:"撕裂伤口",state: 1 ,message:"本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命"}
-  // small_skill[73].do = {};
-  // small_skill[74] = {id:1074,name:"野性之斧",state: 0 ,message:"对敌方造成150点伤害(可闪避)"}
-  // small_skill[74].do = {tHp:"150"};
-  // small_skill[75] = {id:1075,name:"寄生种子",state: 1 ,message:"使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌"}
-  // small_skill[75].do = {};
-  // small_skill[76] = {id:1076,name:"活体护甲",state: 2 ,message:"受到物理伤害减少20点持续2回合每回合加40点血"}
-  // small_skill[76].do = {mBuff:[,mB]uffT:}
-  // small_skill[77] = {id:1077,name:"腐烂",state: 1 ,message:"自己掉100点血，对方掉180点血"}
-  // small_skill[77].do = {};
-  // small_skill[78] = {id:1078,name:"腐肉堆积",state: 2 ,message:"被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限"}
-  // small_skill[78].do = {mBuff:[,mB]uffT:}
-  // small_skill[79] = {id:1079,name:"雷霆一击",state: 0 ,message:"对敌方造成80点伤害"}
-  // small_skill[79].do = {tHp:"80"};
-  // small_skill[80] = {id:1080,name:"醉酒云雾",state: 1 ,message:"2回合内使敌方的普通攻击有75%的概率打不中"}
-  // small_skill[80].do = {};
-  // small_skill[81] = {id:1081,name:"醉拳",state: 2 ,message:"被动牌:受到普通攻击时有40%的概率mis"}
-  // small_skill[81].do = {mBuff:[,mB]uffT:}
-  // small_skill[82] = {id:1082,name:"虚空",state: 1 ,message:"对敌方造成130点伤害"}
-  // small_skill[82].do = {tHp:"130"};
-  // small_skill[83] = {id:1083,name:"伤残恐惧",state: 1 ,message:"使敌方2回合内不可以使用技能"}
-  // small_skill[83].do = {};
-  // small_skill[84] = {id:1084,name:"重击",state: 2 ,message:"被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害"}
-  // small_skill[84].do = {mBuff:[,mB]uffT:}
-  // small_skill[85] = {id:1085,name:"鱼人碎击",state: 0 ,message:"对敌方造成60点伤害并晕眩一回合(可闪避)"}
-  // small_skill[85].do = {tHp:"60"};
-  // small_skill[86] = {id:1086,name:"群星坠落",state: 0 ,message:"对敌方造成40加上敌方手牌乘10的伤害(可闪避)"}
-  // small_skill[86].do = {tHp:"40加上敌方手牌乘10"};
-  // small_skill[87] = {id:1087,name:"月神之箭",state: 0 ,message:"有50%的概率使敌方晕眩二回合(可闪避)"}
-  // small_skill[87].do = {};
-  // small_skill[88] = {id:1088,name:"波浪形态",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
-  // small_skill[88].do = {tHp:"70"};
-  // small_skill[89] = {id:1089,name:"变体攻击",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
-  // small_skill[89].do = {tHp:"50"};
-  // small_skill[90] = {id:1090,name:"法力损毁",state: 2 ,message:"被动牌:普通攻击成功后可以削减敌方一点能量值"}
-  // small_skill[90].do = {mBuff:[,mB]uffT:}
-  // small_skill[91] = {id:1091,name:"自杀攻击",state: 0 ,message:"对自己和敌方同时造成500点伤害(可闪避)"}
-  // small_skill[91].do = {tHp:"500"};
-  // small_skill[92] = {id:1092,name:"忽悠",state: 3 ,message:"可以闪避一次敌方的攻击"}
-  // small_skill[92].do = {};
-  // small_skill[93] = {id:1093,name:"地之突袭",state: 2 ,message:"被动牌:攻击力加30"}
-  // small_skill[93].do = {mBuff:[,mB]uffT:}
-  // small_skill[94] = {id:1094,name:"穿刺",state: 0 ,message:"造成70点伤害并晕眩敌方一回合(可闪避)"}
-  // small_skill[94].do = {tHp:"70"};
-  // small_skill[95] = {id:1095,name:"法力燃烧",state: 1 ,message:"减少敌方3点能量值"}
-  // small_skill[95].do = {};
-  // small_skill[96] = {id:1096,name:"带刺外壳",state: 2 ,message:"被动牌:每回合可以抵挡一次指向性法术"}
-  // small_skill[96].do = {mBuff:[,mB]uffT:}
-  // small_skill[97] = {id:1097,name:"魔法箭",state: 1 ,message:"造成80点伤害并晕眩敌方一回合"}
-  // small_skill[97].do = {tHp:"80"};
-  // small_skill[98] = {id:1098,name:"恐怖波动",state: 0 ,message:"减少敌方10点护甲并造成20点伤害(可闪避)"}
-  // small_skill[98].do = {tHp:"20"};
-  // small_skill[99] = {id:1099,name:"命令光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
-  // small_skill[99].do = {mBuff:[,mB]uffT:}
-  // small_skill[100] = {id:1100,name:"霜冻之箭",state: 1 ,message:"可以削减敌方2点能量值"}
-  // small_skill[100].do = {};
-  // small_skill[101] = {id:1101,name:"沉默魔法",state: 0 ,message:"敌方在一回合内不可以使用技能(可闪避)"}
-  // small_skill[101].do = {};
-  // small_skill[102] = {id:1102,name:"强击光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
-  // small_skill[102].do = {mBuff:[,mB]uffT:}
-  // small_skill[103] = {id:1103,name:"灵魂之矛",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
-  // small_skill[103].do = {tHp:"90"};
-  // small_skill[104] = {id:1104,name:"神出鬼没",state: 3 ,message:"可以闪避一次敌方的攻击"}
-  // small_skill[104].do = {};
-  // small_skill[105] = {id:1105,name:"磁场",state: 2 ,message:"使自己在两回合内物理免疫"}
-  // small_skill[105].do = {mBuff:[,mB]uffT:}
-  // small_skill[106] = {id:1106,name:"闪光冤魂",state: 0 ,message:"对敌方造成100点伤害(可闪避)"}
-  // small_skill[106].do = {tHp:"100"};
-  // small_skill[107] = {id:1107,name:"窒息之刃",state: 0 ,message:"对敌方造成30点伤害使用后回复一点能量值(可闪避)"}
-  // small_skill[107].do = {tHp:"30"};
-  // small_skill[108] = {id:1108,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
-  // small_skill[108].do = {};
-  // small_skill[109] = {id:1109,name:"模糊",state: 2 ,message:"被动牌:敌方在普通攻击你时有70%的概率mis"}
-  // small_skill[109].do = {mBuff:[,mB]uffT:}
-  // small_skill[110] = {id:1110,name:"火焰壁垒",state: 2 ,message:"被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值"}
-  // small_skill[110].do = {mBuff:[,mB]uffT:}
-  // small_skill[111] = {id:1111,name:"无影拳",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
-  // small_skill[111].do = {tHp:"70"};
-  // small_skill[112] = {id:1112,name:"榴霰弹",state: 0 ,message:"对敌方造成60点伤害(可闪避)"}
-  // small_skill[112].do = {tHp:"60"};
-  // small_skill[113] = {id:1113,name:"爆头",state: 2 ,message:"被动牌:攻击时有40%的概率附加100点伤害"}
-  // small_skill[113].do = {mBuff:[,mB]uffT:}
-  // small_skill[114] = {id:1114,name:"剑刃风暴",state: 0 ,message:"一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害(可闪避)"}
-  // small_skill[114].do = {tHp:"50"};
-  // small_skill[115] = {id:1115,name:"弧形闪电",state: 1 ,message:"对敌方造成80点伤害"}
-  // small_skill[115].do = {tHp:"80"};
-  // small_skill[116] = {id:1116,name:"剑舞",state: 2 ,message:"被动牌:攻击时有60%的概率1.5倍暴击"}
-  // small_skill[116].do = {mBuff:[,mB]uffT:}
-  // small_skill[117] = {id:1117,name:"狂战士之怒",state: 2 ,message:"被动牌:本回合内加70点攻击"}
-  // small_skill[117].do = {mBuff:[,mB]uffT:}
-  // small_skill[118] = {id:1118,name:"热血战魂",state: 2 ,message:"被动牌:加30点攻击"}
-  // small_skill[118].do = {mBuff:[,mB]uffT:}
-  // small_skill[119] = {id:1119,name:"旋风飞斧",state: 0 ,message:"对敌方造成40点伤害并使敌方攻击有30%的概率mis(可闪避)"}
-  // small_skill[119].do = {tHp:"40"};
-  // small_skill[120] = {id:1120,name:"肉钩",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
-  // small_skill[120].do = {tHp:"80"};
-  // small_skill[121] = {id:1121,name:"瘴气",state: 0 ,message:"对敌方造成70点伤害(可闪避)"}
-  // small_skill[121].do = {tHp:"70"};
-  // small_skill[122] = {id:1122,name:"毒刺",state: 2 ,message:"被动牌:攻击时对敌方额外造成20点伤害"}
-  // small_skill[122].do = {tHp:"20",mBuff:[,mB]uffT:}
-  // small_skill[123] = {id:1123,name:"扫射",state: 2 ,message:"攻击力加40"}
-  // small_skill[123].do = {mBuff:[,mB]uffT:}
-  // small_skill[124] = {id:1124,name:"灼热之箭",state: 2 ,message:"本回合内攻击加50"}
-  // small_skill[124].do = {mBuff:[,mB]uffT:}
-  // small_skill[125] = {id:1125,name:"变身",state: 2 ,message:"永久增加20点攻击力"}
-  // small_skill[125].do = {mBuff:[,mB]uffT:}
-  // small_skill[126] = {id:1126,name:"连击",state: 2 ,message:"被动牌:每次攻击降低敌方10点护甲"}
-  // small_skill[126].do = {mBuff:[,mB]uffT:}
-  // small_skill[127] = {id:1127,name:"蝗虫群",state: 1 ,message:"对敌方造成60点伤害并永久降低5点护甲"}
-  // small_skill[127].do = {tHp:"60"};
-  // small_skill[128] = {id:1128,name:"毒性攻击",state: 2 ,message:"被动牌:本回合攻击力加40"}
-  // small_skill[128].do = {mBuff:[,mB]uffT:}
-  // small_skill[129] = {id:1129,name:"幽冥剧毒",state: 2 ,message:"被动牌:敌方血量低于50%时,攻击附加50点伤害"}
-  // small_skill[129].do = {mBuff:[,mB]uffT:}
-  // small_skill[130] = {id:1130,name:"腐蚀外表",state: 2 ,message:"被动牌:受到敌方的任何攻击之后敌方会掉40点血"}
-  // small_skill[130].do = {mBuff:[,mB]uffT:}
-  // small_skill[131] = {id:1131,name:"等离子场",state: 2 ,message:"3回合内敌方每次对你使用指向性技能时会减少100点生命值"}
-  // small_skill[131].do = {mBuff:[,mB]uffT:}
-  // small_skill[132] = {id:1132,name:"静电连接",state: 1 ,message:"永久性减少敌方5点攻击,自己增加5点攻击"}
-  // small_skill[132].do = {};
-  // small_skill[133] = {id:1133,name:"投掷飞镖",state: 1 ,message:"对敌方造成80点伤害"}
-  // small_skill[133].do = {tHp:"80"};
-  // small_skill[134] = {id:1134,name:"忍术",state: 2 ,message:"被动牌:攻击时有40%的概率双倍暴击"}
-  // small_skill[134].do = {mBuff:[,mB]uffT:}
-  // small_skill[135] = {id:1135,name:"分裂箭",state: 2 ,message:"被动牌:攻击力增加敌方手牌数乘以15的数值"}
-  // small_skill[135].do = {mBuff:[,mB]uffT:}
-  // small_skill[136] = {id:1136,name:"秘术异蛇",state: 0 ,message:"造成敌手牌数乘以20的伤害(可闪避)"}
-  // small_skill[136].do = {tHp:"敌手牌数乘以20"};
-  // small_skill[137] = {id:1137,name:"魔法护盾",state: 2 ,message:"被动牌:受到伤害时一点能量值可以抵挡一次伤害"}
-  // small_skill[137].do = {mBuff:[,mB]uffT:}
-  // small_skill[138] = {id:1138,name:"折光",state: 2 ,message:"5回合内抵挡4次伤害"}
-  // small_skill[138].do = {mBuff:[,mB]uffT:}
-  // small_skill[139] = {id:1139,name:"黑暗契约",state: 2 ,message:"下回合双方损失50点生命值,可以清除自己身上所有状态"}
-  // small_skill[139].do = {mBuff:[,mB]uffT:}
-  // small_skill[140] = {id:1140,name:"能量转换",state: 2 ,message:"被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击"}
-  // small_skill[140].do = {mBuff:[,mB]uffT:}
-  // small_skill[141] = {id:1141,name:"超级力量",state: 2 ,message:"3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害"}
-  // small_skill[141].do = {tHp:"自己攻击乘2",mBuff:[,mB]uffT:}
-  // small_skill[142] = {id:1142,name:"怒意狂击",state: 2 ,message:"被动牌:每次普通攻击成功后攻击力会增加20"}
-  // small_skill[142].do = {mBuff:[,mB]uffT:}
-  // small_skill[143] = {id:1143,name:"回到过去",state: 2 ,message:"被动牌:受到任何攻击时有25%的概率免疫"}
-  // small_skill[143].do = {mBuff:[,mB]uffT:}
-  // small_skill[144] = {id:1144,name:"时间锁定",state: 2 ,message:"被动牌:普通攻击时有25%的概率使敌方晕眩一回合"}
-  // small_skill[144].do = {mBuff:[,mB]uffT:}
-  // small_skill[145] = {id:1145,name:"血之狂暴",state: 1 ,message:"使敌方2回合内无法使用技能"}
-  // small_skill[145].do = {};
-  // small_skill[146] = {id:1146,name:"屠戮",state: 2 ,message:"被动牌:敌方每减少一张牌会使自己增加30点生命值"}
-  // small_skill[146].do = {mBuff:[,mB]uffT:}
-  // small_skill[147] = {id:1147,name:"嗜血渴望",state: 2 ,message:"被动牌:敌方血量低于50%时，自己增加50点攻击"}
-  // small_skill[147].do = {mBuff:[,mB]uffT:}
-  // small_skill[148] = {id:1148,name:"烟幕",state: 0 ,message:"使敌方在1回合内攻击有75%的概率mis,并不可以使用技能(可闪避)"}
-  // small_skill[148].do = {};
-  // small_skill[149] = {id:1149,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
-  // small_skill[149].do = {};
-  // small_skill[150] = {id:1150,name:"魔王降临",state: 2 ,message:"被动牌:减少敌方20点护甲"}
-  // small_skill[150].do = {mBuff:[,mB]uffT:}
-  // small_skill[151] = {id:1151,name:"毁灭阴影",state: 0 ,message:"对敌方造成90点伤害(可闪避)"}
-  // small_skill[151].do = {tHp:"90"};
-  // small_skill[152] = {id:1152,name:"支配死灵",state: 2 ,message:"被动牌:敌方每减少一张牌,你可以永久增加2点攻击"}
-  // small_skill[152].do = {mBuff:[,mB]uffT:}
-  // small_skill[153] = {id:1153,name:"幽鬼之刃",state: 0 ,message:"对敌方造成80点伤害(可闪避)"}
-  // small_skill[153].do = {tHp:"80"};
-  // small_skill[154] = {id:1154,name:"荒芜",state: 2 ,message:"被动牌:增加30点攻击"}
-  // small_skill[154].do = {mBuff:[,mB]uffT:}
-  // small_skill[155] = {id:1155,name:"折射",state: 2 ,message:"被动牌:反弹自己受到一切伤害的25%"}
-  // small_skill[155].do = {mBuff:[,mB]uffT:}
-  // small_skill[156] = {id:1156,name:"麻痹撕咬",state: 2 ,message:"被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis"}
-  // small_skill[156].do = {mBuff:[,mB]uffT:}
-  // small_skill[157] = {id:1157,name:"月光",state: 1 ,message:"对敌方造成90点伤害"}
-  // small_skill[157].do = {tHp:"90"};
-  // small_skill[158] = {id:1158,name:"月之祝福",state: 2 ,message:"被动牌:攻击力加60"}
-  // small_skill[158].do = {mBuff:[,mB]uffT:}
-  // small_skill[159] = {id:1159,name:"月刃",state: 2 ,message:"被动牌:攻击力加敌方手牌数乘10的数值"}
-  // small_skill[159].do = {mBuff:[,mB]uffT:}
-  // small_skill[160] = {id:1160,name:"高射火炮",state: 2 ,message:"本回合内攻击增加70"}
-  // small_skill[160].do = {mBuff:[,mB]uffT:}
-  // small_skill[161] = {id:1161,name:"追踪导弹",state: 0 ,message:"造成160点伤害(可闪避)"}
-  // small_skill[161].do = {tHp:"160"};
-  // small_skill[162] = {id:1162,name:"灵魂猎手",state: 0 ,message:"一回合内使敌方额外承受25%的伤害(可闪避)"}
-  // small_skill[162].do = {};
-  // small_skill[163] = {id:1163,name:"薄葬",state: 2 ,message:"三回合内不会死亡"}
-  // small_skill[163].do = {mBuff:[,mB]uffT:}
-  // small_skill[164] = {id:1164,name:"暗影波",state: 0 ,message:"回复自己手牌数乘以25点的生命(可闪避)"}
-  // small_skill[164].do = {};
-  // small_skill[165] = {id:1165,name:"叉形闪电",state: 1 ,message:"对敌方造成90点伤害"}
-  // small_skill[165].do = {tHp:"90"};
-  // small_skill[166] = {id:1166,name:"妖术",state: 1 ,message:"将敌方变成小羊,持续1回合"}
-  // small_skill[166].do = {};
-  // small_skill[167] = {id:1167,name:"枷锁",state: 1 ,message:"自己摸一张牌,敌方受到50点伤害"}
-  // small_skill[167].do = {};
-  // small_skill[168] = {id:1168,name:"烈焰破击",state: 0 ,message:"对敌方造成100点伤害(可闪避)"}
-  // small_skill[168].do = {tHp:"100"};
-  // small_skill[169] = {id:1169,name:"冰霜新星",state: 0 ,message:"对敌方造成60点伤害(可闪避)"}
-  // small_skill[169].do = {tHp:"60"};
-  // small_skill[170] = {id:1170,name:"冰封禁制",state: 1 ,message:"对敌方造成30点伤害并晕眩一回合"}
-  // small_skill[170].do = {tHp:"30"};
-  // small_skill[171] = {id:1171,name:"辉煌光环",state: 2 ,message:"被动牌:每回合可以额外回复1点能量值"}
-  // small_skill[171].do = {mBuff:[,mB]uffT:}
-  // small_skill[172] = {id:1172,name:"静默诅咒",state: 1 ,message:"减少敌方1点能量值"}
-  // small_skill[172].do = {};
-  // small_skill[173] = {id:1173,name:"智慧之刃",state: 2 ,message:"本回合内攻击力增加自己能量值乘以20的数值"}
-  // small_skill[173].do = {mBuff:[,mB]uffT:}
-  // small_skill[174] = {id:1174,name:"遗言",state: 1 ,message:"对敌方造成60点伤害,并沉默1回合"}
-  // small_skill[174].do = {tHp:"60"};
-  // small_skill[175] = {id:1175,name:"弱化能流",state: 1 ,message:"永久减少敌方10点攻击"}
-  // small_skill[175].do = {};
-  // small_skill[176] = {id:1176,name:"激光",state: 1 ,message:"造成100点伤害并使敌方下1回合攻击100%mis"}
-  // small_skill[176].do = {tHp:"100"};
-  // small_skill[177] = {id:1177,name:"热导飞弹",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[177].do = {tHp:"100"};
-  // small_skill[178] = {id:1178,name:"法力汲取",state: 1 ,message:"减少敌方两点能量格,自己增加两点能量格"}
-  // small_skill[178].do = {};
-  // small_skill[179] = {id:1179,name:"超负荷",state: 2 ,message:"被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击"}
-  // small_skill[179].do = {mBuff:[,mB]uffT:}
-  // small_skill[180] = {id:1180,name:"束缚之箭",state: 1 ,message:"造成40点伤害晕眩敌方半回合"}
-  // small_skill[180].do = {tHp:"40"};
-  // small_skill[181] = {id:1181,name:"强力一击",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[181].do = {tHp:"100"};
-  // small_skill[182] = {id:1182,name:"冲击波",state: 0 ,message:"造成130点伤害"}
-  // small_skill[182].do = {tHp:"130"};
-  // small_skill[183] = {id:1183,name:"法力流失",state: 1 ,message:"3回合内敌方任何攻击所需能量值加1"}
-  // small_skill[183].do = {};
-  // small_skill[184] = {id:1184,name:"查克拉魔法",state: 1 ,message:"瞬间将自身能量值回满"}
-  // small_skill[184].do = {};
-  // small_skill[185] = {id:1185,name:"严寒烧灼",state: 2 ,message:"2回合内增加敌方现有生命值2%的攻击力"}
-  // small_skill[185].do = {mBuff:[,mB]uffT:}
-  // small_skill[186] = {id:1186,name:"碎裂冲击",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[186].do = {tHp:"100"};
-  // small_skill[187] = {id:1187,name:"极寒之拥",state: 2 ,message:"使自己加100点护甲回复100点生命,但本回合不可以再出牌"}
-  // small_skill[187].do = {mBuff:[,mB]uffT:}
-  // small_skill[188] = {id:1188,name:"离子外壳",state: 1 ,message:"对敌方造成80点伤害"}
-  // small_skill[188].do = {tHp:"80"};
-  // small_skill[189] = {id:1189,name:"凤凰冲击",state: 3 ,message:"减少自身100点生命值，闪避对方一次攻击"}
-  // small_skill[189].do = {};
-  // small_skill[190] = {id:1190,name:"秘法天球",state: 2 ,message:"本回合增加能量值乘以25的攻击力"}
-  // small_skill[190].do = {mBuff:[,mB]uffT:}
-  // small_skill[191] = {id:1191,name:"星体禁锢",state: 1 ,message:"使对方减少2点能量格,并轮空一回合"}
-  // small_skill[191].do = {};
-  // small_skill[192] = {id:1192,name:"精气光环",state: 2 ,message:"被动牌:释放技能时有50%的概率加1点能量值"}
-  // small_skill[192].do = {mBuff:[,mB]uffT:}
-  // small_skill[193] = {id:1193,name:"龙破斩",state: 0 ,message:"造成100点伤害(可闪避)"}
-  // small_skill[193].do = {tHp:"100"};
-  // small_skill[194] = {id:1194,name:"光击阵",state: 0 ,message:"造成80点伤害并晕眩1回合(可闪避)"}
-  // small_skill[194].do = {tHp:"80"};
-  // small_skill[195] = {id:1195,name:"寒冰之触",state: 1 ,message:"对敌方造成80点伤害并晕眩半回合"}
-  // small_skill[195].do = {tHp:"80"};
-  // small_skill[196] = {id:1196,name:"火焰爆轰",state: 1 ,message:"造成80点伤害并晕眩敌方1回合"}
-  // small_skill[196].do = {tHp:"80"};
-  // small_skill[197] = {id:1197,name:"引燃",state: 1 ,message:"造成150点伤害"}
-  // small_skill[197].do = {tHp:"150"};
-  // small_skill[198] = {id:1198,name:"嗜血术",state: 2 ,message:"3回合内增加自己30点攻击力"}
-  // small_skill[198].do = {mBuff:[,mB]uffT:}
-  // small_skill[199] = {id:1199,name:"憎恶",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
-  // small_skill[199].do = {tHp:"50"};
-  // small_skill[200] = {id:1200,name:"午夜凋零",state: 0 ,message:"造成80点伤害(可闪避)"}
-  // small_skill[200].do = {tHp:"80"};
-  // small_skill[201] = {id:1201,name:"命运赦令",state: 1 ,message:"使敌方1回合不可以攻击并且所受的物理伤害增加100%"}
-  // small_skill[201].do = {};
-  // small_skill[202] = {id:1202,name:"涤罪之焰",state: 1 ,message:"对敌方造成150点伤害"}
-  // small_skill[202].do = {tHp:"150"};
-  // small_skill[203] = {id:1203,name:"忠诚考验",state: 1 ,message:"随机对敌方造成50-300点伤害"}
-  // small_skill[203].do = {tHp:"50-300"};
-  // small_skill[204] = {id:1204,name:"麻痹陷阱",state: 0 ,message:"对敌方晕眩一回合(可闪避)"}
-  // small_skill[204].do = {};
-  // small_skill[205] = {id:1205,name:"恶魔赦令",state: 1 ,message:"三回合内每回合对敌方造成80点伤害"}
-  // small_skill[205].do = {tHp:"80"};
-  // small_skill[206] = {id:1206,name:"致命连接",state: 1 ,message:"本回合内对敌方额外造成手牌数0.1倍技能伤害 "}
-  // small_skill[206].do = {};
-  // small_skill[207] = {id:1207,name:"暗言术",state: 1 ,message:"使己方回复100点生命值并对敌方造成100点伤害"}
-  // small_skill[207].do = {tHp:"100"};
-  // small_skill[208] = {id:1208,name:"冰火交加",state: 0 ,message:"对敌方造成150点伤害(可闪避)"}
-  // small_skill[208].do = {tHp:"150"};
-  // small_skill[209] = {id:1209,name:"冰封路径",state: 0 ,message:"使敌方晕眩一回合(可闪避)"}
-  // small_skill[209].do = {};
-  // small_skill[210] = {id:1210,name:"液态火",state: 1 ,message:"对敌方造成150点伤害"}
-  // small_skill[210].do = {tHp:"150"};
-  // small_skill[211] = {id:1211,name:"死亡脉冲",state: 0 ,message:"对敌方造成100点伤害，同时回复100点生命值(可闪避)"}
-  // small_skill[211].do = {tHp:"100"};
-  // small_skill[212] = {id:1212,name:"竭心光环",state: 2 ,message:"被动牌:每回合减少敌方2%生命值"}
-  // small_skill[212].do = {mBuff:[,mB]uffT:}
-  // small_skill[213] = {id:1213,name:"施虐之心",state: 2 ,message:"被动牌:每对敌方造成200点伤害回复1点能量格和100点生命"}
-  // small_skill[213].do = {tHp:"200",mBuff:[,mB]uffT:}
-  // small_skill[214] = {id:1214,name:"灵魂超度",state: 0 ,message:"对敌方造成自己损失血量10%的伤害(可闪避)"}
-  // small_skill[214].do = {tHp:"自己损失血量10%"};
-  // small_skill[215] = {id:1215,name:"食腐蝙群",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[215].do = {tHp:"200"};
-  // small_skill[216] = {id:1216,name:"上古封印",state: 0 ,message:"使敌方承受1.5倍魔法伤害，并使敌方沉默一回合(可闪避)"}
-  // small_skill[216].do = {};
-  // small_skill[217] = {id:1217,name:"奥术箭",state: 0 ,message:"对敌方造成50*其能量格的伤害(可闪避)"}
-  // small_skill[217].do = {tHp:"50*其能量格"};
-  // small_skill[218] = {id:1218,name:"暗影突袭",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[218].do = {tHp:"200"};
-  // small_skill[219] = {id:1219,name:"闪烁",state: 3 ,message:"可闪避敌方一次技能，对无视闪避技能无效"}
-  // small_skill[219].do = {};
-  // small_skill[220] = {id:1220,name:"痛苦尖叫",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[220].do = {tHp:"200"};
-  // small_skill[221] = {id:1221,name:"虚弱",state: 1 ,message:"3回合内降低敌方30点攻击力"}
-  // small_skill[221].do = {};
-  // small_skill[222] = {id:1222,name:"蚀脑",state: 1 ,message:"对敌方造成200点伤害，同时回复100点生命值"}
-  // small_skill[222].do = {tHp:"200"};
-  // small_skill[223] = {id:1223,name:"噩梦",state: 1 ,message:"使敌方沉睡一回合不能摸牌，己方也不能进行攻击"}
-  // small_skill[223].do = {};
-  // small_skill[224] = {id:1224,name:"霜冻新星",state: 1 ,message:"对地敌方造成200点伤害"}
-  // small_skill[224].do = {tHp:"200"};
-  // small_skill[225] = {id:1225,name:"霜冻护甲",state: 2 ,message:"2回合内增加20点护甲"}
-  // small_skill[225].do = {mBuff:[,mB]uffT:}
-  // small_skill[226] = {id:1226,name:"邪恶祭祀",state: 1 ,message:"消耗50点生命，回复3点能量"}
-  // small_skill[226].do = {};
-  // small_skill[227] = {id:1227,name:"麻痹药剂",state: 0 ,message:"使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合(可闪避)"}
-  // small_skill[227].do = {};
-  // small_skill[228] = {id:1228,name:"巫毒回复术",state: 1 ,message:"回复150点生命"}
-  // small_skill[228].do = {};
-  // small_skill[229] = {id:1229,name:"诅咒",state: 0 ,message:"使敌方3回合后受到3回合内受到总伤害的25%(可闪避)"}
-  // small_skill[229].do = {};
-  // small_skill[230] = {id:1230,name:"相位转移",state: 3 ,message:"免疫一次任何伤害"}
-  // small_skill[230].do = {};
-  // small_skill[231] = {id:1231,name:"新月之痕",state: 0 ,message:"对敌方造成100点伤害并使对方沉默一回合(可闪避)"}
-  // small_skill[231].do = {tHp:"100"};
-  // small_skill[232] = {id:1232,name:"不可侵犯",state: 2 ,message:"被动牌:使对方普通攻击时消耗双倍能量格"}
-  // small_skill[232].do = {mBuff:[,mB]uffT:}
-  // small_skill[233] = {id:1233,name:"自然之助",state: 1 ,message:"回复自身200点生命值"}
-  // small_skill[233].do = {};
-  // small_skill[234] = {id:1234,name:"幽冥爆轰",state: 0 ,message:"对敌方造成200点伤害(可闪避)"}
-  // small_skill[234].do = {tHp:"200"};
-  // small_skill[235] = {id:1235,name:"幽冥守卫",state: 1 ,message:"对敌方造成敌方消耗能量格*100的伤害"}
-  // small_skill[235].do = {tHp:"敌方消耗能量格*100"};
-  // small_skill[236] = {id:1236,name:"衰老",state: 1 ,message:"使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害"}
-  // small_skill[236].do = {};
-  // small_skill[237] = {id:1237,name:"雷霆之击",state: 1 ,message:"对敌方造成200点伤害"}
-  // small_skill[237].do = {tHp:"200"};
-
-};module.exports = { big_skill: big_skill, small_skill: small_skill };
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Card = __webpack_require__(12);
-
-var _Card2 = _interopRequireDefault(_Card);
-
-var _stateflie = __webpack_require__(24);
-
-var _stateflie2 = _interopRequireDefault(_stateflie);
-
-var _BuffIon = __webpack_require__(25);
-
-var _BuffIon2 = _interopRequireDefault(_BuffIon);
-
-var _Equipment = __webpack_require__(14);
-
-var _Equipment2 = _interopRequireDefault(_Equipment);
-
-var _action = __webpack_require__(5);
-
-__webpack_require__(73);
-
-var _MetailBox = __webpack_require__(8);
-
-var _MetailBox2 = _interopRequireDefault(_MetailBox);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var socket = io();
-
-var HeroPlaceMy = function (_React$Component) {
-    _inherits(HeroPlaceMy, _React$Component);
-
-    function HeroPlaceMy() {
-        _classCallCheck(this, HeroPlaceMy);
-
-        return _possibleConstructorReturn(this, (HeroPlaceMy.__proto__ || Object.getPrototypeOf(HeroPlaceMy)).call(this));
-    }
-
-    _createClass(HeroPlaceMy, [{
-        key: 'cardlist',
-        value: function cardlist() {
-            var _this2 = this;
-
-            return this.props.mystate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({}, _this2.props, { card: card, cardfor: "my", key: i }));
-            });
-        }
-    }, {
-        key: 'showstate',
-        value: function showstate(st) {
-            var buff = st.buff; //状态数组
-            var buffTime = st.buffTime; //状态持续时间
-            return buff.map(function (item, i) {
-                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], buffObj: st.buffObj, key: i }));
-            });
-        }
-    }, {
-        key: 'attackBtn',
-        value: function attackBtn() {
-
-            var attack = {
-                name: "普通攻击",
-                state: 1,
-                do: {
-                    tHp: this.props.mystate.attack
-                }
-            };
-
-            var _doAttack = (0, _action.doAttack)(this.props, attack, "attack"),
-                _doAttack2 = _slicedToArray(_doAttack, 2),
-                check = _doAttack2[0],
-                newstate = _doAttack2[1];
-
-            this.props.setState(newstate);
-
-            if (check == false) return;
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    funname: "getnewstate",
-                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
-                    message: check == "miss" ? "对方普通攻击MISS" : "普通攻击对你造成\"" + check + "\"点伤害"
-                }
-            });
-        }
-    }, {
-        key: 'roundOver',
-        value: function roundOver() {
-            //回合结束
-            var messagelist = this.props.messagelist;
-            messagelist.push("结束回合");
-            var mystate = this.props.mystate;
-            mystate.attackAccount = ("." + mystate.attackAccount * 100 % 100) * 1; //攻击机会重置
-            for (var i = 0; i < mystate.buff.length;) {
-                //状态处理
-                if (mystate.buffTime[i] == 1) {
-                    mystate.buffTime.splice(i, 1);
-                    mystate.buffObj[mystate.buff[i]] && delete mystate.buffObj[mystate.buff[i]];
-                    mystate.buff.splice(i, 1);
-                } else {
-                    mystate.buffTime[i] -= 1;
-                    i++;
-                }
-            }
-            for (var _i in mystate.equipmentcd) {
-                //装备处理
-                if (mystate.equipmentcd[_i] > 0) {
-                    mystate.equipmentcd[_i] -= 1;
-                }
-                _i++;
-            }
-            var newstate = { round: 0, messagelist: messagelist, mystate: mystate };
-            this.props.setState(newstate);
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    funname: "getnewstate",
-                    newstate: { round: 1, thatstate: mystate },
-                    message: "对方回合结束，现在是你的回合"
-                }
-            });
-        }
-    }, {
-        key: 'componentDidUpdate',
-        value: function componentDidUpdate() {
-            //判断游戏结束
-            if (this.props.mystate.Hp <= 0) {
-                alert("你输了");
-                console.info("你输了");
-                this.props.next_process({ progress_state: 1 });
-                socket.emit('fightResult', {
-                    id: this.props.myid,
-                    name: this.props.myname
-                });
-            }
-        }
-    }, {
-        key: 'showtip',
-        value: function showtip(item, e) {
-            this.props.setState({ Tooltip: {
-                    show: true,
-                    place: [e.clientX, e.clientY],
-                    name: item.name,
-                    blueT: item.mp,
-                    redT: item.CD ? "CD:" + item.CD / 2 : "",
-                    message: item.message
-                } });
-        }
-    }, {
-        key: 'closetip',
-        value: function closetip() {
-            this.props.setState({ Tooltip: { show: false } });
-        }
-    }, {
-        key: 'showEquipment',
-        value: function showEquipment(equipments) {
-            var _this3 = this;
-
-            return equipments.map(function (item, i) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'posi_tion', key: i,
-                        onMouseOver: _this3.showtip.bind(_this3, item),
-                        onMouseOut: _this3.closetip.bind(_this3) },
-                    _react2.default.createElement(_Equipment2.default, _extends({}, _this3.props, { equipment: item, equipmentcd: _this3.props.mystate.equipmentcd[item.id], equipfor: "my" }))
-                );
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var basic = this.props.mystate;
-            return _react2.default.createElement(
-                'div',
-                { className: 'hero_place' },
-                _react2.default.createElement(
-                    _MetailBox2.default,
-                    null,
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'hero_box' },
-                        _react2.default.createElement('div', { className: "hero_ion hero_ion_" + basic.herotype }),
-                        this.props.round == 1 ? _react2.default.createElement(
-                            'div',
-                            { className: 'attack_btn', onClick: this.attackBtn.bind(this) },
-                            "攻击x" + basic.attackAccount + "↑" + basic.attackRecove
-                        ) : "",
-                        this.props.round == 1 ? _react2.default.createElement(
-                            'div',
-                            { className: 'over_btn', onClick: this.roundOver.bind(this) },
-                            "回合结束"
-                        ) : ""
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'attribute_list' },
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'HP' },
-                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'MP' },
-                            basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'attack' },
-                            "攻击力:" + basic.attack
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'armor' },
-                            "护甲:" + basic.armor
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'statelist' },
-                            _react2.default.createElement(
-                                'span',
-                                null,
-                                '\u72B6\u6001:'
-                            ),
-                            this.showstate(basic)
-                        )
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'card_list' },
-                        this.cardlist()
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'equipment_list' },
-                        _react2.default.createElement(
-                            'div',
-                            null,
-                            "金钱:" + this.props.mystate.money
-                        ),
-                        this.showEquipment(basic.equipment)
-                    )
-                )
-            );
-        }
-    }]);
-
-    return HeroPlaceMy;
-}(_react2.default.Component);
-
-module.exports = HeroPlaceMy;
-
-/***/ }),
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+module.exports = __webpack_require__(25);
 
-
-var state_list = [{ id: 0, name: "晕眩", message: "使该单位无法攻击,出牌,使用装备" }, { id: 1, name: "沉默", message: "使该单位无法出牌" }, { id: 2, name: "虚无", message: "使该单位无法攻击,所受魔法伤害增加50%" }, { id: 3, name: "缴械", message: "使该单位无法攻击" }, { id: 4, name: "死亡契约", message: "该单位的攻击力暴涨了 (90)" }, { id: 5, name: "巨浪", message: "减少10点护甲" }, { id: 6, name: "锚击", message: "减少50%攻击力" }, { id: 7, name: "船游", message: "受到伤害减半" }, { id: 8, name: "无光之盾", message: "最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)" }, { id: 9, name: "回光返照", message: "将受到的伤害转化为自己的生命值" }, { id: 10, name: "超级新星", message: "承受6次攻击则死亡,否则重生" }, { id: 11, name: "战士怒吼", message: "增加40点护甲" }, { id: 12, name: "海象挥击", message: "攻击力变为现在攻击力的4倍" }, { id: 13, name: "强化图腾", message: "攻击力变为现在攻击力的2倍" }, { id: 14, name: "决斗", message: "强制攻击,无法使用装备，技能" }, { id: 15, name: "变身", message: "攻击加100" }, { id: 16, name: "嚎叫", message: "攻击加60" }, { id: 17, name: "化学狂暴", message: "攻击加40并且每回合回复100点生命值" }, { id: 18, name: "战吼", message: "增加30点护甲" }, { id: 19, name: "神之力量", message: "攻击翻倍" }, { id: 20, name: "真龙形态", message: "攻击力增加装备数目乘以15" }, { id: 21, name: "授予力量", message: "攻击加80" }, { id: 22, name: "末日", message: "每回合造成100点伤害,不能使用技能和物品" }, { id: 23, name: "回音重踏", message: "晕眩状态,受到任何伤害都会解除" }, { id: 24, name: "磁场", message: "物理免疫" }, { id: 25, name: "守护天使", message: "物理免疫" }, { id: 26, name: "血肉傀儡", message: "对方每少一张牌加80点生命" }, { id: 27, name: "狂暴", message: "魔法免疫" }, { id: 28, name: "疯狂生长", message: "无法攻击" }, { id: 29, name: "活体护甲", message: "受到物理伤害减少20每回合加40点血" }, { id: 30, name: "醉酒云雾", message: "普通攻击有75%的概率打不中" }, { id: 31, name: "伤害加深", message: "护甲减少100点" }, { id: 32, name: "战士怒吼2", message: "强迫攻击,无法使用技能物品" }, { id: 33, name: "火焰壁垒", message: "抵挡150点魔法伤害,对方每回合减少30点生命值" }, { id: 34, name: "剑刃风暴", message: "使自己魔免,不可以攻击和出牌" }, { id: 35, name: "战斗专注", message: "普通攻击时可以多攻击敌方一次" }, { id: 36, name: "海妖之歌", message: "处于无敌状态" }, { id: 37, name: "石化凝视", message: "晕眩且魔免,但受到的物理伤害加倍" }, { id: 38, name: "折光", message: "抵挡伤害" }, { id: 39, name: "割裂", message: "自己每减少一张牌会减少200点生命值" }, { id: 40, name: "烟幕", message: "攻击有75%的概率miss,并不可以使用技能" }, { id: 41, name: "魔王降临", message: "减少20点护甲" }, { id: 42, name: "麻痹撕咬", message: "该单位50%概率攻击miss" }, { id: 43, name: "极度饥渴", message: "该单位攻击+80,且将对敌方造成伤害转化为己方生命值" }, { id: 44, name: "灵魂猎手", message: "该单位承受伤害加深25%" }, { id: 45, name: "编织", message: "该单位护甲+50" }, { id: 46, name: "薄葬", message: "该单位不会死亡" }, { id: 47, name: "激光", message: "该单位物理攻击100%miss" }, { id: 48, name: "超负荷", message: "空" }, { id: 49, name: "法力流失", message: "该单位攻击所需能量值+1" }, { id: 50, name: "虚妄之诺", message: "该单位不能攻击" }, { id: 51, name: "命运赦令", message: "该单位不能攻击切所受物理伤害加倍" }, { id: 52, name: "恶魔赦令", message: "该单位每回合对敌方造成80点伤害" }, { id: 53, name: "致命链接", message: "该单位承受1.5倍技能伤害" }, { id: 54, name: "虚弱", message: "该单位攻击力-30" }, { id: 55, name: "噩梦", message: "该单位沉睡中,不能出牌,攻击和使用装备" }, { id: 56, name: "诅咒", message: "该单位能量值-1" }, { id: 57, name: "旋风飞斧", message: "该单位攻击有30%的概率miss" }, { id: 58, name: "血之狂暴", message: "该单位无法使用技能" }, { id: 59, name: "超级力量", message: "普通攻击成功后额外对敌方造成该单位双倍攻击的伤害" }, { id: 60, name: "魔免", message: "魔法免疫" }, { id: 61, name: "撕裂伤口", message: "将该单位受到的普通攻击伤害转化为生命值" }, { id: 62, name: "衰退光环", message: "该单位攻击力减半" }, { id: 63, name: "自然秩序", message: "该单位护甲归0" }, { id: 64, name: "编织", message: "该单位护甲-50" }, { id: 65, name: "高射火炮", message: "该单位攻击+70" }, { id: 66, name: "嗜血术", message: "该单位攻击+30" }, { id: 67, name: "灼热之箭", message: "该单位攻击+50" }, { id: 68, name: "极寒之拥", message: "该单位护甲+100,且不可攻击,出牌和实用装备" }, { id: 69, name: "毒性攻击", message: "该单位攻击+40" }, { id: 70, name: "狂战士之怒", message: "该单位血量<50%时,攻击次数+1且不消耗能量格" }, { id: 71, name: "扫射", message: "该单位攻击+40" }, { id: 72, name: "沸血之矛", message: "该单位攻击+100" }, { id: 73, name: "酸性喷雾", message: "该单位护甲-10" }, { id: 74, name: "严寒灼烧", message: "增加敌方当前生命值2%的攻击力" }, { id: 75, name: "火力聚焦", message: "该单位攻击-50,攻击次数+2" }, { id: 76, name: "智慧之刃", message: "增加该单位20倍能量值的攻击力" }, { id: 77, name: "霜冻护甲", message: "该单位护甲+20" }, { id: 78, name: "秘法天球", message: "增加该单位25倍能量值的攻击力" }, { id: 79, name: "暗影之舞", message: "令该单位处于无法受到攻击状态" }, { id: 80, name: "激怒", message: "增加该单位当前生命5%的攻击力" }, { id: 81, name: "暗杀", message: "" }, { id: 82, name: "撒旦", message: "将造成的物理伤害转化为生命值" }, { id: 83, name: "刃甲", message: "反弹任何伤害,对魔免状态无效" }, { id: 84, name: "勇气徽章", message: "敌方护甲-10,己方护甲-10" }, { id: 85, name: "林肯", message: "抵挡一次指向性法术(对装备的法术无效)" }, { id: 86, name: "鬼手", message: "回合结束时HP-100" }, { id: 87, name: "妖术", message: "使该单位无法攻击,出牌,使用装备" }, { id: 88, name: "风杖", message: "使该单位无法攻击,出牌,使用装备,并且无敌" }, { id: 89, name: "黑暗契约", message: "状态结束后清除所有状态,并造成伤害" }, { id: 90, name: "竭心光环", message: "每回合减少敌方0.1%生命值" }, { id: 91, name: "施虐之心", message: "每对敌方造成200点伤害回复1点能量格和100点生命" }, { id: 92, name: "不可侵犯", message: "使对方普通攻击时消耗双倍能量格" }, { id: 93, name: "魔王降临", message: "减少敌方20点护甲" }, { id: 94, name: "屠戮", message: "敌方每减少一张手牌自己回复30点生命" }, { id: 95, name: "静电场", message: "每次释放任何技能都会对敌方造成40点伤害" }, { id: 96, name: "霜之哀伤", message: "攻击成功后会弃置敌方一张手牌" }, { id: 97, name: "巨力重击", message: "攻击时有30%的概率晕眩敌方一回合并附加40点攻击" }, { id: 98, name: "月刃", message: "攻击力加敌方手牌数乘10的数值" }, { id: 99, name: "巨力挥舞", message: "普通攻击时增加加敌方手牌数乘10的攻击力" }, { id: 100, name: "反击", message: "在自己受到伤害时对敌方造成自身承受伤害的20%" }, { id: 101, name: "海妖外壳", message: "受到普通攻击时可以减少50点伤害" }, { id: 102, name: "潮汐使者", message: "使自己本回合增加20+对方手牌数*10点攻击力" }, { id: 103, name: "活性护甲", message: "每受到一次攻击增加10点护甲" }, { id: 104, name: "回光返照", message: "受到的伤害都会增加自己的生命值" }, { id: 105, name: "反击螺旋", message: "敌方普通攻击自己时会受到50点伤害(持续3回合)" }, { id: 106, name: "战意", message: "每释放一次技能可以增加20点攻击力" }, { id: 107, name: "余震", message: "半合内自己使用任何技能都会使敌方眩晕半回合" }, { id: 108, name: "致命一击", message: "攻击时有40%的概率双倍攻击(持续3回合)" }, { id: 109, name: "勇气之霎", message: "受到普通攻击时有40%的概率增加自己100点血" }, { id: 110, name: "重生", message: "死亡后可以重生，重生后拥有400点生命值" }, { id: 111, name: "吸血光环", message: "普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" }, { id: 112, name: "致死打击", message: "攻击时有60%的概率1.5倍攻击" }, { id: 113, name: "野性驱使", message: "攻击加30" }, { id: 114, name: "地精贪婪", message: "每回合得到金钱数+10" }, { id: 115, name: "龙族血统", message: "每回合回复40点生命值" }, { id: 116, name: "自然秩序", message: "令对方护甲归0" }, { id: 117, name: "崎岖外表", message: "敌方在普通攻击你时有30%的概率晕眩一回合" }, { id: 118, name: "衰退光环", message: "减少对方50%攻击力" }, { id: 119, name: "狂战士之血", message: "血量低于50%时每次普通攻击可以多攻击一次" }, { id: 120, name: "盛宴", message: "普通攻击时将对方现有生命值的2%转化为自身生命" }, { id: 121, name: "活体护甲", message: "免疫三次敌方的普通攻击" }, { id: 122, name: "腐肉堆积", message: "敌方每少一张手牌自己加40点血，并且加40点血量上限" }, { id: 123, name: "醉拳", message: "受到普通攻击时有40%的概率mis" }, { id: 124, name: "重击", message: "攻击时有40%的概率击晕敌方半回合并附加70点伤害" }, { id: 125, name: "法力损毁", message: "普通攻击成功后可以削减敌方一点能量值" }, { id: 126, name: "地之突袭", message: "攻击力加30" }, { id: 127, name: "带刺外壳", message: "每回合可以抵挡一次指向性法术" }, { id: 128, name: "命令光环", message: "增加25%的攻击力" }, { id: 129, name: "强击光环", message: "增加25%的攻击力" }, { id: 130, name: "射手天赋", message: "增加150点攻击力" }, { id: 131, name: "模糊", message: "敌方在普通攻击你时有70%的概率mis" }, { id: 132, name: "恩赐解脱", message: "攻击时有30%的概率4倍暴击" }, { id: 133, name: "爆头", message: "攻击时有40%的概率附加100点伤害" }, { id: 134, name: "剑舞", message: "攻击时有60%的概率1.5倍暴击" }, { id: 135, name: "热血战魂", message: "加30点攻击" }, { id: 136, name: "毒刺", message: "攻击时对敌方额外造成20点伤害" }, { id: 137, name: "幽冥剧毒", message: "敌方血量低于50%时,攻击附加50点伤害" }, { id: 138, name: "腐蚀外表", message: "受到敌方的任何攻击之后敌方会掉40点血" }, { id: 139, name: "等离子场", message: "敌方每次对你使用指向性技能时会减少100点生命值" }, { id: 140, name: "忍术", message: "攻击时有40%的概率双倍暴击" }, { id: 141, name: "分裂箭", message: "攻击力增加敌方手牌数乘以15的数值" }, { id: 142, name: "魔法护盾", message: "受到伤害时一点能量值可以抵挡100点伤害" }, { id: 143, name: "能量转换", message: "每次攻击永久减少敌方1点攻击力,并增加该单位2点攻击" }, { id: 144, name: "怒意狂击", message: "每次普通攻击成功后攻击力会增加20" }, { id: 145, name: "回到过去", message: "受到任何攻击时有25%的概率免疫" }, { id: 146, name: "时间锁定", message: "普通攻击时有25%的概率使敌方晕眩一回合" }, { id: 147, name: "嗜血渴望", message: "敌方血量低于50%时，该单位增加50点攻击" }, { id: 148, name: "支配死灵", message: "敌方每减少一张牌,该单位可以永久增加2点攻击" }, { id: 149, name: "荒芜", message: "增加30点攻击" }, { id: 150, name: "折射", message: "反弹自己受到一切伤害的25%" }, { id: 151, name: "麻痹撕咬", message: "普通攻击成功后可以使敌方1回合内有50%的概率攻击mis" }, { id: 152, name: "月之祝福", message: "攻击力加60" }, { id: 153, name: "辉煌光环", message: "每回合可以额外回复1点能量值" }, { id: 154, name: "超负荷", message: "每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击" }, { id: 155, name: "精气光环", message: "释放技能时有50%的概率加100点能量值" }, { id: 156, name: "连击", message: "每次攻击降低敌方10点护甲" }, { id: 157, name: "多重施法", message: "释放技能时有50%的概率2倍暴击" }, { id: 158, name: "嗜血术", message: "增加自己30点攻击力" }];
-module.exports = state_list;
 
 /***/ }),
 /* 25 */
@@ -3008,283 +2300,7 @@ module.exports = state_list;
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(69);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var BuffIon = function (_React$Component) {
-    _inherits(BuffIon, _React$Component);
-
-    function BuffIon() {
-        _classCallCheck(this, BuffIon);
-
-        return _possibleConstructorReturn(this, (BuffIon.__proto__ || Object.getPrototypeOf(BuffIon)).call(this));
-    }
-
-    _createClass(BuffIon, [{
-        key: "render",
-        value: function render() {
-            // {id:0,name:"晕眩",message:"使该单位无法攻击,出牌,使用装备"},
-            return _react2.default.createElement(
-                "div",
-                { className: "BuffIon_box", style: { background: "url(./server/stateImg/" + this.props.id + ".jpg) no-repeat center" } },
-                _react2.default.createElement(
-                    "div",
-                    { className: "tooltip" },
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        this.props.name,
-                        _react2.default.createElement(
-                            "div",
-                            { className: "Buff_time" },
-                            this.props.buffTime
-                        ),
-                        this.props.buffObj[this.props.id] ? _react2.default.createElement(
-                            "div",
-                            { className: "Buff_obj" },
-                            this.props.buffObj[this.props.id]
-                        ) : ""
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        null,
-                        this.props.message
-                    )
-                )
-            );
-        }
-    }]);
-
-    return BuffIon;
-}(_react2.default.Component);
-
-module.exports = BuffIon;
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Card = __webpack_require__(12);
-
-var _Card2 = _interopRequireDefault(_Card);
-
-var _stateflie = __webpack_require__(24);
-
-var _stateflie2 = _interopRequireDefault(_stateflie);
-
-var _BuffIon = __webpack_require__(25);
-
-var _BuffIon2 = _interopRequireDefault(_BuffIon);
-
-var _Equipment = __webpack_require__(14);
-
-var _Equipment2 = _interopRequireDefault(_Equipment);
-
-var _action = __webpack_require__(5);
-
-__webpack_require__(79);
-
-var _MetailBox = __webpack_require__(8);
-
-var _MetailBox2 = _interopRequireDefault(_MetailBox);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //计算状态影响下的属性
-
-
-var socket = io();
-
-var HeroPlaceThat = function (_React$Component) {
-    _inherits(HeroPlaceThat, _React$Component);
-
-    function HeroPlaceThat() {
-        _classCallCheck(this, HeroPlaceThat);
-
-        return _possibleConstructorReturn(this, (HeroPlaceThat.__proto__ || Object.getPrototypeOf(HeroPlaceThat)).call(this));
-    }
-
-    _createClass(HeroPlaceThat, [{
-        key: 'cardlist',
-        value: function cardlist() {
-            return this.props.thatstate.cardid.map(function (card, i) {
-                return _react2.default.createElement(_Card2.default, _extends({ cardfor: "that" }, card, { key: i }));
-            });
-        }
-    }, {
-        key: 'showstate',
-        value: function showstate(basic) {
-            var buff = basic.buff; //状态数组
-            var buffTime = basic.buffTime; //状态持续时间
-            return buff.map(function (item, i) {
-                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], buffObj: basic.buffObj, key: i }));
-            });
-        }
-    }, {
-        key: 'componentDidUpdate',
-        value: function componentDidUpdate() {
-            //判断游戏结束
-            if (this.props.thatstate.Hp <= 0) {
-                alert("你赢了");
-                console.info("你赢了");
-                this.props.next_process({ progress_state: 1 });
-                socket.emit('fightResult', {
-                    id: this.props.myid,
-                    name: this.props.myname
-                });
-            }
-        }
-    }, {
-        key: 'showtip',
-        value: function showtip(item, e) {
-            this.props.setState({ Tooltip: {
-                    show: true,
-                    place: [e.clientX, e.clientY],
-                    name: item.name,
-                    blueT: item.mp,
-                    redT: item.CD ? "CD:" + item.CD / 2 : "",
-                    message: item.message
-                } });
-        }
-    }, {
-        key: 'closetip',
-        value: function closetip() {
-            this.props.setState({ Tooltip: { show: false } });
-        }
-    }, {
-        key: 'showEquipment',
-        value: function showEquipment(equipments) {
-            var _this2 = this;
-
-            return equipments.map(function (item, i) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'posi_tion', key: i,
-                        onMouseOver: _this2.showtip.bind(_this2, item),
-                        onMouseOut: _this2.closetip.bind(_this2) },
-                    _react2.default.createElement(_Equipment2.default, _extends({}, _this2.props, { equipment: item, equipfor: "that", equipmentcd: 0 }))
-                );
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var basic = this.props.thatstate;
-            if (basic.herotype === "" || basic.herotype === undefined) {
-                return _react2.default.createElement(
-                    'div',
-                    { className: 'hero_place' },
-                    '\u5BF9\u624B\u6B63\u5728\u51C6\u5907\u4E2D...'
-                );
-            }
-            return _react2.default.createElement(
-                'div',
-                { className: 'hero_place' },
-                _react2.default.createElement(
-                    _MetailBox2.default,
-                    null,
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'hero_box' },
-                        _react2.default.createElement('div', { className: "hero_ion hero_ion_" + basic.herotype })
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'attribute_list' },
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'HP' },
-                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove + "/s"
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'MP' },
-                            basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove + "/s"
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'attack' },
-                            "攻击力:" + basic.attack
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'armor' },
-                            "护甲:" + basic.armor
-                        ),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'statelist' },
-                            _react2.default.createElement(
-                                'span',
-                                null,
-                                '\u72B6\u6001:'
-                            ),
-                            this.showstate(basic)
-                        )
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'card_list' },
-                        this.cardlist()
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'equipment_list' },
-                        this.showEquipment(basic.equipment)
-                    )
-                )
-            );
-        }
-    }]);
-
-    return HeroPlaceThat;
-}(_react2.default.Component);
-
-module.exports = HeroPlaceThat;
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(28);
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _reactDom = __webpack_require__(29);
+var _reactDom = __webpack_require__(26);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -3292,11 +2308,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DotaSystem = __webpack_require__(41);
+var _DotaSystem = __webpack_require__(38);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(100);
+__webpack_require__(86);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3304,7 +2320,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(_DotaSystem2.default, null), document.getElementById("box")); //react-dom，仅在项目顶层使用
 
 /***/ }),
-/* 29 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3342,15 +2358,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(30);
+  module.exports = __webpack_require__(27);
 } else {
-  module.exports = __webpack_require__(36);
+  module.exports = __webpack_require__(33);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 30 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3366,7 +2382,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(6),ea=__webpack_require__(0),m=__webpack_require__(16),A=__webpack_require__(9),C=__webpack_require__(7),fa=__webpack_require__(17),ha=__webpack_require__(18),ja=__webpack_require__(19),ka=__webpack_require__(10);
+var ba=__webpack_require__(4),ea=__webpack_require__(0),m=__webpack_require__(14),A=__webpack_require__(8),C=__webpack_require__(5),fa=__webpack_require__(15),ha=__webpack_require__(16),ja=__webpack_require__(17),ka=__webpack_require__(9);
 function D(a){for(var b=arguments.length-1,c="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);ba(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}ea?void 0:D("227");
 function ma(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ma.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return na.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -3603,7 +2619,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
 
 
 /***/ }),
-/* 31 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3616,7 +2632,7 @@ X.injectIntoDevTools({findFiberByHostInstance:Ua,bundleType:0,version:"16.3.2",r
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(9),n=__webpack_require__(6),p=__webpack_require__(10),q=__webpack_require__(7),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
+var m=__webpack_require__(8),n=__webpack_require__(4),p=__webpack_require__(9),q=__webpack_require__(5),r="function"===typeof Symbol&&Symbol["for"],t=r?Symbol["for"]("react.element"):60103,u=r?Symbol["for"]("react.portal"):60106,v=r?Symbol["for"]("react.fragment"):60107,w=r?Symbol["for"]("react.strict_mode"):60108,x=r?Symbol["for"]("react.provider"):60109,y=r?Symbol["for"]("react.context"):60110,z=r?Symbol["for"]("react.async_mode"):60111,A=r?Symbol["for"]("react.forward_ref"):
 60112,B="function"===typeof Symbol&&Symbol.iterator;function C(a){for(var b=arguments.length-1,e="http://reactjs.org/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);n(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var D={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};
 function E(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}E.prototype.isReactComponent={};E.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?C("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};E.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function F(){}F.prototype=E.prototype;function G(a,b,e){this.props=a;this.context=b;this.refs=p;this.updater=e||D}var H=G.prototype=new F;
 H.constructor=G;m(H,E.prototype);H.isPureReactComponent=!0;var I={current:null},J=Object.prototype.hasOwnProperty,K={key:!0,ref:!0,__self:!0,__source:!0};
@@ -3632,7 +2648,7 @@ Y=X&&W||X;module.exports=Y["default"]?Y["default"]:Y;
 
 
 /***/ }),
-/* 32 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3653,12 +2669,12 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(9);
-var invariant = __webpack_require__(6);
-var emptyObject = __webpack_require__(10);
-var warning = __webpack_require__(13);
-var emptyFunction = __webpack_require__(7);
-var checkPropTypes = __webpack_require__(15);
+var _assign = __webpack_require__(8);
+var invariant = __webpack_require__(4);
+var emptyObject = __webpack_require__(9);
+var warning = __webpack_require__(11);
+var emptyFunction = __webpack_require__(5);
+var checkPropTypes = __webpack_require__(13);
 
 // TODO: this is special because it gets imported during build.
 
@@ -5054,7 +4070,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 33 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5073,7 +4089,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 34 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5088,7 +4104,7 @@ module.exports = ReactPropTypesSecret;
  * @typechecks
  */
 
-var isNode = __webpack_require__(35);
+var isNode = __webpack_require__(32);
 
 /**
  * @param {*} object The object to check.
@@ -5101,7 +4117,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 35 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5129,7 +4145,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 36 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5150,19 +4166,19 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var invariant = __webpack_require__(6);
+var invariant = __webpack_require__(4);
 var React = __webpack_require__(0);
-var warning = __webpack_require__(13);
-var ExecutionEnvironment = __webpack_require__(16);
-var _assign = __webpack_require__(9);
-var emptyFunction = __webpack_require__(7);
-var checkPropTypes = __webpack_require__(15);
-var getActiveElement = __webpack_require__(17);
-var shallowEqual = __webpack_require__(18);
-var containsNode = __webpack_require__(19);
-var emptyObject = __webpack_require__(10);
-var hyphenateStyleName = __webpack_require__(37);
-var camelizeStyleName = __webpack_require__(39);
+var warning = __webpack_require__(11);
+var ExecutionEnvironment = __webpack_require__(14);
+var _assign = __webpack_require__(8);
+var emptyFunction = __webpack_require__(5);
+var checkPropTypes = __webpack_require__(13);
+var getActiveElement = __webpack_require__(15);
+var shallowEqual = __webpack_require__(16);
+var containsNode = __webpack_require__(17);
+var emptyObject = __webpack_require__(9);
+var hyphenateStyleName = __webpack_require__(34);
+var camelizeStyleName = __webpack_require__(36);
 
 // Relying on the `invariant()` implementation lets us
 // have preserve the format and params in the www builds.
@@ -21791,7 +20807,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 37 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21806,7 +20822,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(38);
+var hyphenate = __webpack_require__(35);
 
 var msPattern = /^ms-/;
 
@@ -21833,7 +20849,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 38 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21869,7 +20885,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 39 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21884,7 +20900,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(40);
+var camelize = __webpack_require__(37);
 
 var msPattern = /^-ms-/;
 
@@ -21912,7 +20928,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 40 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21947,7 +20963,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 41 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21961,17 +20977,17 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(42);
+__webpack_require__(39);
 
-var _login = __webpack_require__(45);
+var _login = __webpack_require__(42);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _Prepare = __webpack_require__(49);
+var _Prepare = __webpack_require__(46);
 
 var _Prepare2 = _interopRequireDefault(_Prepare);
 
-var _playing = __webpack_require__(54);
+var _playing = __webpack_require__(51);
 
 var _playing2 = _interopRequireDefault(_playing);
 
@@ -22038,11 +21054,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 42 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(43);
+var content = __webpack_require__(40);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22088,7 +21104,7 @@ if(false) {
 }
 
 /***/ }),
-/* 43 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22102,7 +21118,7 @@ exports.push([module.i, "html {\n  height: 100%;\n  width: 100%; }\n  html body 
 
 
 /***/ }),
-/* 44 */
+/* 41 */
 /***/ (function(module, exports) {
 
 
@@ -22197,7 +21213,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 45 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22209,7 +21225,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(46);
+__webpack_require__(43);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22298,11 +21314,11 @@ var login = function (_React$Component) {
 module.exports = login;
 
 /***/ }),
-/* 46 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(47);
+var content = __webpack_require__(44);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22348,28 +21364,28 @@ if(false) {
 }
 
 /***/ }),
-/* 47 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(4);
+var escape = __webpack_require__(6);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".login_box {\n  width: 100%;\n  height: 100%;\n  background: url(" + escape(__webpack_require__(48)) + ") no-repeat;\n  background-size: auto 100%;\n  background-color: #000;\n  background-position: left; }\n  .login_box .login {\n    width: 200px;\n    background: #3a4c4c;\n    color: #fff;\n    position: absolute;\n    left: 75%;\n    top: 50%;\n    margin-left: -100px;\n    margin-top: -30px;\n    padding: 10px;\n    border-radius: 3px; }\n    .login_box .login .login_title {\n      background: #3a4c4c;\n      margin-top: -30px;\n      line-height: 20px;\n      padding: 5px 10px;\n      position: inherit;\n      font-size: 13px;\n      border-radius: 3px; }\n    .login_box .login .name_input {\n      box-sizing: border-box;\n      text-align: center;\n      font-size: 1.4em;\n      border-radius: 4px;\n      border: 1px solid #c8cccf;\n      color: #6a6f77;\n      -web-kit-appearance: none;\n      -moz-appearance: none;\n      display: block;\n      width: 100%; }\n    .login_box .login .login_btn {\n      background: #285ea8;\n      text-align: center;\n      padding: 5px;\n      border-radius: 3px;\n      font-size: 14px;\n      margin-top: 10px; }\n", ""]);
+exports.push([module.i, ".login_box {\n  width: 100%;\n  height: 100%;\n  background: url(" + escape(__webpack_require__(45)) + ") no-repeat;\n  background-size: auto 100%;\n  background-color: #000;\n  background-position: left; }\n  .login_box .login {\n    width: 200px;\n    background: #3a4c4c;\n    color: #fff;\n    position: absolute;\n    left: 75%;\n    top: 50%;\n    margin-left: -100px;\n    margin-top: -30px;\n    padding: 10px;\n    border-radius: 3px; }\n    .login_box .login .login_title {\n      background: #3a4c4c;\n      margin-top: -30px;\n      line-height: 20px;\n      padding: 5px 10px;\n      position: inherit;\n      font-size: 13px;\n      border-radius: 3px; }\n    .login_box .login .name_input {\n      box-sizing: border-box;\n      text-align: center;\n      font-size: 1.4em;\n      border-radius: 4px;\n      border: 1px solid #c8cccf;\n      color: #6a6f77;\n      -web-kit-appearance: none;\n      -moz-appearance: none;\n      display: block;\n      width: 100%; }\n    .login_box .login .login_btn {\n      background: #285ea8;\n      text-align: center;\n      padding: 5px;\n      border-radius: 3px;\n      font-size: 14px;\n      margin-top: 10px; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 48 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "5ff841ec66299ab986b56ca3b15dd927.jpg";
 
 /***/ }),
-/* 49 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22381,9 +21397,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(50);
+__webpack_require__(47);
 
-var _MetailBox = __webpack_require__(8);
+var _MetailBox = __webpack_require__(12);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
@@ -22418,6 +21434,7 @@ var Component = function (_React$Component) {
         value: function componentWillMount() {
             var _this2 = this;
 
+            this.Unmount = false; //组件移除
             window.onunload = function (event) {
                 socket.emit('logout', {
                     id: _this2.props.myid,
@@ -22426,13 +21443,15 @@ var Component = function (_React$Component) {
             };
             this.props.socket.on('getpersen', function (persenAry) {
                 //刷新人员列表
-                _this2.setState({ persenAry: persenAry });
+                if (!_this2.Unmount) {
+                    _this2.setState({ persenAry: persenAry });
+                }
             });
             this.props.socket.on('getmessage', function (mewmessage) {
                 //刷新消息
-                // let message = this.state.message;
-                // message.push(mewmessage);
-                _this2.setState({ message: mewmessage });
+                if (!_this2.Unmount) {
+                    _this2.setState({ message: mewmessage });
+                }
             });
 
             this.props.socket.on('getFight', function (res) {
@@ -22463,6 +21482,11 @@ var Component = function (_React$Component) {
                     alert(res.message);
                 }
             });
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            this.Unmount = true;
         }
     }, {
         key: 'select_persen',
@@ -22545,7 +21569,7 @@ var Component = function (_React$Component) {
                     _react2.default.createElement(
                         _MetailBox2.default,
                         null,
-                        _react2.default.createElement('textarea', { spellcheck: 'false', onChange: this.edit.bind(this), value: this.state.mymessage })
+                        _react2.default.createElement('textarea', { spellCheck: 'false', onChange: this.edit.bind(this), value: this.state.mymessage })
                     )
                 ),
                 _react2.default.createElement(
@@ -22577,11 +21601,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 50 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(51);
+var content = __webpack_require__(48);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22627,7 +21651,7 @@ if(false) {
 }
 
 /***/ }),
-/* 51 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22641,11 +21665,11 @@ exports.push([module.i, ".prepare_body {\n  width: 100%;\n  height: 100%;\n  bac
 
 
 /***/ }),
-/* 52 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(53);
+var content = __webpack_require__(50);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22691,22 +21715,22 @@ if(false) {
 }
 
 /***/ }),
-/* 53 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(4);
+var escape = __webpack_require__(6);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  overflow: hidden;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: calc(100% - 28px);\n    width: 14px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    top: 0px;\n    right: 0px;\n    transform: rotate(90deg); }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(21)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    top: 0px;\n    right: 14px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(20)) + ");\n    height: calc(100% - 28px);\n    width: 14px;\n    position: absolute;\n    bottom: 14px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(11)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    left: 0px;\n    transform: rotate(270deg); }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(21)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    bottom: 0px;\n    left: 14px;\n    transform: rotate(180deg); }\n  .metal_box .inner_scroll {\n    position: absolute;\n    top: 14px;\n    left: 14px;\n    width: calc(100% - 28px);\n    height: calc(100% - 28px);\n    overflow-y: auto;\n    overflow-x: hidden; }\n  .metal_box .inner_scroll::-webkit-scrollbar {\n    width: 0px;\n    background-color: #18181e;\n    border: 3px solid #2a2a2e;\n    border-radius: 5px; }\n  .metal_box .inner_scroll::-webkit-scrollbar-thumb {\n    background-color: #2b3351;\n    border-radius: 5px;\n    border: 3px solid #2a2a2e;\n    height: 10px !important;\n    width: 10px; }\n", ""]);
+exports.push([module.i, ".metal_box {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  overflow: hidden;\n  background-color: #18181e; }\n  .metal_box .border_corner1 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px; }\n  .metal_box .border_line1 {\n    background: url(" + escape(__webpack_require__(18)) + ");\n    height: calc(100% - 28px);\n    width: 14px; }\n  .metal_box .border_corner2 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    top: 0px;\n    right: 0px;\n    transform: rotate(90deg); }\n  .metal_box .border_line2 {\n    background: url(" + escape(__webpack_require__(19)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    top: 0px;\n    right: 14px; }\n  .metal_box .border_corner3 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_line3 {\n    background: url(" + escape(__webpack_require__(18)) + ");\n    height: calc(100% - 28px);\n    width: 14px;\n    position: absolute;\n    bottom: 14px;\n    right: 0px;\n    transform: rotate(180deg); }\n  .metal_box .border_corner4 {\n    background: url(" + escape(__webpack_require__(10)) + ") no-repeat center;\n    width: 14px;\n    height: 14px;\n    position: absolute;\n    bottom: 0px;\n    left: 0px;\n    transform: rotate(270deg); }\n  .metal_box .border_line4 {\n    background: url(" + escape(__webpack_require__(19)) + ");\n    height: 14px;\n    width: calc(100% - 28px);\n    position: absolute;\n    bottom: 0px;\n    left: 14px;\n    transform: rotate(180deg); }\n  .metal_box .inner_scroll {\n    position: absolute;\n    top: 14px;\n    left: 14px;\n    width: calc(100% - 28px);\n    height: calc(100% - 28px);\n    overflow-y: auto;\n    overflow-x: hidden; }\n  .metal_box .inner_scroll::-webkit-scrollbar {\n    width: 0px;\n    background-color: #18181e;\n    border: 3px solid #2a2a2e;\n    border-radius: 5px; }\n  .metal_box .inner_scroll::-webkit-scrollbar-thumb {\n    background-color: #2b3351;\n    border-radius: 5px;\n    border: 3px solid #2a2a2e;\n    height: 10px !important;\n    width: 10px; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 54 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22720,15 +21744,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(55);
+__webpack_require__(52);
 
-var _action = __webpack_require__(5);
+var _action = __webpack_require__(7);
 
-var _Tooltip = __webpack_require__(58);
+var _Tooltip = __webpack_require__(56);
 
 var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
-var _index = __webpack_require__(61);
+var _index = __webpack_require__(59);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -22771,9 +21795,9 @@ var Component = function (_React$Component) {
                 Mp: 500, //当前蓝量
                 Mprecove: 50, //魔法值恢复速度
                 attack: 40, //攻击力
-                attackAccount: 0, //剩余攻击次数
                 attackRecove: 1, //攻击速度
                 armor: 10, //护甲
+                attackAccount: 0, //剩余攻击次数
                 buff: [], //状态数组
                 buffTime: [], //状态持续时间
                 buffObj: {}, //有些状态需要对象来存储
@@ -22832,11 +21856,11 @@ var Component = function (_React$Component) {
 module.exports = Component;
 
 /***/ }),
-/* 55 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(56);
+var content = __webpack_require__(53);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -22882,7 +21906,7 @@ if(false) {
 }
 
 /***/ }),
-/* 56 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -22896,11 +21920,584 @@ exports.push([module.i, ".system_body {\n  background: #363549; }\n  .system_bod
 
 
 /***/ }),
-/* 57 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+
+var big_skill = [];
+var small_skill = [];
+big_skill[0] = { id: 0, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害" };
+big_skill[1] = { id: 1, name: "毁灭", state: 1, message: "对敌方造成100点伤害并晕眩敌方手牌数除以2的回合" //(可闪避)"}
+};big_skill[2] = { id: 2, name: "幽灵船", state: 1, message: "对敌方造成130点伤害晕眩一回合,三回合内自己受到伤害减半" //(可闪避)"}
+};big_skill[3] = { id: 3, name: "雷神之怒", state: 1, message: "对敌方造成自己手牌乘以60的伤害" };
+big_skill[4] = { id: 4, name: "飞锯", state: 1, message: "使敌方受到敌方最大生命值的10%的伤害" //(可闪避)"}
+};big_skill[5] = { id: 5, name: "回光返照", state: 2, message: "发动后4回合内受到的伤害都会增加自己的生命值" };
+big_skill[6] = { id: 6, name: "超级新星", state: 2, message: "敌方在3回合内对你造成6次攻击你死亡否则你的生命值变为50%" };
+big_skill[7] = { id: 7, name: "淘汰之刃", state: 1, message: "当敌方生命值少于500时直接秒杀,否则造成200点伤害" };
+big_skill[8] = { id: 8, name: "战意", state: 2, message: "被动牌:每释放一次技能可以增加20点攻击力" };
+big_skill[9] = { id: 9, name: "海象挥击", state: 2, message: "三回合内使自己攻击力变为现在攻击力的4倍，攻击后恢复正常" };
+big_skill[10] = { id: 10, name: "回音击", state: 1, message: "造成敌方手牌数乘以60的伤害" //(可闪避)"}
+};big_skill[11] = { id: 11, name: "决斗", state: 1, message: "在3回合内双方只能互相攻击" };
+big_skill[12] = { id: 12, name: "重生", state: 2, message: "被动牌:死亡后可以重生，重生后拥有400点生命值" };
+big_skill[13] = { id: 13, name: "变身", state: 2, message: "三回合内攻击加100" };
+big_skill[14] = { id: 14, name: "化学狂暴", state: 2, message: "持续三回合,攻击加40并且每回合回复100点生命值" };
+big_skill[15] = { id: 15, name: "幽冥一击", state: 1, message: "对敌方造成300加自己攻击力的伤害并晕眩一回合" };
+big_skill[16] = { id: 16, name: "神之力量", state: 2, message: "三回合内攻击翻倍" };
+big_skill[17] = { id: 17, name: "真龙形态", state: 2, message: "三回合内攻击力加上自身装备数目乘以15" };
+big_skill[18] = { id: 18, name: "两级反转", state: 1, message: "造成100点伤害并晕眩对手3回合" //(可闪避)"}
+};big_skill[19] = { id: 19, name: "末日", state: 1, message: "每回合造成100点伤害,敌方三回合内不能使用技能和物品" };
+big_skill[20] = { id: 20, name: "裂地者", state: 1, message: "对敌方造成自己现有生命值的30%的伤害，无视魔法免疫" //(可闪避)"}
+};big_skill[21] = { id: 21, name: "守护天使", state: 2, message: "2回合内使自己物理免疫，并回复300点生命值" };
+big_skill[22] = { id: 22, name: "地震", state: 1, message: "对敌方造成300+敌方手牌数乘50的伤害" //(可闪避)"}
+};big_skill[23] = { id: 23, name: "牺牲", state: 1, message: "自己和对方同时掉50%的血" };
+big_skill[24] = { id: 24, name: "血肉傀儡", state: 2, message: "回复200点生命,三回合内对方每少一张牌自己就加80点生命" };
+big_skill[25] = { id: 25, name: "原始咆哮", state: 1, message: "造成200点伤害并晕眩敌方2回合无视魔法免疫" };
+big_skill[26] = { id: 26, name: "疯狂生长", state: 1, message: "对敌方造成200点伤害并使敌方3回合内无法普通攻击,无视魔免" //(可闪避)"}
+};big_skill[27] = { id: 27, name: "肢解", state: 1, message: "对敌方造成自身现有血量的25%的伤害" };
+big_skill[29] = { id: 29, name: "变形术", state: 1, message: "永久增加自己600点血量上限，并回复450点生命值" };
+big_skill[28] = { id: 28, name: "伤害加深", state: 1, message: "三回合内使敌方的护甲减少100点" };
+big_skill[30] = { id: 30, name: "射手天赋", state: 2, message: "被动牌:增加150点攻击力" };
+big_skill[31] = { id: 31, name: "恩赐解脱", state: 2, message: "被动牌:攻击时有30%的概率4倍暴击" };
+big_skill[32] = { id: 32, name: "暗杀", state: 2, message: "下一回合自己不可以出牌,如果没有被打断,敌方受到1点伤害" };
+big_skill[33] = { id: 33, name: "无敌斩", state: 1, message: "快速普通攻击敌方6次" //(可闪避)"}
+};big_skill[34] = { id: 34, name: "战斗专注", state: 2, message: "每次普通攻击时可以多攻击敌方一次,只维持一回合" };
+big_skill[35] = { id: 35, name: "剧毒新星", state: 1, message: "对敌方造成300点伤害" //(可闪避)"}
+};big_skill[36] = { id: 36, name: "死亡契约", state: 2, message: "本回合内每弃掉自己的1张手牌可以提高自己的攻击力100点" };
+big_skill[37] = { id: 37, name: "灵魂隔断", state: 1, message: "自己和敌方互换血量" };
+big_skill[38] = { id: 38, name: "时光倒流", state: 2, message: "可以瞬间使自己的能量值变为4点，手牌数增加到4张" };
+big_skill[39] = { id: 39, name: "蝮蛇突袭", state: 1, message: "对敌方造成300点伤害" };
+big_skill[40] = { id: 40, name: "海妖之歌", state: 1, message: "晕眩敌方3回合,敌方在3回合内处于无敌状态" //(可闪避)"}
+};big_skill[41] = { id: 41, name: "风暴之眼", state: 1, message: "3回合内每回合对敌方造成你手牌数乘以30的伤害" //(可闪避)"}
+};big_skill[42] = { id: 42, name: "石化凝视", state: 1, message: "晕眩敌方一回合,并使敌方魔免,但受到的物理伤害加倍" //(可闪避)"}
+};big_skill[43] = { id: 43, name: "暗影之舞", state: 2, message: "回复200点生命并使敌方在2回合内无法攻击自己" };
+big_skill[44] = { id: 44, name: "激怒", state: 2, message: "本回合内增加自己当前生命5%的攻击力" };
+big_skill[45] = { id: 45, name: "时间结界", state: 1, message: "晕眩敌方2回合" //(可闪避)"}
+};big_skill[46] = { id: 46, name: "割裂", state: 1, message: "三回合敌方减少一张牌会减少200点生命值" };
+big_skill[47] = { id: 47, name: "极度饥渴", state: 2, message: "3回合增加80点攻击,将敌方受到普攻伤害变为自己生命" };
+big_skill[48] = { id: 48, name: "月蚀", state: 1, message: "对敌方造成350点伤害" //(可闪避)"}
+};big_skill[49] = { id: 49, name: "召唤飞弹", state: 1, message: "造成200加上,敌方手牌数乘30的伤害" //(可闪避)"}
+};big_skill[50] = { id: 50, name: "编织", state: 1, message: "三回合内增加自己50点护甲,减少敌方50点护甲" //(可闪避)"}
+};big_skill[51] = { id: 51, name: "燃烧枷锁", state: 1, message: "晕眩敌方3回合,期间自己不可以使用技能,否则敌方晕眩结束" };
+big_skill[52] = { id: 52, name: "极寒领域", state: 1, message: "对敌方造成350点伤害" //(可闪避)"}
+};big_skill[53] = { id: 53, name: "全域静默", state: 2, message: "使敌方3回合内无法使用技能" };
+big_skill[54] = { id: 54, name: "技能窃取", state: 1, message: "弃置敌方一张手牌并重新获得一个大技能" };
+big_skill[55] = { id: 55, name: "死亡一指", state: 1, message: "造成600点伤害" };
+big_skill[56] = { id: 56, name: "火力聚焦", state: 2, message: "三回合内减少自身50点攻击,每次攻击后可以再攻击两次" };
+big_skill[57] = { id: 57, name: "寒冬诅咒", state: 1, message: "弃置敌方所有手牌" };
+big_skill[58] = { id: 58, name: "神智之蚀", state: 1, message: "造成自己能量值减敌方能量值的数值乘以220的伤害" //(可闪避)"}
+};big_skill[59] = { id: 59, name: "神灭斩", state: 1, message: "造成650点伤害" };
+big_skill[60] = { id: 60, name: "冰晶爆轰", state: 1, message: "对方血量低于15%时直接秒杀" //(可闪避)"}
+};big_skill[61] = { id: 61, name: "多重施法", state: 2, message: "被动牌:释放技能时有50%的概率2倍暴击" };
+big_skill[62] = { id: 62, name: "黑洞", state: 1, message: "对敌方造成250点伤害并晕眩2回合无视魔免" //(可闪避)"}
+};big_skill[63] = { id: 63, name: "虚妄之诺", state: 2, message: "回复300点生命值并使对方三回合内无法攻击你" };
+big_skill[64] = { id: 64, name: "上帝之手", state: 1, message: "回复己方500点生命值" };
+big_skill[65] = { id: 65, name: "脉冲新星", state: 1, message: "对敌方造成450点伤害" //(可闪避)"}
+};big_skill[66] = { id: 66, name: "万火焚身", state: 1, message: "对敌方造成100点伤害，持续4回合" //(可闪避)"}
+};big_skill[67] = { id: 67, name: "死神镰刀", state: 1, message: "对敌方造成2%损失生命值的伤害，并使对方晕眩一回合" };
+big_skill[68] = { id: 68, name: "驱使恶灵", state: 1, message: "对敌方造成400点伤害，并使己方回复100点生命值" };
+big_skill[69] = { id: 69, name: "神秘之耀", state: 1, message: "对地方造成450点伤害" //(可闪避)"}
+};big_skill[70] = { id: 70, name: "超声冲击波", state: 1, message: "对敌方造成400点伤害" //(可闪避)"}
+};big_skill[71] = { id: 71, name: "恶魔的掌握", state: 1, message: "对敌方造成400点伤害，无视魔法免疫" };
+big_skill[72] = { id: 72, name: "连环霜冻", state: 1, message: "对敌方造成100*敌方手牌数的伤害" //(可闪避)"}
+};big_skill[73] = { id: 73, name: "梦境缠绕", state: 1, message: "对敌方造成200点伤害并使敌方晕眩一回合" //(可闪避)"}
+};big_skill[74] = { id: 74, name: "自然之怒", state: 1, message: "对敌方造成300点伤害" //(可闪避)"}
+};big_skill[75] = { id: 75, name: "生命汲取", state: 1, message: "对敌方造成300点伤害，同时回复300点生命值" //(可闪避)"}
+};big_skill[76] = { id: 76, name: "静态风暴", state: 1, message: "对敌方造成200点伤害并使敌方沉默一回合" //(可闪避)"}
+};big_skill[77] = { id: 77, name: "法力虚空", state: 1, message: "造成敌方己消耗能量值乘以200的伤害"
+
+  // small_skill[0] = {id:1000,name:"雷霆之击",state: 1 ,mp:100,message:"对敌方造成300点伤害"}
+  // small_skill[0].do = {mMp:-100,tHp:"300"};
+  // small_skill[1] = {id:1001,name:"马蹄践踏",state: 1 ,mp:50,message:"对敌方造成(50+敌方手牌数*10)点伤害并晕眩1回合"}//(可闪避)"}
+  // small_skill[1].do = {mMp:-50,tHp:"50+thatstate.cardid.length*10",tBuff:[0],tBuffT:[2]};
+  // small_skill[2] = {id:1002,name:"双刃剑",state: 1 ,mp:0,message:"使自己和敌方同时受到150点伤害"}
+  // small_skill[2].do = {mMp:-0,mHp:-150,tHp:"150"};
+  // small_skill[3] = {id:1003,name:"反击",state: 2 ,message:"被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)"}
+  // small_skill[3].do = {mBuff:[100],mBuffT:[6]}
+  // small_skill[4] = {id:1004,name:"巨浪",state: 1 ,mp:80,message:"减少敌方10点护甲(持续3回合)并对对方造成100点伤害"}//(可闪避)"}
+  // small_skill[4].do = {mMp:-80,tHp:"100",tBuff:[5],tBuffT:[6]};
+  // small_skill[5] = {id:1005,name:"海妖外壳",state: 2 ,message:"被动牌:受到普通攻击时可以减少50点伤害(持续3回合)"}
+  // small_skill[5].do = {mBuff:[101],mBuffT:[6]}
+  // small_skill[6] = {id:1006,name:"锚击",state: 1 ,mp:30,message:"造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)"}
+  // small_skill[6].do = {tHp:"50+thatstate.cardid.length*10",mp:30,tBuff:[6],tBuffT:[6]};
+  // small_skill[7] = {id:1007,name:"洪流",state: 1 ,mp:80,message:"对敌方造成100点伤害并晕眩半回合"}//(可闪避)"}
+  // small_skill[7].do = {mMp:-80,tHp:"100",tBuff:[0],tBuffT:[1]};
+  // small_skill[8] = {id:1008,name:"潮汐使者",state: 2 ,message:"被动牌:使自己本回合增加20+对方手牌数*10点攻击力"}
+  // small_skill[8].do = {mBuff:[102],mBuffT:[2]}
+  // small_skill[9] = {id:1009,name:"死亡旋风",state: 1 ,mp:60,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[9].do = {mMp:-60,tHp:"200"};
+  // small_skill[10] = {id:1010,name:"伐木链锯",state: 1 ,mp:30,message:"对敌方造成100点伤害"}//(可闪避)"}
+  // small_skill[10].do = {mMp:-30,tHp:"100"};
+  // small_skill[11] = {id:1011,name:"活性护甲",state: 2 ,message:"被动牌:每受到一次攻击增加10点护甲(持续3回合)"}
+  // small_skill[11].do = {mBuff:[103],mBuffT:[6],mBuffObj:{103:0}}
+  // small_skill[12] = {id:1012,name:"死亡缠绕",state: 1 ,mp:50,message:"消耗自己100点生命,对敌方造成250点伤害"}
+  // small_skill[12].do = {mMp:-50,tHp:"250",mHp:-100};
+  // small_skill[13] = {id:1013,name:"无光之盾",state: 2 ,mp:100,message:"最大吸收250点伤害并在破裂时对敌方造成100点伤害(持续3回合)"}
+  // small_skill[13].do = {mMp:-100,mBuff:[8],mBuffT:[6],mBuffObj:{8:250}}
+  // small_skill[14] = {id:1014,name:"霜之哀伤",state: 2 ,message:"被动牌:本回合内攻击对手后可以去除对手一张手牌"}
+  // small_skill[14].do = {mBuff:[96],mBuffT:[2]}
+  // small_skill[15] = {id:1015,name:"烈火精灵",state: 1 ,mp:100,message:"对敌方造成90点伤害并且减少敌方100能量值"}
+  // small_skill[15].do = {mMp:-100,tHp:"90",tMp:-100};
+  // small_skill[16] = {id:1016,name:"烈日炎烤",state: 1 ,mp:100,message:"对自己造成50点伤害并造成敌方现有生命值5%的伤害"}//(可闪避)"}
+  // small_skill[16].do = {mMp:-100,mHp:-50,tHp:"thatstate.Hp*0.05"};
+  // small_skill[17] = {id:1017,name:"战士怒吼",state: 1 ,mp:100,message:"增加自己40点护甲,使敌方下一回合只可以攻击自己"}//(可闪避)"}
+  // small_skill[17].do = {mMp:-100,mBuff:[11],mBuffT:[2],tBuff:[32],tBuffT:[2]};
+  // small_skill[18] = {id:1018,name:"反击螺旋",state: 2 ,message:"被动牌:敌方普通攻击自己时会受到50点伤害(持续3回合)"}
+  // small_skill[18].do = {mBuff:[105],mBuffT:[6]}
+  // small_skill[19] = {id:1019,name:"寒冰碎片",state: 1 ,mp:50,message:"对敌方造成80点伤害"}//(可闪避)"}
+  // small_skill[19].do = {mMp:-50,tHp:"80"};
+  // small_skill[20] = {id:1020,name:"雪球",state: 1 ,mp:80,message:"对敌方造成80点伤害并晕眩半回合"}//(可闪避)"}
+  // small_skill[20].do = {mMp:-80,tHp:"80",tBuff:[0],tBuffT:[1]};
+  // small_skill[21] = {id:1021,name:"沟壑",state: 1 ,mp:100,message:"对敌方造成(90+敌方手牌数*10)点伤害并晕眩一回合"}//(可闪避)"}
+  // small_skill[21].do = {mMp:-100,tHp:"90+thatstate.cardid.length*10",tBuff:[0],tBuffT:[2]};
+  // small_skill[22] = {id:1022,name:"强化图腾",state: 2 ,mp:50,message:"使自己攻击力变为现在攻击力的2倍(持续半回合)"}
+  // small_skill[22].do = {mMp:-50,mBuff:[13],mBuffT:[1]}
+  // small_skill[23] = {id:1023,name:"余震",state: 2 ,message:"被动牌:半回合内自己使用任何技能都会使敌方眩晕半回合"}
+  // small_skill[23].do = {mBuff:[107],mBuffT:[1]}
+  // small_skill[24] = {id:1024,name:"混乱之箭",state: 1 ,message:"随机对敌方造成1-200的伤害，并晕眩1-2回合"}
+  // small_skill[24].do = {mMp:-100,tHp:"Math.random()*200",tBuff:[0],tBuffT:["Math.random()*2"]};
+  // small_skill[25] = {id:1025,name:"实相裂隙",state: 1 ,mp:30,message:"造成50+物理攻击的伤害"}
+  // small_skill[25].do = {mMp:-30,tHp:"50+mystate.attack"};
+  // small_skill[26] = {id:1026,name:"致命一击",state: 2 ,message:"被动牌:攻击时有40%的概率双倍攻击(持续3回合)"}
+  // small_skill[26].do = {mBuff:[108],mBuffT:[6]}
+  // small_skill[27] = {id:1027,name:"幽光之魂",state: 1 ,mp:50,message:"对敌方造成130点伤害"}//(可闪避)"}
+  // small_skill[27].do = {mMp:-50,tHp:"130"};
+  // small_skill[28] = {id:1028,name:"压倒性优势",state: 1 ,mp:80,message:"对敌方造成敌方手牌乘以30的伤害"}//(可闪避)"}
+  // small_skill[28].do = {mMp:80,tHp:"thatstate.cardid.length*30"};
+  // small_skill[29] = {id:1029,name:"勇气之霎",state: 2 ,message:"被动牌:受到普通攻击时有40%的概率增加自己100点血"}
+  // small_skill[29].do = {mBuff:[109],mBuffT:[6]}
+  // small_skill[30] = {id:1030,name:"强攻",state: 1 ,mp:80,message:"回复100点生命值并造成物理攻击的伤害"}
+  // small_skill[30].do = {mMp:80,mHp:100,tHp:"mystate.attack"};
+  // small_skill[31] = {id:1031,name:"冥火暴击",state: 1 ,mp:100,message:"对敌方造成150点伤害并晕眩1回合"}//(可闪避)"}
+  // small_skill[31].do = {mMp:-100,tHp:"150",tBuff:[0],tBuffT:[2]};
+  // small_skill[32] = {id:1032,name:"吸血光环",state: 2 ,message:"被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)"}
+  // small_skill[32].do = {mBuff:[111],mBuffT:[6]}
+  // small_skill[33] = {id:1033,name:"致死打击",state: 2 ,message:"被动牌:攻击时有60%的概率1.5倍攻击(持续3回合)"}
+  // small_skill[33].do = {mBuff:[112],mBuffT:[6]}
+  // small_skill[34] = {id:1034,name:"嚎叫",state: 2 ,mp:50,message:"本回合攻击加60"}
+  // small_skill[34].do = {mMp:-50,mBuff:[16],mBuffT:[2]};
+  // small_skill[35] = {id:1035,name:"野性驱使",state: 2 ,message:"被动牌:攻击加30(持续3回合)"}
+  // small_skill[35].do = {mBuff:[113],mBuffT:[6]}
+  // small_skill[36] = {id:1036,name:"酸性喷雾",state: 1 ,mp:80,message:"三回合内降低敌方10点防御并造成50点伤害"}//(可闪避)"}
+  // small_skill[36].do = {mMp:-80,tBuff:[73],tBuffT:[6]};
+  // small_skill[37] = {id:1037,name:"不稳定物",state: 1 ,mp:50,message:"50%使对方晕眩两回合50%使自己晕眩一回合"}//(可闪避)"}
+  // small_skill[37].do = {special:true};
+  // small_skill[38] = {id:1038,name:"地精贪婪",state: 2 ,message:"被动牌:每回合得到金钱数+10(持续3回合)"}
+  // small_skill[38].do = {mBuff:[114],mBuffT:[6]}
+  // small_skill[39] = {id:1039,name:"暗影冲刺",state: 1 ,mp:50,message:"对敌方造成60点伤害并眩晕半回合"}//(可闪避)"}
+  // small_skill[39].do = {mMp:-50,tHp:"60",tBuff:[0],tBuffT:[1]};
+  // small_skill[40] = {id:1040,name:"巨力重击",state: 2 ,message:"被动牌:攻击时有30%的概率使敌方晕眩一回合并附加40点攻击(持续3回合)"}
+  // small_skill[40].do = {tHp:"40",mBuff:[97],mBuffT:[6]}
+  // small_skill[41] = {id:1041,name:"风暴之锤",state: 1 ,mp:100,message:"对敌方造成100点伤害并晕眩一回合"}//(可闪避)"}
+  // small_skill[41].do = {mMp:-100,tHp:"100",tBuff:[0],tBuffT:[2]};
+  // small_skill[42] = {id:1042,name:"巨力挥舞",state: 2 ,message:"被动牌:普通攻击时增加加敌方手牌数乘10的攻击力(持续3回合)"}
+  // small_skill[42].do = {mBuff:[99],mBuffT:[6]}
+  // small_skill[43] = {id:1043,name:"战吼",state: 2 ,mp:30,message:"三回合内增加自身30点护甲"}
+  // small_skill[43].do = {mMp:-30,mBuff:[18],mBuffT:[6]}
+  // small_skill[44] = {id:1044,name:"火焰气息",state: 1 ,mp:90,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[44].do = {mMp:-90,tHp:"200"};
+  // small_skill[45] = {id:1045,name:"神龙摆尾",state: 1 ,mp:80,message:"对敌方造成50点伤害并晕眩一回合"}
+  // small_skill[45].do = {mMp:-80,tHp:"50",tBuff:[0],tBuffT:[2]};
+  // small_skill[46] = {id:1046,name:"龙族血统",state: 2 ,message:"被动牌:每回合回复40点生命值(持续3回合)"}
+  // small_skill[46].do = {mBuff:[115],mBuffT:[6]}
+  // small_skill[47] = {id:1047,name:"震荡波",state: 1 ,mp:90,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[47].do = {mMp:-90,tHp:"200"};
+  // small_skill[48] = {id:1048,name:"授予力量",state: 2 ,mp:50,message:"本回合内攻击加80"}
+  // small_skill[48].do = {mMp:-50,mBuff:[21],mBuffT:[2]}
+  // small_skill[49] = {id:1049,name:"獠牙冲刺",state: 1 ,mp:50,message:"对敌方造成100点伤害"}//(可闪避)"}
+  // small_skill[49].do = {mMp:-50,tHp:"100"};
+  // small_skill[50] = {id:1050,name:"吞噬",state: 2 ,mp:100,message:"将对方的随机一张牌,转化为100金币"}
+  // small_skill[50].do = {special:true}
+
+
+};small_skill[51] = { id: 1051, name: "焦土", state: 1, mp: 80, message: "敌方掉80血，自己回复80血" };
+small_skill[51].do = { mMp: -80, mHp: 80, tHp: "80" };
+small_skill[52] = { id: 1052, name: "回音重踏", state: 1, mp: 100, message: "使对方晕眩两回合，对方受到任何伤害都会解除眩晕状态" //(可闪避)"}
+};small_skill[52].do = { mMp: -100, tBuff: [23], tBuffT: [4] };
+small_skill[53] = { id: 1053, name: "自然秩序", state: 2, message: "被动牌:使对方护甲归0" };
+small_skill[53].do = { tBuff: [63], tBuffT: [6] };
+small_skill[54] = { id: 1054, name: "洗礼", state: 1, mp: 100, message: "回复自己100点生命值,并造成100伤害" //(可闪避)"}
+};small_skill[54].do = { mMp: -100, mHp: 100, tHp: "100" };
+small_skill[55] = { id: 1055, name: "驱逐", state: 2, mp: 50, message: "使自己魔免一合" };
+small_skill[55].do = { mMp: -50, mBuff: [60], mBuffT: [2] };
+small_skill[56] = { id: 1056, name: "掘地穿刺", state: 1, mp: 100, message: "对敌方造成100点伤害并晕眩一回合" //(可闪避)"}
+};small_skill[56].do = { mMp: -100, tHp: "100", tBuff: [0], tBuffT: [2] };
+// small_skill[57] = {id:1057,name:"沙尘暴",state: 1 ,message:"对敌方造成40点伤害，敌方的下一回合不可以攻击自己"}//(可闪避)"}
+// small_skill[57].do = {tHp:"40"};
+// small_skill[58] = {id:1058,name:"雷击",state: 1 ,message:"对敌方造成140点伤害"}
+// small_skill[58].do = {tHp:"140"};
+small_skill[59] = { id: 1059, name: "投掷", state: 1, mp: 80, message: "对敌方造成250点伤害" //(可闪避)"}
+};small_skill[59].do = { mMp: -80, tHp: "250" };
+small_skill[60] = { id: 1060, name: "崎岖外表", state: 2, message: "被动牌:敌方在普通攻击你时有30%的概率使敌方晕眩一回合" };
+small_skill[60].do = { mBuff: [117], mBuffT: [6] };
+small_skill[61] = { id: 1061, name: "山崩", state: 1, mp: 100, message: "对敌方造成200点伤害并晕眩一回合" //(可闪避)"}
+};small_skill[61].do = { mMp: -100, tHp: "200", tBuff: [0], tBuffT: [2] };
+// small_skill[62] = {id:1062,name:"火焰风暴",state: 1 ,message:"对敌方造成90点伤害"}//(可闪避)"}
+// small_skill[62].do = {tHp:"90"};
+// small_skill[63] = {id:1063,name:"怨念深渊",state: 1 ,message:"使对方晕眩半回合"}//(可闪避)"}
+// small_skill[63].do = {};
+small_skill[64] = { id: 1064, name: "衰退光环", state: 2, message: "被动牌:减少对方50%攻击力" };
+small_skill[64].do = { tBuff: [62], tBuffT: [6] };
+small_skill[65] = { id: 1065, name: "活血术", state: 1, message: "生命值回复速度*5" };
+small_skill[65].do = { mBuff: [159], mBuffT: [6] };
+// small_skill[66] = {id:1066,name:"沸血之矛",state: 2 ,message:"消耗自身50点生命值使本回合内攻击加100"}
+// small_skill[66].do = {mBuff:[72],mBuffT:[6]}
+small_skill[67] = { id: 1067, name: "狂战士之血", state: 2, message: "被动牌:增加已损失生命值百分比*2的攻速" };
+small_skill[67].do = { mBuff: [119], mBuffT: [6] };
+small_skill[68] = { id: 1068, name: "静电场", state: 2, message: "被动牌:每次释放任何技能都会对敌方造成50点伤害" };
+small_skill[68].do = { mBuff: [95], mBuffT: [6]
+  // small_skill[69] = {id:1069,name:"腐朽",state: 1 ,message:"可以对敌方造成70点伤害"}//(可闪避)"}
+  // small_skill[69].do = {tHp:"70"};
+};small_skill[70] = { id: 1070, name: "噬魂", state: 1, mp: 100, message: "造成己方和敌方手牌数的总和乘以20的伤害" };
+small_skill[70].do = { mMp: -100, tHp: "(mystate.cardid.length+thatstate.cardid.length)*20" };
+small_skill[71] = { id: 1071, name: "狂暴", state: 2, mp: 50, message: "可以使自己魔免一回合" };
+small_skill[71].do = { mMp: -50, mBuff: [27], mBuffT: [2] };
+small_skill[72] = { id: 1072, name: "盛宴", state: 2, message: "被动牌:普通攻击时将对方现有生命值的2%转化为自身生命" };
+small_skill[72].do = { mBuff: [120], mBuffT: [6]
+  // small_skill[73] = {id:1073,name:"撕裂伤口",state: 1 ,message:"本回合内普通攻击敌方时会将敌方受到伤害转化成自己生命"}
+  // small_skill[73].do = {};
+  // small_skill[74] = {id:1074,name:"野性之斧",state: 1 ,message:"对敌方造成150点伤害"}//(可闪避)"}
+  // small_skill[74].do = {tHp:"150"};
+  // small_skill[75] = {id:1075,name:"寄生种子",state: 1 ,message:"使敌方减少90点生命值自己回复80点生命值并且可以再摸一张牌"}
+  // small_skill[75].do = {};
+  // small_skill[76] = {id:1076,name:"活体护甲",state: 2 ,message:"受到物理伤害减少20点持续2回合每回合加40点血"}
+  // small_skill[76].do = {mBuff:[,mB]uffT:}
+  // small_skill[77] = {id:1077,name:"腐烂",state: 1 ,message:"自己掉100点血，对方掉180点血"}
+  // small_skill[77].do = {};
+  // small_skill[78] = {id:1078,name:"腐肉堆积",state: 2 ,message:"被动牌:敌方每少一张手牌自己加40点血，并且加40点血量上限"}
+  // small_skill[78].do = {mBuff:[,mB]uffT:}
+  // small_skill[79] = {id:1079,name:"雷霆一击",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[79].do = {tHp:"80"};
+  // small_skill[80] = {id:1080,name:"醉酒云雾",state: 1 ,message:"2回合内使敌方的普通攻击有75%的概率打不中"}
+  // small_skill[80].do = {};
+  // small_skill[81] = {id:1081,name:"醉拳",state: 2 ,message:"被动牌:受到普通攻击时有40%的概率mis"}
+  // small_skill[81].do = {mBuff:[,mB]uffT:}
+  // small_skill[82] = {id:1082,name:"虚空",state: 1 ,message:"对敌方造成130点伤害"}
+  // small_skill[82].do = {tHp:"130"};
+  // small_skill[83] = {id:1083,name:"伤残恐惧",state: 1 ,message:"使敌方2回合内不可以使用技能"}
+  // small_skill[83].do = {};
+  // small_skill[84] = {id:1084,name:"重击",state: 2 ,message:"被动牌:攻击时有40%的概率击晕敌方半回合并附加70点伤害"}
+  // small_skill[84].do = {mBuff:[,mB]uffT:}
+  // small_skill[85] = {id:1085,name:"鱼人碎击",state: 1 ,message:"对敌方造成60点伤害并晕眩一回合"}//(可闪避)"}
+  // small_skill[85].do = {tHp:"60"};
+  // small_skill[86] = {id:1086,name:"群星坠落",state: 1 ,message:"对敌方造成40加上敌方手牌乘10的伤害"}//(可闪避)"}
+  // small_skill[86].do = {tHp:"40加上敌方手牌乘10"};
+  // small_skill[87] = {id:1087,name:"月神之箭",state: 1 ,message:"有50%的概率使敌方晕眩二回合"}//(可闪避)"}
+  // small_skill[87].do = {};
+  // small_skill[88] = {id:1088,name:"波浪形态",state: 1 ,message:"对敌方造成70点伤害"}//(可闪避)"}
+  // small_skill[88].do = {tHp:"70"};
+  // small_skill[89] = {id:1089,name:"变体攻击",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
+  // small_skill[89].do = {tHp:"50"};
+  // small_skill[90] = {id:1090,name:"法力损毁",state: 2 ,message:"被动牌:普通攻击成功后可以削减敌方一点能量值"}
+  // small_skill[90].do = {mBuff:[,mB]uffT:}
+  // small_skill[91] = {id:1091,name:"自杀攻击",state: 1 ,message:"对自己和敌方同时造成500点伤害"}//(可闪避)"}
+  // small_skill[91].do = {tHp:"500"};
+  // small_skill[92] = {id:1092,name:"忽悠",state: 3 ,message:"可以闪避一次敌方的攻击"}
+  // small_skill[92].do = {};
+  // small_skill[93] = {id:1093,name:"地之突袭",state: 2 ,message:"被动牌:攻击力加30"}
+  // small_skill[93].do = {mBuff:[,mB]uffT:}
+  // small_skill[94] = {id:1094,name:"穿刺",state: 1 ,message:"造成70点伤害并晕眩敌方一回合"}//(可闪避)"}
+  // small_skill[94].do = {tHp:"70"};
+  // small_skill[95] = {id:1095,name:"法力燃烧",state: 1 ,message:"减少敌方3点能量值"}
+  // small_skill[95].do = {};
+  // small_skill[96] = {id:1096,name:"带刺外壳",state: 2 ,message:"被动牌:每回合可以抵挡一次指向性法术"}
+  // small_skill[96].do = {mBuff:[,mB]uffT:}
+  // small_skill[97] = {id:1097,name:"魔法箭",state: 1 ,message:"造成80点伤害并晕眩敌方一回合"}
+  // small_skill[97].do = {tHp:"80"};
+  // small_skill[98] = {id:1098,name:"恐怖波动",state: 1 ,message:"减少敌方10点护甲并造成20点伤害"}//(可闪避)"}
+  // small_skill[98].do = {tHp:"20"};
+  // small_skill[99] = {id:1099,name:"命令光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
+  // small_skill[99].do = {mBuff:[,mB]uffT:}
+  // small_skill[100] = {id:1100,name:"霜冻之箭",state: 1 ,message:"可以削减敌方2点能量值"}
+  // small_skill[100].do = {};
+  // small_skill[101] = {id:1101,name:"沉默魔法",state: 1 ,message:"敌方在一回合内不可以使用技能"}//(可闪避)"}
+  // small_skill[101].do = {};
+  // small_skill[102] = {id:1102,name:"强击光环",state: 2 ,message:"被动牌:增加25%的攻击力"}
+  // small_skill[102].do = {mBuff:[,mB]uffT:}
+  // small_skill[103] = {id:1103,name:"灵魂之矛",state: 1 ,message:"对敌方造成90点伤害"}//(可闪避)"}
+  // small_skill[103].do = {tHp:"90"};
+  // small_skill[104] = {id:1104,name:"神出鬼没",state: 3 ,message:"可以闪避一次敌方的攻击"}
+  // small_skill[104].do = {};
+  // small_skill[105] = {id:1105,name:"磁场",state: 2 ,message:"使自己在两回合内物理免疫"}
+  // small_skill[105].do = {mBuff:[,mB]uffT:}
+  // small_skill[106] = {id:1106,name:"闪光冤魂",state: 1 ,message:"对敌方造成100点伤害"}//(可闪避)"}
+  // small_skill[106].do = {tHp:"100"};
+  // small_skill[107] = {id:1107,name:"窒息之刃",state: 1 ,message:"对敌方造成30点伤害使用后回复一点能量值"}//(可闪避)"}
+  // small_skill[107].do = {tHp:"30"};
+  // small_skill[108] = {id:1108,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
+  // small_skill[108].do = {};
+  // small_skill[109] = {id:1109,name:"模糊",state: 2 ,message:"被动牌:敌方在普通攻击你时有70%的概率mis"}
+  // small_skill[109].do = {mBuff:[,mB]uffT:}
+  // small_skill[110] = {id:1110,name:"火焰壁垒",state: 2 ,message:"被动牌:可以抵挡150点魔法伤害，对方每回合减少30点生命值"}
+  // small_skill[110].do = {mBuff:[,mB]uffT:}
+  // small_skill[111] = {id:1111,name:"无影拳",state: 1 ,message:"对敌方造成70点伤害"}//(可闪避)"}
+  // small_skill[111].do = {tHp:"70"};
+  // small_skill[112] = {id:1112,name:"榴霰弹",state: 1 ,message:"对敌方造成60点伤害"}//(可闪避)"}
+  // small_skill[112].do = {tHp:"60"};
+  // small_skill[113] = {id:1113,name:"爆头",state: 2 ,message:"被动牌:攻击时有40%的概率附加100点伤害"}
+  // small_skill[113].do = {mBuff:[,mB]uffT:}
+  // small_skill[114] = {id:1114,name:"剑刃风暴",state: 1 ,message:"一回合内使自己魔免不可以攻击和出牌,并对敌方造成50点伤害"}//(可闪避)"}
+  // small_skill[114].do = {tHp:"50"};
+  // small_skill[115] = {id:1115,name:"弧形闪电",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[115].do = {tHp:"80"};
+  // small_skill[116] = {id:1116,name:"剑舞",state: 2 ,message:"被动牌:攻击时有60%的概率1.5倍暴击"}
+  // small_skill[116].do = {mBuff:[,mB]uffT:}
+  // small_skill[117] = {id:1117,name:"狂战士之怒",state: 2 ,message:"被动牌:本回合内加70点攻击"}
+  // small_skill[117].do = {mBuff:[,mB]uffT:}
+  // small_skill[118] = {id:1118,name:"热血战魂",state: 2 ,message:"被动牌:加30点攻击"}
+  // small_skill[118].do = {mBuff:[,mB]uffT:}
+  // small_skill[119] = {id:1119,name:"旋风飞斧",state: 1 ,message:"对敌方造成40点伤害并使敌方攻击有30%的概率mis"}//(可闪避)"}
+  // small_skill[119].do = {tHp:"40"};
+  // small_skill[120] = {id:1120,name:"肉钩",state: 1 ,message:"对敌方造成80点伤害"}//(可闪避)"}
+  // small_skill[120].do = {tHp:"80"};
+  // small_skill[121] = {id:1121,name:"瘴气",state: 1 ,message:"对敌方造成70点伤害"}//(可闪避)"}
+  // small_skill[121].do = {tHp:"70"};
+  // small_skill[122] = {id:1122,name:"毒刺",state: 2 ,message:"被动牌:攻击时对敌方额外造成20点伤害"}
+  // small_skill[122].do = {tHp:"20",mBuff:[,mB]uffT:}
+  // small_skill[123] = {id:1123,name:"扫射",state: 2 ,message:"攻击力加40"}
+  // small_skill[123].do = {mBuff:[,mB]uffT:}
+  // small_skill[124] = {id:1124,name:"灼热之箭",state: 2 ,message:"本回合内攻击加50"}
+  // small_skill[124].do = {mBuff:[,mB]uffT:}
+  // small_skill[125] = {id:1125,name:"变身",state: 2 ,message:"永久增加20点攻击力"}
+  // small_skill[125].do = {mBuff:[,mB]uffT:}
+  // small_skill[126] = {id:1126,name:"连击",state: 2 ,message:"被动牌:每次攻击降低敌方10点护甲"}
+  // small_skill[126].do = {mBuff:[,mB]uffT:}
+  // small_skill[127] = {id:1127,name:"蝗虫群",state: 1 ,message:"对敌方造成60点伤害并永久降低5点护甲"}
+  // small_skill[127].do = {tHp:"60"};
+  // small_skill[128] = {id:1128,name:"毒性攻击",state: 2 ,message:"被动牌:本回合攻击力加40"}
+  // small_skill[128].do = {mBuff:[,mB]uffT:}
+  // small_skill[129] = {id:1129,name:"幽冥剧毒",state: 2 ,message:"被动牌:敌方血量低于50%时,攻击附加50点伤害"}
+  // small_skill[129].do = {mBuff:[,mB]uffT:}
+  // small_skill[130] = {id:1130,name:"腐蚀外表",state: 2 ,message:"被动牌:受到敌方的任何攻击之后敌方会掉40点血"}
+  // small_skill[130].do = {mBuff:[,mB]uffT:}
+  // small_skill[131] = {id:1131,name:"等离子场",state: 2 ,message:"3回合内敌方每次对你使用指向性技能时会减少100点生命值"}
+  // small_skill[131].do = {mBuff:[,mB]uffT:}
+  // small_skill[132] = {id:1132,name:"静电连接",state: 1 ,message:"永久性减少敌方5点攻击,自己增加5点攻击"}
+  // small_skill[132].do = {};
+  // small_skill[133] = {id:1133,name:"投掷飞镖",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[133].do = {tHp:"80"};
+  // small_skill[134] = {id:1134,name:"忍术",state: 2 ,message:"被动牌:攻击时有40%的概率双倍暴击"}
+  // small_skill[134].do = {mBuff:[,mB]uffT:}
+  // small_skill[135] = {id:1135,name:"分裂箭",state: 2 ,message:"被动牌:攻击力增加敌方手牌数乘以15的数值"}
+  // small_skill[135].do = {mBuff:[,mB]uffT:}
+  // small_skill[136] = {id:1136,name:"秘术异蛇",state: 1 ,message:"造成敌手牌数乘以20的伤害"}//(可闪避)"}
+  // small_skill[136].do = {tHp:"敌手牌数乘以20"};
+  // small_skill[137] = {id:1137,name:"魔法护盾",state: 2 ,message:"被动牌:受到伤害时一点能量值可以抵挡一次伤害"}
+  // small_skill[137].do = {mBuff:[,mB]uffT:}
+  // small_skill[138] = {id:1138,name:"折光",state: 2 ,message:"5回合内抵挡4次伤害"}
+  // small_skill[138].do = {mBuff:[,mB]uffT:}
+  // small_skill[139] = {id:1139,name:"黑暗契约",state: 2 ,message:"下回合双方损失50点生命值,可以清除自己身上所有状态"}
+  // small_skill[139].do = {mBuff:[,mB]uffT:}
+  // small_skill[140] = {id:1140,name:"能量转换",state: 2 ,message:"被动牌:每次攻击永久减少敌方1点攻击力,并增加自己2点攻击"}
+  // small_skill[140].do = {mBuff:[,mB]uffT:}
+  // small_skill[141] = {id:1141,name:"超级力量",state: 2 ,message:"3回合内下一次普通攻击成功后可以额外造成自己攻击乘2的伤害"}
+  // small_skill[141].do = {tHp:"自己攻击乘2",mBuff:[,mB]uffT:}
+  // small_skill[142] = {id:1142,name:"怒意狂击",state: 2 ,message:"被动牌:每次普通攻击成功后攻击力会增加20"}
+  // small_skill[142].do = {mBuff:[,mB]uffT:}
+  // small_skill[143] = {id:1143,name:"回到过去",state: 2 ,message:"被动牌:受到任何攻击时有25%的概率免疫"}
+  // small_skill[143].do = {mBuff:[,mB]uffT:}
+  // small_skill[144] = {id:1144,name:"时间锁定",state: 2 ,message:"被动牌:普通攻击时有25%的概率使敌方晕眩一回合"}
+  // small_skill[144].do = {mBuff:[,mB]uffT:}
+  // small_skill[145] = {id:1145,name:"血之狂暴",state: 1 ,message:"使敌方2回合内无法使用技能"}
+  // small_skill[145].do = {};
+  // small_skill[146] = {id:1146,name:"屠戮",state: 2 ,message:"被动牌:敌方每减少一张牌会使自己增加30点生命值"}
+  // small_skill[146].do = {mBuff:[,mB]uffT:}
+  // small_skill[147] = {id:1147,name:"嗜血渴望",state: 2 ,message:"被动牌:敌方血量低于50%时，自己增加50点攻击"}
+  // small_skill[147].do = {mBuff:[,mB]uffT:}
+  // small_skill[148] = {id:1148,name:"烟幕",state: 1 ,message:"使敌方在1回合内攻击有75%的概率mis,并不可以使用技能"}//(可闪避)"}
+  // small_skill[148].do = {};
+  // small_skill[149] = {id:1149,name:"闪烁突袭",state: 3 ,message:"可以闪避掉一次攻击"}
+  // small_skill[149].do = {};
+  // small_skill[150] = {id:1150,name:"魔王降临",state: 2 ,message:"被动牌:减少敌方20点护甲"}
+  // small_skill[150].do = {mBuff:[,mB]uffT:}
+  // small_skill[151] = {id:1151,name:"毁灭阴影",state: 1 ,message:"对敌方造成90点伤害"}//(可闪避)"}
+  // small_skill[151].do = {tHp:"90"};
+  // small_skill[152] = {id:1152,name:"支配死灵",state: 2 ,message:"被动牌:敌方每减少一张牌,你可以永久增加2点攻击"}
+  // small_skill[152].do = {mBuff:[,mB]uffT:}
+  // small_skill[153] = {id:1153,name:"幽鬼之刃",state: 1 ,message:"对敌方造成80点伤害"}//(可闪避)"}
+  // small_skill[153].do = {tHp:"80"};
+  // small_skill[154] = {id:1154,name:"荒芜",state: 2 ,message:"被动牌:增加30点攻击"}
+  // small_skill[154].do = {mBuff:[,mB]uffT:}
+  // small_skill[155] = {id:1155,name:"折射",state: 2 ,message:"被动牌:反弹自己受到一切伤害的25%"}
+  // small_skill[155].do = {mBuff:[,mB]uffT:}
+  // small_skill[156] = {id:1156,name:"麻痹撕咬",state: 2 ,message:"被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis"}
+  // small_skill[156].do = {mBuff:[,mB]uffT:}
+  // small_skill[157] = {id:1157,name:"月光",state: 1 ,message:"对敌方造成90点伤害"}
+  // small_skill[157].do = {tHp:"90"};
+  // small_skill[158] = {id:1158,name:"月之祝福",state: 2 ,message:"被动牌:攻击力加60"}
+  // small_skill[158].do = {mBuff:[,mB]uffT:}
+  // small_skill[159] = {id:1159,name:"月刃",state: 2 ,message:"被动牌:攻击力加敌方手牌数乘10的数值"}
+  // small_skill[159].do = {mBuff:[,mB]uffT:}
+  // small_skill[160] = {id:1160,name:"高射火炮",state: 2 ,message:"本回合内攻击增加70"}
+  // small_skill[160].do = {mBuff:[,mB]uffT:}
+  // small_skill[161] = {id:1161,name:"追踪导弹",state: 1 ,message:"造成160点伤害"}//(可闪避)"}
+  // small_skill[161].do = {tHp:"160"};
+  // small_skill[162] = {id:1162,name:"灵魂猎手",state: 1 ,message:"一回合内使敌方额外承受25%的伤害"}//(可闪避)"}
+  // small_skill[162].do = {};
+  // small_skill[163] = {id:1163,name:"薄葬",state: 2 ,message:"三回合内不会死亡"}
+  // small_skill[163].do = {mBuff:[,mB]uffT:}
+  // small_skill[164] = {id:1164,name:"暗影波",state: 1 ,message:"回复自己手牌数乘以25点的生命"}//(可闪避)"}
+  // small_skill[164].do = {};
+  // small_skill[165] = {id:1165,name:"叉形闪电",state: 1 ,message:"对敌方造成90点伤害"}
+  // small_skill[165].do = {tHp:"90"};
+  // small_skill[166] = {id:1166,name:"妖术",state: 1 ,message:"将敌方变成小羊,持续1回合"}
+  // small_skill[166].do = {};
+  // small_skill[167] = {id:1167,name:"枷锁",state: 1 ,message:"自己摸一张牌,敌方受到50点伤害"}
+  // small_skill[167].do = {};
+  // small_skill[168] = {id:1168,name:"烈焰破击",state: 1 ,message:"对敌方造成100点伤害"}//(可闪避)"}
+  // small_skill[168].do = {tHp:"100"};
+  // small_skill[169] = {id:1169,name:"冰霜新星",state: 1 ,message:"对敌方造成60点伤害"}//(可闪避)"}
+  // small_skill[169].do = {tHp:"60"};
+  // small_skill[170] = {id:1170,name:"冰封禁制",state: 1 ,message:"对敌方造成30点伤害并晕眩一回合"}
+  // small_skill[170].do = {tHp:"30"};
+  // small_skill[171] = {id:1171,name:"辉煌光环",state: 2 ,message:"被动牌:每回合可以额外回复1点能量值"}
+  // small_skill[171].do = {mBuff:[,mB]uffT:}
+  // small_skill[172] = {id:1172,name:"静默诅咒",state: 1 ,message:"减少敌方1点能量值"}
+  // small_skill[172].do = {};
+  // small_skill[173] = {id:1173,name:"智慧之刃",state: 2 ,message:"本回合内攻击力增加自己能量值乘以20的数值"}
+  // small_skill[173].do = {mBuff:[,mB]uffT:}
+  // small_skill[174] = {id:1174,name:"遗言",state: 1 ,message:"对敌方造成60点伤害,并沉默1回合"}
+  // small_skill[174].do = {tHp:"60"};
+  // small_skill[175] = {id:1175,name:"弱化能流",state: 1 ,message:"永久减少敌方10点攻击"}
+  // small_skill[175].do = {};
+  // small_skill[176] = {id:1176,name:"激光",state: 1 ,message:"造成100点伤害并使敌方下1回合攻击100%mis"}
+  // small_skill[176].do = {tHp:"100"};
+  // small_skill[177] = {id:1177,name:"热导飞弹",state: 1 ,message:"造成100点伤害"}//(可闪避)"}
+  // small_skill[177].do = {tHp:"100"};
+  // small_skill[178] = {id:1178,name:"法力汲取",state: 1 ,message:"减少敌方两点能量格,自己增加两点能量格"}
+  // small_skill[178].do = {};
+  // small_skill[179] = {id:1179,name:"超负荷",state: 2 ,message:"被动牌:每放1次技能就可以增加自己40点攻击,不可叠加,维持一次攻击"}
+  // small_skill[179].do = {mBuff:[,mB]uffT:}
+  // small_skill[180] = {id:1180,name:"束缚之箭",state: 1 ,message:"造成40点伤害晕眩敌方半回合"}
+  // small_skill[180].do = {tHp:"40"};
+  // small_skill[181] = {id:1181,name:"强力一击",state: 1 ,message:"造成100点伤害"}//(可闪避)"}
+  // small_skill[181].do = {tHp:"100"};
+  // small_skill[182] = {id:1182,name:"冲击波",state: 1 ,message:"造成130点伤害"}
+  // small_skill[182].do = {tHp:"130"};
+  // small_skill[183] = {id:1183,name:"法力流失",state: 1 ,message:"3回合内敌方任何攻击所需能量值加1"}
+  // small_skill[183].do = {};
+  // small_skill[184] = {id:1184,name:"查克拉魔法",state: 1 ,message:"瞬间将自身能量值回满"}
+  // small_skill[184].do = {};
+  // small_skill[185] = {id:1185,name:"严寒烧灼",state: 2 ,message:"2回合内增加敌方现有生命值2%的攻击力"}
+  // small_skill[185].do = {mBuff:[,mB]uffT:}
+  // small_skill[186] = {id:1186,name:"碎裂冲击",state: 1 ,message:"造成100点伤害"}//(可闪避)"}
+  // small_skill[186].do = {tHp:"100"};
+  // small_skill[187] = {id:1187,name:"极寒之拥",state: 2 ,message:"使自己加100点护甲回复100点生命,但本回合不可以再出牌"}
+  // small_skill[187].do = {mBuff:[,mB]uffT:}
+  // small_skill[188] = {id:1188,name:"离子外壳",state: 1 ,message:"对敌方造成80点伤害"}
+  // small_skill[188].do = {tHp:"80"};
+  // small_skill[189] = {id:1189,name:"凤凰冲击",state: 3 ,message:"减少自身100点生命值，闪避对方一次攻击"}
+  // small_skill[189].do = {};
+  // small_skill[190] = {id:1190,name:"秘法天球",state: 2 ,message:"本回合增加能量值乘以25的攻击力"}
+  // small_skill[190].do = {mBuff:[,mB]uffT:}
+  // small_skill[191] = {id:1191,name:"星体禁锢",state: 1 ,message:"使对方减少2点能量格,并轮空一回合"}
+  // small_skill[191].do = {};
+  // small_skill[192] = {id:1192,name:"精气光环",state: 2 ,message:"被动牌:释放技能时有50%的概率加1点能量值"}
+  // small_skill[192].do = {mBuff:[,mB]uffT:}
+  // small_skill[193] = {id:1193,name:"龙破斩",state: 1 ,message:"造成100点伤害"}//(可闪避)"}
+  // small_skill[193].do = {tHp:"100"};
+  // small_skill[194] = {id:1194,name:"光击阵",state: 1 ,message:"造成80点伤害并晕眩1回合"}//(可闪避)"}
+  // small_skill[194].do = {tHp:"80"};
+  // small_skill[195] = {id:1195,name:"寒冰之触",state: 1 ,message:"对敌方造成80点伤害并晕眩半回合"}
+  // small_skill[195].do = {tHp:"80"};
+  // small_skill[196] = {id:1196,name:"火焰爆轰",state: 1 ,message:"造成80点伤害并晕眩敌方1回合"}
+  // small_skill[196].do = {tHp:"80"};
+  // small_skill[197] = {id:1197,name:"引燃",state: 1 ,message:"造成150点伤害"}
+  // small_skill[197].do = {tHp:"150"};
+  // small_skill[198] = {id:1198,name:"嗜血术",state: 2 ,message:"3回合内增加自己30点攻击力"}
+  // small_skill[198].do = {mBuff:[,mB]uffT:}
+  // small_skill[199] = {id:1199,name:"憎恶",state: 1 ,message:"对敌方造成50点伤害并晕眩半回合"}
+  // small_skill[199].do = {tHp:"50"};
+  // small_skill[200] = {id:1200,name:"午夜凋零",state: 1 ,message:"造成80点伤害"}//(可闪避)"}
+  // small_skill[200].do = {tHp:"80"};
+  // small_skill[201] = {id:1201,name:"命运赦令",state: 1 ,message:"使敌方1回合不可以攻击并且所受的物理伤害增加100%"}
+  // small_skill[201].do = {};
+  // small_skill[202] = {id:1202,name:"涤罪之焰",state: 1 ,message:"对敌方造成150点伤害"}
+  // small_skill[202].do = {tHp:"150"};
+  // small_skill[203] = {id:1203,name:"忠诚考验",state: 1 ,message:"随机对敌方造成50-300点伤害"}
+  // small_skill[203].do = {tHp:"50-300"};
+  // small_skill[204] = {id:1204,name:"麻痹陷阱",state: 1 ,message:"对敌方晕眩一回合"}//(可闪避)"}
+  // small_skill[204].do = {};
+  // small_skill[205] = {id:1205,name:"恶魔赦令",state: 1 ,message:"三回合内每回合对敌方造成80点伤害"}
+  // small_skill[205].do = {tHp:"80"};
+  // small_skill[206] = {id:1206,name:"致命连接",state: 1 ,message:"本回合内对敌方额外造成手牌数0.1倍技能伤害 "}
+  // small_skill[206].do = {};
+  // small_skill[207] = {id:1207,name:"暗言术",state: 1 ,message:"使己方回复100点生命值并对敌方造成100点伤害"}
+  // small_skill[207].do = {tHp:"100"};
+  // small_skill[208] = {id:1208,name:"冰火交加",state: 1 ,message:"对敌方造成150点伤害"}//(可闪避)"}
+  // small_skill[208].do = {tHp:"150"};
+  // small_skill[209] = {id:1209,name:"冰封路径",state: 1 ,message:"使敌方晕眩一回合"}//(可闪避)"}
+  // small_skill[209].do = {};
+  // small_skill[210] = {id:1210,name:"液态火",state: 1 ,message:"对敌方造成150点伤害"}
+  // small_skill[210].do = {tHp:"150"};
+  // small_skill[211] = {id:1211,name:"死亡脉冲",state: 1 ,message:"对敌方造成100点伤害，同时回复100点生命值"}//(可闪避)"}
+  // small_skill[211].do = {tHp:"100"};
+  // small_skill[212] = {id:1212,name:"竭心光环",state: 2 ,message:"被动牌:每回合减少敌方2%生命值"}
+  // small_skill[212].do = {mBuff:[,mB]uffT:}
+  // small_skill[213] = {id:1213,name:"施虐之心",state: 2 ,message:"被动牌:每对敌方造成200点伤害回复1点能量格和100点生命"}
+  // small_skill[213].do = {tHp:"200",mBuff:[,mB]uffT:}
+  // small_skill[214] = {id:1214,name:"灵魂超度",state: 1 ,message:"对敌方造成自己损失血量10%的伤害"}//(可闪避)"}
+  // small_skill[214].do = {tHp:"自己损失血量10%"};
+  // small_skill[215] = {id:1215,name:"食腐蝙群",state: 1 ,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[215].do = {tHp:"200"};
+  // small_skill[216] = {id:1216,name:"上古封印",state: 1 ,message:"使敌方承受1.5倍魔法伤害，并使敌方沉默一回合"}//(可闪避)"}
+  // small_skill[216].do = {};
+  // small_skill[217] = {id:1217,name:"奥术箭",state: 1 ,message:"对敌方造成50*其能量格的伤害"}//(可闪避)"}
+  // small_skill[217].do = {tHp:"50*其能量格"};
+  // small_skill[218] = {id:1218,name:"暗影突袭",state: 1 ,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[218].do = {tHp:"200"};
+  // small_skill[219] = {id:1219,name:"闪烁",state: 3 ,message:"可闪避敌方一次技能，对无视闪避技能无效"}
+  // small_skill[219].do = {};
+  // small_skill[220] = {id:1220,name:"痛苦尖叫",state: 1 ,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[220].do = {tHp:"200"};
+  // small_skill[221] = {id:1221,name:"虚弱",state: 1 ,message:"3回合内降低敌方30点攻击力"}
+  // small_skill[221].do = {};
+  // small_skill[222] = {id:1222,name:"蚀脑",state: 1 ,message:"对敌方造成200点伤害，同时回复100点生命值"}
+  // small_skill[222].do = {tHp:"200"};
+  // small_skill[223] = {id:1223,name:"噩梦",state: 1 ,message:"使敌方沉睡一回合不能摸牌，己方也不能进行攻击"}
+  // small_skill[223].do = {};
+  // small_skill[224] = {id:1224,name:"霜冻新星",state: 1 ,message:"对地敌方造成200点伤害"}
+  // small_skill[224].do = {tHp:"200"};
+  // small_skill[225] = {id:1225,name:"霜冻护甲",state: 2 ,message:"2回合内增加20点护甲"}
+  // small_skill[225].do = {mBuff:[,mB]uffT:}
+  // small_skill[226] = {id:1226,name:"邪恶祭祀",state: 1 ,message:"消耗50点生命，回复3点能量"}
+  // small_skill[226].do = {};
+  // small_skill[227] = {id:1227,name:"麻痹药剂",state: 1 ,message:"使敌方晕眩,若敌方手牌超过4张晕眩2回合,否则晕眩1回合"}//(可闪避)"}
+  // small_skill[227].do = {};
+  // small_skill[228] = {id:1228,name:"巫毒回复术",state: 1 ,message:"回复150点生命"}
+  // small_skill[228].do = {};
+  // small_skill[229] = {id:1229,name:"诅咒",state: 1 ,message:"使敌方3回合后受到3回合内受到总伤害的25%"}//(可闪避)"}
+  // small_skill[229].do = {};
+  // small_skill[230] = {id:1230,name:"相位转移",state: 3 ,message:"免疫一次任何伤害"}
+  // small_skill[230].do = {};
+  // small_skill[231] = {id:1231,name:"新月之痕",state: 1 ,message:"对敌方造成100点伤害并使对方沉默一回合"}//(可闪避)"}
+  // small_skill[231].do = {tHp:"100"};
+  // small_skill[232] = {id:1232,name:"不可侵犯",state: 2 ,message:"被动牌:使对方普通攻击时消耗双倍能量格"}
+  // small_skill[232].do = {mBuff:[,mB]uffT:}
+  // small_skill[233] = {id:1233,name:"自然之助",state: 1 ,message:"回复自身200点生命值"}
+  // small_skill[233].do = {};
+  // small_skill[234] = {id:1234,name:"幽冥爆轰",state: 1 ,message:"对敌方造成200点伤害"}//(可闪避)"}
+  // small_skill[234].do = {tHp:"200"};
+  // small_skill[235] = {id:1235,name:"幽冥守卫",state: 1 ,message:"对敌方造成敌方消耗能量格*100的伤害"}
+  // small_skill[235].do = {tHp:"敌方消耗能量格*100"};
+  // small_skill[236] = {id:1236,name:"衰老",state: 1 ,message:"使敌方2回合不能攻击,同时物理免疫,承受1.5倍魔法伤害"}
+  // small_skill[236].do = {};
+  // small_skill[237] = {id:1237,name:"雷霆之击",state: 1 ,message:"对敌方造成200点伤害"}
+  // small_skill[237].do = {tHp:"200"};
+
+};module.exports = { big_skill: big_skill, small_skill: small_skill };
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _buffTo_base;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 module.exports = {
     whatToDo: {
@@ -22979,45 +22576,45 @@ module.exports = {
         88: "风杖"
     },
     herotype: {
-        0: {
+        0: { //兽族
+            herotype: 0,
             maxHp: 4000, //最大血量
             Hprecove: 15, //生命值恢复速度
             maxMp: 500, //最大蓝量
             Mprecove: 50, //魔法值恢复速度
             attack: 40, //攻击力
-            armor: 10, //护甲
             attackRecove: 1, //攻击速度
-            herotype: 0
+            armor: 10 //护甲
         },
-        1: {
+        1: { //精灵族
+            herotype: 1,
             maxHp: 3500, //最大血量
             Hprecove: 10, //生命值恢复速度
             maxMp: 500, //最大蓝量
             Mprecove: 50, //魔法值恢复速度
             attack: 70, //攻击力
-            armor: 15, //护甲
-            attackRecove: 1, //攻击速度
-            herotype: 1
+            attackRecove: 1.5, //攻击速度
+            armor: 15 //护甲
         },
-        2: {
+        2: { //不死族
+            herotype: 2,
             maxHp: 3000, //最大血量
             Hprecove: 10, //生命值恢复速度
             maxMp: 600, //最大蓝量
             Mprecove: 60, //魔法值恢复速度
             attack: 40, //攻击力
-            armor: 10, //护甲
             attackRecove: 1, //攻击速度
-            herotype: 2
+            armor: 10 //护甲
         },
-        3: {
+        3: { //人族
+            herotype: 3,
             maxHp: 3500, //最大血量
             Hprecove: 10, //生命值恢复速度
             maxMp: 500, //最大蓝量
-            Mprecove: 50, //魔法值恢复速度
             attack: 50, //攻击力
-            armor: 10, //护甲
+            Mprecove: 50, //魔法值恢复速度
             attackRecove: 1, //攻击速度
-            herotype: 3
+            armor: 10 //护甲
         }
     },
     equiptTo_base: {
@@ -23129,7 +22726,7 @@ module.exports = {
             return base;
         }
     },
-    buffTo_base: {
+    buffTo_base: (_buffTo_base = {
         5: function _(base) {
             //巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
             base.armor -= 10;
@@ -23200,13 +22797,42 @@ module.exports = {
             //授予力量 2 本回合内攻击加80
             base.attack += 80;
             return base;
+        },
+        63: function _(base) {
+            //自然秩序 使对方护甲归0
+            base.armor = 0;
+            return base;
+        },
+        62: function _(base) {
+            //衰退光环 减少对方50%攻击力
+            base.attack -= parseInt(base.attack / 2);
+            return base;
+        },
+        159: function _(base) {
+            //活血术 生命值回复速度*5
+            base.Hprecove *= 5;
+            return base;
+        },
+        //-------------------------------------------
+        119: function _(base, Mstate) {
+            //狂战士之血 增加已损失生命值百分比*2的攻速
+            base.attackRecove += ((1 - Mstate.Hp / base.maxHp) * 2).toFixed(1) * 1;
+            return base;
         }
-    }
+    }, _defineProperty(_buffTo_base, "159", function _(base) {
+        //活血术 生命值回复速度*5
+        base.Hprecove *= 5;
+        return base;
+    }), _defineProperty(_buffTo_base, "159", function _(base) {
+        //活血术 生命值回复速度*5
+        base.Hprecove *= 5;
+        return base;
+    }), _buffTo_base)
 
 };
 
 /***/ }),
-/* 58 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23218,7 +22844,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(59);
+__webpack_require__(57);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23287,11 +22913,11 @@ var Tooltip = function (_React$Component) {
 module.exports = Tooltip;
 
 /***/ }),
-/* 59 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(60);
+var content = __webpack_require__(58);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23337,7 +22963,7 @@ if(false) {
 }
 
 /***/ }),
-/* 60 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23351,25 +22977,25 @@ exports.push([module.i, ".Tooltip {\n  width: 120px;\n  background-color: black;
 
 
 /***/ }),
-/* 61 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _PlayPage = __webpack_require__(62);
+var _PlayPage = __webpack_require__(60);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(93);
+var _HeroSelect = __webpack_require__(61);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
-var _HeroPlaceMy = __webpack_require__(23);
+var _HeroPlaceMy = __webpack_require__(68);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(26);
+var _HeroPlaceThat = __webpack_require__(83);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
@@ -23384,7 +23010,7 @@ var common = {
 module.exports = common;
 
 /***/ }),
-/* 62 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23398,21 +23024,21 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(63);
+__webpack_require__(88);
 
-var _action = __webpack_require__(5);
+var _action = __webpack_require__(7);
 
-var _skill = __webpack_require__(22);
+var _skill = __webpack_require__(54);
 
-var _HeroPlaceMy = __webpack_require__(23);
+var _HeroPlaceMy = __webpack_require__(68);
 
 var _HeroPlaceMy2 = _interopRequireDefault(_HeroPlaceMy);
 
-var _HeroPlaceThat = __webpack_require__(26);
+var _HeroPlaceThat = __webpack_require__(83);
 
 var _HeroPlaceThat2 = _interopRequireDefault(_HeroPlaceThat);
 
-var _FightPlace = __webpack_require__(81);
+var _FightPlace = __webpack_require__(90);
 
 var _FightPlace2 = _interopRequireDefault(_FightPlace);
 
@@ -23501,15 +23127,22 @@ var PlayPage = function (_React$Component) {
         value: function prepare_card(round, thatstate) {
             if (round > 0) {
                 //准备完毕,并且先手
-                var small_cardheap = (0, _action.shufflecards)(_skill.small_skill); //洗牌
+                var arr = [];
+                _skill.small_skill.map(function (val, index) {
+                    //去除空项
+                    if (val !== "" && val != undefined) {
+                        arr.push(val);
+                    }
+                });
+                var small_cardheap = (0, _action.shufflecards)(arr); //洗牌
                 var big_cardheap = (0, _action.shufflecards)(_skill.big_skill); //洗牌
                 //抓牌↓
                 var mystate = this.props.mystate;
                 mystate.money = 100;
                 mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
 
-                // mystate.cardid[0] = {id:1003,name:"反击",state: 2 ,message:"被动牌:在自己受到伤害时对敌方造成自身承受伤害的20%(持续3回合)"}
-                // mystate.cardid[0].do = {mBuff:[100],mBuffT:[6]}
+                // mystate.cardid[0] = {id:1050,name:"吞噬",state: 2 ,mp:100,message:"将对方的随机一张牌,转化为100金币"}
+                // mystate.cardid[0].do = {special:true}
 
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
@@ -23560,11 +23193,157 @@ var PlayPage = function (_React$Component) {
 module.exports = PlayPage;
 
 /***/ }),
-/* 63 */
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(62);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var HeroSelect = function (_React$Component) {
+    _inherits(HeroSelect, _React$Component);
+
+    function HeroSelect() {
+        _classCallCheck(this, HeroSelect);
+
+        var _this = _possibleConstructorReturn(this, (HeroSelect.__proto__ || Object.getPrototypeOf(HeroSelect)).call(this));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(HeroSelect, [{
+        key: 'coeckhero',
+        value: function coeckhero(type) {
+            var mystate = this.props.mystate;
+            var mystateHerotype = {};
+            switch (type) {
+                case 0:
+                    //兽族
+                    mystateHerotype = {
+                        herotype: 0,
+                        maxHp: 4000, //最大血量
+                        Hp: 4000, //当前血量
+                        Hprecove: 15, //生命值恢复速度
+                        maxMp: 500, //最大蓝量
+                        Mp: 500, //当前蓝量
+                        Mprecove: 50, //魔法值恢复速度
+                        attack: 40, //攻击力
+                        attackRecove: 1, //攻击速度
+                        armor: 10 //护甲
+                    };
+                    break;
+                case 1:
+                    //精灵族
+                    mystateHerotype = {
+                        herotype: 1,
+                        maxHp: 3500, //最大血量
+                        Hp: 3500, //当前血量
+                        Hprecove: 10, //生命值恢复速度
+                        maxMp: 500, //最大蓝量
+                        Mp: 500, //当前蓝量
+                        Mprecove: 50, //魔法值恢复速度
+                        attack: 70, //攻击力
+                        attackRecove: 1.5, //攻击速度
+                        armor: 15 //护甲
+                    };
+                    break;
+                case 2:
+                    //不死族
+                    mystateHerotype = {
+                        herotype: 2,
+                        maxHp: 3000, //最大血量
+                        Hp: 3000, //当前血量
+                        Hprecove: 10, //生命值恢复速度
+                        maxMp: 600, //最大蓝量
+                        Mp: 600, //当前蓝量
+                        Mprecove: 60, //魔法值恢复速度
+                        attack: 40, //攻击力
+                        attackRecove: 1, //攻击速度
+                        armor: 10 //护甲
+                    };
+                    break;
+                case 3:
+                    //人族
+                    mystateHerotype = {
+                        herotype: 3,
+                        maxHp: 3500, //最大血量
+                        Hp: 3500, //当前血量
+                        Hprecove: 10, //生命值恢复速度
+                        maxMp: 500, //最大蓝量
+                        Mp: 500, //当前蓝量
+                        attack: 50, //攻击力
+                        Mprecove: 50, //魔法值恢复速度
+                        attackRecove: 1, //攻击速度
+                        armor: 10 //护甲
+                    };
+                    break;
+            }
+            Object.assign(mystate, mystateHerotype);
+            var round = Math.random(); //随机回合用
+            this.props.setState({ mystate: mystate, mystateBase: mystate, playingSpeed: 1, round: this.props.round + round });
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    state: this.props.mystate,
+                    funname: "prepareOk",
+                    round: round
+                }
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'heroSelect' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'select_title' },
+                    _react2.default.createElement(
+                        'span',
+                        null,
+                        '\u8BF7\u9009\u62E9\u4F60\u8981\u4F7F\u7528\u7684\u82F1\u96C4'
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'picture_box' },
+                    _react2.default.createElement('div', { className: 'hero0 heropicture', onClick: this.coeckhero.bind(this, 0) }),
+                    _react2.default.createElement('div', { className: 'hero1 heropicture', onClick: this.coeckhero.bind(this, 1) }),
+                    _react2.default.createElement('div', { className: 'hero2 heropicture', onClick: this.coeckhero.bind(this, 2) }),
+                    _react2.default.createElement('div', { className: 'hero3 heropicture', onClick: this.coeckhero.bind(this, 3) })
+                )
+            );
+        }
+    }]);
+
+    return HeroSelect;
+}(_react2.default.Component);
+
+module.exports = HeroSelect;
+
+/***/ }),
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(64);
+var content = __webpack_require__(63);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23583,8 +23362,8 @@ var update = __webpack_require__(2)(content, options);
 if(content.locals) module.exports = content.locals;
 
 if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss");
 
 		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 
@@ -23610,25 +23389,324 @@ if(false) {
 }
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var escape = __webpack_require__(6);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(64)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(65)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(66)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(67)) + ") no-repeat center; }\n", ""]);
 
 // exports
 
 
 /***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "52161e9892467fa48f01d90390b46efe.jpg";
+
+/***/ }),
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__.p + "be5072aea25eb22a9bbbbd7f4ded5518.jpg";
 
-var content = __webpack_require__(66);
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "31b809f3672807f11398cd3516b78823.jpg";
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(20);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+var _stateflie = __webpack_require__(21);
+
+var _stateflie2 = _interopRequireDefault(_stateflie);
+
+var _BuffIon = __webpack_require__(22);
+
+var _BuffIon2 = _interopRequireDefault(_BuffIon);
+
+var _Equipment = __webpack_require__(23);
+
+var _Equipment2 = _interopRequireDefault(_Equipment);
+
+var _action = __webpack_require__(7);
+
+__webpack_require__(77);
+
+var _MetailBox = __webpack_require__(12);
+
+var _MetailBox2 = _interopRequireDefault(_MetailBox);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var socket = io();
+
+var HeroPlaceMy = function (_React$Component) {
+    _inherits(HeroPlaceMy, _React$Component);
+
+    function HeroPlaceMy() {
+        _classCallCheck(this, HeroPlaceMy);
+
+        return _possibleConstructorReturn(this, (HeroPlaceMy.__proto__ || Object.getPrototypeOf(HeroPlaceMy)).call(this));
+    }
+
+    _createClass(HeroPlaceMy, [{
+        key: 'cardlist',
+        value: function cardlist() {
+            var _this2 = this;
+
+            return this.props.mystate.cardid.map(function (card, i) {
+                return _react2.default.createElement(_Card2.default, _extends({}, _this2.props, { card: card, cardfor: "my", key: i }));
+            });
+        }
+    }, {
+        key: 'showstate',
+        value: function showstate(st) {
+            var buff = st.buff; //状态数组
+            var buffTime = st.buffTime; //状态持续时间
+            return buff.map(function (item, i) {
+                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], buffObj: st.buffObj, key: i }));
+            });
+        }
+    }, {
+        key: 'attackBtn',
+        value: function attackBtn() {
+
+            var attack = {
+                name: "普通攻击",
+                state: 1,
+                do: {
+                    tHp: this.props.mystate.attack
+                }
+            };
+
+            var _doAttack = (0, _action.doAttack)(this.props, attack, "attack"),
+                _doAttack2 = _slicedToArray(_doAttack, 2),
+                check = _doAttack2[0],
+                newstate = _doAttack2[1];
+
+            this.props.setState(newstate);
+
+            if (check == false) return;
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { mystate: newstate.thatstate, thatstate: newstate.mystate },
+                    message: check == "miss" ? "对方普通攻击MISS" : "普通攻击对你造成\"" + check + "\"点伤害"
+                }
+            });
+        }
+    }, {
+        key: 'roundOver',
+        value: function roundOver() {
+            //回合结束
+            var messagelist = this.props.messagelist;
+            messagelist.push("结束回合");
+            var mystate = this.props.mystate;
+            mystate.attackAccount = ("." + mystate.attackAccount * 100 % 100) * 1; //攻击机会重置
+            for (var i = 0; i < mystate.buff.length;) {
+                //状态处理
+                if (mystate.buffTime[i] == 1) {
+                    mystate.buffTime.splice(i, 1);
+                    mystate.buffObj[mystate.buff[i]] && delete mystate.buffObj[mystate.buff[i]];
+                    mystate.buff.splice(i, 1);
+                } else {
+                    mystate.buffTime[i] -= 1;
+                    i++;
+                }
+            }
+            for (var _i in mystate.equipmentcd) {
+                //装备处理
+                if (mystate.equipmentcd[_i] > 0) {
+                    mystate.equipmentcd[_i] -= 1;
+                }
+                _i++;
+            }
+            var newstate = { round: 0, messagelist: messagelist, mystate: mystate };
+            this.props.setState(newstate);
+            this.props.socket.emit('totalk', {
+                id: this.props.thatid,
+                obj: {
+                    funname: "getnewstate",
+                    newstate: { round: 1, thatstate: mystate },
+                    message: "对方回合结束，现在是你的回合"
+                }
+            });
+        }
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            //判断游戏结束
+            if (this.props.mystate.Hp <= 0) {
+                alert("你输了");
+                console.info("你输了");
+                this.props.next_process({ progress_state: 1 });
+                socket.emit('fightResult', {
+                    id: this.props.myid,
+                    name: this.props.myname
+                });
+            }
+        }
+    }, {
+        key: 'showtip',
+        value: function showtip(item, e) {
+            this.props.setState({ Tooltip: {
+                    show: true,
+                    place: [e.clientX, e.clientY],
+                    name: item.name,
+                    blueT: item.mp,
+                    redT: item.CD ? "CD:" + item.CD / 2 : "",
+                    message: item.message
+                } });
+        }
+    }, {
+        key: 'closetip',
+        value: function closetip() {
+            this.props.setState({ Tooltip: { show: false } });
+        }
+    }, {
+        key: 'showEquipment',
+        value: function showEquipment(equipments) {
+            var _this3 = this;
+
+            return equipments.map(function (item, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'posi_tion', key: i,
+                        onMouseOver: _this3.showtip.bind(_this3, item),
+                        onMouseOut: _this3.closetip.bind(_this3) },
+                    _react2.default.createElement(_Equipment2.default, _extends({}, _this3.props, { equipment: item, equipmentcd: _this3.props.mystate.equipmentcd[item.id], equipfor: "my" }))
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var basic = this.props.mystate;
+            return _react2.default.createElement(
+                'div',
+                { className: 'hero_place' },
+                _react2.default.createElement(
+                    _MetailBox2.default,
+                    null,
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'hero_box' },
+                        _react2.default.createElement('div', { className: "hero_ion hero_ion_" + basic.herotype }),
+                        this.props.round == 1 ? _react2.default.createElement(
+                            'div',
+                            { className: 'attack_btn', onClick: this.attackBtn.bind(this) },
+                            "攻击x" + basic.attackAccount + "↑" + basic.attackRecove
+                        ) : "",
+                        this.props.round == 1 ? _react2.default.createElement(
+                            'div',
+                            { className: 'over_btn', onClick: this.roundOver.bind(this) },
+                            "回合结束"
+                        ) : ""
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'attribute_list' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'HP' },
+                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'MP' },
+                            basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'attack' },
+                            "攻击力:" + basic.attack
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'armor' },
+                            "护甲:" + basic.armor
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'statelist' },
+                            _react2.default.createElement(
+                                'span',
+                                null,
+                                '\u72B6\u6001:'
+                            ),
+                            this.showstate(basic)
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_list' },
+                        this.cardlist()
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'equipment_list' },
+                        _react2.default.createElement(
+                            'div',
+                            null,
+                            "金钱:" + this.props.mystate.money
+                        ),
+                        this.showEquipment(basic.equipment)
+                    )
+                )
+            );
+        }
+    }]);
+
+    return HeroPlaceMy;
+}(_react2.default.Component);
+
+module.exports = HeroPlaceMy;
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(70);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23674,38 +23752,38 @@ if(false) {
 }
 
 /***/ }),
-/* 66 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(4);
+var escape = __webpack_require__(6);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  color: #fff;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(67)) + ") no-repeat center;\n  background-size: 116% 113%;\n  overflow: hidden; }\n  .card_box .card_mp {\n    color: blue;\n    float: left;\n    margin: 4px;\n    line-height: 12px; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 50px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 0 7px; }\n\n.card_my {\n  transform: scale(0.9);\n  /*0.9倍*/ }\n\n.card_my:hover {\n  transform: scale(1);\n  /*1倍*/ }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transform: scale(0.9);\n  /*0.9倍*/\n  background: url(" + escape(__webpack_require__(68)) + ") no-repeat center;\n  background-size: 116% 113%;\n  float: left; }\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.card_box {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 100%;\n  color: #fff;\n  transition: all 0.1s;\n  cursor: pointer;\n  background: url(" + escape(__webpack_require__(71)) + ") no-repeat center;\n  background-size: 116% 113%;\n  overflow: hidden; }\n  .card_box .card_mp {\n    color: blue;\n    float: left;\n    margin: 4px;\n    line-height: 12px; }\n  .card_box .card_ion {\n    background: green;\n    width: 60px;\n    height: 50px;\n    margin: 10px 0px 0px 20px; }\n  .card_box .card_name {\n    text-align: center;\n    width: 100%; }\n  .card_box .card_message {\n    text-align: left;\n    margin: 0 7px; }\n\n.card_my {\n  transform: scale(0.9);\n  /*0.9倍*/ }\n\n.card_my:hover {\n  transform: scale(1);\n  /*1倍*/ }\n\n.card_box_hide {\n  width: 100px;\n  position: relative;\n  font-size: 12px;\n  height: 160px;\n  transform: scale(0.9);\n  /*0.9倍*/\n  background: url(" + escape(__webpack_require__(72)) + ") no-repeat center;\n  background-size: 116% 113%;\n  float: left; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 67 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "c02156dc8e2f723f107e92d09f12c96e.jpg";
 
 /***/ }),
-/* 68 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "ff72ff859aa2438bfcf81643da7cfb07.jpg";
 
 /***/ }),
-/* 69 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(70);
+var content = __webpack_require__(74);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23751,7 +23829,7 @@ if(false) {
 }
 
 /***/ }),
-/* 70 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23765,11 +23843,11 @@ exports.push([module.i, "@charset \"UTF-8\";\n.BuffIon_box {\n  height: 20px;\n 
 
 
 /***/ }),
-/* 71 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(72);
+var content = __webpack_require__(76);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23815,7 +23893,7 @@ if(false) {
 }
 
 /***/ }),
-/* 72 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23829,11 +23907,11 @@ exports.push([module.i, ".equipment {\n  width: 100%;\n  height: 100%;\n  cursor
 
 
 /***/ }),
-/* 73 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(74);
+var content = __webpack_require__(78);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23879,50 +23957,247 @@ if(false) {
 }
 
 /***/ }),
-/* 74 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(4);
+var escape = __webpack_require__(6);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".hero_place {\n  height: 200px;\n  min-width: 1155px; }\n  .hero_place .hero_box {\n    width: 99px;\n    position: absolute; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px;\n      border-top-left-radius: 50%;\n      border-top-right-radius: 50%;\n      border: 0px solid burlywood;\n      box-shadow: darkgrey 0px 0px 5px 5px;\n      margin: 10px 5px 10px 10px;\n      background-position: -14px !important; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(75)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(76)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(77)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_3 {\n      background: url(" + escape(__webpack_require__(78)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: #c10000;\n      border: 0px solid burlywood;\n      box-shadow: darkgrey 0px 0px 5px 3px inset;\n      border-radius: 5px;\n      color: #fff;\n      margin: 5px 5px 5px 10px; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: #0e379e;\n      border: 0px solid burlywood;\n      box-shadow: darkgrey 0px 0px 5px 3px inset;\n      border-radius: 5px;\n      color: #fff;\n      margin: 5px 5px 5px 10px; }\n  .hero_place .attribute_list {\n    height: 100%;\n    width: 130px;\n    position: absolute;\n    left: 105px;\n    color: #fff; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n      .hero_place .attribute_list .statelist span {\n        float: left; }\n  .hero_place .card_list {\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    position: absolute;\n    left: 240px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    height: 100%;\n    width: 105px;\n    position: absolute;\n    right: 0px;\n    color: #fff; }\n    .hero_place .equipment_list .posi_tion {\n      float: left;\n      width: 45px;\n      height: 45px;\n      margin: 1px 3px 1px 2px; }\n", ""]);
+exports.push([module.i, ".hero_place {\n  height: 200px;\n  min-width: 1155px; }\n  .hero_place .hero_box {\n    width: 99px;\n    position: absolute; }\n    .hero_place .hero_box .hero_ion {\n      height: 100px;\n      border-top-left-radius: 50%;\n      border-top-right-radius: 50%;\n      border: 0px solid burlywood;\n      box-shadow: darkgrey 0px 0px 5px 5px;\n      margin: 10px 5px 10px 10px;\n      background-position: -14px !important; }\n    .hero_place .hero_box .hero_ion_0 {\n      background: url(" + escape(__webpack_require__(79)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_1 {\n      background: url(" + escape(__webpack_require__(80)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_2 {\n      background: url(" + escape(__webpack_require__(81)) + ") no-repeat center; }\n    .hero_place .hero_box .hero_ion_3 {\n      background: url(" + escape(__webpack_require__(82)) + ") no-repeat center; }\n    .hero_place .hero_box .attack_btn {\n      text-align: center;\n      background: #c10000;\n      border: 0px solid burlywood;\n      box-shadow: darkgrey 0px 0px 5px 3px inset;\n      border-radius: 5px;\n      color: #fff;\n      margin: 3px 5px 3px 10px;\n      font-size: 12px;\n      line-height: 22px; }\n    .hero_place .hero_box .over_btn {\n      text-align: center;\n      background: #0e379e;\n      border: 0px solid burlywood;\n      box-shadow: darkgrey 0px 0px 5px 3px inset;\n      border-radius: 5px;\n      color: #fff;\n      margin: 3px 5px 3px 10px;\n      font-size: 12px;\n      line-height: 22px; }\n  .hero_place .attribute_list {\n    height: 100%;\n    width: 130px;\n    position: absolute;\n    left: 105px;\n    color: #fff; }\n    .hero_place .attribute_list .HP {\n      width: 100%;\n      background: #8bff04; }\n    .hero_place .attribute_list .MP {\n      width: 100%;\n      background: #6977ff; }\n    .hero_place .attribute_list .attack {\n      width: 100%; }\n    .hero_place .attribute_list .armor {\n      width: 100%; }\n    .hero_place .attribute_list .statelist {\n      width: 100%; }\n      .hero_place .attribute_list .statelist span {\n        float: left; }\n  .hero_place .card_list {\n    height: 100%;\n    width: calc(100% - 350px);\n    min-width: 400px;\n    position: absolute;\n    left: 240px; }\n    .hero_place .card_list .card_box {\n      float: left; }\n  .hero_place .equipment_list {\n    height: 100%;\n    width: 105px;\n    position: absolute;\n    right: 0px;\n    color: #fff; }\n    .hero_place .equipment_list .posi_tion {\n      float: left;\n      width: 45px;\n      height: 45px;\n      margin: 1px 3px 1px 2px; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 75 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "851a5fe0c3ff4094869fc048ba0d39b9.jpg";
 
 /***/ }),
-/* 76 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "07a04e6f5080fe504b06f89816f20ea1.jpg";
 
 /***/ }),
-/* 77 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "bcbac891ffef28917c8a6c2358aef23e.jpg";
 
 /***/ }),
-/* 78 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "7670498601a07e49efa30737e1f90b0c.jpg";
 
 /***/ }),
-/* 79 */
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(20);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+var _stateflie = __webpack_require__(21);
+
+var _stateflie2 = _interopRequireDefault(_stateflie);
+
+var _BuffIon = __webpack_require__(22);
+
+var _BuffIon2 = _interopRequireDefault(_BuffIon);
+
+var _Equipment = __webpack_require__(23);
+
+var _Equipment2 = _interopRequireDefault(_Equipment);
+
+var _action = __webpack_require__(7);
+
+__webpack_require__(84);
+
+var _MetailBox = __webpack_require__(12);
+
+var _MetailBox2 = _interopRequireDefault(_MetailBox);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //计算状态影响下的属性
+
+
+var socket = io();
+
+var HeroPlaceThat = function (_React$Component) {
+    _inherits(HeroPlaceThat, _React$Component);
+
+    function HeroPlaceThat() {
+        _classCallCheck(this, HeroPlaceThat);
+
+        return _possibleConstructorReturn(this, (HeroPlaceThat.__proto__ || Object.getPrototypeOf(HeroPlaceThat)).call(this));
+    }
+
+    _createClass(HeroPlaceThat, [{
+        key: 'cardlist',
+        value: function cardlist() {
+            return this.props.thatstate.cardid.map(function (card, i) {
+                return _react2.default.createElement(_Card2.default, _extends({ cardfor: "that" }, card, { key: i }));
+            });
+        }
+    }, {
+        key: 'showstate',
+        value: function showstate(basic) {
+            var buff = basic.buff; //状态数组
+            var buffTime = basic.buffTime; //状态持续时间
+            return buff.map(function (item, i) {
+                return _react2.default.createElement(_BuffIon2.default, _extends({}, _stateflie2.default[item], { buffTime: buffTime[i], buffObj: basic.buffObj, key: i }));
+            });
+        }
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            //判断游戏结束
+            if (this.props.thatstate.Hp <= 0) {
+                alert("你赢了");
+                console.info("你赢了");
+                this.props.next_process({ progress_state: 1 });
+                socket.emit('fightResult', {
+                    id: this.props.myid,
+                    name: this.props.myname
+                });
+            }
+        }
+    }, {
+        key: 'showtip',
+        value: function showtip(item, e) {
+            this.props.setState({ Tooltip: {
+                    show: true,
+                    place: [e.clientX, e.clientY],
+                    name: item.name,
+                    blueT: item.mp,
+                    redT: item.CD ? "CD:" + item.CD / 2 : "",
+                    message: item.message
+                } });
+        }
+    }, {
+        key: 'closetip',
+        value: function closetip() {
+            this.props.setState({ Tooltip: { show: false } });
+        }
+    }, {
+        key: 'showEquipment',
+        value: function showEquipment(equipments) {
+            var _this2 = this;
+
+            return equipments.map(function (item, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'posi_tion', key: i,
+                        onMouseOver: _this2.showtip.bind(_this2, item),
+                        onMouseOut: _this2.closetip.bind(_this2) },
+                    _react2.default.createElement(_Equipment2.default, _extends({}, _this2.props, { equipment: item, equipfor: "that", equipmentcd: 0 }))
+                );
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var basic = this.props.thatstate;
+            if (basic.herotype === "" || basic.herotype === undefined) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'hero_place' },
+                    '\u5BF9\u624B\u6B63\u5728\u51C6\u5907\u4E2D...'
+                );
+            }
+            return _react2.default.createElement(
+                'div',
+                { className: 'hero_place' },
+                _react2.default.createElement(
+                    _MetailBox2.default,
+                    null,
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'hero_box' },
+                        _react2.default.createElement('div', { className: "hero_ion hero_ion_" + basic.herotype })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'attribute_list' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'HP' },
+                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove + "/s"
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'MP' },
+                            basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove + "/s"
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'attack' },
+                            "攻击力:" + basic.attack
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'armor' },
+                            "护甲:" + basic.armor
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'statelist' },
+                            _react2.default.createElement(
+                                'span',
+                                null,
+                                '\u72B6\u6001:'
+                            ),
+                            this.showstate(basic)
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'card_list' },
+                        this.cardlist()
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'equipment_list' },
+                        this.showEquipment(basic.equipment)
+                    )
+                )
+            );
+        }
+    }]);
+
+    return HeroPlaceThat;
+}(_react2.default.Component);
+
+module.exports = HeroPlaceThat;
+
+/***/ }),
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(80);
+var content = __webpack_require__(85);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -23968,7 +24243,7 @@ if(false) {
 }
 
 /***/ }),
-/* 80 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -23982,7 +24257,135 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 81 */
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(87);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(89);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(2)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./PlayPage.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23996,23 +24399,23 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(12);
+var _Card = __webpack_require__(20);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-var _CardShowList = __webpack_require__(82);
+var _CardShowList = __webpack_require__(91);
 
 var _CardShowList2 = _interopRequireDefault(_CardShowList);
 
-var _Shoping = __webpack_require__(85);
+var _Shoping = __webpack_require__(94);
 
 var _Shoping2 = _interopRequireDefault(_Shoping);
 
-var _MetailBox = __webpack_require__(8);
+var _MetailBox = __webpack_require__(12);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
-__webpack_require__(90);
+__webpack_require__(99);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24092,7 +24495,7 @@ var FightPlace = function (_React$Component) {
 module.exports = FightPlace;
 
 /***/ }),
-/* 82 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24104,11 +24507,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Card = __webpack_require__(12);
+var _Card = __webpack_require__(20);
 
 var _Card2 = _interopRequireDefault(_Card);
 
-__webpack_require__(83);
+__webpack_require__(92);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24206,11 +24609,11 @@ var CardShowList = function (_React$Component) {
 module.exports = CardShowList;
 
 /***/ }),
-/* 83 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(84);
+var content = __webpack_require__(93);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24256,7 +24659,7 @@ if(false) {
 }
 
 /***/ }),
-/* 84 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -24270,7 +24673,7 @@ exports.push([module.i, ".Slide_box {\n  margin-bottom: -140px;\n  border: 1px s
 
 
 /***/ }),
-/* 85 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24282,19 +24685,19 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _equipment = __webpack_require__(86);
+var _equipment = __webpack_require__(95);
 
 var _equipment2 = _interopRequireDefault(_equipment);
 
-var _Equipment = __webpack_require__(14);
+var _Equipment = __webpack_require__(23);
 
 var _Equipment2 = _interopRequireDefault(_Equipment);
 
-var _MetailBox = __webpack_require__(8);
+var _MetailBox = __webpack_require__(12);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
-__webpack_require__(87);
+__webpack_require__(96);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24427,7 +24830,7 @@ var Shoping = function (_React$Component) {
 module.exports = Shoping;
 
 /***/ }),
-/* 86 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24477,11 +24880,11 @@ equipment[20] = { id: 20, name: "圣剑", price: "￥80", state: 2, message: "�
 };module.exports = equipment;
 
 /***/ }),
-/* 87 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(88);
+var content = __webpack_require__(97);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24527,32 +24930,32 @@ if(false) {
 }
 
 /***/ }),
-/* 88 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var escape = __webpack_require__(4);
+var escape = __webpack_require__(6);
 exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
 // module
-exports.push([module.i, ".shop_room_box {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  transition: all 0.1s; }\n  .shop_room_box .shop_room {\n    width: 100%;\n    height: 100%; }\n  .shop_room_box .back {\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px;\n    background: url(" + escape(__webpack_require__(89)) + ") no-repeat center;\n    height: 50px;\n    width: 50px;\n    cursor: pointer; }\n  .shop_room_box .posi_tion {\n    float: left;\n    width: 60px;\n    height: 60px;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
+exports.push([module.i, ".shop_room_box {\n  height: 100%;\n  width: 300px;\n  position: absolute;\n  right: 0px;\n  transition: all 0.1s; }\n  .shop_room_box .shop_room {\n    width: 100%;\n    height: 100%; }\n  .shop_room_box .back {\n    right: 0px;\n    position: absolute;\n    bottom: 0px;\n    color: #fff;\n    padding: 0px 5px;\n    line-height: 20px;\n    background: url(" + escape(__webpack_require__(98)) + ") no-repeat center;\n    height: 50px;\n    width: 50px;\n    cursor: pointer; }\n  .shop_room_box .posi_tion {\n    float: left;\n    width: 60px;\n    height: 60px;\n    margin: 1px 3px 1px 2px; }\n\n.room_show {\n  transform: translateX(0px); }\n\n.room_hide {\n  transform: translateX(300px); }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 89 */
+/* 98 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAyCAYAAADx/eOPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MEM3NTU5RjNBQzQ2MTFFODg0NjJBQkVFQ0JEMDMxQTkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MEM3NTU5RjJBQzQ2MTFFODg0NjJBQkVFQ0JEMDMxQTkiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowMzEzQ0E2OUFDMkIxMUU4ODQ2MkFCRUVDQkQwMzFBOSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowMzEzQ0E2QUFDMkIxMUU4ODQ2MkFCRUVDQkQwMzFBOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pp5G1SAAABTWSURBVHjatFoJlF1lff/d/b371pl5s2eWzCSkgSRAgmzqwQ0oUgWEGKEYUDjtKbRVbBVrpSLQVlBqe+ppjXI8pxCkIIuypAWEsiUxbCcJISGThUxmJrO9fbv33bW/7yWASIIQxnvOgyTz3n3f//v//r/luyOFYYh3uyzLUgzDCFzXha7roSRJeL+X7/vN/4dBINUtS3YbDd5GUhzH0Qr5XGrf3j2dI5u3RPZt3HT87LNPX7VPkY7ta7hyqbcHuQMTje7h4f+44c67vrbs+BPevGfAe/F623rU37eQaDTqN/jlqqrivRQivkSs2/U8yeNG8M/aT3/4QxNhGK/NznaMTuw/Nj89vdyplIYDy17kVCvdadNU+hK6FO0bUs48+0NqeuEw2mQPU56CJzftNLZtf+3k11/ZprIY743vkWX5HV1Q38vOsjOHbZ/oqm3bKObzWqlSjjcsK1nJ59s816nsGxnp3PzwuuP2bHnxeHOmcArfvszQJbU/ncDyjhZ0tUswkimYrf1oiaeRSBvoNiWxSMy6ZdTrNvqjOmqxGjbU6sPPr3/27PMuvfSRd1un9PtgdqSLn5PH9u41n7jnruGNj/36I1MHxk9UPW9Rolbr1YFyynN6I5rWlprXKw1FovwmCcmuOPpTaThpGSm/DC0iQZIVyIoMzw8QQwDRykooNd/vqBHsyAPrHtuI50dzd1x16w9Wr77q6iOuScVRXrmZmcQd/3jjJTvu//k1na3phT2Wh24jgQWLFqBNiSDFPZIREqYmIppN/HEDai40dxJh1obcUoIaiYg5OgQbliGJTxDazf9KKHUfg161gpO6M3ht58TH9m1Yf3bpS19+NBWNzl0xnAu8+vKLsW13rT1v+UD/wmWLhzgkErpYhEIoR7JFSDUHCndctYoIVB1yXMAAcF0BJf5ZUeF4rmgACwqhmWqzQ2LgfJXv8UIYZQtpJ0Qm043hzt19Yy9tWbn/tdceXXriiXNajLRv50g6afux9GwBeXsP4rIkZgsZ4l93AkilAjQOsVitZnhQo6yGiw5Dn8X5kNwIUODfIyFkLj6sk/Ek0T5+QVyDXHcRDW2kExHM75Dw4ePm42dPblvx+H33Lj1myZJXDE17x7rko4WZZ9mNBJk7VyyjMD0Na2ISM+PTqIxPIZgpwOR36ZoKXeZ+RRz4lRpqjgUfXrOzsn1w9/0wirpjIBD0HXjsks9CHARVH6FTbHbK4CR1tqUwoGLJs7988OKXX3oxMpczE0qK4jmAnSLWDWJddWto8F/y9Qo84kl3ktBUGYHBNytec7AFUXsO5yIUhbIoPcLPhISjhMBRxZggIrFr7Cwr4N3rCKYsOC1pxFsyWLxoobr21W3R8R3bA5x62twUIxgwNztbN4FdDYELRUdBI3xcm1UGcMVa3AqSUhK6XWZ3YpB8DxHLabKXppucKQVBpAHFqEOKaQg1udkxRTk43BIL9GMkkMoM5vFemSAKr1XGkxIqjtVwDreuo4KZRryuvOyy7D5gjSrJTyu+S4Q0IHRe4qLiRhKyZsLnpEu+CYeLdEplSISW5LIj1RphVoHcsKB7BB41xa5ZfK8P12Nx1F2HXVHLMjQIBqxBtYvoIp13AsPsXXLOihHX4JIl4T889dSeR13nzp0c7CwX7vJ2MRaSTCgwZZ0DXIJOyBkWYeVHoGcb0IuEZCEQFoHFeLAr/Fyd3a6yS0XeocD5yhchlxrwSC7OpAy9zK4Wc1C4AW1dyjmPP/jQGa+PjMxNMU2YZbNSrCUdVIF81bPcCHfYSMaRTMYQ07Um/SKIwZGsJkOFdgOuwd5xuAXDSaRcz+Ye+xUoQYO0LaHODld8B065ArdchVutcBDyKFSKaDgeTH681zBbKqN7V1VmZ1rnpBjh0eLJRPg/TzxuFoDjPIJLTSQxFI+jhxCJ2gEMv0hi8JriJwpyTcG8CeqQSYamDRJf7RkIG3H4ZR1a3odObUqW2DXCEUUbGm8u5yzEx0nt0xJi7OwniwFO2ze5ausTT32sWq/PETW7nkyodJCBT41xWDsTMSRMLpa3lELqjNB/Fi2ciXgF7JJPcrAE5Tj0nVKU/9YgJTucCwcy4Sg5ChpN2raa3W9IdTi1KjtYht9gd2x2x4xDkSR19wP/9ecHtm0eCOcCZrt37MCLDz08vAQ4aWlrJ5Yl0+is1ZGgakc4vIavw9NDOFEJFmm2oEko0h2UDBN1wk0KVQQsSHEdqA2NREDm8+KIcLMNKcEiJCjcBVnsRDlEMGsjzvlKZ8v4JJ2DtnnfWY/8bO1ni/mc9oGK8Xizh/7758b4hvUfXTTY1d7R18MhtqkVB3MLdLorWhN6FxiMDqGvwpM1wsyG6lW5SKE1btNchiwKZMKQ9yTlsUAfdkiZTMTZEQkCcVV2VASLOvlSptOQFY2m1MPzd91++TPr1g0QJUdfzEw2K2/dtOnUjgCru6BjHnudcEOoNZvD7DXhIuhVUhXUaFOCUEHEs2hbYtBDkgPlzZccCigZrEGhdHVSLz9nh9QoA45VaxaRZ2cLDc4c6V4Lm5rKV4AkN2A+qV8v15bf9p3rPz4xtl87qmJ8YvrBH6/pd7e88m3K2+DkgVmMjR/gl/twEiZsOtqGIRHvtPWO6KKAEs0n4RJzmFbZPFnMBQuNRwKoysFdF2iS5QgCimaYZhiQDTKbjBw92qzlY4bf3ZA01ORo8/1R00QH9W7v3r0r1919d1rYofddzAP33Rfd9Ohj3zwuYnyiP07tCCzMTh3AeG4a03TIgl5d2pYG4eCDSi+scslverEEhTvqSZwNOmrCSkAvoHuWEB4KV4GoFPVIHEWSx37LxTT/fZIzeoBaVmbFfuAgwjvHFQXt8SiGgdPWP/XkPG6y9L7szIb7b1em/+Un3zo/dC9tX7wY9tgI8rMKHCp6hQsddRyUyEBxJsR4WycMz0ODkEqZXnOhflNwagi5YOKR61bIfsw0LEfAx1EFr6mwSOPj5RIm2FFFlprwEoLc4D0Mp4aYpjfnpp1OPFUsx8NSseN9ebPnNm7Apv+87ZLFbdG/PMY2YgFvWG9rR9KgWSzRm00VmBDZES4qa9lor+S50BC9fJ+RboHJhQRllxpycPAdumPTZCEcfoSiO2rT/gSSAq9kYYaak2chwqAmeZ8GuyMRnhXB7GRAKaT21Dir7K5dtRxG5vdWzPr1z+HX37x+8ZJa7S+WxKRUhrTplSegKdXmSNZSGcz4BibsPPHtoEIolajiKVqaMEIvFomhwJ1NMQYH6RI0DrUmFu76Ta8mHQKI6IFNhz1m51BWQkwLD8uC6lxwnXqUJszIibDEsBdKcCMJJHzXrTtuLnwvnfnFPffgf2++qb/bdr47kEicWPIsqSNHj0XWUrkQ30wzGruIZBLoUKPwqdyNyRwKnAuXu+fXxaHHBPqJ8bA9aNKyoRmo0pBp1sHJD0DjKcWoKRqL5IgVuSFB+IaoUbM4hyxC6L3OV4w/qwlwWhUWh0k9YZakZn/f5dq+exd+c8sPhpdNlW48vb/rTzpz+UimQQ1oFIh7evG0TBjUYHoaBkizXBEW8EsrKQW7S0CWcBKHExU/RIXwCbw2JJhENdlHhtORCcpoo4aEnkrSUDHTlsTT+TzWsWCRicaZ8ObTjFrsTMK1RFBFEDexrSVBKNoYcWzknMb4SYODzfz9rsXseua5dG3PyA31qn1R1rO1TDx20DQ2RzaAFlS4cQnITpXFKYK3m3kkGu8mbdow6kXstqknhFOOs6FkZ6AUmHM6DEKH+0wn76tijxUynIccd3qmVhREEeyP6KQWKcvs2Z/zG/EkDWGdBWapR0XOpxO4r5p9ffeUpqefPnbFyQXP99/JZsKqVCpVPPP4o62P//jfr5uqlC9MaYpWpJrvok+qmTJknYaSCp+gnZfj3FVGY4sY91XmeUGv3O2uiIYexoFuojkbZDHKgQ/YoSzzirW/jmQ0RpdNVVdScEixoaFjw/QYXmA4GE/Etiw+7fQfJbq6XprcOfKJiRdfWOl43gpSWFQivKuJxGtLz7/kK6ef8+knzjr3XBKJKU5N3yqmeaBnWdi6fkP8V3fcfnp++7a/tbdvP9NkbxW2uu4Vm2xFe4sWM0mBbGlaeZ/i6CuHdEKomTCMhw4uRLRKtgq70gW/mkeZmaUiJkQY0EYV6kwVFj8ay7RgogiMlKp1tTvzwLmXXbHm8r/662fFAcmOTZt23PGvt27c/cKmL61YOLykFEvuWdA3cPvnr7r6mRNWrHjzlFVRlLdmplatYs2NN5q/+bcfXX1KW+t3l2daDXnhPEyNTqDCRVD3OB18NShYXhkFFvRRipqvJ2Ex3spu0Mz2akgH7AWMyHTOLMigh0qILiZbkKVLCOpZOKE47JMwy/xf4GZU2bGXqFHrdfXXyz951t+vuuKK/d09Pc11nXLWWaGtay9sWr9+6wV/+sVYVNeqs9NTztAxC99xXNw80RQH2//38IPKj1au/MgyXbvt9BUrFnS10c6bFRwYyaJOyzKVL8B2aEmEreBnWvlaRHpNGHHotP8R2pioKkSQVOsrZDrnoKILTxVRYLHAhuTCqjqw7BpKnoxZkkaJo/Y6i3kxDKuZc86+9Jqbb3l48ZKl9JN886Gr0WjAYnZJt7S8ufByqSTO5VTDiHBcFV+cojc7Uy4UpBuuvLJzqRt85oyhwQXLmOr0PftQizhoIWyU+R3YmUphemw/aZZ2nF1yuCsvs6AeDn9ruYEOJ4FUrAW6nGaOZxijExAhTBJnYizEJHMZFMIO+itP0TGpxBCSJHKyi5FyDf7Q4H1/9u3rNrIQn4X4v3PWLem6LnPj/UPdkCqVsh6hYCuq5mvCSr+hM57rStlsvndo3vCKdJy5gqwS5rOcB5rBmI1oawIDtOSp1jbk8nXCrsqfCc9EcQxEMhTdKDXZLB6j5SBJuHTOTciJ76EeieI10CTyg+KEU+PAm+J41qpz5J1d51155dolJ5w4Kx/+SYN4dOH/1iMSqbunN5BlccqI8O1HTXQN1KoFkUa9v0mGJIKIU4GpUvQotxKx3U7IRYx2xOIKcvy8Xffwut6gRRc8QN9F+vWcItIc7KQdhcRNiYsjJdrkg4cX5I7mmRgjALtmMvMYfNmlkrvgj8+594yLPr+ZrPSeTvE57OKAOjjsuZmqqPI8XW+fnJ3JjMYi3EEVvboMU2MaJJOFTI8ilydD5nFW3qKnGKBYCLWjTs6iYaHBlDjMAW2+gzhNZytnpjvdRkFVqUcaRTGkEHLs4+wkacGi2czVqxhz7VfnLzv+kZ55fVl8wKsZAQzTdE9ffenWGZqRQo3DaVcYWylyFLwIc4V4rBMpuizMgsqMYhJeLS0d6GvvQzqVgEpKrnM+xGGqKCpLaJWZ4/OzU6jnrebmQDJIBDoCjcXoTIt8XymfD2cq1gbO1i5IwJwUY8ZiwaVfv3ZjeemS763n358nXT5LNL4SpjHZ9EQMXFo7xFmrf8gBoFHDQk3BMkJpIBWj95LQRn0R3kkYwUkWOEp47bNmsL1G46jKqOgRTEfaMBuL4fWEjM1wc/WhvpcHPnRyUczPnBQjrnmDg40vXHvt/Xp/z1qF1qIkAlGliIlCDVaZQ82FK9LBbNEcOYargF2MUH27M13o6B1EW0cMmh42CxYvAeoi71Mjre6ZnkSBxOGQli1Jx1TJE2Fr9OOXr9764U+d6cxBY97yZqQ+fOr8C6YLM7M/eerm7/9R1/TU0koYGkURjFzamLKCBOlZUKPGefIonkmXf5YszhKQIsu3SewkWUoNasgbHqbYorKQGr76yHr1XBHz6N2EC9hiV2YKCxfcc9zHz3klPgddeccZQJztv/CKK549dfXFqybUcC2DHnVSoXIDM24Juex+7jhDFlsjCtKIf58tcMh24nlpKx1tf38bhoaHmQYZqUUe4X3TQsvEoX5g44BbwOj0VC5XqK1p6ez/aaa328YcXe8wmslkEp+5+it7t47svu7eDc/Jg05wSU/dMpKBi15CJpOdxHA6iYSAnZblDcxmuFIZuIxiDcligD7y2xKrAeoj9lLHd/Nzec7hVnaNau/u7et9on9o+KcXXHFZoTvTLv22VsxZZ96cn4F+XPO9myc/e+anvsGY8YuSx73ncItwZDNwjdPaZLMUu4aKaijogO6Z4csNbXikb595RDIZhZMa4mSwNCle0rlvdoOlI39yf/+9X/6bb4ydf+FFiCcS4Vx1Rrn++usP+4O2TAaDp3247seTW8fG9nfZ+cKgGoR6hRRQlYQ/Y04JdXFOwogXZeCKHDygoOCK0xbZoZnkoKukbjeaRi2Rov1voGiYBwYvOO/WT3/h4rx5hAetQuFlWZ6bzrxx9dO5XvLVr+z5wj/989XJU067fq+u7RGd2N98hKHigGVjolLAgXqFTqDG/M40SePZDHDi5dElB+JpShTx7i7obW3iuYsbUdRKOpk84pomJ8alOZmZ373iNHNnf+5z+faBgVs3rXto194nHls99vwLZ9ZtKemJLELHHS1XUNd0DBgJRPl+3dBoiarcYq/56EKcpEgkiirF1DJj1aFlJxSOtFrHcWRV0/yjejrxfn6pgYODndte7d14953nPrXmtq9p9dqiNs5BTGGq9F0MceJ7CbmuhAZaWuYaGzWZQ5/pxB6jikc27wsiK5b/8oZfPXhhT0fnYb9D/I6OdpgnyXPSmbe9mYx03NKlE70D37rN7Onbdf8t3/9OMDp6hnj+KPRoLxkvZEjzyiHmOa0w4jKtC/O+46NQK6HoenYmFn+pJd1ypEfysib4fi7Z7PddxHtw/uVfevriv/vWV+vHHPPwTsJolH5tVDOwm2ZzBx30c7U8dtLS7G/LYCpWwvNjJVSSsakFJ5y4LqrrR3qIFYrhnzOdea8X7Xpwzuovbkn0dH/97h/cMjP73IZVitOI1YWgcjnixNLKZtHK7DJtF1D2vXKse+CWT1x4weZ3eSIXHg2LfeBfBHrbb2vs2Z2+/SdrTnjpgfsvylRKn4/VnIxCdoi4NmaYlBq+b72uq7eu+vq1N331hhsb+ANdH7iYt37JjmZy+w5t3drbL9x3593X5fPZY7tIGFNCzBbMX3/SyktWXXPTjRP4A17/L8AA6x5xS0taCFcAAAAASUVORK5CYII="
 
 /***/ }),
-/* 90 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(91);
+var content = __webpack_require__(100);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -24598,289 +25001,25 @@ if(false) {
 }
 
 /***/ }),
-/* 91 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(4);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(92)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "359fb7f3f8b83373f73aeb290533070f.png";
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-__webpack_require__(94);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var HeroSelect = function (_React$Component) {
-    _inherits(HeroSelect, _React$Component);
-
-    function HeroSelect() {
-        _classCallCheck(this, HeroSelect);
-
-        var _this = _possibleConstructorReturn(this, (HeroSelect.__proto__ || Object.getPrototypeOf(HeroSelect)).call(this));
-
-        _this.state = {};
-        return _this;
-    }
-
-    _createClass(HeroSelect, [{
-        key: 'coeckhero',
-        value: function coeckhero(type) {
-            var mystate = this.props.mystate;
-            switch (type) {
-                case 0:
-                    mystate.herotype = 0;
-                    mystate.maxHp = 4000;
-                    mystate.Hp = 4000;
-                    mystate.Hprecove = 15;
-                    break;
-                case 1:
-                    mystate.herotype = 1;
-                    mystate.attack = 70;
-                    mystate.armor = 15;
-                    break;
-                case 2:
-                    mystate.herotype = 2;
-                    mystate.maxHp = 3000;
-                    mystate.Hp = 3000;
-                    mystate.maxMp = 600;
-                    mystate.Mp = 600;
-                    mystate.Mprecove = 60;
-                    break;
-                case 3:
-                    mystate.herotype = 3;
-                    mystate.maxHp = 3500;
-                    mystate.Hp = 3500;
-                    mystate.maxMp = 500;
-                    mystate.Mp = 500;
-                    mystate.attack = 50;
-                    break;
-            }
-            var round = Math.random(); //随机回合用
-            this.props.setState({ mystate: mystate, mystateBase: mystate, playingSpeed: 1, round: this.props.round + round });
-            this.props.socket.emit('totalk', {
-                id: this.props.thatid,
-                obj: {
-                    state: this.props.mystate,
-                    funname: "prepareOk",
-                    round: round
-                }
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                'div',
-                { className: 'heroSelect' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'select_title' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
-                        '\u8BF7\u9009\u62E9\u4F60\u8981\u4F7F\u7528\u7684\u82F1\u96C4'
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'picture_box' },
-                    _react2.default.createElement('div', { className: 'hero0 heropicture', onClick: this.coeckhero.bind(this, 0) }),
-                    _react2.default.createElement('div', { className: 'hero1 heropicture', onClick: this.coeckhero.bind(this, 1) }),
-                    _react2.default.createElement('div', { className: 'hero2 heropicture', onClick: this.coeckhero.bind(this, 2) }),
-                    _react2.default.createElement('div', { className: 'hero3 heropicture', onClick: this.coeckhero.bind(this, 3) })
-                )
-            );
-        }
-    }]);
-
-    return HeroSelect;
-}(_react2.default.Component);
-
-module.exports = HeroSelect;
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(95);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss", function() {
-		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./HeroSelect.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 95 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var escape = __webpack_require__(4);
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(96)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(97)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(98)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(99)) + ") no-repeat center; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "52161e9892467fa48f01d90390b46efe.jpg";
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "be5072aea25eb22a9bbbbd7f4ded5518.jpg";
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "31b809f3672807f11398cd3516b78823.jpg";
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
-
-/***/ }),
 /* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-var content = __webpack_require__(101);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
+var escape = __webpack_require__(6);
+exports = module.exports = __webpack_require__(1)(false);
+// imports
 
 
+// module
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(101)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n", ""]);
 
-var options = {"hmr":true}
+// exports
 
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(2)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {
-	module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
-		var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/lib/loader.js!./index.scss");
-
-		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-
-		var locals = (function(a, b) {
-			var key, idx = 0;
-
-			for(key in a) {
-				if(!b || a[key] !== b[key]) return false;
-				idx++;
-			}
-
-			for(key in b) idx--;
-
-			return idx === 0;
-		}(content.locals, newContent.locals));
-
-		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
-
-		update(newContent);
-	});
-
-	module.hot.dispose(function() { update(); });
-}
 
 /***/ }),
 /* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 100%; }\n  body #box {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none; }\n", ""]);
-
-// exports
-
+module.exports = __webpack_require__.p + "359fb7f3f8b83373f73aeb290533070f.png";
 
 /***/ })
 /******/ ]);

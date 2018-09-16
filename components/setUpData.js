@@ -75,46 +75,46 @@ module.exports = {
 	    88:"风杖"
 	},
 	herotype:{
-		0:{
-	        maxHp:4000,//最大血量
-	        Hprecove:15,//生命值恢复速度
-	        maxMp:500,//最大蓝量
-	        Mprecove:50,//魔法值恢复速度
-	        attack:40,//攻击力
-	        armor:10,//护甲
-	        attackRecove:1,//攻击速度
-            herotype:0
-		},
-		1:{
-	        maxHp:3500,//最大血量
-	        Hprecove:10,//生命值恢复速度
-	        maxMp:500,//最大蓝量
-	        Mprecove:50,//魔法值恢复速度
-	        attack:70,//攻击力
-	        armor:15,//护甲
-	        attackRecove:1,//攻击速度
-            herotype:1
-		},
-        2:{
+        0:{//兽族
+            herotype:0,
+            maxHp:4000,//最大血量
+            Hprecove:15,//生命值恢复速度
+            maxMp:500,//最大蓝量
+            Mprecove:50,//魔法值恢复速度
+            attack:40,//攻击力
+            attackRecove:1,//攻击速度
+            armor:10//护甲
+        },
+        1:{//精灵族
+            herotype:1,
+            maxHp:3500,//最大血量
+            Hprecove:10,//生命值恢复速度
+            maxMp:500,//最大蓝量
+            Mprecove:50,//魔法值恢复速度
+            attack:70,//攻击力
+            attackRecove:1.5,//攻击速度
+            armor:15,//护甲
+        },
+        2:{//不死族
+            herotype:2,
             maxHp:3000,//最大血量
             Hprecove:10,//生命值恢复速度
             maxMp:600,//最大蓝量
             Mprecove:60,//魔法值恢复速度
             attack:40,//攻击力
-            armor:10,//护甲
             attackRecove:1,//攻击速度
-            herotype:2
+            armor:10,//护甲
         },
-        3:{
+        3:{//人族
+            herotype:3,
             maxHp:3500,//最大血量
             Hprecove:10,//生命值恢复速度
             maxMp:500,//最大蓝量
-            Mprecove:50,//魔法值恢复速度
             attack:50,//攻击力
-            armor:10,//护甲
+            Mprecove:50,//魔法值恢复速度
             attackRecove:1,//攻击速度
-            herotype:3
-        }
+            armor:10,//护甲
+        },
 	},
 	equiptTo_base:{
         0:(base)=>{//达贡之神力
@@ -260,7 +260,32 @@ module.exports = {
         21:(base)=>{//授予力量 2 本回合内攻击加80
             base.attack+= 80;
         	return base;
-        }
+        },
+        63:(base)=>{//自然秩序 使对方护甲归0
+            base.armor= 0;
+            return base;
+        },
+        62:(base)=>{//衰退光环 减少对方50%攻击力
+            base.attack-= parseInt(base.attack/2);
+            return base;
+        },
+        159:(base)=>{//活血术 生命值回复速度*5
+            base.Hprecove*=5;
+            return base;
+        },
+        //-------------------------------------------
+        119:(base,Mstate)=>{//狂战士之血 增加已损失生命值百分比*2的攻速
+            base.attackRecove += ((1 - Mstate.Hp / base.maxHp)*2).toFixed(1)*1;
+            return base;
+        },
+        159:(base)=>{//活血术 生命值回复速度*5
+            base.Hprecove*=5;
+            return base;
+        },
+        159:(base)=>{//活血术 生命值回复速度*5
+            base.Hprecove*=5;
+            return base;
+        },
     },
 
 }

@@ -28,9 +28,9 @@ class Component extends React.Component{
                 Mp:500,//当前蓝量
                 Mprecove:50,//魔法值恢复速度
                 attack:40,//攻击力
-                attackAccount:0,//剩余攻击次数
                 attackRecove:1,//攻击速度
                 armor:10,//护甲
+                attackAccount:0,//剩余攻击次数
                 buff:[],//状态数组
                 buffTime:[],//状态持续时间
                 buffObj:{},//有些状态需要对象来存储

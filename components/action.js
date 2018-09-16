@@ -137,6 +137,9 @@ function check_buffToCard (props,Attack){
                 Attack.do.tBuff = Attack.do.tBuff?Attack.do.tBuff.push(0):[0];
                 Attack.do.tBuffT = Attack.do.tBuffT?Attack.do.tBuffT.push(1):[1];
                 break;
+            case 95://静电场 每次释放任何技能都会对敌方额外50点伤害
+                Attack.do.tHp += 50;
+                break;
         }
     });
     let tBuff= props.thatstate.buff;
@@ -144,6 +147,12 @@ function check_buffToCard (props,Attack){
         switch(tBuff[i]){
             case 2://虚无
                 Attack.do.tHp = parseInt(Attack.do.tHp*1.5);
+                break;
+            case 23://回音重踏
+                if (Attack.do.tHp>0) {
+                    props.thatstate.buff.splice(i,1);
+                    props.thatstate.buffTime.splice(i,1);
+                }
                 break;
             case 8://无光之盾
                 if(thatstate.buffObj[8]>(Attack.do.tHp||0)){
@@ -172,6 +181,17 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
     let thatstate = props.thatstate;
     let checked = true;//用于判断检查状态
     Attack = JSON.parse(JSON.stringify(Attack));
+    Attack.do = Object.assign({//格式化数据
+        "mMp":0,
+        "mHp":0,
+        "tMp":0,
+        "tHp":0,
+        "mBuff":[],
+        "tBuff":[],
+        "mBuffObj":{},
+        "tBuffObj":{}
+    }, Attack.do);
+    if(isNaN(Attack.do.tHp))Attack.do.tHp = eval(Attack.do.tHp);
     [checked,props] = check_round(props);//检查回合
     if(!checked)return [false,props];
     [checked,props] = check_myBuff(props,type);//检查自己状态
@@ -193,7 +213,7 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
         [props,Attack] = check_buffToCard(props,Attack,type);
     }
     if(type=="attack"){
-        // [checked,props] = check_attackAccount(props)//判断剩余攻击次数
+        [checked,props] = check_attackAccount(props)//判断剩余攻击次数
         if(!checked)return [false,props];
         props.mystate.attackAccount -=1;//攻击机会减1
         [checked,props] = check_miss(props);//此攻击miss
@@ -238,7 +258,7 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
                 props.thatstate.buffObj = Object.assign(props.thatstate.buffObj, DO.tBuffObj);
                 break;
             case "special":
-                specialcard(props,DO);
+                specialcard(props,Attack);
                 break;
         }
     }
@@ -256,7 +276,7 @@ export function doAttack (props,Attack,type){//物理攻击方法 type=card/atta
 
 function check_attackAccount (props){//判断剩余攻击次数
     let mystate = props.mystate;
-    if(mystate.attackAccount==0){
+    if(mystate.attackAccount<1){
         props.messagelist.push("没有剩余的攻击次数！");
         return [false,props];
     }else{
@@ -296,8 +316,23 @@ function check_miss(props){//物理攻击,判断miss
                     return;
                 };
                 break;
+
         }
     })
+    thatstate.buff.map((buffid)=>{
+        switch(buffid){
+            case 117://崎岖外表 普通攻击你时有30%的概率使敌方晕眩一回合
+                if(Math.random()<0.3){
+                    messagelist.push("对方触发\"崎岖外表\"状态");
+                    res[0] = "miss";
+                    props = addBuff(props,"mystate",[0],[2])//添加buff方法
+                    return;
+                };
+                break;
+
+        }
+    })
+
     props.mystate.messagelist = messagelist;
     return res
 }
@@ -318,6 +353,11 @@ function attackBefore(props,Attack){
                 if(Math.random()<0.6){
                     DO.tHp = parseInt(DO.tHp*1.5);
                 };
+                break;
+            case 120://盛宴 普通攻击时将对方现有生命值的2%转化为自身生命
+                let blud = parseInt(thatstate.Hp*0.02);
+                thatstate.Hp -= blud;
+                mystate.Hp += blud;
                 break;
         }
     });
@@ -358,6 +398,10 @@ function attackAfter(props,Attack){
                 if(Math.random()<0.4){
                     thatstate.Hp+=100;
                 };
+                break;
+            case 23://回音重踏
+                props.thatstate.buff.splice(i,1);
+                props.thatstate.buffTime.splice(i,1);
                 break;
             case 8://无光之盾
                 if(thatstate.buffObj[8]>(DO.tHp||0)){
