@@ -48,18 +48,21 @@
             line-height: 22px;
         }
     }
-    .attribute_list{//属性列表
+    .attribute_list{/*属性列表*/
         height: 100%;
         width: 130px;
         position: absolute;
         left: 105px;
         color: #fff;
+        div{
+            border-radius: 3px;
+        }
         .HP{
-            width: 100%;
+            transition: all 0.1s;
             background: #8bff04;
         }
         .MP{
-            width: 100%;
+            transition: all 0.1s;
             background: #6977ff;
         }
         .attack{

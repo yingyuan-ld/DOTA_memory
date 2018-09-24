@@ -19,7 +19,8 @@ module.exports = {
         55:"噩梦",
         68:"极寒之拥",
         87:"妖术",
-        88:"风杖"
+        88:"风杖",
+        58:"血之狂暴",
     },
     muBuffTo_attack : {
         0:"晕眩",
@@ -61,7 +62,6 @@ module.exports = {
 	},
 	thatBuffTo_attack : {
 	    2:"虚无",
-	    24:"磁场",
 	    36:"海妖之歌",
 	    79:"暗影之舞",
 	    88:"风杖"
@@ -204,9 +204,14 @@ module.exports = {
         } 
     },
     buffTo_base:{
+
+        84:(base)=>{//勇气徽章",message:"敌方护甲-10,己方护甲-10
+            base.armor-=10;
+            return base;
+        },
         5:(base)=>{//巨浪 0 减少敌方十点护甲(持续3回合)并对对方造成100点伤害
             base.armor-=10;
-        	return base;
+            return base;
         },
         6:(base)=>{//锚击 1 造成(50+敌方手牌数*10)的伤害,并减少敌方50%攻击力(持续3回合)
             base.attack-= parseInt(base.attack/2);
@@ -273,19 +278,98 @@ module.exports = {
             base.Hprecove*=5;
             return base;
         },
-        //-------------------------------------------
         119:(base,Mstate)=>{//狂战士之血 增加已损失生命值百分比*2的攻速
             base.attackRecove += ((1 - Mstate.Hp / base.maxHp)*2).toFixed(1)*1;
             return base;
         },
-        159:(base)=>{//活血术 生命值回复速度*5
-            base.Hprecove*=5;
+        29:(base)=>{//活体护甲
+            base.Hprecove+=20;
             return base;
         },
-        159:(base)=>{//活血术 生命值回复速度*5
-            base.Hprecove*=5;
+        126:(base)=>{//地之突袭  被动牌:攻击力加50
+            base.attack += 50;
             return base;
         },
+        121:(base)=>{//恐怖波动  减少10点护甲
+            base.armor -= 10;
+            return base;
+        },
+        128:(base)=>{//命令光环  被动牌:增加30%的攻击力
+            base.attack = parseInt(base.attack*1.3);
+            return base;
+        },
+        129:(base)=>{//强击光环  被动牌:增加25%的攻击力
+            base.attack = parseInt(base.attack*1.25);
+            return base;
+        },
+        135:(base,Mstate)=>{//热血战魂  每次普通攻击增加30攻速
+            base.attackRecove+= (Mstate.buffObj["135"]*0.3);
+            return base;
+        },
+        71:(base)=>{//扫射   增加100%攻击速度
+            base.attackRecove+= 1;
+            return base;
+        },
+        160:(base)=>{//变身  增加20攻击
+            base.attack += 20;
+            return base;
+        },
+        156:(base)=>{//连击  每回合增加一次攻击次数
+            base.attackRecove+= 1;
+            return base;
+        },
+        137:(base,Mstate,Tstate)=>{//幽冥剧毒  被动牌:增加(对方已损失生命值百分比*200)的攻击
+            base.attack += parseInt((1-Tstate.Hp/base.maxHp)*200);
+            return base;
+        },
+        141:(base,Mstate,Tstate)=>{//分裂箭 攻击力增加敌方手牌数乘以15的数值"
+            base.attack+= Tstate.cardid.length*15;
+            return base;
+        },
+        144:(base,Mstate)=>{//怒意狂击  被动牌:每次普通攻击成功后攻击力会增加20
+            base.attack += (Mstate.buffObj["144"]*20);
+            return base;
+        },
+        147:(base,Tstate)=>{//嗜血渴望  敌方血量低于50%时，增加加70点攻击
+            if(Tstate.Hp/base.maxHp<0.5){
+                base.attack += 70;
+            }
+            return base;
+        },
+        41:(base)=>{//魔王降临  被动牌:减少敌方20点护甲
+            base.armor -= 20;
+            return base;
+        },
+        148:(base)=>{//支配死灵  被动牌:敌方每减少一张牌,可以增加30点攻击
+            base.attack += (Mstate.buffObj["148"]*30);
+            return base;
+        },
+        148:(base)=>{//荒芜  增加50点攻击
+            base.attack += 50;
+            return base;
+        },
+        152:(base)=>{//月之祝福 攻击力加60"
+            base.attack += 50;
+            return base;
+        },
+        152:(base,Tstate)=>{//月刃 对方每张手牌,增加自己10%的攻击
+            base.attack += base.attack*Tstate.cardid.length*0.1;
+            return base;
+        },
+        65:(base)=>{//高射火炮   本回合内攻击增加70,维持4次攻击
+            base.attack += 70;
+            return base;
+        },
+        153:(base)=>{//辉煌光环 增加50点魔法值恢复
+            base.Mprecove+=50;
+            return base;
+        },
+        161:(base)=>{//静默诅咒 魔法值恢复速度减少100
+            base.Hprecove-=50;
+            base.Mprecove-=50;
+            return base;
+        },
+        
     },
 
 }
