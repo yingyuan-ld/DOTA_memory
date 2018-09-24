@@ -144,8 +144,23 @@ function check_buffToCard (props,Attack){
                 Attack.do.tHp = parseInt(Attack.do.tHp*1.5);
                 break;
             case 161://静默诅咒  每使用一次技能,持续时间延长一回合
-                Attack.do.tBuff = Attack.do.tBuff?Attack.do.tBuff.push(161):[161];
-                Attack.do.tBuffT = Attack.do.tBuffT?Attack.do.tBuffT.push(mystate.buffT[i]+=2):[mystate.buffT[i]+=2];
+                Attack.do.mBuff = Attack.do.mBuff[0]?Attack.do.mBuff.push(161):[161];
+                Attack.do.mBuffT = Attack.do.mBuffT[0]?Attack.do.mBuffT.push(mystate.buffT[i]+=2):[mystate.buffT[i]+=2];
+                break;
+            case 48://超负荷  每放1次技能就可以增加自己100点攻击,不可叠加,维持一次攻击
+                Attack.do.mBuffObj = Object.assign(Attack.do.mBuffObj||{}, {48:1});
+                break;
+            case 49://法力流失  3回合内敌方任何攻击所需魔法值翻倍
+                Attack.do.mMp *= 2;
+                break;
+            case 155://精气光环  释放技能时有50%的概率加100点魔法值
+                if(Math.random()>0.5){
+                    Attack.do.mMp += 100;
+                }
+                break;
+            case 91://施虐之心  每对敌方造成100点伤害回复50点魔法和50点生命
+                Attack.do.mHp = Attack.do.mHp+parseInt(Attack.do.tHp*0.5);
+                Attack.do.mMp = Attack.do.mMp+parseInt(Attack.do.tHp*0.5);
                 break;
         }
     });
@@ -218,11 +233,20 @@ function check_buffToCard (props,Attack){
                 Object.assign(Attack.do.tBuffObj||{}, {148:thatstate.buffObj[148]+=1});
                 break;
             case 150://折射  被动牌:反弹自己受到一切伤害的25%
-                Attack.do.mHp = Attack.do.mHp - parseInt(Attack.do.tHp/5);
-                Attack.do.tHp = Attack.do.tHp - parseInt(Attack.do.tHp/5);
+                Attack.do.mHp = Attack.do.mHp - parseInt(Attack.do.tHp/4);
+                Attack.do.tHp = Attack.do.tHp - parseInt(Attack.do.tHp/4);
                 break;
             case 44://灵魂猎手  一回合内使敌方额外承受50%的伤害
                 Attack.do.tHp = parseInt(Attack.do.tHp*1.5);
+                break;
+            case 53://致命连接  本回合内对敌方额外造成手牌数0.1倍伤害
+                Attack.do.tHp += parseInt(thatstate.cardid.length*0.1);
+                break;
+            case 166://上古封印 承受1.5倍魔法伤害，并沉默
+                Attack.do.tHp = parseInt(Attack.do.tHp*1.5);
+                break;
+            case 169://幽冥守卫  对敌方造成敌方消耗魔法值的伤害
+                Attack.do.mHp += Attack.do.mMp;
                 break;
         }
     }
@@ -474,8 +498,10 @@ function attackBefore(props,Attack){
                 }
                 break;
             case 67://灼热之箭  攻击消耗20魔法值,附加50攻击
-                DO.tHp = DO.tHp*1+50;
-                DO.mMp -= 20;
+                if (props.mystate.mp>20) {
+                    DO.tHp = DO.tHp*1+50;
+                    DO.mMp -= 20;
+                }
                 break;
             case 140://忍术 攻击时有40%的概率双倍暴击
                 if(Math.random()<0.4){
@@ -492,8 +518,15 @@ function attackBefore(props,Attack){
                 DO.tHp = parseInt(DO.tHp*1.5);
                 break;
             case 151://麻痹撕咬 被动牌:普通攻击成功后可以使敌方1回合内有50%的概率攻击mis
-                DO.tBuff.push(42),
-                DO.tBuffT.push(2),
+                DO.tBuff.push(42);
+                DO.tBuffT.push(2);
+                break;
+            case 48://超负荷  每放1次技能就可以增加自己100点攻击,不可叠加,维持一次攻击
+                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {48:0});
+                break;
+            case 163://液态火   普通攻击成功后,对其每回合造成60点伤害持续3回合
+                DO.tBuff.push(164);
+                DO.tBuffT.push(6);
                 break;
 
         }
@@ -510,6 +543,16 @@ function attackBefore(props,Attack){
                 break;
             case 58://血之狂暴  伤害增加50%,受伤增加50%
                 DO.tHp = parseInt(DO.tHp*1.5);
+                break;
+            case 51://命运赦令
+                DO.tHp *= 2;
+                break;
+            case 92://不可侵犯  被动牌:减少对方50%攻击速度
+                DO.tBuff.push(168);
+                DO.tBuffT.push(6);
+                break;
+            case 169://幽冥守卫  对敌方造成敌方消耗魔法值的伤害
+                DO.mHp -= DO.mMp;
                 break;
         }
     }
@@ -537,15 +580,19 @@ function attackAfter(props,Attack){
                 DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {135:mystate.buffObj[135]+1});
                 break;
             case 144://怒意狂击  被动牌:每次普通攻击成功后攻击力会增加20
-                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {144:mBuffObj.buffObj[144]+1});
+                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {144:mBuffObj.buffObj[144]+1});//???
                 break;
             case 65://高射火炮  该单位攻击+70
-                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {65:mBuffObj.buffObj[65]-=1});
-                if(mBuffObj.buffObj[65]<=0){
-                    props.thatstate.buff.splice(i,1);
-                    props.thatstate.buffTime.splice(i,1);
+                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {65:mystate.buffObj[65]-=1});
+                if(DO.mBuffObj[65]<=0){
+                    props.mystate.buff.splice(i,1);
+                    props.mystate.buffTime.splice(i,1);
                     i--;
                 }
+                break;
+            case 91://施虐之心  每对敌方造成100点伤害回复50点魔法和50点生命
+                DO.mHp = DO.mHp+parseInt(DO.tHp*0.5);
+                DO.mMp = DO.mMp+parseInt(DO.tHp*0.5);
                 break;
                 
         }
@@ -621,6 +668,9 @@ function attackAfter(props,Attack){
             case 44://灵魂猎手  一回合内使敌方额外承受50%的伤害
                 DO.tHp = parseInt(DO.tHp*1.5);
                 break;
+            case 53://致命连接  本回合内对敌方额外造成手牌数0.1倍伤害
+                DO.tHp += parseInt(thatstate.cardid.length*0.1);
+                break;
         }
     }
     if(DO.tHp < 0)DO.tHp=0;
@@ -636,7 +686,6 @@ export function specialcard (props,card){//特殊技能处理
     switch (card.id)
     {
         case 1037://不稳定物 0 50%使对方晕眩两回合50%使自己晕眩一回合
-            mystate.Mp -= 50;
             r = Math.random();
             if (r >= 0.5){
                 props = addBuff(props,"thatstate",[0],[4])//添加buff方法
@@ -645,34 +694,32 @@ export function specialcard (props,card){//特殊技能处理
             }
             break;
         case 1050://吞噬 1 将对方的随机一张牌,转化为100金币
-            mystate.Mp -= 100;
             mystate.money = mystate.money*1+100;
             r = Math.random();
             let index = parseInt(r*thatstate.cardid.length);
             thatstate.cardid.splice(index, 1);
             break;
         case 1087://月神之箭  有50%的概率使敌方晕眩二回合并造成100点伤害
-            mystate.Mp -= 100;
             if (Math.random() >= 0.5){
                 props = addBuff(props,"thatstate",[0],[4])//添加buff方法
                 thatstate.Hp-=100;
             }
             break;
         case 1108://闪烁突袭  增加两次攻击次数
-            mystate.Mp -= 100;
             mystate.attackAccount = mystate.attackAccount*1+2;
             break;
         case 1141://超级力量  增加两次攻击次数
-            mystate.Mp -= 60;
             mystate.attackAccount = mystate.attackAccount*1+2;
             break;
         case 1151://毁灭阴影  对敌方造成360点伤害(50%概率命中)
-            mystate.Mp -= 60;
             if (Math.random() >= 0.5){
-                thatstate.Hp-=360;
+                thatstate.Hp-=375;
             }
             break;
-
+        case 1202://涤罪之焰  对敌方造成150点伤害,并清除所有状态
+            props.thatstate.buff = [];
+            props.thatstate.buffT = [];
+            break;
         
     }
     return {mystate:mystate,thatstate:thatstate};

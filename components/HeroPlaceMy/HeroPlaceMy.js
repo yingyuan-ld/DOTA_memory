@@ -125,7 +125,7 @@ class HeroPlaceMy extends React.Component{
             <div className="attribute_list">
                 <div className="HP" style={{width:(basic.Hp/basic.maxHp*100).toFixed(2)+"%"}}>
                     {(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+"+"+basic.Hprecove}</div>
-                <div className="MP" style={{width:(basic.MP/basic.maxMp*100).toFixed(2)+"%"}}>
+                <div className="MP" style={{width:(basic.Mp/basic.maxMp*100).toFixed(2)+"%"}}>
                     {basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>

@@ -21,6 +21,7 @@ module.exports = {
         87:"妖术",
         88:"风杖",
         58:"血之狂暴",
+        166:"上古封印",
     },
     muBuffTo_attack : {
         0:"晕眩",
@@ -35,7 +36,8 @@ module.exports = {
         55:"噩梦",
         68:"极寒之拥",
         87:"妖术",
-        88:"风杖"
+        88:"风杖",
+        51:"命运赦令",
     },
     muBuffTo_equipt : {
         0:"晕眩",
@@ -330,7 +332,7 @@ module.exports = {
             base.attack += (Mstate.buffObj["144"]*20);
             return base;
         },
-        147:(base,Tstate)=>{//嗜血渴望  敌方血量低于50%时，增加加70点攻击
+        147:(base,Mstate,Tstate)=>{//嗜血渴望  敌方血量低于50%时，增加加70点攻击
             if(Tstate.Hp/base.maxHp<0.5){
                 base.attack += 70;
             }
@@ -344,7 +346,7 @@ module.exports = {
             base.attack += (Mstate.buffObj["148"]*30);
             return base;
         },
-        148:(base)=>{//荒芜  增加50点攻击
+        149:(base)=>{//荒芜  增加50点攻击
             base.attack += 50;
             return base;
         },
@@ -352,7 +354,7 @@ module.exports = {
             base.attack += 50;
             return base;
         },
-        152:(base,Tstate)=>{//月刃 对方每张手牌,增加自己10%的攻击
+        98:(base,Mstate,Tstate)=>{//月刃 对方每张手牌,增加自己10%的攻击
             base.attack += base.attack*Tstate.cardid.length*0.1;
             return base;
         },
@@ -369,6 +371,66 @@ module.exports = {
             base.Mprecove-=50;
             return base;
         },
+        76:(base,Mstate,Tstate)=>{//智慧之刃 增加同等魔法恢复速度的攻击
+            base.attack += Mstate.Mprecove;
+            return base;
+        },
+        48:(base,Mstate,Tstate)=>{//超负荷  每放1次技能就可以增加自己100点攻击,不可叠加,维持一次攻击
+            if(Mstate.buffObj[48]){
+                base.attack += 100;
+            }
+            return base;
+        },
+        74:(base,Mstate,Tstate)=>{//严寒烧灼  2回合内增加敌方现有生命值10%的攻击力
+            base.attack += parseInt(Tstate.Hp*0.1);
+            return base;
+        },
+        68:(base,Mstate,Tstate)=>{//极寒之拥  该单位护甲+100,且不可攻击,出牌和实用装备
+            base.armor += 100;
+            return base;
+        },
+        78:(base,Mstate,Tstate)=>{//秘法天球",state: 2 ,message:"增加魔法值25%的攻击力
+            base.attack += parseInt(Mstate.Mp*0.25);
+            return base;
+        },
+        158:(base,Mstate,Tstate)=>{//嗜血术  "3回合内增加自己30%攻击速度
+            base.attackRecove += 0.3;
+            return base;
+        },
+        162:(base,Mstate,Tstate)=>{//暗言术  每回合造成60点伤害
+            base.Hprecove-=60;
+            return base;
+        },
+        164:(base,Mstate,Tstate)=>{//液态火  每回合造成60点伤害
+            base.Hprecove-=60;
+            return base;
+        },
+        165:(base,Mstate,Tstate)=>{//竭心光环  每回合减少3%生命值
+            base.Hprecove-=parseInt(Mstate.maxHp*0.03);
+            return base;
+        },
+        54:(base,Mstate,Tstate)=>{//虚弱  该单位攻击力-50
+            base.attack -= 50;
+            return base;
+        },
+        77:(base,Mstate,Tstate)=>{//霜冻护甲  该单位护甲+20
+            base.armor += 20;
+            return base;
+        },
+        167:(base,Mstate,Tstate)=>{//巫毒回复术  每回合消耗50魔法,恢复100生命
+            base.Hprecove+=100;
+            base.Mprecove-=50;
+            return base;
+        },
+        168:(base,Mstate,Tstate)=>{//不可侵犯  减少对方50%攻击速度"},
+            base.attackRecove -= 0.5;
+            return base;
+        },
+        // :(base,Mstate,Tstate)=>{//
+        //     base.attack += parseInt(Tstate.Hp*0.1);
+        //     return base;
+        // },
+
         
     },
 
