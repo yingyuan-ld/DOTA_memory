@@ -31,6 +31,7 @@ class Component extends React.Component{
         })
         
         this.props.socket.on('getFight', (res)=>{//接收挑战
+            // debugger
             let r=confirm(res.message);
             if (r==true){
 				this.props.next_process({

@@ -31,7 +31,7 @@ class Equipment extends React.Component{
         }
         let equipmentready = (this.props.equipfor=="my"&&this.props.equipment.CD&&CDnow==0)?this.useEquip.bind(this,this.props.equipment):()=>{}
         return <div className="equipment" 
-        	style={{background: "url(./server/equipmentImg/"+this.props.equipment.id+".png) no-repeat center"}}
+        	style={{background: "url(./src/server/equipmentImg/"+this.props.equipment.id+".png) no-repeat center"}}
         	onClick={equipmentready}>
             {CDnow!=0?<div className="shadow_box">
                 <div className="box">

@@ -8,13 +8,13 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/server/server.js"
+            "program": "${workspaceFolder}/src/server/server.js"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "启动程序",
-            "program": "${workspaceFolder}\\server/server.js"
+            "program": "${workspaceFolder}\\src/server/server.js"
         }
     ]
 }

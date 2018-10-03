@@ -426,7 +426,92 @@ module.exports = {
             base.attackRecove -= 0.5;
             return base;
         },
-        // :(base,Mstate,Tstate)=>{//
+        106:(base,Mstate)=>{//战意  每释放一次技能可以增加30点攻击力
+            base.attack += (Mstate.buffObj["106"]*30);
+            return base;
+        },
+        12:(base,Mstate,Tstate)=>{//海象挥击  攻击力变为现在攻击力的4倍
+            base.attack *= 4;
+            return base;
+        },
+        15:(base,Mstate,Tstate)=>{//变身",message:"攻击加100,攻速加80
+            base.attack += 100;
+            base.attackRecove += 0.8;
+            return base;
+        },
+        17:(base,Mstate,Tstate)=>{//化学狂暴",message:"攻速加100,生命恢复回复加150
+            base.Hprecove += 150;
+            base.attackRecove += 1;
+            return base;
+        },
+        19:(base,Mstate,Tstate)=>{//神之力量",message:"三回合内攻击增加200
+            base.attack += 200;
+            return base;
+        },
+        22:(base,Mstate,Tstate)=>{//末日  每回合造成100点伤害
+            base.Hprecove -= 100;
+            return base;
+        },
+        25:(base,Mstate,Tstate)=>{//守护天使 3回合内物理免疫
+            base.armor = 9999;
+            return base;
+        },
+        31:(base,Mstate,Tstate)=>{//伤害加深  护甲减少40点
+            base.armor -= 40;
+            return base;
+        },
+        130:(base,Mstate,Tstate)=>{//射手天赋  增加100点攻击力,100攻速
+            base.attack += 100;
+            base.attackRecove += 1;
+            return base;
+        },
+        35:(base,Mstate,Tstate)=>{//战斗专注",message:"增加200攻速
+            base.attackRecove += 2;
+            return base;
+        },
+        79:(base,Mstate,Tstate)=>{//暗影之舞  增加5%生命恢复并使敌方在2回合内无法攻击自己
+            base.Hprecove += parseInt(base.maxHp*0.05);
+            return base;
+        },
+        43:(base,Mstate,Tstate)=>{//极度饥渴  该单位攻击+80,且将对敌方造成伤害转化为己方生命值
+            base.attack += 80;
+            return base;
+        },
+        45:(base,Mstate,Tstate)=>{//编织 护甲+20
+            base.armor += 25;
+            return base;
+        },
+        64:(base,Mstate,Tstate)=>{//编织 护甲减20
+            base.armor -= 25;
+            return base;
+        },
+        75:(base,Mstate,Tstate)=>{//火力聚焦  三回合内减少自身50%攻击,增加300攻速
+            base.attack = parseInt(base.attack*0.5);
+            base.attackRecove += 3;
+            return base;
+        },
+        50:(base,Mstate,Tstate)=>{//虚妄之诺  生命恢复增加1倍伤害减为一半
+            base.Hprecove *= 2;
+            return base;
+        },
+
+        // :(base,Mstate,Tstate)=>{
+        //     base.attack += parseInt(Tstate.Hp*0.1);
+        //     return base;
+        // },
+        // :(base,Mstate,Tstate)=>{
+        //     base.attack += parseInt(Tstate.Hp*0.1);
+        //     return base;
+        // },
+        // :(base,Mstate,Tstate)=>{
+        //     base.attack += parseInt(Tstate.Hp*0.1);
+        //     return base;
+        // },
+        // :(base,Mstate,Tstate)=>{
+        //     base.attack += parseInt(Tstate.Hp*0.1);
+        //     return base;
+        // },
+        // :(base,Mstate,Tstate)=>{
         //     base.attack += parseInt(Tstate.Hp*0.1);
         //     return base;
         // },

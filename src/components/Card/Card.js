@@ -22,13 +22,13 @@ class Card extends React.Component{
         });
     }
   	render() {
-        // big_skill[0] = {id:0,name:"法力虚空",state: 1 ,message:"造成敌方己消耗能量值乘以200的伤害"}
+        // card Dom
         let card = this.props.card
         if(this.props.cardfor!="that"){
             return <div className={this.props.cardfor=="my"?"card_box card_my":"card_box"}
                         onClick={this.props.cardfor=="my"?this.usecard.bind(this,card.id,card.name):()=>{}}>
                 <div className="card_mp">{card.mp}</div>
-                <div className="card_ion" style={{background: "url(./server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
+                <div className="card_ion" style={{background: "url(./src/server/skillImg/"+card.id+".jpg) no-repeat center"}}></div>
                 <div className="card_name">{card.name}</div>
                 <div className="card_message">{card.message}</div>
             </div>

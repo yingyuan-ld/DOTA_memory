@@ -130,7 +130,7 @@ function check_buffToCard (props,Attack){
         switch(buffid){
             case 157://多重施法
                 if(Math.random()>0.5){
-                    Attack.do.tHp = parseInt(Attack.do.tHp*1.5);
+                    Attack.do.tHp = parseInt(Attack.do.tHp*3);
                 }
                 break;
             case 107://余震 半合内自己使用任何技能都会使敌方眩晕半回合
@@ -162,6 +162,23 @@ function check_buffToCard (props,Attack){
                 Attack.do.mHp = Attack.do.mHp+parseInt(Attack.do.tHp*0.5);
                 Attack.do.mMp = Attack.do.mMp+parseInt(Attack.do.tHp*0.5);
                 break;
+            case 106://战意  每释放一次技能可以增加30点攻击力
+                Object.assign(Attack.do.mBuffObj||{}, {148:mystate.buffObj[106]+=1});
+                break;
+            case 26://血肉傀儡  三回合内双方每少一张牌自己就加80点生命
+                Attack.do.mHp += 80;
+                break;
+            case 39://割裂  自己每减少一张牌会减少100点生命值
+                Attack.do.mHp -= 100;
+                break;
+            case 59:////虚妄之诺  生命恢复增加1倍伤害减为一半
+                if(Attack.do.mHp>=0){
+                    Attack.do.mHp*=2
+                }else{
+                    Attack.do.mHp=parseInt(Attack.do.mHp*0.5)
+                }
+                break;
+
         }
     });
     let tBuff= props.thatstate.buff;
@@ -247,6 +264,25 @@ function check_buffToCard (props,Attack){
                 break;
             case 169://幽冥守卫  对敌方造成敌方消耗魔法值的伤害
                 Attack.do.mHp += Attack.do.mMp;
+                break;
+            case 7://船油  受到伤害减半
+                Attack.do.tHp = parseInt(Attack.do.tHp/2);
+                break;
+            case 9://回光返照  将受到的伤害转化为自己的生命值
+                if(Attack.do.tHp <0)Attack.do.tHp *= -1;
+                break;
+            case 26://血肉傀儡  三回合内双方每少一张牌自己就加80点生命
+                Attack.do.tHp -= 80;
+                break;
+            case 80://激怒  伤害减少90%
+                Attack.do.tHp = parseInt(Attack.do.tHp*0.1);
+                break;
+            case 59:////虚妄之诺  生命恢复增加1倍伤害减为一半
+                if(Attack.do.tHp>=0){
+                    Attack.do.tHp*=2
+                }else{
+                    Attack.do.tHp=parseInt(Attack.do.tHp*0.5)
+                }
                 break;
         }
     }
@@ -461,8 +497,9 @@ function attackBefore(props,Attack){
     let mystate = props.mystate;
     let thatstate = props.thatstate;
     let DO = Attack.do;
-    mystate.buff.map((buffid)=>{//
-        switch(buffid){
+    let mBuff= props.mystate.buff;
+    for(let i=0;i< mBuff.length;i++){
+        switch(mBuff[i]){
             case 97://巨力重击 有30%的概率使敌方晕眩一回合并附加40点攻击
                 if(Math.random()<0.3){
                     DO.tBuff.push(0),
@@ -528,9 +565,27 @@ function attackBefore(props,Attack){
                 DO.tBuff.push(164);
                 DO.tBuffT.push(6);
                 break;
+            case 12://海象挥击  攻击力变为现在攻击力的4倍
+                props.mystate.buff.splice(i,1);
+                props.mystate.buffTime.splice(i,1);
+                i--
+                break;
+            case 146://恩赐解脱  攻击时有30%的概率4倍暴击
+                if(Math.random()<0.3){
+                    DO.tHp *= 4;
+                }
+                break;
+            case 59:////虚妄之诺  生命恢复增加1倍伤害减为一半
+                if(DO.mHp>=0){
+                    DO.mHp*=2;
+                }else{
+                    DO.mHp=parseInt(DO.mHp*0.5);
+                }
+                break;
+                
 
         }
-    });
+    }
     let tBuff= props.thatstate.buff;
     for(let i=0;i< tBuff.length;i++){
         switch(tBuff[i]){
@@ -553,6 +608,19 @@ function attackBefore(props,Attack){
                 break;
             case 169://幽冥守卫  对敌方造成敌方消耗魔法值的伤害
                 DO.mHp -= DO.mMp;
+                break;
+            case 7://船油  受到伤害减半
+                DO.tHp = parseInt(DO.tHp/2);
+                break;
+            case 9://回光返照  将受到的伤害转化为自己的生命值
+                if(DO.tHp <0)DO.tHp *= -1;
+                break;
+            case 59:////虚妄之诺  生命恢复增加1倍伤害减为一半
+                if(DO.tHp>=0){
+                    DO.tHp*=2;
+                }else{
+                    DO.tHp=parseInt(DO.tHp*0.5);
+                }
                 break;
         }
     }
@@ -594,6 +662,10 @@ function attackAfter(props,Attack){
                 DO.mHp = DO.mHp+parseInt(DO.tHp*0.5);
                 DO.mMp = DO.mMp+parseInt(DO.tHp*0.5);
                 break;
+            case 43://极度饥渴  该单位攻击+80,且将对敌方造成伤害转化为己方生命值
+                DO.mHp = DO.tHp;
+                break;
+
                 
         }
     });
@@ -671,6 +743,10 @@ function attackAfter(props,Attack){
             case 53://致命连接  本回合内对敌方额外造成手牌数0.1倍伤害
                 DO.tHp += parseInt(thatstate.cardid.length*0.1);
                 break;
+            case 80://激怒  伤害减少90%
+                DO.tHp = parseInt(DO.tHp*0.1);
+                break;
+
         }
     }
     if(DO.tHp < 0)DO.tHp=0;
@@ -711,15 +787,31 @@ export function specialcard (props,card){//特殊技能处理
         case 1141://超级力量  增加两次攻击次数
             mystate.attackAccount = mystate.attackAccount*1+2;
             break;
-        case 1151://毁灭阴影  对敌方造成360点伤害(50%概率命中)
-            if (Math.random() >= 0.5){
-                thatstate.Hp-=375;
-            }
-            break;
         case 1202://涤罪之焰  对敌方造成150点伤害,并清除所有状态
             props.thatstate.buff = [];
             props.thatstate.buffT = [];
             break;
+        case 7://淘汰之刃  当敌方生命值少于600时直接秒杀
+            if(thatstate.Hp<600){
+                thatstate.Hp-=9999;
+            }
+            break;
+        case 37://灵魂隔断  自己和敌方互换血量
+            // {mystate.Hp,thatstate.Hp} = {thatstate.Hp,mystate.Hp}
+            let tempHp = thatstate.Hp;
+            thatstate.Hp = mystate.Hp;
+            mystate.Hp = tempHp;
+            break;
+        case 54://技能窃取  抽取敌方一张卡牌
+            r = Math.random();
+            index = parseInt(r*thatstate.cardid.length);
+            mystate.cardid.push(thatstate.cardid.splice(index, 1));
+            break;
+        case 57://寒冬诅咒  弃置敌方所有手牌
+            thatstate.cardid = [];
+            break;
+            
+            
         
     }
     return {mystate:mystate,thatstate:thatstate};
