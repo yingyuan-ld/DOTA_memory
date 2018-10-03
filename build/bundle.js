@@ -953,7 +953,7 @@ function check_buffToCard(props, Attack) {
             case 161:
                 //静默诅咒  每使用一次技能,持续时间延长一回合
                 Attack.do.mBuff = Attack.do.mBuff[0] ? Attack.do.mBuff.push(161) : [161];
-                Attack.do.mBuffT = Attack.do.mBuffT[0] ? Attack.do.mBuffT.push(mystate.buffT[i] += 2) : [mystate.buffT[i] += 2];
+                Attack.do.mBuffT = Attack.do.mBuffT[0] ? Attack.do.mBuffT.push(mystate.buffTime[i] += 2) : [mystate.buffTime[i] += 2];
                 break;
             case 48:
                 //超负荷  每放1次技能就可以增加自己100点攻击,不可叠加,维持一次攻击
@@ -987,7 +987,7 @@ function check_buffToCard(props, Attack) {
                 Attack.do.mHp -= 100;
                 break;
             case 59:
-                ////虚妄之诺  生命恢复增加1倍伤害减为一半
+                //虚妄之诺  生命恢复增加1倍伤害减为一半
                 if (Attack.do.mHp >= 0) {
                     Attack.do.mHp *= 2;
                 } else {
@@ -3347,7 +3347,13 @@ var HeroPlaceMy = function (_React$Component) {
     function HeroPlaceMy() {
         _classCallCheck(this, HeroPlaceMy);
 
-        return _possibleConstructorReturn(this, (HeroPlaceMy.__proto__ || Object.getPrototypeOf(HeroPlaceMy)).call(this));
+        var _this = _possibleConstructorReturn(this, (HeroPlaceMy.__proto__ || Object.getPrototypeOf(HeroPlaceMy)).call(this));
+
+        _this.state = {
+            count_down: 60 //回合倒计时
+        };
+        _this.timeInterval;
+        return _this;
     }
 
     _createClass(HeroPlaceMy, [{
@@ -3396,6 +3402,27 @@ var HeroPlaceMy = function (_React$Component) {
                     message: check == "miss" ? "对方普通攻击MISS" : "普通攻击对你造成\"" + check + "\"点伤害"
                 }
             });
+        }
+    }, {
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(nextProps) {
+            if (nextProps.round == 1 && this.props.round != 1) {
+                this.setState({ count_down: 60 });
+                this.timeInterval = window.setInterval(this.count_down.bind(this), 1000);
+            }
+            if (nextProps.round != 1 && this.props.round == 1) {
+                window.clearInterval(this.timeInterval);
+            }
+        }
+    }, {
+        key: 'count_down',
+        value: function count_down() {
+            var count_down = this.state.count_down;
+            if (count_down > 1) {
+                this.setState({ count_down: --count_down });
+            } else {
+                this.roundOver();
+            }
         }
     }, {
         key: 'roundOver',
@@ -3502,7 +3529,7 @@ var HeroPlaceMy = function (_React$Component) {
                         this.props.round == 1 ? _react2.default.createElement(
                             'div',
                             { className: 'over_btn', onClick: this.roundOver.bind(this) },
-                            "回合结束"
+                            "回合结束" + this.state.count_down
                         ) : ""
                     ),
                     _react2.default.createElement(
@@ -3511,12 +3538,12 @@ var HeroPlaceMy = function (_React$Component) {
                         _react2.default.createElement(
                             'div',
                             { className: 'HP', style: { width: (basic.Hp / basic.maxHp * 100).toFixed(2) + "%" } },
-                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove
+                            basic.Hp + "/" + basic.maxHp + (basic.Hprecove > 0 ? "+" : "") + basic.Hprecove
                         ),
                         _react2.default.createElement(
                             'div',
                             { className: 'MP', style: { width: (basic.Mp / basic.maxMp * 100).toFixed(2) + "%" } },
-                            basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove
+                            basic.Mp + "/" + basic.maxMp + (basic.Mprecove > 0 ? "+" : "") + basic.Mprecove
                         ),
                         _react2.default.createElement(
                             'div',
@@ -3796,13 +3823,13 @@ var HeroPlaceThat = function (_React$Component) {
                             'div',
                             { className: 'HP', style: { width: (basic.Hp / basic.maxHp * 100).toFixed(2) + "%" }
                             },
-                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + "+" + basic.Hprecove + "/s"
+                            (basic.Hp > 0 ? basic.Hp : 0) + "/" + basic.maxHp + (basic.Hprecove > 0 ? "+" : "") + basic.Hprecove
                         ),
                         _react2.default.createElement(
                             'div',
                             { className: 'MP', style: { width: (basic.Mp / basic.maxMp * 100).toFixed(2) + "%" }
                             },
-                            basic.Mp + "/" + basic.maxMp + "+" + basic.Mprecove + "/s"
+                            basic.Mp + "/" + basic.maxMp + (basic.Mprecove > 0 ? "+" : "") + basic.Mprecove
                         ),
                         _react2.default.createElement(
                             'div',
@@ -23520,7 +23547,6 @@ module.exports = {
         28: "疯狂生长",
         36: "海妖之歌",
         37: "石化",
-        50: "虚妄之诺",
         55: "噩梦",
         68: "极寒之拥",
         87: "妖术",

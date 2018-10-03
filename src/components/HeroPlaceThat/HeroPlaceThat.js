@@ -72,9 +72,9 @@ class HeroPlaceThat extends React.Component{
             </div>
             <div className="attribute_list">
                 <div className="HP" style={{width:(basic.Hp/basic.maxHp*100).toFixed(2)+"%"}}
-                >{(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+"+"+basic.Hprecove+"/s"}</div>
+                >{(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+(basic.Hprecove>0?"+":"")+basic.Hprecove}</div>
                 <div className="MP" style={{width:(basic.Mp/basic.maxMp*100).toFixed(2)+"%"}}
-                >{basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove+"/s"}</div>
+                >{basic.Mp+"/"+basic.maxMp+(basic.Mprecove>0?"+":"")+basic.Mprecove}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
                 <div className="statelist">

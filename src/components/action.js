@@ -145,7 +145,7 @@ function check_buffToCard (props,Attack){
                 break;
             case 161://静默诅咒  每使用一次技能,持续时间延长一回合
                 Attack.do.mBuff = Attack.do.mBuff[0]?Attack.do.mBuff.push(161):[161];
-                Attack.do.mBuffT = Attack.do.mBuffT[0]?Attack.do.mBuffT.push(mystate.buffT[i]+=2):[mystate.buffT[i]+=2];
+                Attack.do.mBuffT = Attack.do.mBuffT[0]?Attack.do.mBuffT.push(mystate.buffTime[i]+=2):[mystate.buffTime[i]+=2];
                 break;
             case 48://超负荷  每放1次技能就可以增加自己100点攻击,不可叠加,维持一次攻击
                 Attack.do.mBuffObj = Object.assign(Attack.do.mBuffObj||{}, {48:1});
@@ -171,7 +171,7 @@ function check_buffToCard (props,Attack){
             case 39://割裂  自己每减少一张牌会减少100点生命值
                 Attack.do.mHp -= 100;
                 break;
-            case 59:////虚妄之诺  生命恢复增加1倍伤害减为一半
+            case 59://虚妄之诺  生命恢复增加1倍伤害减为一半
                 if(Attack.do.mHp>=0){
                     Attack.do.mHp*=2
                 }else{

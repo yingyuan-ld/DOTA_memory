@@ -10,6 +10,10 @@ var socket = io();
 class HeroPlaceMy extends React.Component{
     constructor(){
         super();
+        this.state = {
+            count_down:60,//回合倒计时
+        }
+        this.timeInterval;
     }
     cardlist(){
         return this.props.mystate.cardid.map((card,i)=>{
@@ -44,6 +48,23 @@ class HeroPlaceMy extends React.Component{
                 message:check=="miss"?"对方普通攻击MISS":"普通攻击对你造成\""+check+"\"点伤害",
             }
         });
+    }
+    componentWillReceiveProps(nextProps){
+        if(nextProps.round == 1&&this.props.round != 1){
+            this.setState({count_down:60})
+            this.timeInterval = window.setInterval(this.count_down.bind(this),1000);
+        }
+        if(nextProps.round != 1&&this.props.round == 1){
+            window.clearInterval(this.timeInterval); 
+        }
+    }
+    count_down(){
+        let count_down = this.state.count_down;
+        if(count_down>1){
+            this.setState({count_down:--count_down});
+        }else{
+            this.roundOver();
+        }
     }
     roundOver(){//回合结束
         let messagelist = this.props.messagelist;
@@ -120,13 +141,13 @@ class HeroPlaceMy extends React.Component{
                 <div className={"hero_ion hero_ion_"+basic.herotype} />
                 {this.props.round==1?<div className="attack_btn" onClick={this.attackBtn.bind(this)}>
                     {"攻击x"+basic.attackAccount+"↑"+basic.attackRecove}</div>:""}
-                {this.props.round==1?<div className="over_btn" onClick={this.roundOver.bind(this)}>{"回合结束"}</div>:""}
+                {this.props.round==1?<div className="over_btn" onClick={this.roundOver.bind(this)}>{"回合结束"+this.state.count_down}</div>:""}
             </div>
             <div className="attribute_list">
                 <div className="HP" style={{width:(basic.Hp/basic.maxHp*100).toFixed(2)+"%"}}>
-                    {(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+"+"+basic.Hprecove}</div>
+                    {basic.Hp+"/"+basic.maxHp+(basic.Hprecove>0?"+":"")+basic.Hprecove}</div>
                 <div className="MP" style={{width:(basic.Mp/basic.maxMp*100).toFixed(2)+"%"}}>
-                    {basic.Mp+"/"+basic.maxMp+"+"+basic.Mprecove}</div>
+                    {basic.Mp+"/"+basic.maxMp+(basic.Mprecove>0?"+":"")+basic.Mprecove}</div>
                 <div className="attack">{"攻击力:"+basic.attack}</div>
                 <div className="armor">{"护甲:"+basic.armor}</div>
                 <div className="statelist">
