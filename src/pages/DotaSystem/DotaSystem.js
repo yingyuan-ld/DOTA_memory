@@ -3,6 +3,11 @@ import "./DotaSystem.scss";
 import Login from "../login/login";
 import Prepare from "../Prepare/Prepare.js";
 import Playing from "../playing/playing";
+
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as allActions from '../../redux/actions/index';
 var socket = io();
 setTimeout(() => {
     console.info(socket.id);
@@ -15,27 +20,26 @@ const component = {//页面
 class Component extends React.Component{
     constructor(props) {
         super(props);
-        this.state = {
-            myname:"",
-            myid:"",
-            thatname:"",
-            thatid:"",
-            process:["Login","Prepare","Playing"],//游戏流程
-            progress_state:0
-        }
-    }
-    next_process(newdata){//进行到下一个流程
-        let state = this.state;
-        state = Object.assign(state,newdata);
-        this.setState(state);
     }
   	render() {
-        let FieldBox = component[this.state.process[this.state.progress_state]];
+        let pagedata = this.props;
+        debugger
+        let FieldBox = component[pagedata.process[pagedata.progress_state]];
         let data = {
-            next_process:this.next_process.bind(this),
+            next_process:this.props.actions.next_process,
             socket:socket
         }
-      return <FieldBox {...data}{...this.state}/>;
+        return <FieldBox {...data}{...pagedata}/>;
   	}
 }
-module.exports = Component;
+
+function mapStateToProps(state) {
+    return state ;
+}
+
+function mapDispatchToProps(dispatch) {
+    return{ actions: bindActionCreators(allActions, dispatch)};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Component);
+
+
