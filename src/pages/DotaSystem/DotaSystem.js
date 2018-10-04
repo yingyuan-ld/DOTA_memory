@@ -23,7 +23,6 @@ class Component extends React.Component{
     }
   	render() {
         let pagedata = this.props;
-        debugger
         let FieldBox = component[pagedata.process[pagedata.progress_state]];
         let data = {
             next_process:this.props.actions.next_process,

@@ -1,6 +1,6 @@
 import React from 'react';
 import "./playing.scss";
-import {prepareOk,cardheap,getnewstate} from '../../components/action';
+import {prepareOk,cardheap,getnewstate} from '../../components/functions';
 import Tooltip from '../../components/Tooltip/Tooltip';
 // import {HeroSelect,PlayPage} from '../../components/index';
 import PAGES from '../../components/index';

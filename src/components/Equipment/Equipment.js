@@ -1,5 +1,5 @@
 import React from 'react';
-import {doAttack} from '../action';//使用技能
+import {doAttack} from '../functions';//使用技能
 import "./Equipment.scss";
 
 class Equipment extends React.Component{

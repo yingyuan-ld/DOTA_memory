@@ -1,6 +1,6 @@
 import React from 'react';
 import "./PlayPage.scss";
-import {shufflecards,state_base} from '../action';
+import {shufflecards,state_base} from '../functions';
         //洗牌
 import {big_skill,small_skill} from '../../server/skill';
 import HeroPlaceMy from "../HeroPlaceMy/HeroPlaceMy";

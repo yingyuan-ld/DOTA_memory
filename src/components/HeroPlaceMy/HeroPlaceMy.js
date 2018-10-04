@@ -3,7 +3,7 @@ import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
 import Equipment from '../Equipment/Equipment';
-import {doAttack} from '../action';
+import {doAttack} from '../functions';
 import "./HeroPlaceMy.scss";
 import MetailBox from '..//MetailBox/MetailBox';
 var socket = io();
