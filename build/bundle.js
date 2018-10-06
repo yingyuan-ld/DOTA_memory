@@ -25826,6 +25826,20 @@ var Component = function (_React$Component) {
                     });
                 }
             });
+            this.props.socket.on('runaway', function (res) {
+                //对方逃跑
+                _this2.props.actions.show_compop({
+                    message: res.message,
+                    Turebtn: true,
+                    TureFun: function TureFun() {
+                        _this2.props.next_process({ progress_state: 1 });
+                        socket.emit('fightResult', {
+                            id: _this2.props.myid,
+                            name: _this2.props.myname
+                        });
+                    }
+                });
+            });
         }
     }, {
         key: 'componentWillUnmount',
@@ -25929,7 +25943,7 @@ var Component = function (_React$Component) {
                         _react2.default.createElement(
                             'div',
                             null,
-                            '\u5728\u7EBF\u4EBA\u5458\u5217\u8868'
+                            '\u8BF7\u9009\u53D6\u4E00\u540D\u5728\u7EBF\u4EBA\u5458\u5F00\u59CB\u6E38\u620F\u2193'
                         ),
                         this.render_presen()
                     )
@@ -26358,7 +26372,7 @@ module.exports = {
             Hprecove: 15, //生命值恢复速度
             maxMp: 500, //最大蓝量
             Mprecove: 50, //魔法值恢复速度
-            attack: 8000, //攻击力
+            attack: 40, //攻击力
             attackRecove: 1, //攻击速度
             armor: 10 //护甲
         },

@@ -17,7 +17,7 @@ class Component extends React.Component{
             socket.emit('logout', {
                 id:this.props.myid,
                 name:this.props.myname
-            }); 
+            });
         }
         this.props.socket.on('getpersen', (persenAry)=>{//刷新人员列表
             if(!this.Unmount){
@@ -71,6 +71,19 @@ class Component extends React.Component{
                 });
             }
 		})
+        this.props.socket.on('runaway', (res)=>{//对方逃跑
+            this.props.actions.show_compop({
+                message:res.message,
+                Turebtn:true,
+                TureFun:()=>{
+                    this.props.next_process({progress_state:1});
+                    socket.emit('fightResult', {
+                        id:this.props.myid,
+                        name:this.props.myname
+                    }); 
+                }
+            });
+        })
     }
     componentWillUnmount(){
         this.Unmount = true;
@@ -120,7 +133,7 @@ class Component extends React.Component{
             </div>
             <div className="online_list">
                 <MetailBox>
-                    <div>在线人员列表</div>
+                    <div>请选取一名在线人员开始游戏↓</div>
                     {this.render_presen()}
                 </MetailBox>
             </div>

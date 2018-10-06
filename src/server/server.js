@@ -102,10 +102,14 @@ io.on('connection', function(socket){
             for(i in persenAry){
                 if(persenAry[i].id===socket.id){
                     persenAry[i].state = "fighting";
+                    persenAry[i].tname= res.name;
+                    persenAry[i].tid = res.id;
                     myname = persenAry[i].name;
                 }
                 if(persenAry[i].id===res.id){
                     persenAry[i].state = "fighting"
+                    persenAry[i].tname= myname;//可能没有取到
+                    persenAry[i].tid = socket.id;
                 }
             }
             getpersen(persenAry);
@@ -131,6 +135,11 @@ io.on('connection', function(socket){
         persenObj[res.name] = "";
         for(i in persenAry){
             if(persenAry[i].id===res.id){
+                if(persenAry[i].tid){
+                    io.to(persenAry[i].tid).emit('runaway',{//逃跑消息
+                        message:'对方逃跑了'
+                    });
+                }
                 persenAry.splice(i, 1);
                 break;
             }
