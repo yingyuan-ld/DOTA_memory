@@ -6,7 +6,13 @@ const initValue={
     thatname:"",
     thatid:"",
     process:["Login","Prepare","Playing"],//游戏流程
-    progress_state:0
+    progress_state:0,
+    CompopData:{
+    	show:false,
+    	message:"",
+        Closebtn:false,
+        Turebtn:true,
+    }
 }
 const store=createStore(reducer,initValue)
 export default store

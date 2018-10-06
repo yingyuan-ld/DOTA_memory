@@ -24,18 +24,6 @@ class HeroPlaceThat extends React.Component{
             return <BuffIon {...state_list[item]} buffTime={buffTime[i]} buffObj={basic.buffObj} key={i}/>
         });
     }
-    componentDidUpdate(){
-        //判断游戏结束
-        if(this.props.thatstate.Hp<=0){
-            alert("你赢了");
-            console.info("你赢了");
-            this.props.next_process({progress_state:1});
-            socket.emit('fightResult', {
-                id:this.props.myid,
-                name:this.props.myname
-            }); 
-        }
-    }
     showtip(item,e){
         this.props.setState({Tooltip:{
             show:true,
@@ -60,7 +48,7 @@ class HeroPlaceThat extends React.Component{
     }
   	render() {
         let basic = this.props.thatstate;
-        if(basic.herotype===""||basic.herotype===undefined){
+        if(basic.herotype===undefined){
             return <div className="hero_place" >
                 对手正在准备中...
             </div>;

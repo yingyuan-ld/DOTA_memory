@@ -1,6 +1,6 @@
 import {big_skill,small_skill} from '../server/skill';
 import setUpData from './setUpData';
-
+import _ from 'lodash';
 
 export function prepareOk (mystate,obj){//准备开始
     mystate.round-=obj.round
@@ -277,7 +277,7 @@ function check_buffToCard (props,Attack){
             case 80://激怒  伤害减少90%
                 Attack.do.tHp = parseInt(Attack.do.tHp*0.1);
                 break;
-            case 59:////虚妄之诺  生命恢复增加1倍伤害减为一半
+            case 59://虚妄之诺  生命恢复增加1倍伤害减为一半
                 if(Attack.do.tHp>=0){
                     Attack.do.tHp*=2
                 }else{
@@ -288,7 +288,8 @@ function check_buffToCard (props,Attack){
     }
     return [props,Attack];
 }
-export function doAttack (props,Attack,type){//物理攻击方法 type=card/attack/equipt
+export function doAttack (props,Attack,type){//攻击方法 type=card/attack/equipt
+    props = _.cloneDeep(props);
     let mystate = props.mystate;
     let thatstate = props.thatstate;
     let checked = true;//用于判断检查状态

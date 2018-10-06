@@ -14,9 +14,17 @@ class PlayPage extends React.Component{
     componentWillMount(){
         if(this.props.thatstate.herotype!=undefined){//对手比你先进来
             this.prepare_card(this.props.round,this.props.thatstate);
+        }else{
+            this.props.actions.show_compop({
+                message:"对方还在英雄选择中",
+                Turebtn:false,
+            });
         }
     }
     componentWillReceiveProps(newProps){
+        if(this.props.thatstate.herotype==undefined&&newProps.thatstate.herotype!=undefined){//对手也进来了
+            this.props.actions.hide_compop();
+        }
         if((this.props.round+"").indexOf(".")>0&&(newProps.round+"").indexOf(".")>0){//对手比你后进来
             this.prepare_card(newProps.round,newProps.thatstate);
         }

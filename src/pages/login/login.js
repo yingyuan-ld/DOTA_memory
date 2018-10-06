@@ -20,7 +20,7 @@ class login extends React.Component{
 					progress_state:1
 				})
 			}else{
-				alert(res.message)
+				that.props.actions.show_compop({message:res.message,Turebtn:true});
 			}
 		})
 	}
@@ -30,7 +30,7 @@ class login extends React.Component{
   	send(){
 		let that = this;
 		if(that.state.myname===""){
-			alert("名字必填");
+			this.props.actions.show_compop({message:"名字必填!",Turebtn:true});
 			return;
 		}
 		this.props.socket.emit('login', that.state.myname);

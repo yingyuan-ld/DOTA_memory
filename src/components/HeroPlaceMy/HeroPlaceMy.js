@@ -52,10 +52,33 @@ class HeroPlaceMy extends React.Component{
     componentWillReceiveProps(nextProps){
         if(nextProps.round == 1&&this.props.round != 1){
             this.setState({count_down:60})
-            this.timeInterval = window.setInterval(this.count_down.bind(this),1000);
+            this.timeInterval = window.setInterval(this.count_down.bind(this),1000);//倒数计时
         }
         if(nextProps.round != 1&&this.props.round == 1){
-            window.clearInterval(this.timeInterval); 
+            window.clearInterval(this.timeInterval); //倒数计时
+        }
+
+        //判断游戏结束
+        let message = "";
+        if(nextProps.thatstate.Hp<=0&&this.props.thatstate.Hp>0){
+            message = "你赢了!";
+        }
+        if(nextProps.mystate.Hp<=0&&this.props.mystate.Hp>0){
+            message = "你输了!"
+        }
+        if(message){
+            window.clearInterval(this.timeInterval);
+            this.props.actions.show_compop({
+                message:message,
+                Turebtn:true,
+                TureFun:()=>{
+                    this.props.next_process({progress_state:1});
+                    socket.emit('fightResult', {
+                        id:this.props.myid,
+                        name:this.props.myname
+                    }); 
+                }
+            })
         }
     }
     count_down(){
@@ -97,18 +120,6 @@ class HeroPlaceMy extends React.Component{
                 message:"对方回合结束，现在是你的回合"
             }
         });
-    }
-    componentDidUpdate(){
-        //判断游戏结束
-        if(this.props.mystate.Hp<=0){
-            alert("你输了");
-            console.info("你输了");
-            this.props.next_process({progress_state:1});
-            socket.emit('fightResult', {
-                id:this.props.myid,
-                name:this.props.myname
-            }); 
-        }
     }
 
     showtip(item,e){

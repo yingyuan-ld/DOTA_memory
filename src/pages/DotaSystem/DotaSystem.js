@@ -4,6 +4,8 @@ import Login from "../login/login";
 import Prepare from "../Prepare/Prepare.js";
 import Playing from "../playing/playing";
 
+import Compop from "../../components/Compop/Compop";
+
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -26,9 +28,13 @@ class Component extends React.Component{
         let FieldBox = component[pagedata.process[pagedata.progress_state]];
         let data = {
             next_process:this.props.actions.next_process,
-            socket:socket
+            socket:socket,
+            actions:this.props.actions
         }
-        return <FieldBox {...data}{...pagedata}/>;
+        return <div style={{width:"100%",height:"100%"}}>
+            <FieldBox {...data}{...pagedata}/>
+            <Compop {...this.props.CompopData} actions={this.props.actions}/>
+        </div>;
   	}
 }
 

@@ -32,18 +32,29 @@ class Component extends React.Component{
         
         this.props.socket.on('getFight', (res)=>{//接收挑战
             // debugger
-            let r=confirm(res.message);
-            if (r==true){
-				this.props.next_process({
-                    thatname:res.name,
-                    thatid:res.id,
-                    progress_state:2
-                })//可以进行下一步了
-            }
-            this.props.socket.emit('fightAns', {
-                id:res.id,
-                name:res.name,
-                fight:r
+            this.props.actions.show_compop({
+                message:res.message,
+                Turebtn:true,
+                TureFun:()=>{
+                    this.props.next_process({
+                        thatname:res.name,
+                        thatid:res.id,
+                        progress_state:2
+                    })//可以进行下一步了
+                    this.props.socket.emit('fightAns', {
+                        id:res.id,
+                        name:res.name,
+                        fight:true
+                    });
+                },
+                Closebtn:true,
+                CloseFun:()=>{
+                    this.props.socket.emit('fightAns', {
+                        id:res.id,
+                        name:res.name,
+                        fight:false
+                    });
+                },
             });
 		})
         this.props.socket.on('fightAns', (res)=>{//挑战答复
@@ -54,7 +65,10 @@ class Component extends React.Component{
                     progress_state:2
                 })//可以进行下一步了
             }else{
-                alert(res.message);
+                this.props.actions.show_compop({
+                    message:res.message,
+                    Turebtn:true
+                });
             }
 		})
     }
@@ -62,12 +76,12 @@ class Component extends React.Component{
         this.Unmount = true;
     }
     select_persen(challengName,challengId){//选择用户发出要求 defier挑战 challeng被挑战
-        let r=confirm("是否向\""+challengName+"\"发出邀请");
-        if (r==true){
-            this.props.socket.emit('sendFight', challengId);
-        }else{
-            console.info("你按下了\"取消\"按钮!");
-        }
+        this.props.actions.show_compop({
+            message:"是否向\""+challengName+"\"发出邀请",
+            Turebtn:true,
+            TureFun:()=>{this.props.socket.emit('sendFight', challengId)},
+            Closebtn:true,
+        });
     }
     render_presen(){//渲染 当前在线用户
         return this.state.persenAry.map((item,i)=>{

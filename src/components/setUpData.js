@@ -82,7 +82,7 @@ module.exports = {
             Hprecove:15,//生命值恢复速度
             maxMp:500,//最大蓝量
             Mprecove:50,//魔法值恢复速度
-            attack:40,//攻击力
+            attack:8000,//攻击力
             attackRecove:1,//攻击速度
             armor:10//护甲
         },
