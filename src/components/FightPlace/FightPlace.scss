@@ -38,7 +38,8 @@
     .seal_card{
         width: 100px;
         height: 160px;
-        background: red;
+        background: url(./bigcardback.png) no-repeat center;
+        background-size: 100%;
         position: absolute;
         right: 10px;
         top: 10px;

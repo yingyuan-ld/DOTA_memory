@@ -80,7 +80,7 @@ module.exports = {
             herotype:0,
             maxHp:4000,//最大血量
             Hprecove:15,//生命值恢复速度
-            maxMp:500,//最大蓝量
+            maxMp:300,//最大蓝量
             Mprecove:50,//魔法值恢复速度
             attack:40,//攻击力
             attackRecove:1,//攻击速度
@@ -90,7 +90,7 @@ module.exports = {
             herotype:1,
             maxHp:3500,//最大血量
             Hprecove:10,//生命值恢复速度
-            maxMp:500,//最大蓝量
+            maxMp:300,//最大蓝量
             Mprecove:50,//魔法值恢复速度
             attack:70,//攻击力
             attackRecove:1.5,//攻击速度
@@ -100,7 +100,7 @@ module.exports = {
             herotype:2,
             maxHp:3000,//最大血量
             Hprecove:10,//生命值恢复速度
-            maxMp:600,//最大蓝量
+            maxMp:400,//最大蓝量
             Mprecove:60,//魔法值恢复速度
             attack:40,//攻击力
             attackRecove:1,//攻击速度
@@ -110,7 +110,7 @@ module.exports = {
             herotype:3,
             maxHp:3500,//最大血量
             Hprecove:10,//生命值恢复速度
-            maxMp:500,//最大蓝量
+            maxMp:300,//最大蓝量
             attack:50,//攻击力
             Mprecove:50,//魔法值恢复速度
             attackRecove:1,//攻击速度
@@ -341,7 +341,7 @@ module.exports = {
             base.armor -= 20;
             return base;
         },
-        148:(base)=>{//支配死灵  被动牌:敌方每减少一张牌,可以增加30点攻击
+        148:(base,Mstate)=>{//支配死灵  被动牌:敌方每减少一张牌,可以增加30点攻击
             base.attack += (Mstate.buffObj["148"]*30);
             return base;
         },

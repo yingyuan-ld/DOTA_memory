@@ -60,6 +60,7 @@ class Component extends React.Component{
     componentWillMount(){
         this.props.socket.on('totalk', (res)=>{
             let state = ACTION[res.obj.funname](this.state,res.obj);
+            console.info(state);
             this.setState(state);
         });
     }

@@ -33,7 +33,7 @@ class FightPlace extends React.Component{
             mystate.messagelist = messagelist;
             getcard = false
         }
-        if(mystate.money<1&&getcard){//金钱判断
+        if(mystate.money<100&&getcard){//金钱判断
             messagelist.push("小伙，你钱不够!");
             mystate.messagelist = messagelist;
             getcard = false
@@ -47,7 +47,7 @@ class FightPlace extends React.Component{
             mystate.cardid.push(this.props.big_cardheap[this.props.big_speed]);
             messagelist.push("你购买了一张卡牌");
             tempspeed++;
-            mystate.money-=1;
+            mystate.money-=100;
             this.props.socket.emit('totalk', {
                 id:this.props.thatid,
                 obj:{

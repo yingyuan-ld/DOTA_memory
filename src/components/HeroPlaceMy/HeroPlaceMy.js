@@ -67,7 +67,7 @@ class HeroPlaceMy extends React.Component{
             message = "你输了!"
         }
         if(message){
-            window.clearInterval(this.timeInterval);
+            // window.clearInterval(this.timeInterval);
             this.props.actions.show_compop({
                 message:message,
                 Turebtn:true,
@@ -112,13 +112,15 @@ class HeroPlaceMy extends React.Component{
         }
         let newstate= {round:0,messagelist:messagelist,mystate:mystate};
         this.props.setState(newstate);
+        console.info("回合结束")
         this.props.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
                 newstate:{round:1,thatstate:mystate},
                 message:"对方回合结束，现在是你的回合"
-            }
+            },
+            myoverid:this.props.myid
         });
     }
 

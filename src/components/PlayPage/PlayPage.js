@@ -22,10 +22,10 @@ class PlayPage extends React.Component{
         }
     }
     componentWillReceiveProps(newProps){
-        if(this.props.thatstate.herotype==undefined&&newProps.thatstate.herotype!=undefined){//对手也进来了
+        if(this.props.thatstate.herotype==undefined&&newProps.thatstate.herotype!=undefined){//对手比你后进来
             this.props.actions.hide_compop();
         }
-        if((this.props.round+"").indexOf(".")>0&&(newProps.round+"").indexOf(".")>0){//对手比你后进来
+        if((this.props.round+"").indexOf(".")>0&&(newProps.round+"").indexOf(".")>0&&this.props.round!=newProps.round){//对手比你后进来
             this.prepare_card(newProps.round,newProps.thatstate);
         }
         if(this.props.round==0&&newProps.round==1){//你的回合开始
@@ -66,7 +66,8 @@ class PlayPage extends React.Component{
                     funname:"getnewstate",
                     newstate:{thatstate:mystate,small_speed:small_speed},
                     message:"现在是对方回合"
-                }
+                },
+                myid:this.props.myid
             });
         }
     }

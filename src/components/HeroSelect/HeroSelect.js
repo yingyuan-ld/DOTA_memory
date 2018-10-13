@@ -17,8 +17,8 @@ class HeroSelect extends React.Component{
                     maxHp:4000,//最大血量
                     Hp:4000,//当前血量
                     Hprecove:15,//生命值恢复速度
-                    maxMp:500,//最大蓝量
-                    Mp:500,//当前蓝量
+                    maxMp:300,//最大蓝量
+                    Mp:300,//当前蓝量
                     Mprecove:50,//魔法值恢复速度
                     attack:40,//攻击力
                     attackRecove:1,//攻击速度
@@ -31,8 +31,8 @@ class HeroSelect extends React.Component{
                     maxHp:3500,//最大血量
                     Hp:3500,//当前血量
                     Hprecove:10,//生命值恢复速度
-                    maxMp:500,//最大蓝量
-                    Mp:500,//当前蓝量
+                    maxMp:300,//最大蓝量
+                    Mp:300,//当前蓝量
                     Mprecove:50,//魔法值恢复速度
                     attack:70,//攻击力
                     attackRecove:1.5,//攻击速度
@@ -45,8 +45,8 @@ class HeroSelect extends React.Component{
                     maxHp:3000,//最大血量
                     Hp:3000,//当前血量
                     Hprecove:10,//生命值恢复速度
-                    maxMp:600,//最大蓝量
-                    Mp:600,//当前蓝量
+                    maxMp:400,//最大蓝量
+                    Mp:400,//当前蓝量
                     Mprecove:60,//魔法值恢复速度
                     attack:40,//攻击力
                     attackRecove:1,//攻击速度
@@ -59,8 +59,8 @@ class HeroSelect extends React.Component{
                     maxHp:3500,//最大血量
                     Hp:3500,//当前血量
                     Hprecove:10,//生命值恢复速度
-                    maxMp:500,//最大蓝量
-                    Mp:500,//当前蓝量
+                    maxMp:300,//最大蓝量
+                    Mp:300,//当前蓝量
                     attack:50,//攻击力
                     Mprecove:50,//魔法值恢复速度
                     attackRecove:1,//攻击速度
