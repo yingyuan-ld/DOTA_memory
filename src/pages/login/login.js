@@ -11,7 +11,7 @@ class login extends React.Component{
 	  
 	componentWillMount(){
 		let that = this;
-		this.props.socket.on('getLogin', function(res){//返回登录结果
+		window.socket.on('getLogin', function(res){//返回登录结果
 			if(res.type){
 				console.info(res.message);
 				that.props.next_process({//可以进行下一步了
@@ -33,7 +33,7 @@ class login extends React.Component{
 			this.props.actions.show_compop({message:"名字必填!",Turebtn:true});
 			return;
 		}
-		this.props.socket.emit('login', that.state.myname);
+		window.socket.emit('login', that.state.myname);
   	}
   	render() {
     	return (<div className="login_box">

@@ -48,7 +48,7 @@ class FightPlace extends React.Component{
             messagelist.push("你购买了一张卡牌");
             tempspeed++;
             mystate.money-=100;
-            this.props.socket.emit('totalk', {
+            window.socket.emit('totalk', {
                 id:this.props.thatid,
                 obj:{
                     funname:"getnewstate",

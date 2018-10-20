@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as allActions from '../../redux/actions/index';
 var socket = io();
+window.socket = socket;
 setTimeout(() => {
     console.info(socket.id);
 }, 100); 
@@ -28,7 +29,6 @@ class Component extends React.Component{
         let FieldBox = component[pagedata.process[pagedata.progress_state]];
         let data = {
             next_process:this.props.actions.next_process,
-            socket:socket,
             actions:this.props.actions
         }
         return <div style={{width:"100%",height:"100%"}}>

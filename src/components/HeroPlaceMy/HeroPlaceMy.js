@@ -7,7 +7,6 @@ import {doAttack} from '../functions';
 import "./HeroPlaceMy.scss";
 import MetailBox from '..//MetailBox/MetailBox';
 import _ from 'lodash';
-var socket = io();
 class HeroPlaceMy extends React.Component{
     constructor(){
         super();
@@ -41,7 +40,7 @@ class HeroPlaceMy extends React.Component{
         this.props.setState(newstate);
 
         if(check==false)return;
-        this.props.socket.emit('totalk', {
+        window.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
@@ -61,7 +60,7 @@ class HeroPlaceMy extends React.Component{
 
         //判断游戏结束
         let message = "";
-        if(nextProps.thatstate.Hp<=0){
+        if(nextProps.thatstate.Hp<=0&&this.props.thatstate.Hp>0){
             message = "你赢了!";
         }
         if(nextProps.mystate.Hp<=0&&this.props.mystate.Hp>0){
@@ -74,7 +73,7 @@ class HeroPlaceMy extends React.Component{
                 Turebtn:true,
                 TureFun:()=>{
                     this.props.next_process({progress_state:1});
-                    socket.emit('fightResult', {
+                    window.socket.emit('fightResult', {
                         id:this.props.myid,
                         name:this.props.myname
                     }); 
@@ -114,7 +113,7 @@ class HeroPlaceMy extends React.Component{
         let newstate= {round:0,messagelist:messagelist,mystate:mystate};
         this.props.setState(newstate);
         console.info("回合结束")
-        this.props.socket.emit('totalk', {
+        window.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",

@@ -12,7 +12,7 @@ class Equipment extends React.Component{
         this.props.setState(newstate);
         if(check==false)return;
 
-        this.props.socket.emit('totalk', {
+        window.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",

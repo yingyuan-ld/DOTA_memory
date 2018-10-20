@@ -60,7 +60,7 @@ class PlayPage extends React.Component{
                 i++;
             }
             this.props.setState({mystate:mystate,small_speed:small_speed,messagelist:messagelist});
-            this.props.socket.emit('totalk', {
+            window.socket.emit('totalk', {
                 id:this.props.thatid,
                 obj:{
                     funname:"getnewstate",
@@ -107,7 +107,7 @@ class PlayPage extends React.Component{
                 mystate:mystate,
                 thatstate:thatstate
             });
-            this.props.socket.emit('totalk', {
+            window.socket.emit('totalk', {
                 id:this.props.thatid,
                 obj:{
                     funname:"cardheap",

@@ -6,7 +6,6 @@ import Equipment from '../Equipment/Equipment';
 import {state_base} from '../functions';//计算状态影响下的属性
 import "./HeroPlaceThat.scss";
 import MetailBox from '..//MetailBox/MetailBox';
-var socket = io();
 
 class HeroPlaceThat extends React.Component{
     constructor(){

@@ -154,7 +154,8 @@ io.on('connection', function(socket){
     socket.on('fightResult', function(res){//战斗结果
         for(i in persenAry){
             if(persenAry[i].id===res.id){
-                persenAry[i].state = "free"
+                persenAry[i].state = "free";
+                persenAry[i].tid = null;
             }
         }
         getpersen(persenAry);

@@ -19,18 +19,18 @@ class Component extends React.Component{
                 name:this.props.myname
             });
         }
-        this.props.socket.on('getpersen', (persenAry)=>{//刷新人员列表
+        window.socket.on('getpersen', (persenAry)=>{//刷新人员列表
             if(!this.Unmount){
                 this.setState({persenAry:persenAry});
             }
         })
-        this.props.socket.on('getmessage', (mewmessage)=>{//刷新消息
+        window.socket.on('getmessage', (mewmessage)=>{//刷新消息
             if(!this.Unmount){
                 this.setState({message:mewmessage});
             }
         })
         
-        this.props.socket.on('getFight', (res)=>{//接收挑战
+        window.socket.on('getFight', (res)=>{//接收挑战
             // debugger
             this.props.actions.show_compop({
                 message:res.message,
@@ -41,7 +41,7 @@ class Component extends React.Component{
                         thatid:res.id,
                         progress_state:2
                     })//可以进行下一步了
-                    this.props.socket.emit('fightAns', {
+                    window.socket.emit('fightAns', {
                         id:res.id,
                         name:res.name,
                         fight:true
@@ -49,7 +49,7 @@ class Component extends React.Component{
                 },
                 Closebtn:true,
                 CloseFun:()=>{
-                    this.props.socket.emit('fightAns', {
+                    window.socket.emit('fightAns', {
                         id:res.id,
                         name:res.name,
                         fight:false
@@ -57,7 +57,7 @@ class Component extends React.Component{
                 },
             });
 		})
-        this.props.socket.on('fightAns', (res)=>{//挑战答复
+        window.socket.on('fightAns', (res)=>{//挑战答复
             if(res.fight){
 				this.props.next_process({
                     thatname:res.name,
@@ -71,7 +71,7 @@ class Component extends React.Component{
                 });
             }
 		})
-        this.props.socket.on('runaway', (res)=>{//对方逃跑
+        window.socket.on('runaway', (res)=>{//对方逃跑
             this.props.actions.show_compop({
                 message:res.message,
                 Turebtn:true,
@@ -92,7 +92,7 @@ class Component extends React.Component{
         this.props.actions.show_compop({
             message:"是否向\""+challengName+"\"发出邀请",
             Turebtn:true,
-            TureFun:()=>{this.props.socket.emit('sendFight', challengId)},
+            TureFun:()=>{window.socket.emit('sendFight', challengId)},
             Closebtn:true,
         });
     }
@@ -116,7 +116,7 @@ class Component extends React.Component{
         this.setState({mymessage:val.target.value});
     }
     sendmessage(){
-        this.props.socket.emit('sendmessage', this.state.mymessage);
+        window.socket.emit('sendmessage', this.state.mymessage);
         this.setState({mymessage:""});
     }
   	render() {

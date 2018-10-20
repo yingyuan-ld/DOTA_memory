@@ -60,7 +60,7 @@ class Shoping extends React.Component{
         newstate.messagelist.push("你购买了\""+equipment.name+"\"");
         this.props.setState(newstate);
 
-        this.props.socket.emit('totalk', {
+        window.socket.emit('totalk', {
             id:this.props.thatid,
             obj:{
                 funname:"getnewstate",
