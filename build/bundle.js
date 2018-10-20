@@ -1208,7 +1208,7 @@ function check_buffToCard(props, Attack) {
 }
 function doAttack(props, Attack, type) {
     //攻击方法 type=card/attack/equipt
-    // props = _.cloneDeep(props); 这个东西会导致 多发一次“回合结束”原因不明。。。。。。。。。。。。。。fuck！
+    props = _lodash2.default.cloneDeep(props); //这个东西会导致 多发一次“回合结束”原因不明。。。。。。。。。。。。。。fuck！
     var mystate = props.mystate;
     var thatstate = props.thatstate;
     var checked = true; //用于判断检查状态
@@ -1370,7 +1370,6 @@ function doAttack(props, Attack, type) {
                 break;
         }
     }
-
     var messagelist = props.messagelist; //消息
     if (type == "attack") {
         messagelist.push("物理攻击造成" + Attack.do.tHp + "点伤害");
@@ -1799,7 +1798,7 @@ function specialcard(props, card) {
     var mystate = props.mystate;
     var thatstate = props.thatstate;
     var r = void 0;
-    switch (card.id) {
+    switch (card.id * 1) {
         case 1037:
             //不稳定物 0 50%使对方晕眩两回合50%使自己晕眩一回合
             r = Math.random();
@@ -3131,11 +3130,11 @@ small_skill[26].do = { mBuff: [108], mBuffT: [6] };
 small_skill[27] = { id: "1027", name: "幽光之魂", state: 1, mp: 50, message: "对敌方造成130点伤害" //(可闪避)"}
 };small_skill[27].do = { mMp: -50, tHp: "130" };
 small_skill[28] = { id: "1028", name: "压倒性优势", state: 1, mp: 80, message: "对敌方造成敌方手牌乘以30的伤害" //(可闪避)"}
-};small_skill[28].do = { mMp: 80, tHp: "thatstate.cardid.length*30" };
+};small_skill[28].do = { mMp: -80, tHp: "thatstate.cardid.length*30" };
 small_skill[29] = { id: "1029", name: "勇气之霎", state: 2, message: "被动牌:受到普通攻击时有40%的概率增加自己100点血" };
 small_skill[29].do = { mBuff: [109], mBuffT: [6] };
 small_skill[30] = { id: "1030", name: "强攻", state: 1, mp: 80, message: "回复100点生命值并造成物理攻击的伤害" };
-small_skill[30].do = { mMp: 80, mHp: 100, tHp: "mystate.attack" };
+small_skill[30].do = { mMp: -80, mHp: 100, tHp: "mystate.attack" };
 small_skill[31] = { id: "1031", name: "冥火暴击", state: 1, mp: 100, message: "对敌方造成150点伤害并晕眩1回合" //(可闪避)"}
 };small_skill[31].do = { mMp: -100, tHp: "150", tBuff: [0], tBuffT: [2] };
 small_skill[32] = { id: "1032", name: "吸血光环", state: 2, message: "被动牌:普通攻击时将对方受到伤害的30%转化成自己的生命值(持续3回合)" };
@@ -3609,6 +3608,10 @@ var _MetailBox = __webpack_require__(5);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
+var _lodash = __webpack_require__(93);
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3696,7 +3699,7 @@ var HeroPlaceMy = function (_React$Component) {
 
             //判断游戏结束
             var message = "";
-            if (nextProps.thatstate.Hp <= 0 && this.props.thatstate.Hp > 0) {
+            if (nextProps.thatstate.Hp <= 0) {
                 message = "你赢了!";
             }
             if (nextProps.mystate.Hp <= 0 && this.props.mystate.Hp > 0) {
@@ -4177,9 +4180,9 @@ var _DotaSystem = __webpack_require__(76);
 
 var _DotaSystem2 = _interopRequireDefault(_DotaSystem);
 
-__webpack_require__(141);
+__webpack_require__(142);
 
-var _store = __webpack_require__(143);
+var _store = __webpack_require__(144);
 
 var _store2 = _interopRequireDefault(_store);
 
@@ -27599,7 +27602,7 @@ var _playing = __webpack_require__(89);
 
 var _playing2 = _interopRequireDefault(_playing);
 
-var _Compop = __webpack_require__(137);
+var _Compop = __webpack_require__(138);
 
 var _Compop2 = _interopRequireDefault(_Compop);
 
@@ -27607,7 +27610,7 @@ var _reactRedux = __webpack_require__(16);
 
 var _redux = __webpack_require__(13);
 
-var _index = __webpack_require__(140);
+var _index = __webpack_require__(141);
 
 var allActions = _interopRequireWildcard(_index);
 
@@ -28662,7 +28665,7 @@ module.exports = {
             Hprecove: 15, //生命值恢复速度
             maxMp: 300, //最大蓝量
             Mprecove: 50, //魔法值恢复速度
-            attack: 40, //攻击力
+            attack: 40000, //攻击力
             attackRecove: 1, //攻击速度
             armor: 10 //护甲
         },
@@ -46490,7 +46493,7 @@ var _PlayPage = __webpack_require__(99);
 
 var _PlayPage2 = _interopRequireDefault(_PlayPage);
 
-var _HeroSelect = __webpack_require__(130);
+var _HeroSelect = __webpack_require__(131);
 
 var _HeroSelect2 = _interopRequireDefault(_HeroSelect);
 
@@ -46648,14 +46651,21 @@ var PlayPage = function (_React$Component) {
                     }
                 });
                 var small_cardheap = (0, _functions.shufflecards)(arr); //洗牌
-                var big_cardheap = (0, _functions.shufflecards)(_skill.big_skill); //洗牌
+                arr = [];
+                _skill.big_skill.map(function (val, index) {
+                    //去除空项
+                    if (val !== "" && val != undefined) {
+                        arr.push(val);
+                    }
+                });
+                var big_cardheap = (0, _functions.shufflecards)(arr); //洗牌
                 //抓牌↓
                 var mystate = this.props.mystate;
                 mystate.money = 100;
                 mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
 
-                // mystate.cardid[0] = {id:1050,name:"吞噬",state: 2 ,mp:100,message:"将对方的随机一张牌,转化为100金币"}
-                // mystate.cardid[0].do = {special:true}
+                // mystate.cardid[0] = {id:"0054",name:"技能窃取",state: 1 ,mp:100,message:"抽取敌方一张卡牌"}
+                // mystate.cardid[0].do = {mMp:-100,special:true};
 
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
@@ -47796,7 +47806,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(129)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n  .fight_place .seal_card {\n    width: 100px;\n    height: 160px;\n    background: url(" + escape(__webpack_require__(146)) + ") no-repeat center;\n    background-size: 100%;\n    position: absolute;\n    right: 10px;\n    top: 10px; }\n", ""]);
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(129)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n  .fight_place .seal_card {\n    width: 100px;\n    height: 160px;\n    background: url(" + escape(__webpack_require__(130)) + ") no-repeat center;\n    background-size: 100%;\n    position: absolute;\n    right: 10px;\n    top: 10px; }\n", ""]);
 
 // exports
 
@@ -47811,6 +47821,12 @@ module.exports = __webpack_require__.p + "359fb7f3f8b83373f73aeb290533070f.png";
 /* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__.p + "0dec506c23a11ae6927a084808110f58.png";
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -47820,7 +47836,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(131);
+__webpack_require__(132);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47954,11 +47970,11 @@ var HeroSelect = function (_React$Component) {
 module.exports = HeroSelect;
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(132);
+var content = __webpack_require__(133);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -48004,7 +48020,7 @@ if(false) {
 }
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var escape = __webpack_require__(4);
@@ -48013,37 +48029,37 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(133)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(134)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(135)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(136)) + ") no-repeat center; }\n", ""]);
+exports.push([module.i, ".heroSelect {\n  width: 100%;\n  text-align: center;\n  height: 100%;\n  background: #000;\n  overflow: hidden; }\n  .heroSelect .select_title {\n    height: 20%;\n    position: relative; }\n    .heroSelect .select_title span {\n      color: #fff;\n      font-size: 26px;\n      position: absolute;\n      bottom: 0px;\n      left: 50%;\n      margin-left: -130px;\n      height: 60px; }\n  .heroSelect .picture_box {\n    height: 50%; }\n    .heroSelect .picture_box .heropicture {\n      width: 25%;\n      height: 100%;\n      display: inline-block;\n      background-size: auto 100% !important;\n      background-color: #000 !important;\n      background-position: right !important;\n      transition: all 0.1s; }\n    .heroSelect .picture_box .heropicture:hover {\n      transform: scale3d(1.2, 1.2, 0.8); }\n    .heroSelect .picture_box .hero0 {\n      background: url(" + escape(__webpack_require__(134)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero1 {\n      background: url(" + escape(__webpack_require__(135)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero2 {\n      background: url(" + escape(__webpack_require__(136)) + ") no-repeat center; }\n    .heroSelect .picture_box .hero3 {\n      background: url(" + escape(__webpack_require__(137)) + ") no-repeat center; }\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "52161e9892467fa48f01d90390b46efe.jpg";
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "be5072aea25eb22a9bbbbd7f4ded5518.jpg";
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "31b809f3672807f11398cd3516b78823.jpg";
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "c7b2f8b05bb77072b3d03432d8b7992a.jpg";
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48059,7 +48075,7 @@ var _MetailBox = __webpack_require__(5);
 
 var _MetailBox2 = _interopRequireDefault(_MetailBox);
 
-__webpack_require__(138);
+__webpack_require__(139);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -48138,11 +48154,11 @@ var Compop = function (_React$Component) {
 module.exports = Compop;
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(139);
+var content = __webpack_require__(140);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -48188,7 +48204,7 @@ if(false) {
 }
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -48202,7 +48218,7 @@ exports.push([module.i, ".ComBox {\n  width: 100%;\n  height: 100%;\n  position:
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48236,11 +48252,11 @@ function hide_compop() {
 }
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(142);
+var content = __webpack_require__(143);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -48286,7 +48302,7 @@ if(false) {
 }
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)(false);
@@ -48300,7 +48316,7 @@ exports.push([module.i, "body {\n  background: #fff;\n  width: 100%;\n  height: 
 
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48312,7 +48328,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(13);
 
-var _reduxter = __webpack_require__(144);
+var _reduxter = __webpack_require__(145);
 
 var _reduxter2 = _interopRequireDefault(_reduxter);
 
@@ -48336,7 +48352,7 @@ var store = (0, _redux.createStore)(_reduxter2.default, initValue);
 exports.default = store;
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48346,7 +48362,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _immer = __webpack_require__(145);
+var _immer = __webpack_require__(146);
 
 var _immer2 = _interopRequireDefault(_immer);
 
@@ -48381,7 +48397,7 @@ exports.default = function (state, action) {
 };
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49141,12 +49157,6 @@ var nothing = NOTHING;
 //# sourceMappingURL=immer.module.js.map
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
-
-/***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "0dec506c23a11ae6927a084808110f58.png";
 
 /***/ })
 /******/ ]);

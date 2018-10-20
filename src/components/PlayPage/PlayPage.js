@@ -80,7 +80,13 @@ class PlayPage extends React.Component{
                 }
             });
             let small_cardheap = shufflecards(arr)//洗牌
-            let big_cardheap = shufflecards(big_skill)//洗牌
+            arr = [];
+            big_skill.map(function(val, index) {//去除空项
+                if (val !== "" && val != undefined) {
+                    arr.push(val);
+                }
+            });
+            let big_cardheap = shufflecards(arr)//洗牌
             //抓牌↓
             let mystate = this.props.mystate;
             mystate.money = 100;
@@ -88,8 +94,8 @@ class PlayPage extends React.Component{
             mystate.cardid = small_cardheap.slice(0,6);
 
 
-// mystate.cardid[0] = {id:1050,name:"吞噬",state: 2 ,mp:100,message:"将对方的随机一张牌,转化为100金币"}
-// mystate.cardid[0].do = {special:true}
+// mystate.cardid[0] = {id:"0054",name:"技能窃取",state: 1 ,mp:100,message:"抽取敌方一张卡牌"}
+// mystate.cardid[0].do = {mMp:-100,special:true};
 
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({

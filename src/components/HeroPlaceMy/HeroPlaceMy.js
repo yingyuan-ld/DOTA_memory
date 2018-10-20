@@ -6,6 +6,7 @@ import Equipment from '../Equipment/Equipment';
 import {doAttack} from '../functions';
 import "./HeroPlaceMy.scss";
 import MetailBox from '..//MetailBox/MetailBox';
+import _ from 'lodash';
 var socket = io();
 class HeroPlaceMy extends React.Component{
     constructor(){
@@ -60,7 +61,7 @@ class HeroPlaceMy extends React.Component{
 
         //判断游戏结束
         let message = "";
-        if(nextProps.thatstate.Hp<=0&&this.props.thatstate.Hp>0){
+        if(nextProps.thatstate.Hp<=0){
             message = "你赢了!";
         }
         if(nextProps.mystate.Hp<=0&&this.props.mystate.Hp>0){

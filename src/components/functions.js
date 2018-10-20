@@ -289,7 +289,7 @@ function check_buffToCard (props,Attack){
     return [props,Attack];
 }
 export function doAttack (props,Attack,type){//攻击方法 type=card/attack/equipt
-    // props = _.cloneDeep(props); 这个东西会导致 多发一次“回合结束”原因不明。。。。。。。。。。。。。。fuck！
+    props = _.cloneDeep(props); //这个东西会导致 多发一次“回合结束”原因不明。。。。。。。。。。。。。。fuck！
     let mystate = props.mystate;
     let thatstate = props.thatstate;
     let checked = true;//用于判断检查状态
@@ -386,7 +386,6 @@ export function doAttack (props,Attack,type){//攻击方法 type=card/attack/equ
                 break;
         }
     }
-
     let messagelist = props.messagelist;//消息
     if(type=="attack"){
         messagelist.push("物理攻击造成"+ Attack.do.tHp +"点伤害");
@@ -760,7 +759,7 @@ export function specialcard (props,card){//特殊技能处理
     let mystate = props.mystate;
     let thatstate = props.thatstate;
     let r;  
-    switch (card.id)
+    switch (card.id*1)
     {
         case 1037://不稳定物 0 50%使对方晕眩两回合50%使自己晕眩一回合
             r = Math.random();
