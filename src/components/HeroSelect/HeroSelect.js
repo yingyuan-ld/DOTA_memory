@@ -83,7 +83,7 @@ class HeroSelect extends React.Component{
   	render() {
         return<div className="heroSelect">
                 <div className="select_title">
-                    <span>请选择你要使用的英雄</span>
+                    <span>请选择你要使用的种族</span>
                 </div>
                 <div className="picture_box">
                     <div className="hero0 heropicture" onClick={this.coeckhero.bind(this,0)} />

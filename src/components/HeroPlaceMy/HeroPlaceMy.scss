@@ -1,6 +1,6 @@
 .hero_place{
     height: 200px;
-    min-width: 1155px;
+    min-width: 1180px;
     .hero_box{
         width: 99px;
         position: absolute;
@@ -60,10 +60,12 @@
         .HP{
             transition: all 0.1s;
             background: #8bff04;
+            white-space: nowrap;
         }
         .MP{
             transition: all 0.1s;
             background: #6977ff;
+            white-space: nowrap;
         }
         .attack{
             width: 100%;

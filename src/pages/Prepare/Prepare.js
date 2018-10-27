@@ -121,6 +121,7 @@ class Component extends React.Component{
     }
   	render() {
         return <div className="prepare_body">
+            <div className="tip_message">该游戏仍有很多bug，如发现严重bug，请立即通知作者(907280636@qq.com)</div>
             <div className="Chat_record">
                 <MetailBox>
                     {this.render_message()}
@@ -134,6 +135,7 @@ class Component extends React.Component{
             <div className="online_list">
                 <MetailBox>
                     <div>请选取一名在线人员开始游戏↓</div>
+                    <div className="small_ps">ps:如果实在没人，你就再打开一个窗口自己跟自己玩吧...</div>
                     {this.render_presen()}
                 </MetailBox>
             </div>
