@@ -161,7 +161,7 @@ io.on('connection', function(socket){
         getpersen(persenAry);
     });
     socket.on('totalk', function(res){//游戏交互
-        console.info(res);
+        // console.info(res);
         io.to(res.id).emit('totalk',res);
     });
     
