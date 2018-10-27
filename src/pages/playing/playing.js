@@ -38,7 +38,7 @@ class Component extends React.Component{
                 equipmentcd:{},//装备cd
                 cardid:[],//卡牌数组
                 money:0,//金钱
-                moneyrecove:100,//金钱获得速度
+                moneyrecove:50,//金钱获得速度
             },
             round:0, //是否是我的回合 0不是 1是
             messagelist:[],//战斗记录

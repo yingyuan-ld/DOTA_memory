@@ -44,7 +44,7 @@ class PlayPage extends React.Component{
                 small_speed++;
             }
             for(let i=0,l = mystate.buff.length;i<l;){//状态处理
-                if(mystate.buffTime[i]==1){
+                if(mystate.buffTime[i]<=1){
                     mystate.buffTime.splice(i,1);
                     mystate.buffObj[mystate.buff[i]]&&delete mystate.buffObj[mystate.buff[i]];
                     mystate.buff.splice(i,1);
@@ -89,13 +89,12 @@ class PlayPage extends React.Component{
             let big_cardheap = shufflecards(arr)//洗牌
             //抓牌↓
             let mystate = this.props.mystate;
-            mystate.money = 100;
+            mystate.money = 50;
             mystate.attackAccount = 1,
             mystate.cardid = small_cardheap.slice(0,6);
 
-
-// mystate.cardid[0] = {id:"0054",name:"技能窃取",state: 1 ,mp:100,message:"抽取敌方一张卡牌"}
-// mystate.cardid[0].do = {mMp:-100,special:true};
+// mystate.cardid[0] = {id:"1145",name:"血之狂暴",state: 1 ,message:"该单位无法使用技能,伤害增加50%,受伤增加50%"}
+// mystate.cardid[0].do = {mBuff:[58],mBuffT:[6]};
 
             thatstate.cardid = small_cardheap.slice(6,11);
             this.props.setState({

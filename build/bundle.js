@@ -45578,7 +45578,7 @@ var Component = function (_React$Component) {
                 equipmentcd: {}, //装备cd
                 cardid: [], //卡牌数组
                 money: 0, //金钱
-                moneyrecove: 100 //金钱获得速度
+                moneyrecove: 50 //金钱获得速度
             },
             round: 0, //是否是我的回合 0不是 1是
             messagelist: [], //战斗记录
@@ -46614,7 +46614,7 @@ var PlayPage = function (_React$Component) {
                 }
                 for (var i = 0, l = mystate.buff.length; i < l;) {
                     //状态处理
-                    if (mystate.buffTime[i] == 1) {
+                    if (mystate.buffTime[i] <= 1) {
                         mystate.buffTime.splice(i, 1);
                         mystate.buffObj[mystate.buff[i]] && delete mystate.buffObj[mystate.buff[i]];
                         mystate.buff.splice(i, 1);
@@ -46665,11 +46665,11 @@ var PlayPage = function (_React$Component) {
                 var big_cardheap = (0, _functions.shufflecards)(arr); //洗牌
                 //抓牌↓
                 var mystate = this.props.mystate;
-                mystate.money = 100;
+                mystate.money = 50;
                 mystate.attackAccount = 1, mystate.cardid = small_cardheap.slice(0, 6);
 
-                // mystate.cardid[0] = {id:"0054",name:"技能窃取",state: 1 ,mp:100,message:"抽取敌方一张卡牌"}
-                // mystate.cardid[0].do = {mMp:-100,special:true};
+                // mystate.cardid[0] = {id:"1145",name:"血之狂暴",state: 1 ,message:"该单位无法使用技能,伤害增加50%,受伤增加50%"}
+                // mystate.cardid[0].do = {mBuff:[58],mBuffT:[6]};
 
                 thatstate.cardid = small_cardheap.slice(6, 11);
                 this.props.setState({
@@ -47280,7 +47280,11 @@ var FightPlace = function (_React$Component) {
                     { className: 'cardShow' },
                     this.props.cardShowList[0] ? _react2.default.createElement(_Card2.default, { card: this.props.cardShowList[this.props.cardShowList.length - 1], cardfor: "show" }) : ""
                 ),
-                _react2.default.createElement('div', { className: 'seal_card', onClick: this.buycard.bind(this) }),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'seal_card', onClick: this.buycard.bind(this) },
+                    '\xA5:100'
+                ),
                 _react2.default.createElement('div', { className: 'shop', onClick: this.goshoping.bind(this) }),
                 _react2.default.createElement(_Shoping2.default, _extends({}, this.props, {
                     show: this.state.shoping,
@@ -47810,7 +47814,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(129)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n  .fight_place .seal_card {\n    width: 100px;\n    height: 160px;\n    background: url(" + escape(__webpack_require__(130)) + ") no-repeat center;\n    background-size: 100%;\n    position: absolute;\n    right: 10px;\n    top: 10px; }\n", ""]);
+exports.push([module.i, ".fight_place {\n  height: calc(100% - 400px);\n  min-height: 300px;\n  position: relative;\n  overflow: hidden; }\n  .fight_place .fight_message {\n    width: 250px;\n    height: 100%;\n    overflow: auto;\n    border: 1px solid #666;\n    position: absolute;\n    color: #fff; }\n  .fight_place .cardShow {\n    width: 100px;\n    height: 160px;\n    position: absolute;\n    left: calc(50% - 50px);\n    top: calc(50% - 90px); }\n  .fight_place .cardShowList {\n    position: absolute;\n    width: 102px;\n    height: 100%;\n    left: 250px;\n    overflow: hidden; }\n  .fight_place .shop {\n    width: 80px;\n    height: 80px;\n    background: url(" + escape(__webpack_require__(129)) + ") no-repeat center;\n    background-size: contain;\n    position: absolute;\n    right: 10px;\n    bottom: 10px;\n    cursor: pointer; }\n  .fight_place .seal_card {\n    color: #fffe02;\n    width: 100px;\n    height: 160px;\n    background: url(" + escape(__webpack_require__(130)) + ") no-repeat center;\n    background-size: 100%;\n    position: absolute;\n    right: 10px;\n    top: 10px; }\n", ""]);
 
 // exports
 

@@ -72,7 +72,9 @@ class FightPlace extends React.Component{
             <div className="cardShow">
                 {this.props.cardShowList[0]?<Card card={this.props.cardShowList[this.props.cardShowList.length-1]} cardfor={"show"}/>:""}
             </div>
-            <div className="seal_card" onClick={this.buycard.bind(this)}></div>
+            <div className="seal_card" onClick={this.buycard.bind(this)}>
+                ¥:100
+            </div>
             <div className="shop" onClick={this.goshoping.bind(this)}/>
             <Shoping 
                 {...this.props}
