@@ -4,6 +4,7 @@ var url = require("url");
 
 let server = http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
+    pathname = pathname=="/"?"/index.html":pathname;
     let type = pathname.split('.').pop();
     let contentType = {
         "css": "text/css",
@@ -36,7 +37,7 @@ let server = http.createServer(function (request, response) {
         }
         response.end();
     }); 
-}).listen(8088);
+}).listen(80);
 const io = require('socket.io')(server); 
 
 var history = new Array();
@@ -175,4 +176,4 @@ let getmessage = function(message){
     if(messageAry.length>100)messageAry.shift();
     io.in('prepare room').emit('getmessage', messageAry);
 }
-console.log('Server running at http://127.0.0.1:8088/');
+console.log('Server running at http://127.0.0.1:80/');
