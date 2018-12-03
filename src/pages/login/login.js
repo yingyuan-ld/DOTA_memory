@@ -7,7 +7,8 @@ class login extends React.Component{
 			myname:"",
 			myid:""
         }
-	  }
+    	// this.textInput = React.createRef();
+	 }
 	  
 	componentWillMount(){
 		let that = this;
@@ -35,11 +36,19 @@ class login extends React.Component{
 		}
 		window.socket.emit('login', that.state.myname);
   	}
+	componentDidMount() {
+		this.refs.textInput.focus();
+	}
   	render() {
     	return (<div className="login_box">
     		<div className="login">
 	        	<div className="login_title">输入名字</div>
-	        	<input type="text" className="name_input" onChange={this.edit.bind(this)} value={this.state.myname}/>
+	        	<input type="text"
+	        		ref={"textInput"}
+	        		className="name_input"
+	        		onChange={this.edit.bind(this)}
+	        		value={this.state.myname}
+	        	/>
 	        	<div className="login_btn" onClick={this.send.bind(this)}>登录</div>
         	</div>
     	</div>);

@@ -38,6 +38,7 @@ let server = http.createServer(function (request, response) {
         response.end();
     }); 
 }).listen(80);
+console.log('Server running at http://127.0.0.1:80/');
 const io = require('socket.io')(server); 
 
 var history = new Array();
@@ -162,7 +163,6 @@ io.on('connection', function(socket){
         getpersen(persenAry);
     });
     socket.on('totalk', function(res){//游戏交互
-        // console.info(res);
         io.to(res.id).emit('totalk',res);
     });
     
@@ -176,4 +176,3 @@ let getmessage = function(message){
     if(messageAry.length>100)messageAry.shift();
     io.in('prepare room').emit('getmessage', messageAry);
 }
-console.log('Server running at http://127.0.0.1:80/');

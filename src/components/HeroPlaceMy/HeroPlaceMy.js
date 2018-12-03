@@ -147,6 +147,7 @@ class HeroPlaceMy extends React.Component{
             })
     }
   	render() {
+        // this.props.mystate.Hp = 6666;
         let basic = this.props.mystate;
         return <div className="hero_place">
         <MetailBox>
