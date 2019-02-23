@@ -1,7 +1,10 @@
 // const webpack = require('webpack')
 // const path = require('path');
-// const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
+// const HtmlWebpackPlugin = require('html-webpack-plugin');//用于自动生成html入口文件的插件
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
+// const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
 module.exports = {
+    mode:'development',
     entry: [
         './index.js'
     ],
