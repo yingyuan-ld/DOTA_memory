@@ -32,10 +32,10 @@
     "socket.io": "^2.1.1",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    
     "mini-css-extract-plugin": "^0.5.0",
     "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.2.3",
+    "uglifyjs-webpack-plugin": "^2.1.1"
   },
   "repository": {
     "type": "git",

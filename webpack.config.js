@@ -1,6 +1,7 @@
 // const HtmlWebpackPlugin = require('html-webpack-plugin');//用于自动生成html入口文件的插件
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
+const uglifyjs = require('uglifyjs-webpack-plugin');//压缩js
 module.exports = {
     // mode:'development',
     mode:'production',
@@ -14,9 +15,14 @@ module.exports = {
         filename:'bundle.js'
     },
     module: {
-        rules: [
-            {test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/, query: {presets: ['react', 'es2015']}},
-            {
+        rules: [{
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: [{
+                    loader: 'babel-loader',
+                    query: {presets: ['react', 'es2015']}//这个是babel的属性
+                }]
+            },{
                 test: /\.scss$/,
                 exclude: /node_modules/, //排除node_modules文件夹
                 use: [{
@@ -33,9 +39,9 @@ module.exports = {
                 use:[{
                 loader:'url-loader',
                     options:{
-                    // limit:8129,//小于limit限制的图片将转为base64嵌入引用位置
-                    // fallback:'file-loader',//大于limit限制的将转交给指定的loader处理
-                    outputPath:'imgs/'
+                        limit:8129,//小于limit限制的图片将 打包进css
+                        fallback:'file-loader',//大于limit限制的将转交给指定的loader处理
+                        outputPath:'imgs/'
                     }
                 }]
             }
@@ -46,7 +52,8 @@ module.exports = {
         // new HtmlWebpackPlugin(),//生成入口html文件
         new MiniCssExtractPlugin({
             filename: "[name].css"
-        })//为抽取出的独立的CSS文件设置配置参数
+        }),//为抽取出的独立的CSS文件设置配置参数
+        new uglifyjs()//压缩js
     ],
     optimization:{
         //对生成的CSS文件进行代码压缩 mode='production'时生效
@@ -55,3 +62,7 @@ module.exports = {
         ]
     }
 }
+
+
+
+
