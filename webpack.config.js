@@ -2,8 +2,8 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
 module.exports = {
-    mode:'development',
-    // mode:'production',
+    // mode:'development',
+    mode:'production',
     entry: [
         './index.js'
     ],
@@ -28,8 +28,18 @@ module.exports = {
                         loader: 'sass-loader'//SCSS加载器，webpack默认使用node-sass进行编译
                     }
                 ]
-            },
-            {test: /\.(png|jpg)$/,loader: 'url-loader?limit=8192'}
+            },{
+                test:/\.(jpg|png|svg|gif)/,
+                use:[{
+                loader:'url-loader',
+                    options:{
+                    // limit:8129,//小于limit限制的图片将转为base64嵌入引用位置
+                    // fallback:'file-loader',//大于limit限制的将转交给指定的loader处理
+                    outputPath:'imgs/'
+                    }
+                }]
+            }
+            // {test: /\.(png|jpg)$/,loader: 'url-loader?limit=8192'}
         ]
     },
     plugins:[
