@@ -2,8 +2,10 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
 const uglifyjs = require('uglifyjs-webpack-plugin');//压缩js
+const SaasCssLoader = require('@saascss-loader');//迪哥处理css
+// const SaasCssLoader = require('@mini-css-extract-plugin');//迪哥处理css
 module.exports = {
-    // mode:'development',
+    mode:'development',
     mode:'production',
     entry: [
         './index.js'
@@ -39,7 +41,7 @@ module.exports = {
                 use:[{
                 loader:'url-loader',
                     options:{
-                        limit:8129,//小于limit限制的图片将 打包进css
+                        limit:1024,//小于limit限制的图片将 打包进css
                         fallback:'file-loader',//大于limit限制的将转交给指定的loader处理
                         outputPath:'imgs/'
                     }
@@ -52,6 +54,7 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: "[name].css"
         }),//为抽取出的独立的CSS文件设置配置参数
+        new SaasCssLoader(),
         new uglifyjs()//压缩js
     ],
     optimization:{
