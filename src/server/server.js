@@ -37,8 +37,8 @@ let server = http.createServer(function (request, response) {
         }
         response.end();
     }); 
-}).listen(81);
-console.log('Server running at http://127.0.0.1:81/');
+}).listen(80);
+console.log('Server running at http://127.0.0.1:80/');
 const io = require('socket.io')(server); 
 
 var history = new Array();
@@ -46,6 +46,37 @@ var persenObj = {};//登录人员对象
 var persenAry = [];//登录人员数组
 var messageAry = [];//消息数组数组
 io.on('connection', function(socket){
+    setInterval(function(){
+        io.in('prepare room').emit('areYouOk'); //每5分钟去问问玩家，还活着没？
+        for(var i=0;persenAry[i];i++){
+            var persen = persenAry[i];
+            persen.outLine++;             //并且每个人的离线数值加1
+            if(persen.outLine>=12){       //离线超过1小时，踢出系统
+                persenObj[persen.name] = "";
+                if(persen.tid){
+                    io.to(persen.tid).emit('runaway',{//逃跑消息
+                        message:'对方掉线了~~~'
+                    });
+                }
+                persenAry.splice(i, 1);
+                getpersen(persenAry);
+                getmessage({
+                    system:true,
+                    name:"系统消息",
+                    value:'玩家"'+persen.name+'"掉线了...'
+                });
+            }
+        }
+    },300000);
+    socket.on('imOk', function(res){//如果玩家还活着，数值清零
+        for(i in persenAry){
+            if(persenAry[i].id===res.id){
+                persenAry[i].outLine = 0;
+                console.info(persenAry[i]);
+                break;
+            }
+        }
+    });
     socket.on('login', function(name){//接收登录信息
         var res = {};
         if(!persenObj[name]){
@@ -53,7 +84,8 @@ io.on('connection', function(socket){
             persenAry.push({
                 name:name,
                 id:socket.id,
-                state:"free"
+                state:"free",
+                outLine:0//离线值，每5min加1，到12踢出系统
             });
             res = {
                 type:true,
@@ -168,7 +200,7 @@ io.on('connection', function(socket){
     
 });
 
-let getpersen = function(persenAry){
+let getpersen = function(persenAry){//告诉玩家 当前登录人信息
     io.in('prepare room').emit('getpersen', persenAry);
 }
 let getmessage = function(message){

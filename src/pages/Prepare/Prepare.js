@@ -84,6 +84,12 @@ class Component extends React.Component{
                 }
             });
         })
+        window.socket.on('areYouOk', ()=>{  //服务器问，还活着没？
+            socket.emit('imOk', {           //告诉服务器，我还活着！
+                id:this.props.myid,
+                name:this.props.myname
+            });
+        })
     }
     componentWillUnmount(){
         this.Unmount = true;
