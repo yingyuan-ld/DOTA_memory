@@ -1,10 +1,15 @@
-var http = require('http');
-var fs = require("fs");
-var url = require("url");
+let http = require('http');
+let fs = require("fs");
+let url = require("url");
+let path = require("path");
+var cache = require("./cache.js");
 
 let server = http.createServer(function (request, response) {
-    var pathname = url.parse(request.url).pathname;
+    let pathname = url.parse(request.url).pathname;
     pathname = pathname=="/"?"/index.html":pathname;
+    //------------------------------关于缓存的研究
+    cache(request, response, next);    //缓存相关处理
+    //---------------------------------------------
     let type = pathname.split('.').pop();
     let contentType = {
         "css": "text/css",
@@ -27,29 +32,31 @@ let server = http.createServer(function (request, response) {
         "xml": "text/xml"
       }
     // 从文件系统中读取请求的文件内容
-    fs.readFile(pathname.substr(1), function (err, data) {
-        if (err) {
-            console.log(err);
-            response.writeHead(404, {'Content-Type': 'text/html'});
-        }else{          
-            response.writeHead(200, {'Content-Type': contentType[type]});    
-            response.write(data);
-        }
-        response.end();
-    }); 
-}).listen(80);
-console.log('Server running at http://127.0.0.1:80/');
+    function next (){
+        fs.readFile(pathname.substr(1), function (err, data) {
+            if (err) {
+                console.log(err);
+                response.writeHead(404, {'Content-Type': 'text/html'});
+            }else{          
+                response.writeHead(200, {'Content-Type': contentType[type]});    
+                response.write(data);
+            }
+            response.end();
+        });
+    }
+}).listen(81);
+console.log('Server running at http://127.0.0.1:81/');
 const io = require('socket.io')(server); 
 
-var history = new Array();
-var persenObj = {};//登录人员对象
-var persenAry = [];//登录人员数组
-var messageAry = [];//消息数组数组
+let history = new Array();
+let persenObj = {};//登录人员对象
+let persenAry = [];//登录人员数组
+let messageAry = [];//消息数组数组
 io.on('connection', function(socket){
     setInterval(function(){
         io.in('prepare room').emit('areYouOk'); //每5分钟去问问玩家，还活着没？
-        for(var i=0;persenAry[i];i++){
-            var persen = persenAry[i];
+        for(let i=0;persenAry[i];i++){
+            let persen = persenAry[i];
             persen.outLine++;             //并且每个人的离线数值加1
             if(persen.outLine>=12){       //离线超过1小时，踢出系统
                 persenObj[persen.name] = "";
@@ -78,7 +85,7 @@ io.on('connection', function(socket){
         }
     });
     socket.on('login', function(name){//接收登录信息
-        var res = {};
+        let res = {};
         if(!persenObj[name]){
             persenObj[name]=socket.id;
             persenAry.push({
