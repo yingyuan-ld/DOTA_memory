@@ -20,28 +20,27 @@ const component = {//页面
     Prepare:Prepare,//准备
     Playing:Playing//进行
 }
-class Component extends React.Component{
-    constructor(props) {
-        super(props);
-    }
-  	render() {
-        let pagedata = this.props;
-        let FieldBox = component[pagedata.process[pagedata.progress_state]];
-        let data = {
-            next_process:this.props.actions.next_process,
-            actions:this.props.actions
-        }
-        return <div style={{width:"100%",height:"100%"}}>
-            <FieldBox {...data}{...pagedata}/>
-            <Compop {...this.props.CompopData} actions={this.props.actions}/>
-        </div>;
-  	}
+
+const Component = (args)=>{
+	const { process, progress_state, actions, CompopData} = args
+	console.info(args);
+	let FieldBox = component[process[progress_state]];
+	let data = {
+		next_process:actions.next_process,
+		actions:actions
+	}
+
+	return(
+		<div style={{width:"100%",height:"100%"}}>
+			<FieldBox {...data}{...args}/>
+			<Compop {...CompopData} actions={actions}/>
+		</div>
+	)
 }
 
 function mapStateToProps(state) {
     return state ;
 }
-
 function mapDispatchToProps(dispatch) {
     return{ actions: bindActionCreators(allActions, dispatch)};
 }
