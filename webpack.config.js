@@ -2,8 +2,8 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
 const uglifyjs = require('uglifyjs-webpack-plugin');//压缩js
-const SaasCssPlug = require('@saascss-plug');//迪哥处理css 虽然这东西对于本项目来说没啥乱用，但是我还是用了
-const SaasCssLoader = require('@mini-css-extract-plugin');//迪哥处理css
+const SaasCssPlug = require('saascss-plug');//处理css 虽然这东西对于本项目来说没啥乱用，但是我还是用了
+// const SaasCssLoader = require('@mini-css-extract-plugin');//处理css
 module.exports = {
     // mode:'development',
     mode:'production',
