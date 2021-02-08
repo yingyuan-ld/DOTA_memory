@@ -133,4 +133,4 @@ class PlayPage extends React.Component{
         </div>
   	}
 }
-module.exports = PlayPage;
+export default PlayPage;

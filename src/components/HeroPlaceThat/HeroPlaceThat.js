@@ -79,4 +79,4 @@ class HeroPlaceThat extends React.Component{
         </div>
   	}
 }
-module.exports = HeroPlaceThat;
+export default HeroPlaceThat;

@@ -45,4 +45,4 @@ class Equipment extends React.Component{
         </div>
   	}
 }
-module.exports = Equipment;
+export default Equipment;

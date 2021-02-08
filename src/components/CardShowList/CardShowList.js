@@ -57,4 +57,4 @@ class CardShowList extends React.Component{
         </div>
   	}
 }
-module.exports = CardShowList;
+export default CardShowList;

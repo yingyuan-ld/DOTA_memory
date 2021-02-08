@@ -83,4 +83,4 @@ class FightPlace extends React.Component{
         </div>
   	}
 }
-module.exports = FightPlace;
+export default FightPlace;

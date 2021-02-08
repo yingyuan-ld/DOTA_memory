@@ -28,4 +28,4 @@ const Compop = (regs)=>{
 		</div>
 	)
 }
-module.exports = Compop;
+export default Compop;

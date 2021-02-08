@@ -39,4 +39,4 @@ class Card extends React.Component{
         return <div className="card_box_hide" />
   	}
 }
-module.exports = Card;
+export default Card;

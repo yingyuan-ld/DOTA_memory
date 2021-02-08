@@ -30,4 +30,4 @@ class MetailBox extends React.Component{
         </div>
   	}
 }
-module.exports = MetailBox;
+export default MetailBox;

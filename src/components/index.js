@@ -9,4 +9,4 @@ let common = {
     HeroPlaceMy,
     HeroPlaceThat
 }
-module.exports = common;
+export default common;

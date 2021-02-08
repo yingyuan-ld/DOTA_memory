@@ -75,4 +75,4 @@ class Component extends React.Component{
         </div>;
   	}
 }
-module.exports = Component;
+export default Component;

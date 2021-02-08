@@ -90,4 +90,4 @@ class Shoping extends React.Component{
         </div>
   	}
 }
-module.exports = Shoping;
+export default Shoping;

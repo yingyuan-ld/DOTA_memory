@@ -94,4 +94,4 @@ class HeroSelect extends React.Component{
             </div>
   	}
 }
-module.exports = HeroSelect;
+export default HeroSelect;

@@ -180,4 +180,4 @@ class HeroPlaceMy extends React.Component{
         </div>
   	}
 }
-module.exports = HeroPlaceMy;
+export default HeroPlaceMy;

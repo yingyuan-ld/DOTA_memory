@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server/server.js",
-    "dev": "./node_modules/.bin/webpack",
-    "dev1": "./node_modules/.bin/webpack --watch"
+    "dev": "./node_modules/.bin/webpack --watch"
   },
   "dependencies": {
     "cnpm": "^5.3.0"

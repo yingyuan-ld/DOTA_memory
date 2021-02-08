@@ -19,4 +19,4 @@ class BuffIon extends React.Component{
         </div>
     }
 }
-module.exports = BuffIon;
+export default BuffIon;
