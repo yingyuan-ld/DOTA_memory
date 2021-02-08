@@ -16,7 +16,7 @@ setTimeout(() => {
 const component = {//页面
 	Login:Login,//登录
 	Prepare:Prepare,//准备
-	// Playing:Playing//进行
+	Playing:Playing//进行
 }
 
 const Component = (args)=>{
