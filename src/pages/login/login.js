@@ -1,8 +1,8 @@
 import React,{ useState, useEffect } from 'react';
 import "./login.scss";
 
-const login = (regs)=>{
-	const { next_process, actions } = regs;
+const login = (props)=>{
+	const { next_process, actions } = props;
 	const [myname, setMyname] = useState('');
 	const [myid, setMyid] = useState('');
 	useEffect(()=>{
