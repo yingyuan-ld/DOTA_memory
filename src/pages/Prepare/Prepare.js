@@ -19,6 +19,7 @@ const Prepare = (props)=>{
       setPersenAry(persenAry);
     })
     window.socket.on('getmessage', (mewmessage)=>{//刷新消息
+      console.info(mewmessage)
       setMessage(mewmessage);
     })
     window.socket.on('getFight', (res)=>{//接收挑战
