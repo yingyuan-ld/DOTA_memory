@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from 'react';
 import MetailBox from '../../components/MetailBox/MetailBox';
 import "./Prepare.scss";
-var socket = io();
+// var socket = io();
 const Prepare = (props)=>{
 	const { myid, myname, actions, next_process } = props;
   const [persenAry, setPersenAry] = useState([]);
@@ -10,7 +10,7 @@ const Prepare = (props)=>{
 
   useEffect(()=>{
     window.onunload = (event)=> {
-      socket.emit('logout', {
+      window.socket.emit('logout', {
         id: myid,
         name: myname
       });
