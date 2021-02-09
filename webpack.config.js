@@ -7,8 +7,8 @@ const SaasCssPlug = require('saascss-plug');//处理css 虽然这东西对于本
 const resolve = dir => require('path').join(__dirname, dir)
 
 module.exports = {
-	// mode:'development',
-	mode:'production',
+	mode:'development',
+	// mode:'production',
 	entry: [
 		'./index.js'
 	],
@@ -63,10 +63,10 @@ module.exports = {
 		new MiniCssExtractPlugin({
 			filename: "[name].css"
 		}),//为抽取出的独立的CSS文件设置配置参数
-		new SaasCssPlug({
-			input: "main.css",
-			output: "saas-main.css"
-		}),
+		// new SaasCssPlug({
+		// 	input: "main.css",
+		// 	output: "saas-main.css"
+		// }),
 		new uglifyjs()//压缩js
 	],
 	optimization:{
