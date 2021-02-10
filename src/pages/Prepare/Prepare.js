@@ -43,6 +43,39 @@ const Prepare = (props)=>{
         },
       });
     });
+    window.socket.on('fightAns', (res)=>{//挑战答复
+      if(res.fight){
+        next_process({
+            thatname:res.name,
+            thatid:res.id,
+            progress_state:2
+        })//可以进行下一步了
+      }else{
+        actions.show_compop({
+          message:res.message,
+          Turebtn:true
+        });
+      }
+    })
+    window.socket.on('runaway', (res)=>{//对方逃跑
+      actions.show_compop({
+        message:res.message,
+        Turebtn:true,
+        TureFun:()=>{
+          next_process({progress_state:1});
+          socket.emit('fightResult', {
+            id: myid,
+            name: myname
+          }); 
+        }
+      });
+    })
+    window.socket.on('areYouOk', ()=>{  //服务器问，还活着没？
+      socket.emit('imOk', {           //告诉服务器，我还活着！
+        id: myid,
+        name: myname
+      });
+    })
     window.onunload = (event)=> {
       window.socket.emit('logout', {
         id: myid,
