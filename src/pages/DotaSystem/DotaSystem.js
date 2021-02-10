@@ -19,7 +19,7 @@ const component = {//页面
 	Playing:Playing//进行
 }
 
-const Component = (args)=>{
+const DotaSystem = (args)=>{
 	const { process, progress_state, actions, CompopData} = args
 	console.info(args);
 	let FieldBox = component[process[progress_state]];
@@ -42,6 +42,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return{ actions: bindActionCreators(allActions, dispatch)};
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Component);
+export default connect(mapStateToProps, mapDispatchToProps)(DotaSystem);
 
 

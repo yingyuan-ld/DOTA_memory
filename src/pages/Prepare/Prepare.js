@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from 'react';
 import MetailBox from '../../components/MetailBox/MetailBox';
 import "./Prepare.scss";
-// var socket = io();
+
 const Prepare = (props)=>{
 	const { myid, myname, actions, next_process } = props;
   const [persenAry, setPersenAry] = useState([]);
@@ -9,21 +9,15 @@ const Prepare = (props)=>{
 	const [mymessage, setMymessage] = useState('');
 
   useEffect(()=>{
-    window.onunload = (event)=> {
-      window.socket.emit('logout', {
-        id: myid,
-        name: myname
-      });
-    }
-    window.socket.on('getpersen', (persenAry)=>{//刷新人员列表
+    window.socket.on('updatePersen', (persenAry)=>{// 监听人员列表
       setPersenAry(persenAry);
     })
-    window.socket.on('getmessage', (mewmessage)=>{//刷新消息
-      console.info(mewmessage)
+    window.socket.on('updateMessage', (mewmessage)=>{// 监听消息
       setMessage(mewmessage);
     })
+    window.socket.emit('getPersen', {id: myid});  // 请求人员列表
+    window.socket.emit('getMessage', {id: myid}); // 请求消息
     window.socket.on('getFight', (res)=>{//接收挑战
-      // debugger
       actions.show_compop({
         message:res.message,
         Turebtn:true,
@@ -49,6 +43,12 @@ const Prepare = (props)=>{
         },
       });
     });
+    window.onunload = (event)=> {
+      window.socket.emit('logout', {
+        id: myid,
+        name: myname
+      });
+    }
   },[]);
   const select_persen = (challengName,challengId)=>{//选择用户发出要求 defier挑战 challeng被挑战
     actions.show_compop({
