@@ -83,6 +83,7 @@ const Prepare = (props)=>{
     setMymessage(val.target.value);
   }
   const sendmessage = ()=>{
+    if(mymessage==='')return;
     window.socket.emit('sendmessage', mymessage);
     setMymessage('')
   }
@@ -106,7 +107,7 @@ const Prepare = (props)=>{
           {render_presen()}
         </MetailBox>
       </div>
-      <div className="send" onClick={sendmessage}>发送</div>
+      <div className={`send ${mymessage===''?'disable':''}`} onClick={sendmessage}>发送</div>
     </div>
   );
 }

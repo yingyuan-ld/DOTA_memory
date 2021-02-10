@@ -3,7 +3,7 @@ import MetailBox from '..//MetailBox/MetailBox';
 import "./Compop.scss";
 
 const Compop = (regs)=>{
-  const {actions, TureFun, show, Turebtn, Closebtn, message} = regs;
+  const {actions, TureFun, show, Turebtn, Closebtn, message, CloseFun} = regs;
 	const turefun = ()=>{
 	  actions.hide_compop();
 	  TureFun&&TureFun();

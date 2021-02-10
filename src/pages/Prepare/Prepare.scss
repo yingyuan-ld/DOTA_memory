@@ -60,7 +60,7 @@
         }
     }
     .send{
-        background: #afafaf;
+        background: #3d55c1;
         width: 50px;
         height: 25px;
         text-align: center;
@@ -71,6 +71,9 @@
         position: fixed;
         bottom: 10px;
         left: 20px;
+    }
+    .disable{
+        background: #afafaf;
     }
 }
 

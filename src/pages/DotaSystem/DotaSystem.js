@@ -3,7 +3,7 @@ import "./DotaSystem.scss";
 import Login from "../login/login";
 import Prepare from "../Prepare/Prepare.js";
 import Playing from "../playing/playing";
-import Compop from "../../components/Compop/Compop";
+import Compop from "@/components/Compop/Compop";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as allActions from '../../redux/actions/index';
