@@ -65,7 +65,9 @@ const HeroSelect = (props)=>{
     }
     Object.assign(mystate,mystateHerotype);
     let round1 = Math.random();//随机回合用
-    setState({mystate:mystate,mystateBase:mystate,playingSpeed:1,round:(round+round1)});
+    setState((e)=>{
+      return {...e,...{mystate:mystate,mystateBase:mystate,playingSpeed:1,round:(round+round1)}}
+    });
     window.socket.emit('totalk', {
       id: thatid,
       obj:{

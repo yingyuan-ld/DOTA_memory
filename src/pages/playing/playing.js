@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import "./playing.scss";
-import {prepareOk,cardheap,getnewstate} from '../../components/functions';
-import Tooltip from '../../components/Tooltip/Tooltip';
-import PAGES from '../../components/index';
+import {prepareOk,cardheap,getnewstate} from '@/components/functions';
+import Tooltip from '@/components/Tooltip/Tooltip';
+import PAGES from '@/components/index';
 const ACTION = {
   prepareOk,
   cardheap,
@@ -56,10 +56,11 @@ const Playing = (props)=>{
     })
   },[])
   let Field = PAGES[PLAYSPEED[state.playingSpeed]];
+  console.info(state.thatstate)
   return (
     <div className="system_body">
       <Field 
-        setState={setState.bind(this)}
+        setState={setState}
         {...props}
         {...state}/>
       <Tooltip {...state.Tooltip}/>

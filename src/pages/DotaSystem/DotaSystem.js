@@ -21,7 +21,6 @@ const component = {//页面
 
 const DotaSystem = (args)=>{
 	const { process, progress_state, actions, CompopData} = args
-	console.info(args);
 	let FieldBox = component[process[progress_state]];
 	let data = {
 		next_process:actions.next_process,
