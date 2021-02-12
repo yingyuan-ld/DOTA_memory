@@ -10,9 +10,10 @@ import FightPlace from "../FightPlace/FightPlace";
 import "./PlayPage.scss";
 
 const PlayPage = (props)=>{
+  const {myid, thatid} = props
   const { set_state, show_compop, hide_compop } = props.actions;
-  const {mystate, thatstate, round, messagelist, small_speed, small_cardheap,
-    myid, thatid} = props.gameState;
+  const {mystate, thatstate, round, messagelist, small_speed, small_cardheap} = props.gameState;
+    
   useEffect(()=>{
     if(thatstate.herotype!=undefined){//对手比你先进来
       hide_compop();
@@ -124,7 +125,7 @@ const PlayPage = (props)=>{
     <div className="main_box">
       {/* <HeroPlaceThat {...props} {...basic}/> */}
       {/* <FightPlace {...props}/> */}
-      <HeroPlaceMy {...props} {...basic}/>
+      <HeroPlaceMy />
     </div>
   )
 }

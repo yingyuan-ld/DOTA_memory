@@ -74,7 +74,7 @@ const HeroSelect = (props)=>{
       obj:{
           state:mystate,
           funname:"prepareOk",
-          round:round
+          round:round1
       }
     });
   }
