@@ -1,21 +1,24 @@
 import React, {useEffect} from 'react';
-import "./PlayPage.scss";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as allActions from '@/redux/actions/index';
 import {shufflecards,state_base} from '../functions';
-        //洗牌
 import {big_skill,small_skill} from '../../server/skill';
 import HeroPlaceMy from "../HeroPlaceMy/HeroPlaceMy";
 import HeroPlaceThat from "../HeroPlaceThat/HeroPlaceThat";
 import FightPlace from "../FightPlace/FightPlace";
+import "./PlayPage.scss";
 
 const PlayPage = (props)=>{
-  const {mystate, thatstate, round, actions, messagelist, small_speed, small_cardheap,
-    myid, thatid} = props;
+  const { set_state, show_compop, hide_compop } = props.actions;
+  const {mystate, thatstate, round, messagelist, small_speed, small_cardheap,
+    myid, thatid} = props.gameState;
   useEffect(()=>{
     if(thatstate.herotype!=undefined){//对手比你先进来
-      actions.hide_compop();
+      hide_compop();
       prepare_card(round,thatstate);
     }else{
-      actions.show_compop({
+      show_compop({
         message:"对方还在英雄选择中",
         Turebtn:false,
       });
@@ -50,7 +53,7 @@ const PlayPage = (props)=>{
         }
         i++;
       }
-      setState({mystate:mystate,small_speed:small_speed,messagelist:messagelist});
+      set_state({mystate:mystate,small_speed:small_speed,messagelist:messagelist});
       window.socket.emit('totalk', {
         id: thatid,
         obj:{
@@ -88,7 +91,7 @@ const PlayPage = (props)=>{
 // mystate.cardid[0].do = {mBuff:[58],mBuffT:[6]};
 
       thatstate.cardid = small_cardheap.slice(6,11);
-      setState({
+      set_state({
         small_cardheap:small_cardheap,
         big_cardheap:big_cardheap,
         round:1,
@@ -107,7 +110,7 @@ const PlayPage = (props)=>{
         }
       });
       }else{//准备完毕,并且后手
-        setState({
+        set_state({
           round:0,
           messagelist:["对方先手"]
         });
@@ -118,10 +121,17 @@ const PlayPage = (props)=>{
     let basic = {mystate:myBasic,thatstate:thatBasic}
     return(
       <div className="main_box">
-        <HeroPlaceThat {...props} {...basic}/>
-        <FightPlace {...props}/>
-        <HeroPlaceMy {...props} {...basic}/>
+        {/* <HeroPlaceThat {...props} {...basic}/> */}
+        {/* <FightPlace {...props}/> */}
+        {/* <HeroPlaceMy {...props} {...basic}/> */}
       </div>
   	)
 }
-export default PlayPage;
+
+function mapStateToProps(state) {
+  return state ;
+}
+function mapDispatchToProps(dispatch) {
+  return{ actions: bindActionCreators(allActions, dispatch)};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(PlayPage);

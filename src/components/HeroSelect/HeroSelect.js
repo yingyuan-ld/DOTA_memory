@@ -1,8 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as allActions from '@/redux/actions/index';
 import "./HeroSelect.scss";
 
 const HeroSelect = (props)=>{
-  const {mystate, thatid, setState, round} = props
+  const {gameState:{mystate, round}, thatid, actions:{set_state}} = props
   const coeckhero = (type)=>{
     let mystateHerotype = {};
     switch(type){
@@ -64,10 +67,8 @@ const HeroSelect = (props)=>{
         break;
     }
     Object.assign(mystate,mystateHerotype);
-    let round1 = Math.random();//随机回合用
-    setState((e)=>{
-      return {...e,...{mystate:mystate,mystateBase:mystate,playingSpeed:1,round:(round+round1)}}
-    });
+    let round1 = Math.random();// 随机回合用
+    set_state({mystate:mystate,mystateBase:mystate,playingSpeed:1,round:(round+round1)});
     window.socket.emit('totalk', {
       id: thatid,
       obj:{
@@ -91,4 +92,10 @@ const HeroSelect = (props)=>{
     </div>
   )
 }
-export default HeroSelect;
+function mapStateToProps(state) {
+  return state ;
+}
+function mapDispatchToProps(dispatch) {
+  return{ actions: bindActionCreators(allActions, dispatch)};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(HeroSelect);

@@ -1,9 +1,12 @@
 import React,{ useState, useEffect } from 'react';
 import MetailBox from '../../components/MetailBox/MetailBox';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as allActions from '@/redux/actions/index';
 import "./Prepare.scss";
 
 const Prepare = (props)=>{
-	const { myid, myname, actions, next_process } = props;
+	const { myid, myname, actions:{next_process, show_compop} } = props;
   const [persenAry, setPersenAry] = useState([]);
   const [message, setMessage] = useState([]);// {name value system}
 	const [mymessage, setMymessage] = useState('');
@@ -18,7 +21,7 @@ const Prepare = (props)=>{
     window.socket.emit('getPersen', {id: myid});  // 请求人员列表
     window.socket.emit('getMessage', {id: myid}); // 请求消息
     window.socket.on('getFight', (res)=>{//接收挑战
-      actions.show_compop({
+      show_compop({
         message:res.message,
         Turebtn:true,
         TureFun:()=>{
@@ -51,14 +54,14 @@ const Prepare = (props)=>{
             progress_state:2
         })//可以进行下一步了
       }else{
-        actions.show_compop({
+        show_compop({
           message:res.message,
           Turebtn:true
         });
       }
     })
     window.socket.on('runaway', (res)=>{//对方逃跑
-      actions.show_compop({
+      show_compop({
         message:res.message,
         Turebtn:true,
         TureFun:()=>{
@@ -84,7 +87,7 @@ const Prepare = (props)=>{
     }
   },[]);
   const select_persen = (challengName,challengId)=>{//选择用户发出要求 defier挑战 challeng被挑战
-    actions.show_compop({
+    show_compop({
       message:"是否向\""+challengName+"\"发出邀请",
       Turebtn:true,
       TureFun:()=>{window.socket.emit('sendFight', challengId)},
@@ -144,4 +147,10 @@ const Prepare = (props)=>{
     </div>
   );
 }
-export default Prepare;
+function mapStateToProps(state) {
+  return state ;
+}
+function mapDispatchToProps(dispatch) {
+  return{ actions: bindActionCreators(allActions, dispatch)};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Prepare);

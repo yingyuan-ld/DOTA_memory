@@ -1,8 +1,11 @@
 import React,{ useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as allActions from '@/redux/actions/index';
 import "./login.scss";
 
 const login = (props)=>{
-	const { next_process, actions } = props;
+	const { actions:{ next_process } } = props;
 	const [myname, setMyname] = useState('');
 	const [myid, setMyid] = useState('');
 	useEffect(()=>{
@@ -43,4 +46,10 @@ const login = (props)=>{
 		</div>
 	);
 }
-export default login;
+function mapStateToProps(state) {
+  return state ;
+}
+function mapDispatchToProps(dispatch) {
+  return{ actions: bindActionCreators(allActions, dispatch)};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(login);
