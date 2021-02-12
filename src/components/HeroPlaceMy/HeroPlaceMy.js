@@ -37,18 +37,18 @@ const HeroPlaceMy = (props)=>{
         tHp: mystate.attack
       }
     }
-    // let [check,newstate] = doAttack(this.props,attack,"attack");
-    // this.props.setState(newstate);
+    let [check,newstate] = doAttack(props.gameState,attack,"attack");
+    set_state(newstate);
 
-    // if(check==false)return;
-    // window.socket.emit('totalk', {
-    //     id:this.props.thatid,
-    //     obj:{
-    //         funname:"getnewstate",
-    //         newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate},
-    //         message:check=="miss"?"对方普通攻击MISS":"普通攻击对你造成\""+check+"\"点伤害",
-    //     }
-    // });
+    if(check==false)return;
+    window.socket.emit('totalk', {
+      id: thatid,
+      obj:{
+        funname:"getnewstate",
+        newstate:{mystate:newstate.thatstate,thatstate:newstate.mystate},
+        message:check=="miss"?"对方普通攻击MISS":"普通攻击对你造成\""+check+"\"点伤害",
+      }
+    });
   }
   useEffect(()=>{
     if(round === 1){
@@ -82,11 +82,14 @@ const HeroPlaceMy = (props)=>{
     }
   },[props]);
   const count_down = ()=>{
-    if(countDown>1){
-      setCountDown(e=>--e);
-    }else{
-      roundOver();
-    }
+    setCountDown(e=>{
+      if(e>1){
+        return --e;
+      }else{
+        roundOver();
+        return e
+      }
+    });
   }
   const roundOver = ()=>{// 回合结束
     messagelist.push("结束回合");

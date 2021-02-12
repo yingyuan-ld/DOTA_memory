@@ -21,8 +21,8 @@ const Card = (props)=>{
     });
   }
   // card Dom
-  const {id, name, mp, message} = card;
   if(cardfor!="that"){
+    const {id, name, mp, message} = card;
     return (
       <div className={cardfor=="my"?"card_box card_my":"card_box"}
           onClick={cardfor=="my"?()=>usecard(id,name):()=>{}}>

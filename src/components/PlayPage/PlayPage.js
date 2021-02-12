@@ -123,7 +123,7 @@ const PlayPage = (props)=>{
   let basic = {mystate:myBasic,thatstate:thatBasic}
   return(
     <div className="main_box">
-      {/* <HeroPlaceThat {...props} {...basic}/> */}
+      <HeroPlaceThat />
       {/* <FightPlace {...props}/> */}
       <HeroPlaceMy />
     </div>
