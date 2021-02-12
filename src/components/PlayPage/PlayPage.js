@@ -88,8 +88,8 @@ const PlayPage = (props)=>{
       mystate.attackAccount = 1,
       mystate.cardid = small_cardheap.slice(0,6);
 
-// mystate.cardid[0] = {id:"1145",name:"血之狂暴",state: 1 ,message:"该单位无法使用技能,伤害增加50%,受伤增加50%"}
-// mystate.cardid[0].do = {mBuff:[58],mBuffT:[6]};
+      // mystate.cardid[0] = {id:"1145",name:"血之狂暴",state: 1 ,message:"该单位无法使用技能,伤害增加50%,受伤增加50%"}
+      // mystate.cardid[0].do = {mBuff:[58],mBuffT:[6]};
 
       thatstate.cardid = small_cardheap.slice(6,11);
       set_state({
@@ -110,23 +110,23 @@ const PlayPage = (props)=>{
           mystate: mystate
         }
       });
-      }else{//准备完毕,并且后手
-        set_state({
-          round:0,
-          messagelist:["对方先手"]
-        });
-      }
+    }else{//准备完毕,并且后手
+      set_state({
+        round:0,
+        messagelist:["对方先手"]
+      });
     }
-    let myBasic = state_base(mystate,thatstate);//计算状态影响下的属性
-    let thatBasic = state_base(thatstate,mystate);//计算状态影响下的属性
-    let basic = {mystate:myBasic,thatstate:thatBasic}
-    return(
-      <div className="main_box">
-        {/* <HeroPlaceThat {...props} {...basic}/> */}
-        {/* <FightPlace {...props}/> */}
-        <HeroPlaceMy {...props} {...basic}/>
-      </div>
-  	)
+  }
+  let myBasic = state_base(mystate,thatstate);//计算状态影响下的属性
+  let thatBasic = state_base(thatstate,mystate);//计算状态影响下的属性
+  let basic = {mystate:myBasic,thatstate:thatBasic}
+  return(
+    <div className="main_box">
+      {/* <HeroPlaceThat {...props} {...basic}/> */}
+      {/* <FightPlace {...props}/> */}
+      <HeroPlaceMy {...props} {...basic}/>
+    </div>
+  )
 }
 
 function mapStateToProps(state) {

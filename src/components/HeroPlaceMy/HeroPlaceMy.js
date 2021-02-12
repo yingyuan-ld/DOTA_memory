@@ -89,9 +89,7 @@ const HeroPlaceMy = (props)=>{
     }
   }
   const roundOver = ()=>{// 回合结束
-    // let tempMessagelist = messagelist;
     messagelist.push("结束回合");
-    // let tempMystate = mystate;
     mystate.attackAccount = ("."+(mystate.attackAccount*100%100))*1;//攻击机会重置
     for(let i=0;i<mystate.buff.length;){//状态处理
         if(mystate.buffTime[i]==1){
@@ -110,7 +108,6 @@ const HeroPlaceMy = (props)=>{
         i++;
     }
     let newstate= {round:0,messagelist,mystate};
-    // this.props.setState(newstate);
     set_state(newstate);
     console.info("回合结束")
     window.socket.emit('totalk', {
@@ -148,7 +145,6 @@ const HeroPlaceMy = (props)=>{
     })
   }
    
-  // let basic = this.props.mystate;
   const {herotype, attackAccount, attackRecove, Hp, maxHp, Hprecove, Mp, maxMp, Mprecove, attack, armor, money, equipment} = mystate;
   return (
     <div className="hero_place">
