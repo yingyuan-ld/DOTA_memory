@@ -13,6 +13,7 @@ const PlayPage = (props)=>{
   const { set_state, show_compop, hide_compop } = props.actions;
   const {mystate, thatstate, round, messagelist, small_speed, small_cardheap,
     myid, thatid} = props.gameState;
+  console.info(thatstate);
   useEffect(()=>{
     if(thatstate.herotype!=undefined){//对手比你先进来
       hide_compop();
@@ -26,6 +27,7 @@ const PlayPage = (props)=>{
   },[thatstate.herotype])
   useEffect(()=>{
     if(round === 1){
+      let tempsmallspeed = small_speed
       mystate.Hp = mystate.Hp+mystate.Hprecove>mystate.maxHp?mystate.maxHp:mystate.Hp+mystate.Hprecove;//生命值恢复
       mystate.Mp = mystate.Mp+mystate.Mprecove>mystate.maxMp?mystate.maxMp:mystate.Mp+mystate.Mprecove;//魔法值恢复
       mystate.attackAccount += mystate.attackRecove//普攻恢复
@@ -34,8 +36,8 @@ const PlayPage = (props)=>{
         messagelist.push("小伙，你手牌满了！");
         mystate.messagelist = messagelist;
       }else{
-        mystate.cardid.push(small_cardheap[small_speed]);
-        small_speed++;
+        mystate.cardid.push(small_cardheap[tempsmallspeed]);
+        tempsmallspeed++;
       }
       for(let i=0,l = mystate.buff.length;i<l;){//状态处理
         if(mystate.buffTime[i]<=1){
@@ -53,12 +55,12 @@ const PlayPage = (props)=>{
         }
         i++;
       }
-      set_state({mystate:mystate,small_speed:small_speed,messagelist:messagelist});
+      set_state({mystate:mystate,small_speed:tempsmallspeed,messagelist:messagelist});
       window.socket.emit('totalk', {
         id: thatid,
         obj:{
           funname:"getnewstate",
-          newstate:{thatstate:mystate,small_speed:small_speed},
+          newstate:{thatstate:mystate,small_speed:tempsmallspeed},
           message:"现在是对方回合"
         },
         myid: myid

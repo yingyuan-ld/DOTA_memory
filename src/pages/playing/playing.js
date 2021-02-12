@@ -55,9 +55,10 @@ const Playing = (props)=>{
   useEffect(()=>{
     window.socket.on('totalk', (res)=>{
       let tempState = ACTION[res.obj.funname](gameState,res.obj);
+      console.info("totalk",JSON.stringify(tempState))
       set_state(tempState);
     })
-  },[])
+  },[gameState])
   let Field = PAGES[PLAYSPEED[gameState.playingSpeed]];
   
   return (
@@ -68,7 +69,7 @@ const Playing = (props)=>{
   );
 }
 function mapStateToProps(state) {
-  return state ;
+  return state;
 }
 function mapDispatchToProps(dispatch) {
   return{ actions: bindActionCreators(allActions, dispatch)};
