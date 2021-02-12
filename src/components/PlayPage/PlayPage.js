@@ -13,7 +13,6 @@ const PlayPage = (props)=>{
   const { set_state, show_compop, hide_compop } = props.actions;
   const {mystate, thatstate, round, messagelist, small_speed, small_cardheap,
     myid, thatid} = props.gameState;
-  console.info(thatstate);
   useEffect(()=>{
     if(thatstate.herotype!=undefined){//对手比你先进来
       hide_compop();
@@ -125,7 +124,7 @@ const PlayPage = (props)=>{
       <div className="main_box">
         {/* <HeroPlaceThat {...props} {...basic}/> */}
         {/* <FightPlace {...props}/> */}
-        {/* <HeroPlaceMy {...props} {...basic}/> */}
+        <HeroPlaceMy {...props} {...basic}/>
       </div>
   	)
 }

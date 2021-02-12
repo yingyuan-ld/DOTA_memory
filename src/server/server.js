@@ -204,7 +204,6 @@ io.on('connection', function(socket){
         updatePersen(persenAry);
     });
     socket.on('totalk', function(res){//游戏交互
-        console.info(JSON.stringify(res.id))
         io.to(res.id).emit('totalk',res);
     });
     socket.on('getPersen', function(res){// 返回人员列表

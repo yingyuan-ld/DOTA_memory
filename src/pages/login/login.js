@@ -5,7 +5,7 @@ import * as allActions from '@/redux/actions/index';
 import "./login.scss";
 
 const login = (props)=>{
-	const { actions:{ next_process } } = props;
+	const { actions:{ next_process, show_compop } } = props;
 	const [myname, setMyname] = useState('');
 	const [myid, setMyid] = useState('');
 	useEffect(()=>{
@@ -18,7 +18,7 @@ const login = (props)=>{
 					progress_state:1
 				})
 			}else{
-				actions.show_compop({message:res.message,Turebtn:true});
+				show_compop({message:res.message,Turebtn:true});
 			}
 		})
 	})
@@ -27,7 +27,7 @@ const login = (props)=>{
 	}
 	const send = ()=>{
 		if(myname===""){
-			actions.show_compop({message:"名字必填!",Turebtn:true});
+			show_compop({message:"名字必填!",Turebtn:true});
 			return;
 		}
 		window.socket.emit('login', myname);
