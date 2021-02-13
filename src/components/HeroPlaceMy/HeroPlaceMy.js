@@ -140,7 +140,7 @@ const HeroPlaceMy = (props)=>{
     return equipments.map((item,i)=>{
       return (
         <div className="posi_tion" key={i}
-            onMouseOver={()=>showtip(item)}
+            onMouseOver={(e)=>showtip(item,e)}
             onMouseOut={closetip}>
           <Equipment {...props} equipment={item} equipmentcd={mystate.equipmentcd[item.id]} equipfor={"my"}/>
         </div>
