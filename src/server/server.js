@@ -68,8 +68,8 @@ setInterval(function(){//确认在线状态用
                 });
             }
             persenAry.splice(i, 1);
-            getpersen(persenAry);
-            getmessage({
+            updatePersen(persenAry);
+            updateMessage({
                 system:true,
                 name:"系统消息",
                 value:'玩家"'+persen.name+'"掉线了...'
@@ -111,8 +111,8 @@ io.on('connection', function(socket){
         socket.emit('getLogin', res);//给指定的客户端发送消息
         if(res.type){
             socket.join('prepare room');
-            getpersen(persenAry);
-            getmessage({
+            updatePersen(persenAry);
+            updateMessage({
                 system:true,
                 name:"系统消息",
                 value:'玩家"'+name+'"登录游戏'
@@ -123,7 +123,7 @@ io.on('connection', function(socket){
         for(fatename in persenObj){
             if(persenObj[fatename]===socket.id)break;
         }
-        getmessage({
+        updateMessage({
             system:false,
             name:fatename,
             value:mymessage
@@ -155,8 +155,8 @@ io.on('connection', function(socket){
                     persenAry[i].tid = socket.id;
                 }
             }
-            getpersen(persenAry);
-            getmessage({
+            updatePersen(persenAry);
+            updateMessage({
                 system:true,
                 name:"系统消息",
                 value:'玩家"'+res.name+'"和"'+myname+'"开战'
@@ -187,8 +187,8 @@ io.on('connection', function(socket){
                 break;
             }
         }
-        getpersen(persenAry);
-        getmessage({
+        updatePersen(persenAry);
+        updateMessage({
             system:true,
             name:"系统消息",
             value:'玩家"'+res.name+'"离开了...'
@@ -201,19 +201,24 @@ io.on('connection', function(socket){
                 persenAry[i].tid = null;
             }
         }
-        getpersen(persenAry);
+        updatePersen(persenAry);
     });
     socket.on('totalk', function(res){//游戏交互
         io.to(res.id).emit('totalk',res);
     });
-    
+    socket.on('getPersen', function(res){// 返回人员列表
+        io.in(res.id).emit('updatePersen', persenAry);
+    });
+    socket.on('getMessage', function(res){// 返回消息记录
+        io.to(res.id).emit('updateMessage',messageAry);
+    });
 });
 
-let getpersen = function(persenAry){//告诉玩家 当前登录人信息
-    io.in('prepare room').emit('getpersen', persenAry);
+let updatePersen = function(persenAry){// 告诉玩家 当前登录人信息
+    io.in('prepare room').emit('updatePersen', persenAry);
 }
-let getmessage = function(message){
+let updateMessage = function(message){// 发送消息
     messageAry.push(message);
     if(messageAry.length>100)messageAry.shift();
-    io.in('prepare room').emit('getmessage', messageAry);
+    io.in('prepare room').emit('updateMessage', messageAry);
 }

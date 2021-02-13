@@ -3,80 +3,89 @@ import Card from '../Card/Card';
 import state_list from '../../server/stateflie';
 import BuffIon from '../BuffIon/BuffIon';
 import Equipment from '../Equipment/Equipment';
-import {state_base} from '../functions';//计算状态影响下的属性
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as allActions from '@/redux/actions/index';
 import "./HeroPlaceThat.scss";
 import MetailBox from '..//MetailBox/MetailBox';
 
-class HeroPlaceThat extends React.Component{
-    constructor(){
-        super();
-    }
-    cardlist(){
-        return this.props.thatstate.cardid.map((card,i)=>{
-            return <Card cardfor={"that"} {...card} key={i}/>
-        })
-    }
-    showstate(basic){
-        let buff = basic.buff;//状态数组
-        let buffTime = basic.buffTime;//状态持续时间
-        return buff.map((item,i)=>{
-            return <BuffIon {...state_list[item]} buffTime={buffTime[i]} buffObj={basic.buffObj} key={i}/>
-        });
-    }
-    showtip(item,e){
-        this.props.setState({Tooltip:{
-            show:true,
-            place:[e.clientX,e.clientY],
-            name:item.name,
-            blueT:item.mp,
-            redT:item.CD?"CD:"+item.CD/2:"",
-            message:item.message,
-        }})
-    }
-    closetip(){
-        this.props.setState({Tooltip:{show:false}});
-    }
-    showEquipment(equipments){
-        return equipments.map((item,i)=>{
-            return <div className="posi_tion" key={i}
-                        onMouseOver={this.showtip.bind(this,item)}
-                        onMouseOut={this.closetip.bind(this)}>
-                    <Equipment {...this.props} equipment={item} equipfor={"that"} equipmentcd={0}/>
-                </div>
-            })
-    }
-  	render() {
-        let basic = this.props.thatstate;
-        if(basic.herotype===undefined){
-            return <div className="hero_place" >
-                对手正在准备中...
-            </div>;
-        }
-        return <div className="hero_place">
-        <MetailBox>
-            <div className="hero_box">
-                <div className={"hero_ion hero_ion_"+basic.herotype} />
-            </div>
-            <div className="attribute_list">
-                <div className="HP" style={{width:(basic.Hp/basic.maxHp*100).toFixed(2)+"%"}}
-                >{(basic.Hp>0?basic.Hp:0)+"/"+basic.maxHp+(basic.Hprecove>0?"+":"")+basic.Hprecove}</div>
-                <div className="MP" style={{width:(basic.Mp/basic.maxMp*100).toFixed(2)+"%"}}
-                >{basic.Mp+"/"+basic.maxMp+(basic.Mprecove>0?"+":"")+basic.Mprecove}</div>
-                <div className="attack">{"攻击力:"+basic.attack}</div>
-                <div className="armor">{"护甲:"+basic.armor}</div>
-                <div className="statelist">
-                    <span>状态:</span>
-                    {this.showstate(basic)}
-                </div>
-            </div>
-            <div className="card_list">
-                {this.cardlist()}
-            </div>
-            <div className="equipment_list">
-                {this.showEquipment(basic.equipment)}
-            </div>
-        </MetailBox>
+const HeroPlaceThat = (props)=>{
+  const {gameState:{thatstate},actions:{set_state}} = props;
+  const cardlist = ()=>{
+    return thatstate.cardid.map((card,i)=>{
+      return <Card cardfor={"that"} {...card} key={i}/>
+    })
+  }
+  const showstate = (basic)=>{
+    const {buff, buffTime, buffObj} = thatstate;
+    //buff 状态数组, buffTime 状态持续时间
+    return buff.map((item,i)=>{
+      return <BuffIon {...state_list[item]} buffTime={buffTime[i]} buffObj={buffObj} key={i}/>
+    });
+  }
+  const showtip = (item,e)=>{
+    set_state({Tooltip:{
+      show:true,
+      place:[e.clientX,e.clientY],
+      name:item.name,
+      blueT:item.mp,
+      redT:item.CD?"CD:"+item.CD/2:"",
+      message:item.message,
+    }})
+  }
+  const closetip = ()=>{
+    set_state({Tooltip:{show:false}});
+  }
+  const showEquipment = (equipments)=>{
+    return equipments.map((item,i)=>{
+      return (
+        <div className="posi_tion" key={i}
+            onMouseOver={()=>showtip(item)}
+            onMouseOut={closetip}>
+          <Equipment {...props} equipment={item} equipfor={"that"} equipmentcd={0}/>
         </div>
-  	}
+      )
+    })
+  }
+  const {herotype, Hp, maxHp, Hprecove, Mp, maxMp, Mprecove, attack, armor, equipment} = thatstate;
+  
+  if(herotype===undefined){
+    return <div className="hero_place" >
+      对手正在准备中...
+    </div>;
+  }
+  return (
+    <div className="hero_place">
+      <MetailBox>
+        <div className="hero_box">
+          <div className={"hero_ion hero_ion_"+herotype} />
+        </div>
+        <div className="attribute_list">
+          <div className="HP" style={{width:(Hp/maxHp*100).toFixed(2)+"%"}}
+          >{(Hp>0?Hp:0)+"/"+maxHp+(Hprecove>0?"+":"")+Hprecove}</div>
+          <div className="MP" style={{width:(Mp/maxMp*100).toFixed(2)+"%"}}
+          >{Mp+"/"+maxMp+(Mprecove>0?"+":"")+Mprecove}</div>
+          <div className="attack">{"攻击力:"+attack}</div>
+          <div className="armor">{"护甲:"+armor}</div>
+          <div className="statelist">
+            <span>状态:</span>
+            {showstate()}
+          </div>
+        </div>
+        <div className="card_list">
+          {cardlist()}
+        </div>
+        <div className="equipment_list">
+          {showEquipment(equipment)}
+        </div>
+      </MetailBox>
+    </div>
+  )
 }
-module.exports = HeroPlaceThat;
+function mapStateToProps(state) {
+  return state;
+}
+function mapDispatchToProps(dispatch) {
+  return{ actions: bindActionCreators(allActions, dispatch)};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(HeroPlaceThat);
