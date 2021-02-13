@@ -89,8 +89,8 @@ const PlayPage = (props)=>{
       mystate.attackAccount = 1,
       mystate.cardid = small_cardheap.slice(0,6);
 
-      // mystate.cardid[0] = {id:"1142",name:"怒意狂击",state: 2 ,message:"被动牌:每次普通攻击成功后攻击力会增加20"}
-      // mystate.cardid[0].do = {mBuff:[144],mBuffT:[6],mBuffObj:{144:0}};
+      mystate.cardid[0] = {id:"0023",name:"牺牲",state: 1 ,message:"自己和对方同时掉50%的血"}
+      mystate.cardid[0].do = {mMp:-80,tHp:"thatstate.Hp*0.5",mHp:"mystate.Hp*0.5"};
 
       thatstate.cardid = small_cardheap.slice(6,11);
       set_state({

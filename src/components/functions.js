@@ -1,6 +1,5 @@
 import {big_skill,small_skill} from '../server/skill';
 import setUpData from './setUpData';
-import _ from 'lodash';
 
 export function prepareOk (mystate,obj){//准备开始
     mystate.round-=obj.round
@@ -289,7 +288,6 @@ function check_buffToCard (props,Attack){
     return [props,Attack];
 }
 export function doAttack (props,Attack,type){//攻击方法 type=card/attack/equipt
-    props = _.cloneDeep(props); //这个东西会导致 多发一次“回合结束”原因不明。。。。。。。。。。。。。。fuck！
     let mystate = props.mystate;
     let thatstate = props.thatstate;
     let checked = true;//用于判断检查状态
