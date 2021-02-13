@@ -74,9 +74,8 @@ const FightPlace = (props)=>{
       </div>
       <div className="shop" onClick={()=>goshoping(true)}/>
       <Shoping 
-        {...props}
         show={shoping}
-        goshoping={()=>goshoping(true)}/>
+        closeShop={()=>goshoping(false)}/>
     </div>
   )
 }
