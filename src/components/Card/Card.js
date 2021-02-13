@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import * as allActions from '@/redux/actions/index';
 import "./Card.scss";
 const Card = (props)=>{
-  const { card, cardfor, thatid, actions:{set_state} } = props;
+  const { card, cardfor, thatid, actions:{set_state}, gameState } = props;
   const usecard = (id,name)=>{
-    let [check,newstate] = doAttack(props,card,"card");
+    let [check,newstate] = doAttack(gameState,card,"card");
     set_state(newstate);
     if(check==false)return;
 

@@ -89,8 +89,8 @@ const PlayPage = (props)=>{
       mystate.attackAccount = 1,
       mystate.cardid = small_cardheap.slice(0,6);
 
-      // mystate.cardid[0] = {id:"1145",name:"血之狂暴",state: 1 ,message:"该单位无法使用技能,伤害增加50%,受伤增加50%"}
-      // mystate.cardid[0].do = {mBuff:[58],mBuffT:[6]};
+      // mystate.cardid[0] = {id:"1142",name:"怒意狂击",state: 2 ,message:"被动牌:每次普通攻击成功后攻击力会增加20"}
+      // mystate.cardid[0].do = {mBuff:[144],mBuffT:[6],mBuffObj:{144:0}};
 
       thatstate.cardid = small_cardheap.slice(6,11);
       set_state({
@@ -124,7 +124,7 @@ const PlayPage = (props)=>{
   return(
     <div className="main_box">
       <HeroPlaceThat />
-      {/* <FightPlace {...props}/> */}
+      <FightPlace />
       <HeroPlaceMy />
     </div>
   )

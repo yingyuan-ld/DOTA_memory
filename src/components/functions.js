@@ -648,7 +648,7 @@ function attackAfter(props,Attack){
                 DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {135:mystate.buffObj[135]+1});
                 break;
             case 144://怒意狂击  被动牌:每次普通攻击成功后攻击力会增加20
-                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {144:mBuffObj.buffObj[144]+1});//???
+                DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {144:mystate.buffObj[144]+1});
                 break;
             case 65://高射火炮  该单位攻击+70
                 DO.mBuffObj = Object.assign(DO.mBuffObj||{}, {65:mystate.buffObj[65]-=1});

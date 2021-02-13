@@ -12,16 +12,17 @@ const ACTION = {
   getnewstate
 }
 const PLAYSPEED = ["HeroSelect","PlayPage"];
-
+let tempGameState = {value:null} // 建立一个临时变量，用于获取最新的游戏数据
 const Playing = (props)=>{
 	const { gameState, actions:{set_state} } = props;
+  tempGameState.value = gameState;
   useEffect(()=>{
     window.socket.on('totalk', (res)=>{
-      let tempState = ACTION[res.obj.funname](gameState,res.obj);
+      let tempState = ACTION[res.obj.funname](tempGameState.value,res.obj);
       console.info("totalk",JSON.stringify(tempState))
       set_state(tempState);
     })
-  },[gameState])
+  },[])
   let Field = PAGES[PLAYSPEED[gameState.playingSpeed]];
   
   return (
