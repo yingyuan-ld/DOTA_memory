@@ -50,7 +50,6 @@ console.log('Server running at http://127.0.0.1:80/');
 // console.log('Server running at http://127.0.0.1:81/');
 const io = require('socket.io')(server); 
 
-let history = new Array();
 let persenObj = {};//登录人员对象
 let persenAry = [];//登录人员数组
 let messageAry = [];//消息数组数组
