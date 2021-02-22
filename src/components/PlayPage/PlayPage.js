@@ -86,7 +86,7 @@ const PlayPage = (props)=>{
       let big_cardheap = shufflecards(arr)//洗牌
       //抓牌↓
       mystate.money = 50;
-      mystate.attackAccount = 1,
+      mystate.attackAccount = 0,
       mystate.cardid = small_cardheap.slice(0,6);
 
       // mystate.cardid[0] = {id:"0023",name:"牺牲",state: 1 ,message:"自己和对方同时掉50%的血"}
