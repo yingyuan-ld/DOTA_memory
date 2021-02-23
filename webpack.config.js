@@ -6,9 +6,10 @@ const SaasCssPlug = require('saascss-plug');//处理css 虽然这东西对于本
 // const SaasCssLoader = require('@mini-css-extract-plugin');//处理css
 const resolve = dir => require('path').join(__dirname, dir)
 
+var isProductEnv = process.argv[2] === '-p';// 判断环境
+
 module.exports = {
-	mode:'development',
-	// mode:'production',
+	mode: isProductEnv?'production':'development',
 	entry: [
 		'./index.js'
 	],
@@ -63,10 +64,10 @@ module.exports = {
 		new MiniCssExtractPlugin({
 			filename: "[name].css"
 		}),//为抽取出的独立的CSS文件设置配置参数
-		// new SaasCssPlug({
-		// 	input: "main.css",
-		// 	output: "saas-main.css"
-		// }),
+		isProductEnv?new SaasCssPlug({
+			input: "main.css",
+			output: "saas-main.css"
+		}):'',
 		new uglifyjs()//压缩js
 	],
 	optimization:{
