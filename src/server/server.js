@@ -6,7 +6,7 @@ var cache = require("./cache.js");
 
 let server = http.createServer(function (request, response) {
     let pathname = url.parse(request.url).pathname;
-    pathname = pathname=="/"?"/index.html":pathname;
+    pathname = pathname=="/"?"/build/index.html":pathname;
     //------------------------------关于缓存的研究
     cache(request, response, next);    //缓存相关处理
     //---------------------------------------------

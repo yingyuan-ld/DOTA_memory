@@ -1,4 +1,4 @@
-// const HtmlWebpackPlugin = require('html-webpack-plugin');//用于自动生成html入口文件的插件
+const HtmlWebpackPlugin = require('html-webpack-plugin');//用于自动生成html入口文件的插件
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
 const uglifyjs = require('uglifyjs-webpack-plugin');//压缩js
@@ -7,6 +7,27 @@ const SaasCssPlug = require('saascss-plug');//处理css 虽然这东西对于本
 const resolve = dir => require('path').join(__dirname, dir)
 
 var isProductEnv = process.argv[2] === '-p';// 判断环境
+
+let plugins = [];
+plugins.push(//生成入口html文件
+	new HtmlWebpackPlugin({
+		template: './src/pages/index.html'
+	})
+)
+plugins.push(
+	new MiniCssExtractPlugin({
+		filename: "[name].css"
+	})//为抽取出的独立的CSS文件设置配置参数
+)
+isProductEnv&&plugins.push(
+	new SaasCssPlug({
+		input: "main.css",
+		output: "main.css"
+	})
+)
+plugins.push(//压缩js
+	new uglifyjs()
+)
 
 module.exports = {
 	mode: isProductEnv?'production':'development',
@@ -59,17 +80,7 @@ module.exports = {
 			}
 		]
 	},
-	plugins:[
-		// new HtmlWebpackPlugin(),//生成入口html文件
-		new MiniCssExtractPlugin({
-			filename: "[name].css"
-		}),//为抽取出的独立的CSS文件设置配置参数
-		isProductEnv?new SaasCssPlug({
-			input: "main.css",
-			output: "saas-main.css"
-		}):'',
-		new uglifyjs()//压缩js
-	],
+	plugins,
 	optimization:{
 		//对生成的CSS文件进行代码压缩 mode='production'时生效
 		minimizer:[
