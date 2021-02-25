@@ -11,18 +11,17 @@ var isProductEnv = process.argv[2] === '-p';// 判断环境
 let plugins = [];
 plugins.push(//生成入口html文件
 	new HtmlWebpackPlugin({
-		template: './src/pages/index.html'
+		template: './src/pages/index.html',
 	})
 )
 plugins.push(
 	new MiniCssExtractPlugin({
-		filename: "[name].css"
+		filename: "[name].[contenthash:8].css"
 	})//为抽取出的独立的CSS文件设置配置参数
 )
 isProductEnv&&plugins.push(
 	new SaasCssPlug({
-		input: "main.css",
-		output: "main.css"
+		input: "^main\..{8}\.css$",
 	})
 )
 plugins.push(//压缩js
@@ -40,10 +39,9 @@ module.exports = {
 		}
 	},
 	output: {
-		// path: path.resolve(__dirname, 'build'),
 		path:__dirname + '/build',//设置出口的相对路径为build
 		publicPath: '/build/',//替换路径 “放到web服务器下的目录”
-		filename:'bundle.js'
+		filename:'bundle.[contenthash:8].js'
 	},
 	module: {
 		rules: [{
