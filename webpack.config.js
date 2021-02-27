@@ -31,7 +31,7 @@ plugins.push(//压缩js
 module.exports = {
 	mode: isProductEnv?'production':'development',
 	entry: [
-		'./index.js'
+		'./src/pages/index.js'
 	],
 	resolve: {
 		alias: {

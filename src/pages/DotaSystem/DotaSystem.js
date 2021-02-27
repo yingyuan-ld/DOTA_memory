@@ -22,7 +22,6 @@ const component = {//页面
 const DotaSystem = (props)=>{
 	const { process, progress_state, actions, CompopData} = props
 	let FieldBox = component[process[progress_state]];
-
 	return(
 		<div style={{width:"100%",height:"100%"}}>
 			<FieldBox />
