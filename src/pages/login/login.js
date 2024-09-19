@@ -35,7 +35,7 @@ const login = (props)=>{
 	return (
 		<div className="login_box">
 			<div className="login">
-				<div className="login_title">输入名字</div>
+				<div className="login_title">输入姓名</div>
 				<input type="text"
 					className="name_input"
 					onChange={edit}

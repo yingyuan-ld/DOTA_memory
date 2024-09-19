@@ -1,3 +1,4 @@
+const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin');//用于自动生成html入口文件的插件
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//将CSS代码提取为独立文件的插件
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");//CSS模块资源优化插件
@@ -5,6 +6,7 @@ const uglifyjs = require('uglifyjs-webpack-plugin');//压缩js
 const SaasCssPlug = require('saascss-plug');//处理css 虽然这东西对于本项目来说没啥乱用，但是我还是用了
 // const SaasCssLoader = require('@mini-css-extract-plugin');//处理css
 const resolve = dir => require('path').join(__dirname, dir)
+const ModuleFederationPlugin = require('webpack').container.ModuleFederationPlugin
 
 var isProductEnv = process.argv[2] === '-p';// 判断环境
 
@@ -26,6 +28,15 @@ isProductEnv&&plugins.push(
 )
 plugins.push(//压缩js
 	new uglifyjs()
+)
+plugins.push(//模块联邦
+	new ModuleFederationPlugin({
+		filename: 'DOTA_memory_components.js', // 对外提供的打包后的文件名字
+		name:'DOTA_memory', // 微应用的名字
+		exposes:{
+			'./MFPdemo':'./src/components/MFPdemo/MFPdemo.js' // 具体的组件
+		}
+	})
 )
 
 module.exports = {
