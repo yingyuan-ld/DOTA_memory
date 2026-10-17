@@ -13,6 +13,7 @@ let server = http.createServer(function (request, response) {
     let type = pathname.split('.').pop();
     let contentType = {
         "css": "text/css",
+        "map": "application/json",
         "gif": "image/gif",
         "html": "text/html",
         "ico": "image/x-icon",

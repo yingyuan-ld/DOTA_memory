@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server/server.js",
-    "dev": "./node_modules/.bin/webpack -w",
-    "prd": "./node_modules/.bin/webpack -p"
+    "dev": "webpack --mode development -w",
+    "prd": "webpack --mode production"
   },
   "dependencies": {
     "cnpm": "^5.3.0"
@@ -16,24 +16,19 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.0",
-    "css-loader": "^0.28.11",
-    "file-loader": "^1.1.11",
+    "css-loader": "^6.11.0",
+    "css-minimizer-webpack-plugin": "^5.0.1",
     "html-webpack-plugin": "^5.6.0",
     "immer": "^1.1.1",
     "min-model": "^0.1.11",
-    "mini-css-extract-plugin": "^0.5.0",
-    "node-sass": "^4.9.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.1",
-    "react": "0.0.0-experimental-27659559e",
-    "react-dom": "0.0.0-experimental-27659559e",
+    "mini-css-extract-plugin": "^2.9.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-redux": "^7.2.2",
     "redux": "^4.0.5",
-    "saascss-plug": "1.0.2",
-    "sass-loader": "^7.0.1",
+    "sass": "^1.79.0",
+    "sass-loader": "^13.3.3",
     "socket.io": "^2.1.1",
-    "style-loader": "^0.21.0",
-    "uglifyjs-webpack-plugin": "^2.1.1",
-    "url-loader": "^1.0.1",
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
   },
