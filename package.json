@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server/server.js",
-    "dev": "node tests/prepare-tip-message.test.js && webpack --mode development -w",
+    "dev": "webpack --mode development -w",
+    "test:prepare-tip-message": "node tests/prepare-tip-message.test.js",
     "prd": "webpack --mode production"
   },
   "dependencies": {
