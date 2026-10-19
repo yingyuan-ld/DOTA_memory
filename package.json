@@ -4,7 +4,8 @@
   "description": "第一个程序",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/server/server.js",
+    "start": "concurrently -k -n server,pack \"node ./src/server/server.js\" \"webpack --mode development -w\"",
+    "server": "node ./src/server/server.js",
     "dev": "webpack --mode development -w",
     "prd": "webpack --mode production"
   },
@@ -16,6 +17,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.0",
+    "concurrently": "^9.2.5",
     "css-loader": "^6.11.0",
     "css-minimizer-webpack-plugin": "^5.0.1",
     "html-webpack-plugin": "^5.6.0",
