@@ -125,7 +125,7 @@ const Prepare = (props)=>{
   }
   return (
     <div className="prepare_body">
-      <div className="tip_message">该游戏仍有很多bug，如发现严重bug，请立即通知作者(907280636@qq.com)</div>
+      <div className="tip_message">如发现问题，请通知作者</div>
       <div className="Chat_record">
         <MetailBox>
           {render_message()}
